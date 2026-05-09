@@ -6,16 +6,15 @@ Supports: movies, TV, anime, games, books, comics, music (new).
 """
 
 import logging
+from collections import defaultdict
 
 from celery import shared_task
+from django.apps import apps
 from django.contrib.auth import get_user_model
 
 from app.models import Item, MediaTypes
-from app.providers import senscritique, services
-from integrations.helpers import (
-    bulk_create_new_with_history,
-    get_or_create_season,
-)
+from app.providers import senscritique
+from integrations.imports import helpers
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -31,7 +30,7 @@ SC_TO_YAMTRACK = {
     "music": MediaTypes.MUSIC.value,
 }
 
-# SC media_type → Yamtrack source (the provider used for ID resolution)
+# SC media_type → Yamtrack source
 SC_TO_SOURCE = {
     "movie": "tmdb",
     "tv": "tmdb",
@@ -39,7 +38,7 @@ SC_TO_SOURCE = {
     "game": "igdb",
     "book": "openlibrary",
     "comic": "comicvine",
-    "music": "senscritique",  # music uses SC itself as source
+    "music": "senscritique",
 }
 
 
@@ -49,7 +48,6 @@ class SensCritiqueImporter:
         self.username = username
         self.overwrite = overwrite
         self.token = None
-        self.imported = 0
         self.skipped = 0
         self.errors = 0
 
@@ -66,7 +64,8 @@ class SensCritiqueImporter:
         products = senscritique.get_user_collection(self.username, token=self.token)
         logger.info("SC import: fetched %d items for %s", len(products), self.username)
 
-        bulk_media = []
+        # Build dict of {media_type: [model_instances]}
+        bulk_media = defaultdict(list)
 
         for product in products:
             media_type = product.get("media_type")
@@ -78,50 +77,43 @@ class SensCritiqueImporter:
             source = SC_TO_SOURCE[media_type]
 
             try:
-                item = self._build_item(product, yamtrack_type, source)
-                if item:
-                    bulk_media.append(item)
+                obj = self._build_obj(product, yamtrack_type, source)
+                if obj:
+                    bulk_media[yamtrack_type].append(obj)
             except Exception as e:
-                logger.error("SC import error for %s: %s", product.get("title"), e)
+                logger.error("SC import error for '%s': %s", product.get("title"), e)
                 self.errors += 1
 
-        if bulk_media:
-            created = bulk_create_new_with_history(bulk_media, Item, self.user)
-            self.imported = created
+        helpers.bulk_create_media(bulk_media, self.user)
 
+        imported = sum(len(v) for v in bulk_media.values())
         return (
-            f"SensCritique import complete: {self.imported} imported, "
+            f"SensCritique import complete: {imported} imported, "
             f"{self.skipped} skipped, {self.errors} errors."
         )
 
-    def _build_item(self, product: dict, yamtrack_type: str, source: str) -> Item | None:
-        """
-        Resolve the SC item to a Yamtrack Item.
-        For music (source=senscritique), use SC ID directly.
-        For others, try to match by title+year to the appropriate provider.
-        """
+    def _build_obj(self, product: dict, yamtrack_type: str, source: str):
+        """Build a model instance for a SC product."""
         title = product.get("title", "")
-        year = product.get("year")
         sc_id = product.get("sc_id")
         score = product.get("score")
-        poster = product.get("poster")
+        poster = product.get("poster") or ""
 
         if yamtrack_type == MediaTypes.MUSIC.value:
-            # Music: use SC as source, store SC id directly
             media_id = sc_id
         else:
-            # Try to resolve to external provider ID via title search
-            media_id = self._resolve_external_id(title, year, yamtrack_type, source)
+            media_id = self._resolve_external_id(
+                title, product.get("year"), yamtrack_type
+            )
             if not media_id:
-                logger.debug("SC: could not resolve external ID for '%s', using manual", title)
                 source = "manual"
                 media_id = f"sc_{sc_id}"
 
-        # Check if already tracked (skip unless overwrite)
-        exists = Item.objects.filter(
+        # Skip if already exists and not overwriting
+        model = apps.get_model(app_label="app", model_name=yamtrack_type)
+        exists = model.objects.filter(
             user=self.user,
             media_id=media_id,
-            media_type=yamtrack_type,
             source=source,
         ).exists()
 
@@ -129,41 +121,33 @@ class SensCritiqueImporter:
             self.skipped += 1
             return None
 
-        return Item(
+        return model(
             user=self.user,
             media_id=media_id,
-            media_type=yamtrack_type,
             source=source,
             title=title,
-            image=poster or "",
-            score=score * 10 if score is not None else None,  # SC 0-10 → internal 0-100
+            image=poster,
+            score=score * 10 if score is not None else None,
             status=Item.Status.COMPLETED,
         )
 
-    def _resolve_external_id(
-        self, title: str, year: int | None, yamtrack_type: str, source: str
-    ) -> str | None:
-        """
-        Search the appropriate external provider for this item by title and year.
-        Returns the external ID string if found, else None.
-        """
+    def _resolve_external_id(self, title: str, year, yamtrack_type: str) -> str | None:
+        """Search the external provider for this item by title+year."""
         try:
+            from app.providers import services
             results = services.search_media(yamtrack_type, title)
             if not results:
                 return None
 
-            # Pick best match: prefer exact title + year match
             for result in results[:5]:
-                result_year = result.get("year") or result.get("release_date", "")[:4]
+                result_year = str(result.get("year") or result.get("release_date", ""))[:4]
                 title_match = result.get("title", "").lower() == title.lower()
-                year_match = year is None or str(result_year) == str(year)
+                year_match = year is None or str(year) == result_year
 
                 if title_match and year_match:
                     return str(result["media_id"])
 
-            # Fallback: return first result
             return str(results[0]["media_id"])
-
         except Exception as e:
             logger.debug("SC resolve error for '%s': %s", title, e)
             return None
