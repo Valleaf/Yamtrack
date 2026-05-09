@@ -285,6 +285,24 @@ class User(AbstractUser):
         default=MediaStatusChoices.ALL,
         choices=MediaStatusChoices,
     )
+    # Media type preferences: Music
+    music_enabled = models.BooleanField(default=True)
+    music_layout = models.CharField(
+        max_length=20,
+        default=LayoutChoices.GRID,
+        choices=LayoutChoices,
+    )
+    music_sort = models.CharField(
+        max_length=20,
+        default=MediaSortChoices.SCORE,
+        choices=MediaSortChoices,
+    )
+    music_status = models.CharField(
+        max_length=20,
+        default=MediaStatusChoices.ALL,
+        choices=MediaStatusChoices,
+    )
+
 
     # UI preferences
     clickable_media_cards = models.BooleanField(
@@ -617,6 +635,8 @@ class User(AbstractUser):
             "steam": "Import from Steam",
             "imdb": "Import from IMDB",
             "goodreads": "Import from GoodReads",
+            "senscritique": "Import from SensCritique",
+            "filmaffinity": "Import from FilmAffinity",
         }
 
         # Reverse mapping to get source from task name
