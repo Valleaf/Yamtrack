@@ -577,7 +577,10 @@ def import_senscritique(request):
         messages.error(request, "SensCritique username is required.")
         return redirect("import_data")
 
-    password = request.POST.get("sc_password") or None
+    password = request.POST.get("sc_password")
+    if not password:
+        messages.error(request, "SensCritique password is required.")
+        return redirect("import_data")
     mode = request.POST.get("mode", "new")
     overwrite = mode == "overwrite"
 
