@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 
 from app.models import Item, MediaTypes
 from app.providers import senscritique
+from app.providers.senscritique import SC_CATEGORY_MAP
 from integrations.imports import helpers
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ SC_TO_SOURCE = {
     "game": "igdb",
     "book": "openlibrary",
     "comic": "comicvine",
-    "music": "senscritique",
+    "music": "musicbrainz",
 }
 
 
