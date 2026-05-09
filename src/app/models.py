@@ -48,6 +48,7 @@ class Sources(models.TextChoices):
     BGG = "bgg", "BoardGameGeek"
     MANUAL = "manual", "Manual"
     SENSCRITIQUE = "senscritique", "SensCritique"
+    MUSICBRAINZ = "musicbrainz", "MusicBrainz"
 
 
 class MediaTypes(models.TextChoices):
