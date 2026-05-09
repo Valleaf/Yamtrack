@@ -1892,3 +1892,9 @@ class BoardGame(Media):
     """Model for board games."""
 
     tracker = FieldTracker()
+
+
+class Music(Media):
+    """Model for music albums."""
+
+    tracker = FieldTracker()
