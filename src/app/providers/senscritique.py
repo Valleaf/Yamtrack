@@ -14,10 +14,20 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 SC_GQL_URL = "https://gql.senscritique.com/graphql"
-FIREBASE_AUTH_URL = (
-    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
-    "?key=AIzaSyCjLSEDd8GVE0HEnAMvSHHBMfy8uF0GRAL"  # SC's public Firebase API key
-)
+# SC's Firebase API key - configurable via SC_FIREBASE_API_KEY env var
+_DEFAULT_FIREBASE_KEY = "AIzaSyCjLSEDd8GVE0HEnAMvSHHBMfy8uF0GRAL"
+
+
+def _get_firebase_api_key() -> str:
+    import os
+    return os.environ.get("SC_FIREBASE_API_KEY", _DEFAULT_FIREBASE_KEY)
+
+
+def _get_firebase_auth_url() -> str:
+    return (
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
+        f"?key={_get_firebase_api_key()}"
+    )
 
 # SC category slugs → Yamtrack media types
 SC_CATEGORY_MAP = {
@@ -35,12 +45,17 @@ SC_CATEGORY_MAP = {
 def _get_firebase_token(email: str, password: str) -> str:
     """Authenticate with Firebase and return the ID token."""
     resp = requests.post(
-        FIREBASE_AUTH_URL,
+        _get_firebase_auth_url(),
         json={"email": email, "password": password, "returnSecureToken": True},
         timeout=10,
     )
-    resp.raise_for_status()
-    return resp.json()["idToken"]
+    if not resp.ok:
+        logger.error("Firebase auth failed: %s %s", resp.status_code, resp.text[:500])
+        resp.raise_for_status()
+    data = resp.json()
+    if "idToken" not in data:
+        raise ValueError(f"Firebase auth response missing idToken: {data}")
+    return data["idToken"]
 
 
 def _gql(query: str, variables: dict, token: str | None = None) -> dict:
@@ -55,6 +70,8 @@ def _gql(query: str, variables: dict, token: str | None = None) -> dict:
         headers=headers,
         timeout=15,
     )
+    if not resp.ok:
+        logger.error("SC GQL failed: %s %s", resp.status_code, resp.text[:300])
     resp.raise_for_status()
     data = resp.json()
     if "errors" in data:
