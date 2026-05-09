@@ -590,3 +590,26 @@ def import_senscritique(request):
     )
     messages.info(request, "The task to import media from SensCritique has been queued.")
     return redirect("import_data")
+
+
+def import_filmaffinity(request):
+    """View for importing media from FilmAffinity."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    fa_user_id = request.POST.get("fa_user_id")
+    if not fa_user_id:
+        messages.error(request, "FilmAffinity user ID is required.")
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+
+    from integrations.imports.filmaffinity import import_from_filmaffinity
+    import_from_filmaffinity.delay(
+        user_id=request.user.id,
+        fa_user_id=fa_user_id,
+        overwrite=overwrite,
+    )
+    messages.info(request, "The task to import media from FilmAffinity has been queued.")
+    return redirect("import_data")

@@ -56,6 +56,10 @@ SOURCES_CONFIG = {
         "name": "SensCritique",
         "logo": static("img/sc-logo.jpg"),
     },
+    "filmaffinity": {
+        "name": "FilmAffinity",
+        "logo": static("img/fa-logo.png"),
+    },
 }
 
 
