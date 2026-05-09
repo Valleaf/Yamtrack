@@ -50,6 +50,7 @@ class SensCritiqueImporter:
         self.token = None
         self.skipped = 0
         self.errors = 0
+        self.imported = 0
 
         if password:
             try:
@@ -63,8 +64,11 @@ class SensCritiqueImporter:
     def run(self) -> str:
         products = senscritique.get_user_collection(self.username, token=self.token)
         logger.info("SC import: fetched %d items for %s", len(products), self.username)
+        self._run_with_products(products)
+        return self._result_message()
 
-        # Build dict of {media_type: [model_instances]}
+    def _run_with_products(self, products: list) -> None:
+        """Process a list of normalized product dicts into Yamtrack."""
         bulk_media = defaultdict(list)
 
         for product in products:
@@ -85,10 +89,11 @@ class SensCritiqueImporter:
                 self.errors += 1
 
         helpers.bulk_create_media(bulk_media, self.user)
+        self.imported = sum(len(v) for v in bulk_media.values())
 
-        imported = sum(len(v) for v in bulk_media.values())
+    def _result_message(self) -> str:
         return (
-            f"SensCritique import complete: {imported} imported, "
+            f"SensCritique import complete: {self.imported} imported, "
             f"{self.skipped} skipped, {self.errors} errors."
         )
 
@@ -167,3 +172,46 @@ def import_from_senscritique(
 
     importer = SensCritiqueImporter(user, username, password, overwrite)
     return importer.run()
+
+
+def _normalize_browser_product(p: dict) -> dict:
+    """Normalize a product from the browser bookmarklet payload."""
+    category_label = (p.get("category") or {}).get("label", "").lower()
+    media_type = SC_CATEGORY_MAP.get(category_label)
+
+    score = None
+    rating = (p.get("myRating") or {}).get("rating")
+    if rating is not None:
+        score = int(rating)
+
+    artists = [a["name"] for a in (p.get("artists") or []) if a.get("name")]
+
+    return {
+        "sc_id": str(p.get("id", "")),
+        "title": p.get("title") or p.get("originalTitle", ""),
+        "year": p.get("yearOfProduction"),
+        "poster": p.get("poster", ""),
+        "media_type": media_type,
+        "score": score,
+        "artists": artists,
+    }
+
+
+@shared_task(name="Import from SensCritique (browser)")
+def import_from_senscritique_data(
+    user_id: int,
+    products: list,
+    username: str = "",
+    overwrite: bool = False,
+) -> str:
+    """Import SC data received from the browser bookmarklet."""
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return f"User {user_id} not found."
+
+    normalized = [_normalize_browser_product(p) for p in products]
+    importer = SensCritiqueImporter(user, username, overwrite=overwrite)
+    # Bypass the API fetch — inject the already-fetched products
+    importer._run_with_products(normalized)
+    return importer._result_message()

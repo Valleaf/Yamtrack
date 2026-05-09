@@ -1,0 +1,64 @@
+{% extends "users/base.html" %}
+{% load app_tags %}
+
+{% block title %}Import SensCritique - Yamtrack{% endblock title %}
+
+{% block settings_content %}
+<div class="space-y-6">
+  <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="flex items-center mb-4">
+      {% include "app/icons/database.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
+      <h2 class="text-xl font-semibold">Import from SensCritique</h2>
+    </div>
+    <p class="text-gray-400 mb-6 text-sm">
+      SensCritique protects its API with Cloudflare, so we use a bookmarklet that runs directly in your browser while you&#39;re logged in.
+    </p>
+
+    <div class="bg-[#39404b] rounded-lg p-5 space-y-5">
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">1</span>
+        <div>
+          <p class="text-white font-medium mb-1">Add the bookmarklet to your browser</p>
+          <p class="text-gray-400 text-sm mb-3">Drag this button to your bookmarks bar:</p>
+          <a id="sc-bookmarklet"
+             class="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md cursor-grab transition-colors select-none"
+             title="Drag me to your bookmarks bar!">
+            ⭐ Import to Yamtrack
+          </a>
+          <p class="text-gray-500 text-xs mt-2">Can&#39;t drag? Right-click the button → Bookmark this link</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">2</span>
+        <div>
+          <p class="text-white font-medium mb-1">Go to SensCritique and log in</p>
+          <a href="https://www.senscritique.com" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-sm underline">Open SensCritique →</a>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">3</span>
+        <div>
+          <p class="text-white font-medium mb-1">Click the bookmarklet</p>
+          <p class="text-gray-400 text-sm">A progress overlay will appear. It fetches your entire collection and sends it to Yamtrack automatically.</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">4</span>
+        <div>
+          <p class="text-white font-medium mb-1">Check your import history</p>
+          <p class="text-gray-400 text-sm">Come back here to see the results once the ✅ appears.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Set bookmarklet href dynamically so it uses the correct Yamtrack origin
+  const code = '(async function() {\n const YAMTRACK_URL = window.location.origin;\n const SC_GQL = \'https:\n const QUERY = `\n query UserCollection($username: String!, $limit: Int, $offset: Int) {\n userByUsername(username: $username) {\n id\n username\n collection(limit: $limit, offset: $offset) {\n totalCount\n products {\n id\n title\n originalTitle\n yearOfProduction\n poster\n category { label }\n myRating { rating }\n artists { name }\n }\n }\n }\n }\n `;\n const usernameEl = document.querySelector(\'a[href*="/profil/"], a[href*="/profile/"]\');\n const pathMatch = usernameEl && usernameEl.href.match(/\\/(profil|profile)\\/([^\\/]+)/);\n const username = pathMatch ? pathMatch[2] : prompt(\'Enter your SensCritique username:\');\n if (!username) return alert(\'No username found.\');\n let all = [], offset = 0, total = null;\n const statusDiv = document.createElement(\'div\');\n statusDiv.style = \'position:fixed;top:20px;right:20px;background:#1a1a2e;color:white;padding:16px 20px;border-radius:8px;z-index:99999;font-family:sans-serif;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,0.5);min-width:220px;\';\n document.body.appendChild(statusDiv);\n const update = (msg) => { statusDiv.innerHTML = \'<b>Yamtrack SC Import</b><br>\' + msg; };\n update(\'Starting import...\');\n try {\n do {\n update(`Fetching items ${offset + 1}–${offset + 100}${total ? \' of \' + total : \'\'}...`);\n const resp = await fetch(SC_GQL, {\n method: \'POST\',\n headers: { \'Content-Type\': \'application/json\' },\n credentials: \'include\',\n body: JSON.stringify({ query: QUERY, variables: { username, limit: 100, offset } })\n });\n const data = await resp.json();\n const col = data?.data?.userByUsername?.collection;\n if (!col) { update(\'Error: Could not fetch collection. Are you logged in to SensCritique?\'); return; }\n total = col.totalCount;\n all = all.concat(col.products);\n offset += 100;\n } while (offset < total);\n update(`Fetched ${all.length} items. Sending to Yamtrack...`);\n const postResp = await fetch(YAMTRACK_URL + \'/import/senscritique/browser/\', {\n method: \'POST\',\n headers: { \'Content-Type\': \'application/json\', \'X-SC-Import\': \'1\' },\n body: JSON.stringify({ username, products: all })\n });\n if (postResp.ok) {\n update(`✅ Done! ${all.length} items sent to Yamtrack.<br><small>Check your import history.</small>`);\n } else {\n update(\'❌ Error sending to Yamtrack: \' + postResp.status);\n }\n } catch(e) {\n update(\'❌ Error: \' + e.message);\n }\n setTimeout(() => statusDiv.remove(), 8000);\n})();';
+  document.getElementById('sc-bookmarklet').href = 'javascript:' + code;
+</script>
+{% endblock settings_content %}

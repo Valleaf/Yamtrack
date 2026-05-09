@@ -616,3 +616,62 @@ def import_filmaffinity(request):
     )
     messages.info(request, "The task to import media from FilmAffinity has been queued.")
     return redirect("import_data")
+
+"""
+SensCritique browser-based import view.
+The bookmarklet runs in the user's browser while logged into SC,
+fetches their collection with their real session cookies (bypassing Cloudflare),
+then POSTs the raw data here for processing.
+"""
+
+import json
+import logging
+
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+
+from integrations.imports.senscritique import import_from_senscritique_data
+
+logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+@require_POST
+def sc_browser_receive(request):
+    """Receive collection data POSTed by the SC bookmarklet."""
+    # Verify the request comes from our bookmarklet
+    if request.headers.get("X-SC-Import") != "1":
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
+    try:
+        body = json.loads(request.body)
+        products = body.get("products", [])
+        username = body.get("username", "")
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid payload"}, status=400)
+
+    if not products:
+        return JsonResponse({"error": "No products received"}, status=400)
+
+    # Queue the import task with the raw products data
+    import_from_senscritique_data.delay(
+        user_id=request.user.id,
+        products=products,
+        username=username,
+    )
+
+    logger.info("SC browser import: %d items queued for user %s", len(products), request.user)
+    return JsonResponse({"status": "ok", "count": len(products)})
+
+
+
+def sc_import_page(request):
+    """Show the SC bookmarklet import page."""
+    return render(request, "users/import_senscritique.html", {})
+
