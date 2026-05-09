@@ -220,10 +220,10 @@ MEDIA_TYPE_CONFIG = {
         "sources": [Sources.MUSICBRAINZ],
         "default_source": Sources.MUSICBRAINZ,
         "sample_query": "Random Access Memories",
-        "unicode_icon": "\U0001F3B5",
+        "unicode_icon": "🎵",
         "verb": ("listen", "listened"),
-        "text_color": COLORS["fuchsia"]["text"],
-        "stats_color": COLORS["fuchsia"]["hex"],
+        "text_color": COLORS["sky"]["text"],
+        "stats_color": COLORS["sky"]["hex"],
         "svg_icon": """
             <path d="M9 18V5l12-2v13"/>
             <circle cx="6" cy="18" r="3"/>
