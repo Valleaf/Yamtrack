@@ -1,25 +1,54 @@
 services:
   yamtrack:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: yamtrack
-    image: ghcr.io/fuzzygrim/yamtrack
     restart: unless-stopped
-    depends_on:
-      - redis
-    environment:
-      - TZ=Europe/Berlin
-      - SECRET=longstring
-      - REDIS_URL=redis://redis:6379
-    volumes:
-      - ./db:/yamtrack/db
     ports:
-      - "8000:8000"
+      - "8080:8000"
+    environment:
+      - SECRET=7OJ8Jm0Jfw6ODSdKbIZ8Z4s4hE0uCbKQWQ5NDua0DpVqP3v-B83ulBNximecnx27lO0
+      - TZ=Europe/Madrid
+      - REDIS_URL=redis://redis:6379
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=yamtrack
+      - DB_USER=yamtrack
+      - DB_PASSWORD=yamtrack_db_password
+      - ALLOWED_HOSTS=*
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - yamtrack_data:/app/data
+
+  db:
+    image: postgres:16-alpine
+    container_name: yamtrack_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=yamtrack
+      - POSTGRES_USER=yamtrack
+      - POSTGRES_PASSWORD=yamtrack_db_password
+    volumes:
+      - yamtrack_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yamtrack -d yamtrack"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    container_name: yamtrack-redis
     image: redis:8-alpine
+    container_name: yamtrack_redis
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - yamtrack_redis:/data
 
 volumes:
-  redis_data:
+  yamtrack_data:
+  yamtrack_postgres:
+  yamtrack_redis:
