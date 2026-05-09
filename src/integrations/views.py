@@ -565,3 +565,28 @@ def emby_webhook(request, token):
     processor = emby.EmbyWebhookProcessor()
     processor.process_payload(payload, user)
     return HttpResponse(status=200)
+
+
+def import_senscritique(request):
+    """View for importing media from SensCritique."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    username = request.POST.get("sc_username")
+    if not username:
+        messages.error(request, "SensCritique username is required.")
+        return redirect("import_data")
+
+    password = request.POST.get("sc_password") or None
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+
+    from integrations.imports.senscritique import import_from_senscritique
+    import_from_senscritique.delay(
+        user_id=request.user.id,
+        username=username,
+        password=password,
+        overwrite=overwrite,
+    )
+    messages.info(request, "The task to import media from SensCritique has been queued.")
+    return redirect("import_data")
