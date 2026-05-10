@@ -197,7 +197,6 @@ def media_list(request, media_type):
     return render(request, template_name, context)
 
 
-@require_GET
 MUSIC_TYPE_TABS = [
     ("", "All"),
     ("album", "Albums"),
@@ -207,6 +206,7 @@ MUSIC_TYPE_TABS = [
 ]
 
 
+@require_GET
 def media_search(request):
     """Return the media search page."""
     media_type = request.user.update_preference(
