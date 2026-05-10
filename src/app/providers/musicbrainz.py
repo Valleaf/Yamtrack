@@ -24,13 +24,22 @@ HEADERS = {
 CAA_BASE = "https://coverartarchive.org/release-group"
 RESULTS_PER_PAGE = 15
 
+# MB type filter values
+TYPE_FILTERS = {
+    "album": "Album",
+    "ep": "EP",
+    "single": "Single",
+    "broadcast": "Broadcast",
+    "other": "Other",
+    "artist": None,  # special: search artists not release groups
+}
+
 
 def _get(endpoint: str, params: dict) -> dict:
-    """Make a GET request to the MusicBrainz API."""
     params["fmt"] = "json"
     resp = requests.get(f"{MB_BASE}/{endpoint}", params=params, headers=HEADERS, timeout=10)
     resp.raise_for_status()
-    time.sleep(1)  # MusicBrainz rate limit: 1 req/sec
+    time.sleep(1)
     return resp.json()
 
 
@@ -38,9 +47,9 @@ def _cover_url(mb_id: str) -> str:
     return f"{CAA_BASE}/{mb_id}/front-250"
 
 
-def _format_artists(rg: dict) -> list[str]:
+def _format_artists(obj: dict) -> list[str]:
     names = []
-    for ac in rg.get("artist-credit", []):
+    for ac in obj.get("artist-credit", []):
         if isinstance(ac, dict):
             name = ac.get("name") or (ac.get("artist") or {}).get("name", "")
             if name:
@@ -48,29 +57,36 @@ def _format_artists(rg: dict) -> list[str]:
     return names
 
 
-def _artist_id(rg: dict) -> str | None:
-    for ac in rg.get("artist-credit", []):
+def _artist_id(obj: dict) -> str | None:
+    for ac in obj.get("artist-credit", []):
         if isinstance(ac, dict) and ac.get("artist"):
             return ac["artist"].get("id")
     return None
 
 
-def search_music(query: str, page: int = 1) -> dict:
-    """Search MusicBrainz for release groups. Returns paginated response dict."""
-    cache_key = f"search_musicbrainz_{query}_{page}"
+def search_music(query: str, page: int = 1, mb_type: str = "") -> dict:
+    """Search MusicBrainz. mb_type: album|ep|single|artist or empty for all."""
+    if mb_type == "artist":
+        return search_artists(query, page)
+
+    cache_key = f"search_musicbrainz_{query}_{page}_{mb_type}"
     cached = cache.get(cache_key)
     if cached:
         return cached
 
     offset = (page - 1) * RESULTS_PER_PAGE
-    data = _get("release-group", {
+    params = {
         "query": query,
         "limit": RESULTS_PER_PAGE,
         "offset": offset,
-    })
+    }
+    if mb_type and mb_type in TYPE_FILTERS:
+        params["type"] = mb_type
 
+    data = _get("release-group", params)
     total = data.get("release-group-count", 0)
     results = []
+
     for rg in data.get("release-groups", []):
         artists = _format_artists(rg)
         primary_type = rg.get("primary-type", "")
@@ -88,6 +104,40 @@ def search_music(query: str, page: int = 1) -> dict:
             "year": (rg.get("first-release-date") or "")[:4],
             "artists": artists,
             "type": type_label,
+        })
+
+    response = helpers.format_search_response(page, RESULTS_PER_PAGE, total, results)
+    cache.set(cache_key, response, 300)
+    return response
+
+
+def search_artists(query: str, page: int = 1) -> dict:
+    """Search MusicBrainz for artists."""
+    cache_key = f"search_mb_artists_{query}_{page}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    offset = (page - 1) * RESULTS_PER_PAGE
+    data = _get("artist", {
+        "query": query,
+        "limit": RESULTS_PER_PAGE,
+        "offset": offset,
+    })
+
+    total = data.get("count", 0)
+    results = []
+    for artist in data.get("artists", []):
+        tags = [t["name"] for t in (artist.get("tags") or [])[:3]]
+        results.append({
+            "media_id": artist["id"],
+            "title": artist.get("name", ""),
+            "media_type": "music_artist",  # special type for routing
+            "source": Sources.MUSICBRAINZ.value,
+            "image": "",
+            "year": (artist.get("life-span") or {}).get("begin", "")[:4],
+            "artists": tags,  # reuse artists field for genre tags display
+            "type": artist.get("type", ""),
         })
 
     response = helpers.format_search_response(page, RESULTS_PER_PAGE, total, results)
@@ -121,10 +171,22 @@ def album(mb_id: str) -> dict:
 
     first_release = data.get("first-release-date", "")
 
-    # Get other albums by the same artist for recommendations
+    # Get tracklist from first official release
+    tracklist = _get_tracklist(mb_id)
+
+    # Get other albums by same artist for recommendations
     recommendations = []
     if artist_id:
         recommendations = _get_artist_albums(artist_id, exclude_id=mb_id)
+
+    # Build artist link for the detail page
+    artist_links = []
+    for ac in data.get("artist-credit", []):
+        if isinstance(ac, dict) and ac.get("artist"):
+            artist_links.append({
+                "id": ac["artist"]["id"],
+                "name": ac.get("name") or ac["artist"].get("name", ""),
+            })
 
     result = {
         "media_id": mb_id,
@@ -142,13 +204,115 @@ def album(mb_id: str) -> dict:
             "format": type_label or "Album",
             "release_date": first_release,
             "artists": ", ".join(artist_names),
-            "status": data.get("primary-type", ""),
         },
+        "artist_links": artist_links,
+        "tracklist": tracklist,
         "cast": [],
         "total_cast_count": 0,
         "related": {
             "More by this artist": recommendations,
         },
+    }
+
+    cache.set(cache_key, result, 3600)
+    return result
+
+
+def _get_tracklist(rg_id: str) -> list[dict]:
+    """Fetch tracklist from the first official release of a release group."""
+    try:
+        # Get releases in this release group
+        rg_data = _get(f"release", {
+            "release-group": rg_id,
+            "inc": "recordings",
+            "limit": 1,
+        })
+        releases = rg_data.get("releases", [])
+        if not releases:
+            return []
+
+        release_id = releases[0]["id"]
+        release_data = _get(f"release/{release_id}", {
+            "inc": "recordings",
+        })
+
+        tracks = []
+        for medium in release_data.get("media", []):
+            for track in medium.get("tracks", []):
+                recording = track.get("recording", {})
+                duration_ms = recording.get("length") or track.get("length")
+                duration = ""
+                if duration_ms:
+                    secs = duration_ms // 1000
+                    duration = f"{secs // 60}:{secs % 60:02d}"
+                tracks.append({
+                    "number": track.get("number", ""),
+                    "title": track.get("title") or recording.get("title", ""),
+                    "duration": duration,
+                })
+        return tracks
+
+    except Exception as e:
+        logger.debug("MusicBrainz tracklist error for %s: %s", rg_id, e)
+        return []
+
+
+def artist(artist_id: str) -> dict:
+    """Fetch artist metadata and discography."""
+    cache_key = f"musicbrainz_artist_{artist_id}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    data = _get(f"artist/{artist_id}", {
+        "inc": "release-groups+genres+tags+url-rels",
+    })
+
+    genres = [g["name"] for g in (data.get("genres") or [])]
+    if not genres:
+        genres = [t["name"] for t in (data.get("tags") or [])[:8]]
+
+    # Find Wikipedia/Wikidata URL for bio
+    bio_url = ""
+    for rel in data.get("relations", []) or []:
+        if rel.get("type") in ("wikipedia", "wikidata"):
+            bio_url = (rel.get("url") or {}).get("resource", "")
+            break
+
+    # Group release groups by type
+    all_rgs = data.get("release-groups", [])
+    discography = {}
+    for rg in all_rgs:
+        rg_type = rg.get("primary-type", "Other")
+        if rg_type not in discography:
+            discography[rg_type] = []
+        discography[rg_type].append({
+            "media_id": rg["id"],
+            "title": rg.get("title", ""),
+            "media_type": MediaTypes.MUSIC.value,
+            "source": Sources.MUSICBRAINZ.value,
+            "image": _cover_url(rg["id"]),
+            "year": (rg.get("first-release-date") or "")[:4],
+            "type": rg.get("primary-type", ""),
+        })
+
+    # Sort each group by year descending
+    for rg_type in discography:
+        discography[rg_type].sort(key=lambda x: x.get("year", ""), reverse=True)
+
+    life_span = data.get("life-span") or {}
+    result = {
+        "artist_id": artist_id,
+        "name": data.get("name", ""),
+        "sort_name": data.get("sort-name", ""),
+        "type": data.get("type", ""),
+        "genres": genres,
+        "begin": life_span.get("begin", ""),
+        "ended": life_span.get("ended", False),
+        "end": life_span.get("end", ""),
+        "source_url": f"https://musicbrainz.org/artist/{artist_id}",
+        "bio_url": bio_url,
+        "discography": discography,
     }
 
     cache.set(cache_key, result, 3600)

@@ -198,6 +198,15 @@ def media_list(request, media_type):
 
 
 @require_GET
+MUSIC_TYPE_TABS = [
+    ("", "All"),
+    ("album", "Albums"),
+    ("ep", "EPs"),
+    ("single", "Singles"),
+    ("artist", "Artists"),
+]
+
+
 def media_search(request):
     """Return the media search page."""
     media_type = request.user.update_preference(
@@ -208,25 +217,47 @@ def media_search(request):
     page = int(request.GET.get("page", 1))
     layout = request.GET.get("layout", "grid")
 
+    # For music, mb_type is the type filter (album/ep/single/artist)
+    mb_type = request.GET.get("mb_type", "")
+
     # only receives source when searching with secondary source
     source = request.GET.get(
         "source",
-        config.get_default_source_name(media_type).value,
+        mb_type if media_type == "music" and mb_type else config.get_default_source_name(media_type).value,
     )
 
     data = services.search(media_type, query, page, source)
 
     # Enrich search results with user tracking data
+    # Skip enrichment for artist results (not trackable items)
     if data.get("results"):
-        data["results"] = helpers.enrich_items_with_user_data(
-            request, data["results"], "search"
-        )
+        artists = [r for r in data["results"] if r.get("media_type") == "music_artist"]
+        non_artists = [r for r in data["results"] if r.get("media_type") != "music_artist"]
+
+        enriched = []
+        if non_artists:
+            enriched = helpers.enrich_items_with_user_data(request, non_artists, "search")
+
+        # Wrap artist dicts so template can use result.media and result.is_artist
+        artist_entries = [{"media": r, "item": None, "is_artist": True} for r in artists]
+
+        # Preserve original order
+        enriched_iter = iter(enriched)
+        artist_iter = iter(artist_entries)
+        merged = []
+        for r in data["results"]:
+            if r.get("media_type") == "music_artist":
+                merged.append(next(artist_iter))
+            else:
+                merged.append(next(enriched_iter))
+        data["results"] = merged
 
     context = {
         "data": data,
         "source": source,
         "media_type": media_type,
         "layout": layout,
+        "music_type_tabs": MUSIC_TYPE_TABS,
     }
 
     return render(request, "app/search.html", context)
@@ -270,6 +301,15 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "watch_provider_region": request.user.watch_provider_region,
     }
     return render(request, "app/media_details.html", context)
+
+
+
+@require_GET
+def music_artist(request, artist_id):
+    """Return the MusicBrainz artist page."""
+    from app.providers import musicbrainz
+    artist_data = musicbrainz.artist(artist_id)
+    return render(request, "app/music_artist.html", {"artist": artist_data})
 
 
 @require_GET
