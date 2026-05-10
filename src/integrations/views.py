@@ -640,6 +640,35 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @require_POST
+
+def import_senscritique_csv(request):
+    """Handle SC CSV file upload and queue import."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    csv_file = request.FILES.get("sc_csv")
+    if not csv_file:
+        messages.error(request, "No CSV file provided.")
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+
+    try:
+        csv_content = csv_file.read().decode("utf-8-sig")
+    except Exception:
+        messages.error(request, "Could not read CSV file.")
+        return redirect("import_data")
+
+    from integrations.imports.senscritique import import_from_senscritique_csv
+    import_from_senscritique_csv.delay(
+        user_id=request.user.id,
+        csv_content=csv_content,
+        overwrite=overwrite,
+    )
+    messages.info(request, "SensCritique CSV import started in the background.")
+    return redirect("import_data")
+
 def sc_browser_receive(request):
     """Receive collection data POSTed by the SC bookmarklet."""
     # Verify the request comes from our bookmarklet

@@ -33,6 +33,7 @@ urlpatterns = [
     path("import/hltb", views.import_hltb, name="import_hltb"),
     path("import/steam", views.import_steam, name="import_steam"),
     path("import/senscritique", views.import_senscritique, name="import_senscritique"),
+    path("import/senscritique/csv/", views.import_senscritique_csv, name="import_senscritique_csv"),
     path("import/senscritique/browser/", views.sc_browser_receive, name="sc_browser_receive"),
     path("import/senscritique/page/", views.sc_import_page, name="sc_import_page"),
     path("import/filmaffinity", views.import_filmaffinity, name="import_filmaffinity"),

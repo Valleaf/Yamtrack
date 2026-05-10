@@ -395,11 +395,23 @@
         {# SensCritique #}
         <div class="bg-[#39404b] p-4 rounded-lg">
           <div class="flex items-center mb-3">{% source_display "senscritique" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import movies, TV, games, books, comics and music</p>
-          <a href="{% url 'sc_import_page' %}"
-             class="block w-full px-4 py-2 text-sm rounded-md transition-colors text-center bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer">
-            Open Import Guide
-          </a>
+          <p class="text-sm text-gray-400 mb-3">Import movies, TV, anime, games, books, comics and music</p>
+          <div class="space-y-2">
+            <form method="post"
+                  action="{% url 'import_senscritique_csv' %}"
+                  enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="mode" x-model="importMode">
+              <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer">
+                <input name="sc_csv" accept=".csv" class="hidden" type="file" @change="$el.form.submit()">
+                Upload sc_export.csv
+              </label>
+            </form>
+            <a href="{% url 'sc_import_page' %}"
+               class="block w-full px-4 py-2 text-sm rounded-md transition-colors text-center bg-[#2a2f35] text-gray-300 hover:bg-[#454d5a] cursor-pointer">
+              How to export from SensCritique
+            </a>
+          </div>
         </div>
 
         {# FilmAffinity #}

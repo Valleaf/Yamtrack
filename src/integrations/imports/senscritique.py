@@ -217,3 +217,54 @@ def import_from_senscritique_data(
     # Bypass the API fetch — inject the already-fetched products
     importer._run_with_products(normalized)
     return importer._result_message()
+
+
+@shared_task(name="Import from SensCritique CSV")
+def import_from_senscritique_csv(
+    user_id: int,
+    csv_content: str,
+    overwrite: bool = False,
+) -> str:
+    """Import from a CSV produced by sc_export.py."""
+    import csv
+    import io
+
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return f"User {user_id} not found."
+
+    reader = csv.DictReader(io.StringIO(csv_content))
+    products = []
+
+    for row in reader:
+        category = row.get("Category", "movie").strip()
+        title = row.get("Title", "").strip()
+        if not title:
+            continue
+
+        year_str = row.get("Year", "").strip()
+        year = int(year_str) if year_str and year_str != "None" else None
+
+        rating_str = row.get("Rating10", "").strip()
+        score = int(rating_str) if rating_str and rating_str.isdigit() else None
+
+        watch_date = row.get("WatchedDate", "").strip() or None
+
+        products.append({
+            "sc_id": None,
+            "title": title,
+            "year": year,
+            "poster": "",
+            "media_type": category,
+            "score": score,
+            "artists": [],
+            "watch_date": watch_date,
+        })
+
+    if not products:
+        return "No valid items found in CSV."
+
+    importer = SensCritiqueImporter(user, username="csv", overwrite=overwrite)
+    importer._run_with_products(products)
+    return importer._result_message()
