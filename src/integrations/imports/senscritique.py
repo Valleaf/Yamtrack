@@ -270,118 +270,159 @@ def import_from_senscritique_csv(
     return importer._result_message()
 
 
+
 # ---------------------------------------------------------------------------
-# Server-side SC scraper (no bookmarklet needed)
+# Server-side SC scraper using s2l Apollo GraphQL approach
 # ---------------------------------------------------------------------------
 
-SC_BASE = "https://www.senscritique.com"
-SC_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+"""
+SensCritique scraper based on s2l (senscritique2letterboxd) approach.
+Extended to support all categories: movie, tvShow, anime, game, book, comic, music.
+Uses SC's Apollo GraphQL endpoint which is accessible server-side.
+"""
+
+import json
+import logging
+import time
+
+import requests
+
+logger = logging.getLogger(__name__)
+
+# SC universe strings for each category
+SC_UNIVERSES = {
+    "movie":   ("movie",   1),
+    "tv":      ("tvShow",  4),
+    "anime":   ("anime",   8),
+    "game":    ("videogame", 6),
+    "book":    ("book",    3),
+    "comic":   ("comicStrip", 5),
+    "music":   ("music",   7),
 }
-SC_COLLECTION_URL = (
-    "{base}/{username}/collection/all/{category}"
-    "/all/all/all/all/all/all/all/page-{page}"
+
+GRAPHQL_QUERY = (
+    '{"query":"query UserCollection($action: ProductAction, '
+    "$categoryId: Int, $gameSystemId: Int, $genreId: Int, $isAgenda: "
+    "Boolean, $keywords: String, $limit: Int, $month: Int, $offset: "
+    "Int, $order: CollectionSort, $showTvAgenda: Boolean, "
+    "$universe: String, $username: String, "
+    "$versus: Boolean, $year: Int, $yearDateDone: Int, "
+    "$yearDateRelease: Int) { user(username: $username) { "
+    "collection( "
+    "action: $action categoryId: $categoryId gameSystemId: "
+    "$gameSystemId genreId: $genreId isAgenda: "
+    "$isAgenda keywords: $keywords limit: $limit "
+    "month: $month offset: $offset order: $order "
+    "showTvAgenda: $showTvAgenda universe: $universe "
+    "versus: $versus year: $year yearDateDone: "
+    "$yearDateDone yearDateRelease: $yearDateRelease ) "
+    "{ total products { "
+    "originalTitle title yearOfProduction universe "
+    "otherUserInfos(username: $username) "
+    "{ rating dateDone isReviewed "
+    " __typename } __typename } __typename } __typename }}"
+    ', "variables":{'
+    '"action": "DONE", '
+    '"offset": {offset}, '
+    '"universe": "{universe}", '
+    '"username": "{username}"'
+    "}}"
 )
-SC_CATEGORIES = {
-    "films":     "movie",
-    "series":    "tv",
-    "anime":     "anime",
-    "jeuxvideo": "game",
-    "livres":    "book",
-    "bd":        "comic",
-    "musique":   "music",
-}
 
 
-def _scrape_sc_category(username: str, category: str, delay: float = 3.0) -> list[dict]:
-    """Scrape all rated items for one SC category."""
-    import re
-    import time as _time
-    import requests
-    from bs4 import BeautifulSoup
+def _fetch_batch(username: str, universe: str, offset: int, user_agent: str) -> dict:
+    url = f"https://www.senscritique.com/{username}/collection?universe={universe}"
+    query = GRAPHQL_QUERY.format(
+        offset=offset,
+        universe=universe,
+        username=username,
+    )
+    resp = requests.post(
+        url,
+        data=query,
+        headers={
+            "Host": "apollo.senscritique.com",
+            "Content-Type": "application/json",
+            "Referer": url,
+            "Accept": "application/json",
+            "User-Agent": user_agent,
+        },
+        timeout=15,
+    )
+    resp.raise_for_status()
+    return resp.json()
 
-    items = []
-    page = 1
+
+def fetch_category(
+    username: str,
+    media_type: str,
+    user_agent: str = "Mozilla/5.0",
+    delay: float = 2.0,
+) -> list[dict]:
+    """Fetch all rated items for one media type."""
+    universe_str, _ = SC_UNIVERSES.get(media_type, ("movie", 1))
+    offset = 0
+    results = []
 
     while True:
-        url = SC_COLLECTION_URL.format(
-            base=SC_BASE, username=username, category=category, page=page
-        )
-        logger.info("SC scrape: %s", url)
         try:
-            resp = requests.get(url, headers=SC_HEADERS, timeout=15)
-            if resp.status_code == 404:
-                break
-            resp.raise_for_status()
+            data = _fetch_batch(username, universe_str, offset, user_agent)
         except Exception as e:
-            logger.error("SC scrape error page %d: %s", page, e)
+            logger.error("SC fetch error for %s/%s offset %d: %s", username, media_type, offset, e)
             break
 
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        cards = (
-            soup.select("li.elco-collection-item")
-            or soup.select("li[data-rel]")
-            or soup.select("div.elco-collection-item")
-            or soup.select("li.erra-ratings-item")
-        )
-
-        if not cards:
+        user_data = (data.get("data") or {}).get("user")
+        if not user_data:
+            logger.warning("SC: no user data for %s (universe=%s)", username, universe_str)
             break
 
-        for card in cards:
-            try:
-                title_el = (
-                    card.select_one("a.elco-anchor")
-                    or card.select_one("h2.elco-title a")
-                    or card.select_one(".erra-ratings-title a")
-                )
-                if not title_el:
-                    continue
-                title = title_el.get_text(strip=True)
+        collection = user_data.get("collection", {})
+        total = collection.get("total", 0)
+        products = collection.get("products", []) or []
 
-                year_el = card.select_one("span.elco-date") or card.select_one("span.erra-ratings-date")
-                year = None
-                if year_el:
-                    m = re.search(r"\d{4}", year_el.get_text())
-                    year = int(m.group()) if m else None
+        for p in products:
+            title = p.get("originalTitle") or p.get("title", "")
+            year = p.get("yearOfProduction")
+            info = p.get("otherUserInfos") or {}
+            rating = info.get("rating")
+            date_done = (info.get("dateDone") or "")[:10]
 
-                rating_el = (
-                    card.select_one("span.elrua-useraction-avg")
-                    or card.select_one("div.elrua-useraction-avg")
-                    or card.select_one("span.erra-ratings-user")
-                )
-                rating = None
-                if rating_el:
-                    m = re.search(r"\d+", rating_el.get_text())
-                    if m:
-                        rating = int(m.group())
+            results.append({
+                "sc_id": None,
+                "title": title,
+                "year": year,
+                "poster": "",
+                "media_type": media_type,
+                "score": int(rating) if rating is not None else None,
+                "artists": [],
+                "watch_date": date_done or None,
+            })
 
-                items.append({
-                    "sc_id": None,
-                    "title": title,
-                    "year": year,
-                    "poster": "",
-                    "media_type": SC_CATEGORIES[category],
-                    "score": rating,
-                    "artists": [],
-                })
-            except Exception as e:
-                logger.debug("SC card parse error: %s", e)
+        offset += len(products)
+        logger.info("SC: fetched %d/%d for %s/%s", offset, total, username, media_type)
 
-        # Check for next page
-        next_btn = soup.select_one("a.eipa-next, li.next a, [data-sc-list-page-next]")
-        if not next_btn:
+        if offset >= total or not products:
             break
-        page += 1
-        _time.sleep(delay)
 
-    return items
+        time.sleep(delay)
+
+    return results
+
+
+def fetch_all(
+    username: str,
+    user_agent: str = "Mozilla/5.0",
+    delay: float = 2.0,
+) -> list[dict]:
+    """Fetch all categories for a user."""
+    all_items = []
+    for media_type in SC_UNIVERSES:
+        logger.info("SC: fetching %s for %s", media_type, username)
+        items = fetch_category(username, media_type, user_agent, delay)
+        logger.info("SC: %d items in %s", len(items), media_type)
+        all_items.extend(items)
+    return all_items
+
 
 
 @shared_task(name="Import from SensCritique (scraper)", bind=True)
@@ -390,20 +431,15 @@ def import_from_senscritique_scraper(
     user_id: int,
     username: str,
     overwrite: bool = False,
-    delay: float = 3.0,
+    delay: float = 2.0,
 ) -> str:
-    """Scrape SC profile server-side and import all categories."""
+    """Scrape SC profile server-side using Apollo GraphQL endpoint."""
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return f"User {user_id} not found."
 
-    all_products = []
-    for category, media_type in SC_CATEGORIES.items():
-        logger.info("SC scrape: starting category %s for %s", category, username)
-        products = _scrape_sc_category(username, category, delay)
-        logger.info("SC scrape: %d items in %s", len(products), category)
-        all_products.extend(products)
+    all_products = fetch_all(username, delay=delay)
 
     if not all_products:
         return (
