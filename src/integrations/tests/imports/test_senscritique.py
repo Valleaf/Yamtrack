@@ -626,7 +626,7 @@ class TestNormalizeBrowserProduct(TestCase):
             "originalTitle": "Inception",
             "yearOfProduction": 2010,
             "poster": "http://example.com/poster.jpg",
-            "category": {"label": "Film"},
+            "category": {"label": "film"},
             "myRating": {"rating": 9},
             "artists": [],
         }
@@ -644,7 +644,7 @@ class TestNormalizeBrowserProduct(TestCase):
             "originalTitle": None,
             "yearOfProduction": 2020,
             "poster": None,
-            "category": {"label": "Film"},
+            "category": {"label": "film"},
             "myRating": None,
             "artists": [],
         }
@@ -659,7 +659,7 @@ class TestNormalizeBrowserProduct(TestCase):
             "originalTitle": "Inception",
             "yearOfProduction": 2010,
             "poster": None,
-            "category": {"label": "Film"},
+            "category": {"label": "film"},
             "myRating": {"rating": 8},
             "artists": [],
         }
@@ -674,7 +674,7 @@ class TestNormalizeBrowserProduct(TestCase):
             "originalTitle": "Breaking Bad",
             "yearOfProduction": 2008,
             "poster": None,
-            "category": {"label": "Série"},
+            "category": {"label": "serie"},
             "myRating": {"rating": 10},
             "artists": [],
         }
@@ -689,7 +689,7 @@ class TestNormalizeBrowserProduct(TestCase):
             "originalTitle": None,
             "yearOfProduction": 2021,
             "poster": None,
-            "category": {"label": "Podcast"},
+            "category": {"label": "podcast"},
             "myRating": {"rating": 7},
             "artists": [],
         }
