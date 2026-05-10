@@ -268,3 +268,149 @@ def import_from_senscritique_csv(
     importer = SensCritiqueImporter(user, username="csv", overwrite=overwrite)
     importer._run_with_products(products)
     return importer._result_message()
+
+
+# ---------------------------------------------------------------------------
+# Server-side SC scraper (no bookmarklet needed)
+# ---------------------------------------------------------------------------
+
+SC_BASE = "https://www.senscritique.com"
+SC_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+}
+SC_COLLECTION_URL = (
+    "{base}/{username}/collection/all/{category}"
+    "/all/all/all/all/all/all/all/page-{page}"
+)
+SC_CATEGORIES = {
+    "films":     "movie",
+    "series":    "tv",
+    "anime":     "anime",
+    "jeuxvideo": "game",
+    "livres":    "book",
+    "bd":        "comic",
+    "musique":   "music",
+}
+
+
+def _scrape_sc_category(username: str, category: str, delay: float = 3.0) -> list[dict]:
+    """Scrape all rated items for one SC category."""
+    import re
+    import time as _time
+    import requests
+    from bs4 import BeautifulSoup
+
+    items = []
+    page = 1
+
+    while True:
+        url = SC_COLLECTION_URL.format(
+            base=SC_BASE, username=username, category=category, page=page
+        )
+        logger.info("SC scrape: %s", url)
+        try:
+            resp = requests.get(url, headers=SC_HEADERS, timeout=15)
+            if resp.status_code == 404:
+                break
+            resp.raise_for_status()
+        except Exception as e:
+            logger.error("SC scrape error page %d: %s", page, e)
+            break
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        cards = (
+            soup.select("li.elco-collection-item")
+            or soup.select("li[data-rel]")
+            or soup.select("div.elco-collection-item")
+            or soup.select("li.erra-ratings-item")
+        )
+
+        if not cards:
+            break
+
+        for card in cards:
+            try:
+                title_el = (
+                    card.select_one("a.elco-anchor")
+                    or card.select_one("h2.elco-title a")
+                    or card.select_one(".erra-ratings-title a")
+                )
+                if not title_el:
+                    continue
+                title = title_el.get_text(strip=True)
+
+                year_el = card.select_one("span.elco-date") or card.select_one("span.erra-ratings-date")
+                year = None
+                if year_el:
+                    m = re.search(r"\d{4}", year_el.get_text())
+                    year = int(m.group()) if m else None
+
+                rating_el = (
+                    card.select_one("span.elrua-useraction-avg")
+                    or card.select_one("div.elrua-useraction-avg")
+                    or card.select_one("span.erra-ratings-user")
+                )
+                rating = None
+                if rating_el:
+                    m = re.search(r"\d+", rating_el.get_text())
+                    if m:
+                        rating = int(m.group())
+
+                items.append({
+                    "sc_id": None,
+                    "title": title,
+                    "year": year,
+                    "poster": "",
+                    "media_type": SC_CATEGORIES[category],
+                    "score": rating,
+                    "artists": [],
+                })
+            except Exception as e:
+                logger.debug("SC card parse error: %s", e)
+
+        # Check for next page
+        next_btn = soup.select_one("a.eipa-next, li.next a, [data-sc-list-page-next]")
+        if not next_btn:
+            break
+        page += 1
+        _time.sleep(delay)
+
+    return items
+
+
+@shared_task(name="Import from SensCritique (scraper)", bind=True)
+def import_from_senscritique_scraper(
+    self,
+    user_id: int,
+    username: str,
+    overwrite: bool = False,
+    delay: float = 3.0,
+) -> str:
+    """Scrape SC profile server-side and import all categories."""
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return f"User {user_id} not found."
+
+    all_products = []
+    for category, media_type in SC_CATEGORIES.items():
+        logger.info("SC scrape: starting category %s for %s", category, username)
+        products = _scrape_sc_category(username, category, delay)
+        logger.info("SC scrape: %d items in %s", len(products), category)
+        all_products.extend(products)
+
+    if not all_products:
+        return (
+            f"No items found for '{username}'. "
+            "Make sure the username is correct and the profile is public."
+        )
+
+    importer = SensCritiqueImporter(user, username=username, overwrite=overwrite)
+    importer._run_with_products(all_products)
+    return importer._result_message()

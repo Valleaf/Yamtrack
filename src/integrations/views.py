@@ -669,6 +669,33 @@ def import_senscritique_csv(request):
     messages.info(request, "SensCritique CSV import started in the background.")
     return redirect("import_data")
 
+
+def import_senscritique_scrape(request):
+    """Scrape SC profile server-side and import all categories."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    username = request.POST.get("sc_username", "").strip()
+    if not username:
+        messages.error(request, "SensCritique username is required.")
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+
+    from integrations.imports.senscritique import import_from_senscritique_scraper
+    import_from_senscritique_scraper.delay(
+        user_id=request.user.id,
+        username=username,
+        overwrite=overwrite,
+    )
+    messages.info(
+        request,
+        f"SensCritique import started for '{username}'. "
+        "This may take a few minutes depending on your collection size."
+    )
+    return redirect("import_data")
+
 def sc_browser_receive(request):
     """Receive collection data POSTed by the SC bookmarklet."""
     # Verify the request comes from our bookmarklet
