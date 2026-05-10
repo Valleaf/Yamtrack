@@ -12,6 +12,37 @@ Yamtrack is a self hosted media tracker for movies, tv shows, anime, manga, vide
 
 You can try the app at [yamtrack.fuzzygrim.com](https://yamtrack.fuzzygrim.com) using the username `demo` and password `demo`.
 
+## ⚡ Quick Start
+
+Get started with Docker in 5 minutes:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/FuzzyGrim/Yamtrack.git
+   cd Yamtrack
+   ```
+
+2. **Create `.env` file** with required API keys (minimal configuration for testing)
+   ```bash
+   DEBUG=True
+   SECRET_KEY=your-secret-key-here
+   DOMAIN=localhost:8000
+   ALLOWED_HOSTS=localhost,127.0.0.1
+   DB_ENGINE=sqlite3
+   ```
+   See [Environment Variables wiki](https://github.com/FuzzyGrim/Yamtrack/wiki/Environment-Variables) for complete list.
+
+3. **Start with Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Open browser** and navigate to http://localhost:8000
+
+5. **Create account** and start tracking your media!
+
+For production deployment, see the [Installation](#-installing-with-docker) section below.
+
 ## ✨ Features
 
 - 🎬 Track movies, tv shows, anime, manga, games, books, comics, and board games.
@@ -54,6 +85,44 @@ You can try the app at [yamtrack.fuzzygrim.com](https://yamtrack.fuzzygrim.com) 
 | Create Manual Entries                                                                                         | Import Data                                                                                       |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/create_custom.png" alt="Create Manual Entries" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/import_data.png" alt="Import Data" /> |
+
+## 🏗️ Architecture
+
+Yamtrack is built with a modern full-stack architecture:
+
+**Technology Stack**:
+- **Backend**: Django (Python web framework) with DRF for APIs
+- **Frontend**: Django templates + HTMX for dynamic interactions
+- **Database**: SQLite (default) or PostgreSQL
+- **Cache**: Redis for sessions and async task queuing
+- **Async Tasks**: Celery with Beat scheduler for periodic imports
+
+**System Components**:
+
+| Component | Purpose |
+|-----------|---------|
+| **`app/`** | Core media tracking: models (Movie, TV, Anime, etc.), views, business logic, search integration |
+| **`integrations/`** | External service connections: OAuth flows, webhooks (Jellyfin/Plex/Emby), import pipeline |
+| **`users/`** | Authentication, account management, notifications |
+| **`events/`** | Calendar generation, recurring event scheduling, iCalendar (.ics) export |
+| **`lists/`** | Custom lists, categories, collaboration features |
+
+**Data Flow**:
+1. **User Action** (track media, import data, schedule tasks)
+2. **View** (validates input, handles auth)
+3. **Business Logic** (models, helpers, external APIs)
+4. **Database** (persistent storage + audit trail via simple-history)
+5. **Background Tasks** (Celery for imports, notifications, calendar generation)
+
+**Import Pipeline** (detailed in [`.github/IMPORT_PIPELINE.md`](.github/IMPORT_PIPELINE.md)):
+```
+User Import → Celery Task → Importer Class → Helpers → Bulk DB Operations
+```
+
+**Extending Yamtrack**:
+- Add new media sources: Extend providers in `app/providers/`
+- Add new integrations: Implement Importer class (see [`.github/IMPORTER_DEVELOPMENT.md`](.github/IMPORTER_DEVELOPMENT.md))
+- Add new features: Create Django app in `src/` following existing patterns
 
 ## 🐳 Installing with Docker
 
