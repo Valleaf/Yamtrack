@@ -11,7 +11,7 @@ import requests
 from django.core.cache import cache
 
 from app import helpers
-from app.models import MediaTypes
+from app.models import MediaTypes, Sources
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +38,21 @@ def _cover_url(mb_id: str) -> str:
     return f"{CAA_BASE}/{mb_id}/front-250"
 
 
-def _format_artist(rg: dict) -> str:
+def _format_artists(rg: dict) -> list[str]:
+    names = []
     for ac in rg.get("artist-credit", []):
         if isinstance(ac, dict):
             name = ac.get("name") or (ac.get("artist") or {}).get("name", "")
             if name:
-                return name
-    return ""
+                names.append(name)
+    return names
+
+
+def _artist_id(rg: dict) -> str | None:
+    for ac in rg.get("artist-credit", []):
+        if isinstance(ac, dict) and ac.get("artist"):
+            return ac["artist"].get("id")
+    return None
 
 
 def search_music(query: str, page: int = 1) -> dict:
@@ -64,7 +72,7 @@ def search_music(query: str, page: int = 1) -> dict:
     total = data.get("release-group-count", 0)
     results = []
     for rg in data.get("release-groups", []):
-        artist = _format_artist(rg)
+        artists = _format_artists(rg)
         primary_type = rg.get("primary-type", "")
         secondary_types = rg.get("secondary-types", [])
         type_label = primary_type
@@ -75,10 +83,10 @@ def search_music(query: str, page: int = 1) -> dict:
             "media_id": rg["id"],
             "title": rg.get("title", ""),
             "media_type": MediaTypes.MUSIC.value,
-            "source": "musicbrainz",
+            "source": Sources.MUSICBRAINZ.value,
             "image": _cover_url(rg["id"]),
             "year": (rg.get("first-release-date") or "")[:4],
-            "artists": [artist] if artist else [],
+            "artists": artists,
             "type": type_label,
         })
 
@@ -98,12 +106,8 @@ def album(mb_id: str) -> dict:
         "inc": "artists+releases+genres+tags",
     })
 
-    artist_names = []
-    for ac in data.get("artist-credit", []):
-        if isinstance(ac, dict):
-            name = ac.get("name") or (ac.get("artist") or {}).get("name", "")
-            if name:
-                artist_names.append(name)
+    artist_names = _format_artists(data)
+    artist_id = _artist_id(data)
 
     genres = [g["name"] for g in (data.get("genres") or [])]
     if not genres:
@@ -115,19 +119,71 @@ def album(mb_id: str) -> dict:
     if secondary_types:
         type_label = f"{primary_type} / {', '.join(secondary_types)}"
 
+    first_release = data.get("first-release-date", "")
+
+    # Get other albums by the same artist for recommendations
+    recommendations = []
+    if artist_id:
+        recommendations = _get_artist_albums(artist_id, exclude_id=mb_id)
+
     result = {
         "media_id": mb_id,
+        "source": Sources.MUSICBRAINZ.value,
+        "source_url": f"https://musicbrainz.org/release-group/{mb_id}",
+        "media_type": MediaTypes.MUSIC.value,
         "title": data.get("title", ""),
-        "source": "musicbrainz",
+        "max_progress": 1,
         "image": _cover_url(mb_id),
         "synopsis": f"By {', '.join(artist_names)}" if artist_names else "",
         "genres": genres,
-        "release_date": data.get("first-release-date", ""),
-        "rating": None,
-        "artists": artist_names,
-        "type": type_label,
-        "recommendations": [],
+        "score": None,
+        "score_count": 0,
+        "details": {
+            "format": type_label or "Album",
+            "release_date": first_release,
+            "artists": ", ".join(artist_names),
+            "status": data.get("primary-type", ""),
+        },
+        "cast": [],
+        "total_cast_count": 0,
+        "related": {
+            "More by this artist": recommendations,
+        },
     }
 
     cache.set(cache_key, result, 3600)
     return result
+
+
+def _get_artist_albums(artist_id: str, exclude_id: str = "", limit: int = 10) -> list[dict]:
+    """Get other release groups by an artist for recommendations."""
+    try:
+        cache_key = f"musicbrainz_artist_albums_{artist_id}"
+        cached = cache.get(cache_key)
+        if not cached:
+            data = _get("release-group", {
+                "artist": artist_id,
+                "type": "album|ep|single",
+                "limit": 25,
+            })
+            cached = data.get("release-groups", [])
+            cache.set(cache_key, cached, 3600)
+
+        results = []
+        for rg in cached:
+            if rg["id"] == exclude_id:
+                continue
+            results.append({
+                "media_id": rg["id"],
+                "title": rg.get("title", ""),
+                "media_type": MediaTypes.MUSIC.value,
+                "source": Sources.MUSICBRAINZ.value,
+                "image": _cover_url(rg["id"]),
+                "year": (rg.get("first-release-date") or "")[:4],
+            })
+            if len(results) >= limit:
+                break
+        return results
+    except Exception as e:
+        logger.debug("MusicBrainz artist albums error: %s", e)
+        return []
