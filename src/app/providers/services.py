@@ -269,6 +269,6 @@ def search(media_type, query, page, source=None):
         ),
         MediaTypes.COMIC.value: lambda: comicvine.search(query, page),
         MediaTypes.BOARDGAME.value: lambda: bgg.search(query, page),
-        MediaTypes.MUSIC.value: lambda: musicbrainz.search_music(query),
+        MediaTypes.MUSIC.value: lambda: musicbrainz.search_music(query, page),
     }
     return search_handlers[media_type]()

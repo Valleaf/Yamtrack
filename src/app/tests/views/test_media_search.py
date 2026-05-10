@@ -53,3 +53,37 @@ class MediaSearchViewTests(TestCase):
             1,
             Sources.TMDB.value,
         )
+
+    @patch("app.providers.services.search")
+    def test_music_search_view(self, mock_search):
+        """Test the media search view for music."""
+        mock_search.return_value = {
+            "page": 1,
+            "total_results": 5,
+            "total_pages": 1,
+            "results": [
+                {
+                    "media_id": "12345",
+                    "title": "Abbey Road",
+                    "source": "musicbrainz",
+                    "image": "http://example.com/image.jpg",
+                    "year": "1969",
+                    "artists": ["The Beatles"],
+                    "type": "Album",
+                },
+            ],
+        }
+
+        response = self.client.get(
+            reverse("search") + "?media_type=music&q=Beatles",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/search.html")
+
+        mock_search.assert_called_once_with(
+            MediaTypes.MUSIC.value,
+            "Beatles",
+            1,
+            Sources.MUSICBRAINZ.value,
+        )

@@ -254,11 +254,13 @@ def album(sc_id: int | str) -> dict:
     }
 
 
-def search_music(query: str) -> list[dict]:
-    """Search SC for music albums. Returns list of result dicts."""
+def search_music(query: str, page: int = 1) -> dict:
+    """Search SC for music albums. Returns dict with pagination fields and results list."""
+    # SC API doesn't support pagination, so we fetch all and return page 1
     data = _gql(SEARCH_QUERY, {"query": query, "categoryId": SC_CATEGORY_IDS["music"]})
     results = (data.get("search") or {}).get("results", [])
-    return [
+    
+    formatted_results = [
         {
             "media_id": str(r["id"]),
             "title": r.get("title") or r.get("originalTitle", ""),
@@ -269,3 +271,12 @@ def search_music(query: str) -> list[dict]:
         }
         for r in results
     ]
+    
+    total_results = len(formatted_results)
+    
+    return {
+        "page": page,
+        "total_results": total_results,
+        "total_pages": 1 if total_results > 0 else 0,
+        "results": formatted_results,
+    }

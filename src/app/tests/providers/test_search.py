@@ -8,7 +8,9 @@ from app.providers import (
     igdb,
     mal,
     mangaupdates,
+    musicbrainz,
     openlibrary,
+    senscritique,
     tmdb,
 )
 
@@ -113,4 +115,88 @@ class Search(TestCase):
     def test_hardcover_not_found(self):
         """Test the search method for books from Hardcover with no results."""
         response = hardcover.search("xjkqzptmvnsieurytowahdbfglc", 1)
+        self.assertEqual(response["results"], [])
+
+    def test_music(self):
+        """Test the search method for music.
+
+        Assert that all required keys are present in each entry and pagination fields exist.
+        """
+        response = musicbrainz.search_music("The Beatles", 1)
+
+        # Check pagination fields
+        self.assertIn("page", response)
+        self.assertIn("total_results", response)
+        self.assertIn("total_pages", response)
+        self.assertIn("results", response)
+
+        self.assertEqual(response["page"], 1)
+        self.assertIsInstance(response["results"], list)
+
+        # Check required keys in each result
+        required_keys = {"media_id", "title", "source", "image", "year", "artists", "type"}
+
+        if response["results"]:  # If results exist
+            for music in response["results"]:
+                self.assertTrue(all(key in music for key in required_keys))
+                self.assertEqual(music["source"], "musicbrainz")
+
+    def test_music_pagination(self):
+        """Test the search method for music with pagination."""
+        # Test first page
+        response_page1 = musicbrainz.search_music("Pink Floyd", 1)
+        self.assertEqual(response_page1["page"], 1)
+        self.assertIsInstance(response_page1["total_results"], int)
+        self.assertGreaterEqual(response_page1["total_results"], 0)
+        self.assertGreater(response_page1["total_pages"], 0)
+
+        # Test second page if there are enough results
+        if response_page1["total_pages"] > 1:
+            response_page2 = musicbrainz.search_music("Pink Floyd", 2)
+            self.assertEqual(response_page2["page"], 2)
+            # Results should be different between pages or one could be empty
+            self.assertIsInstance(response_page2["results"], list)
+
+    def test_music_not_found(self):
+        """Test the search method for music with no results."""
+        response = musicbrainz.search_music("xjkqzptmvnsieurytowahdbfglc", 1)
+
+        self.assertIn("results", response)
+        self.assertEqual(response["results"], [])
+
+    def test_senscritique_music(self):
+        """Test the search method for music from SensCritique.
+
+        Assert that all required keys are present in each entry and pagination fields exist.
+        """
+        try:
+            response = senscritique.search_music("The Beatles", 1)
+        except Exception as e:
+            self.skipTest(f"SensCritique API unavailable or auth failed: {e}")
+
+        # Check pagination fields
+        self.assertIn("page", response)
+        self.assertIn("total_results", response)
+        self.assertIn("total_pages", response)
+        self.assertIn("results", response)
+
+        self.assertEqual(response["page"], 1)
+        self.assertIsInstance(response["results"], list)
+
+        # Check required keys in each result
+        required_keys = {"media_id", "title", "source", "image", "year", "artists"}
+
+        if response["results"]:  # If results exist
+            for music in response["results"]:
+                self.assertTrue(all(key in music for key in required_keys))
+                self.assertEqual(music["source"], "senscritique")
+
+    def test_senscritique_music_not_found(self):
+        """Test the search method for music from SensCritique with no results."""
+        try:
+            response = senscritique.search_music("xjkqzptmvnsieurytowahdbfglc", 1)
+        except Exception as e:
+            self.skipTest(f"SensCritique API unavailable or auth failed: {e}")
+
+        self.assertIn("results", response)
         self.assertEqual(response["results"], [])

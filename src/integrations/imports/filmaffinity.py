@@ -98,7 +98,8 @@ class FilmAffinityImporter:
         """Search TMDB for this item. Returns (media_id, source) or (None, '')."""
         try:
             from app.providers import services
-            results = services.search_media(yamtrack_type, title)
+            response = services.search(yamtrack_type, title, page=1)
+            results = response.get("results", [])
             if not results:
                 return None, ""
 

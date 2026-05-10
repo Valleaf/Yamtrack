@@ -141,7 +141,8 @@ class SensCritiqueImporter:
         """Search the external provider for this item by title+year."""
         try:
             from app.providers import services
-            results = services.search_media(yamtrack_type, title)
+            response = services.search(yamtrack_type, title, page=1)
+            results = response.get("results", [])
             if not results:
                 return None
 
