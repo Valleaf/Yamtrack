@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from app.models import Movie, TV, Status
+from app.models import Item, Movie, TV, Status
 from integrations.imports.filmaffinity import (
     FilmAffinityImporter,
     import_from_filmaffinity,
@@ -64,7 +64,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.item.title, "Inception")
-        self.assertEqual(movie.item.score, 80)  # 8 * 10
+        self.assertEqual(movie.score, 80)  # 8 * 10
         self.assertEqual(movie.status, Status.COMPLETED.value)
         self.assertIn("imported", result)
 
@@ -90,7 +90,7 @@ class TestFilmAffinityImporter(TestCase):
         FilmAffinityImporter(self.user, "12345").run()
 
         movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.item.score, 70)
+        self.assertEqual(movie.score, 70)
 
     @patch("app.providers.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
@@ -102,7 +102,7 @@ class TestFilmAffinityImporter(TestCase):
         FilmAffinityImporter(self.user, "12345").run()
 
         movie = Movie.objects.get(user=self.user)
-        self.assertIsNone(movie.item.score)
+        self.assertIsNone(movie.score)
 
     @patch("app.providers.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
@@ -114,8 +114,8 @@ class TestFilmAffinityImporter(TestCase):
         FilmAffinityImporter(self.user, "12345").run()
 
         movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.source, "manual")
-        self.assertIn("fa_99999", movie.media_id)
+        self.assertEqual(movie.item.source, "manual")
+        self.assertIn("fa_99999", movie.item.media_id)
 
     @patch("app.providers.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
@@ -124,7 +124,8 @@ class TestFilmAffinityImporter(TestCase):
         mock_scrape.return_value = [_mock_product()]
         mock_search.return_value = _mock_search_response()
 
-        Movie.objects.create(user=self.user, media_id=550, source="tmdb", title="Inception")
+        item = Item.objects.create(media_id="550", source="tmdb", media_type="movie", title="Inception", image="")
+        Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
         importer = FilmAffinityImporter(self.user, "12345")
         importer.run()
@@ -139,7 +140,8 @@ class TestFilmAffinityImporter(TestCase):
         mock_scrape.return_value = [_mock_product()]
         mock_search.return_value = _mock_search_response()
 
-        Movie.objects.create(user=self.user, media_id=550, source="tmdb", title="Inception")
+        item = Item.objects.create(media_id="550", source="tmdb", media_type="movie", title="Inception", image="")
+        Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
         importer = FilmAffinityImporter(self.user, "12345", overwrite=True)
         result = importer.run()
@@ -175,7 +177,7 @@ class TestFilmAffinityImporter(TestCase):
         FilmAffinityImporter(self.user, "12345").run()
 
         movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.media_id, "200")
+        self.assertEqual(movie.item.media_id, "200")
 
     def test_invalid_user(self):
         """Test task with invalid user_id returns error."""

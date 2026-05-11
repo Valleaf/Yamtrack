@@ -119,8 +119,8 @@ class SensCritiqueImporter:
         model = apps.get_model(app_label="app", model_name=yamtrack_type)
         exists = model.objects.filter(
             user=self.user,
-            media_id=media_id,
-            source=source,
+            item__media_id=media_id,
+            item__source=source,
         ).exists()
 
         if exists and not self.overwrite:

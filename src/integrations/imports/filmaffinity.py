@@ -60,7 +60,7 @@ class FilmAffinityImporter:
         )
 
     def _build_obj(self, product: dict, yamtrack_type: str):
-        title = product.get("title", "")
+        title = product.get("title", "") or ""
         year = product.get("year")
         score = product.get("score")
         poster = product.get("poster") or ""
@@ -76,21 +76,29 @@ class FilmAffinityImporter:
         model = apps.get_model(app_label="app", model_name=yamtrack_type)
         exists = model.objects.filter(
             user=self.user,
-            media_id=media_id,
-            source=source,
+            item__media_id=media_id,
+            item__source=source,
+            item__media_type=yamtrack_type,
         ).exists()
 
         if exists and not self.overwrite:
             self.skipped += 1
             return None
 
-        return model(
-            user=self.user,
+        item, _ = Item.objects.get_or_create(
             media_id=media_id,
             source=source,
-            title=title,
-            image=poster,
-            score=score * 10 if score is not None else None,  # FA 1-10 → internal 0-100
+            media_type=yamtrack_type,
+            defaults={
+                "title": title,
+                "image": poster,
+            },
+        )
+
+        return model(
+            item=item,
+            user=self.user,
+            score=score * 10 if score is not None else None,
             status=Item.Status.COMPLETED,
         )
 

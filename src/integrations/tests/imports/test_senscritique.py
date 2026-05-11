@@ -10,6 +10,7 @@ from app.models import (
     Book,
     Comic,
     Game,
+    Item,
     Movie,
     Music,
     TV,
@@ -159,12 +160,12 @@ class ImportSensCritique(TestCase):
         # Check specific properties
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.item.title, "Inception")
-        self.assertEqual(movie.item.score, 90)  # 9 * 10
+        self.assertEqual(movie.score, 90)  # 9 * 10 (score is on movie, not item)
         self.assertEqual(movie.status, Status.COMPLETED.value)
 
         music = Music.objects.get(user=self.user)
         self.assertEqual(music.item.title, "Abbey Road")
-        self.assertEqual(music.item.score, 100)  # 10 * 10
+        self.assertEqual(music.score, 100)  # 10 * 10
 
     @patch("app.providers.senscritique.get_user_collection")
     @patch("app.providers.services.search")
@@ -196,8 +197,8 @@ class ImportSensCritique(TestCase):
         # Should fallback to manual source
         self.assertEqual(importer.imported, 1)
         movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.source, "manual")
-        self.assertIn("sc_99999", movie.media_id)
+        self.assertEqual(movie.item.source, "manual")
+        self.assertIn("sc_99999", movie.item.media_id)
 
     @patch("app.providers.senscritique.get_user_collection")
     @patch("app.providers.services.search")
@@ -223,12 +224,14 @@ class ImportSensCritique(TestCase):
         }
 
         # Create the same movie as already existing
-        Movie.objects.create(
-            user=self.user,
-            media_id=550,
+        item = Item.objects.create(
+            media_id="550",
             source="tmdb",
+            media_type="movie",
             title="Inception",
+            image="",
         )
+        Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
         importer = SensCritiqueImporter(self.user, "test_user")
         result_message = importer.run()
@@ -262,12 +265,14 @@ class ImportSensCritique(TestCase):
         }
 
         # Create the same movie as already existing
-        Movie.objects.create(
-            user=self.user,
-            media_id=550,
+        item = Item.objects.create(
+            media_id="550",
             source="tmdb",
+            media_type="movie",
             title="Inception",
+            image="",
         )
+        Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
         importer = SensCritiqueImporter(self.user, "test_user", overwrite=True)
         result_message = importer.run()
@@ -556,7 +561,7 @@ class TestSCCSVImport(TestCase):
         """Test basic CSV import with movie and TV."""
         mock_search.return_value = {
             "page": 1, "total_results": 1, "total_pages": 1,
-            "results": [{"media_id": 550, "title": "Inception", "year": 2010}],
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}],
         }
 
         csv_content = (

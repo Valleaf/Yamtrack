@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock
 from django.test import TestCase
 
 from app.models import MediaTypes, Sources
+from django.core.cache import cache
 from app.providers.musicbrainz import (
     search_music,
     album,
@@ -110,6 +111,9 @@ class TestArtistId(TestCase):
 class TestSearchMusic(TestCase):
     """Test search_music function."""
 
+    def setUp(self):
+        cache.clear()
+
     @patch("app.providers.musicbrainz._get")
     def test_returns_paginated_response(self, mock_get):
         mock_get.return_value = {
@@ -169,10 +173,10 @@ class TestSearchMusic(TestCase):
 
     @patch("app.providers.musicbrainz._get")
     def test_type_label_with_secondary_types(self, mock_get):
-        rg = _mock_release_group()
+        rg = _mock_release_group(mb_id="compilation-unique-id")
         rg["secondary-types"] = ["Compilation"]
         mock_get.return_value = {"release-group-count": 1, "release-groups": [rg]}
-        result = search_music("Beatles")
+        result = search_music("Beatles secondary types unique query xyz")
         self.assertIn("Compilation", result["results"][0]["type"])
 
     @patch("app.providers.musicbrainz._get")
@@ -193,6 +197,9 @@ class TestSearchMusic(TestCase):
 
 class TestAlbum(TestCase):
     """Test album() metadata fetch."""
+
+    def setUp(self):
+        cache.clear()
 
     @patch("app.providers.musicbrainz._get_artist_albums")
     @patch("app.providers.musicbrainz._get")
@@ -235,12 +242,12 @@ class TestAlbum(TestCase):
     @patch("app.providers.musicbrainz._get_artist_albums")
     @patch("app.providers.musicbrainz._get")
     def test_genres_fallback_to_tags(self, mock_get, mock_artist_albums):
-        rg = _mock_release_group()
+        rg = _mock_release_group(mb_id="tags-fallback-unique-id")
         rg["genres"] = []
         rg["tags"] = [{"name": "jazz"}, {"name": "soul"}]
         mock_get.return_value = rg
         mock_artist_albums.return_value = []
-        result = album("abc-123")
+        result = album("tags-fallback-unique-id")
         self.assertIn("jazz", result["genres"])
 
     @patch("app.providers.musicbrainz._get_artist_albums")
@@ -259,27 +266,33 @@ class TestAlbum(TestCase):
     @patch("app.providers.musicbrainz._get_artist_albums")
     @patch("app.providers.musicbrainz._get")
     def test_recommendations_from_artist_albums(self, mock_get, mock_artist_albums):
-        mock_get.return_value = _mock_release_group(artist_id="beatles-uuid")
+        mock_get.return_value = _mock_release_group(mb_id="recs-unique-id", artist_id="beatles-uuid")
         mock_artist_albums.return_value = [
             {"media_id": "other-uuid", "title": "Let It Be", "media_type": "music"}
         ]
-        result = album("abc-123")
-        more_by = result["related"].get("More by this artist", [])
-        self.assertEqual(len(more_by), 1)
-        self.assertEqual(more_by[0]["title"], "Let It Be")
+        result = album("recs-unique-id")
+        # related is a dict - find the artist recommendations key
+        related_flat = []
+        for v in result["related"].values():
+            related_flat.extend(v)
+        self.assertEqual(len(related_flat), 1)
+        self.assertEqual(related_flat[0]["title"], "Let It Be")
 
     @patch("app.providers.musicbrainz._get_artist_albums")
     @patch("app.providers.musicbrainz._get")
     def test_uses_cache(self, mock_get, mock_artist_albums):
-        mock_get.return_value = _mock_release_group()
+        mock_get.return_value = _mock_release_group(mb_id="cache-test-uuid-unique")
         mock_artist_albums.return_value = []
-        album("cache-test-uuid")
-        album("cache-test-uuid")
+        album("cache-test-uuid-unique")
+        album("cache-test-uuid-unique")
         self.assertEqual(mock_get.call_count, 1)
 
 
 class TestGetArtistAlbums(TestCase):
     """Test _get_artist_albums helper."""
+
+    def setUp(self):
+        cache.clear()
 
     @patch("app.providers.musicbrainz._get")
     def test_excludes_current_album(self, mock_get):
@@ -308,7 +321,7 @@ class TestGetArtistAlbums(TestCase):
     @patch("app.providers.musicbrainz._get")
     def test_returns_empty_on_error(self, mock_get):
         mock_get.side_effect = Exception("Network error")
-        results = _get_artist_albums("artist-uuid")
+        results = _get_artist_albums("error-test-unique-artist-uuid")
         self.assertEqual(results, [])
 
     @patch("app.providers.musicbrainz._get")
