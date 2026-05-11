@@ -1,4 +1,4 @@
-"""Tests for FilmAffinity import functionality."""
+"""Tests for FilmAffinity CSV import."""
 
 import unittest.mock
 from unittest.mock import patch
@@ -8,189 +8,152 @@ from django.test import TestCase
 
 from app.models import Item, Movie, TV, Status
 from integrations.imports.filmaffinity import (
-    FilmAffinityImporter,
-    import_from_filmaffinity,
-    FA_TO_YAMTRACK,
+    FilmAffinityCSVImporter,
+    import_from_filmaffinity_csv,
+    FA_TYPE_MAP,
 )
 
 User = get_user_model()
 
 
-def _mock_product(title="Inception", year=2010, score=8, media_type="movie", fa_id="12345"):
-    return {
-        "fa_id": fa_id,
-        "title": title,
-        "year": year,
-        "score": score,
-        "media_type": media_type,
-        "poster": "http://example.com/poster.jpg",
-    }
-
-
-def _mock_search_response(media_id=550, title="Inception", year=2010):
-    return {
-        "page": 1,
-        "total_results": 1,
-        "total_pages": 1,
-        "results": [{"media_id": media_id, "title": title, "release_date": f"{year}-01-01", "year": year}],
-    }
-
-
-class TestFAToYamtrack(TestCase):
-    """Test FA_TO_YAMTRACK mapping."""
-
+class TestFATypeMap(TestCase):
     def test_movie_mapped(self):
-        self.assertEqual(FA_TO_YAMTRACK["movie"], "movie")
+        self.assertIn("movie", FA_TYPE_MAP)
 
     def test_tv_mapped(self):
-        self.assertEqual(FA_TO_YAMTRACK["tv"], "tv")
+        self.assertIn("tv", FA_TYPE_MAP)
 
 
-class TestFilmAffinityImporter(TestCase):
-    """Test FilmAffinityImporter class."""
-
+class TestFilmAffinityCSVImporter(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="test", password="12345")
-        def _simple_bulk_create(objs, model, batch_size=500, default_user=None):
+
+        def _bulk_create(objs, model, batch_size=500, default_user=None):
             model.objects.bulk_create(objs)
             return objs
 
         patcher = unittest.mock.patch(
             "simple_history.utils.bulk_create_with_history",
-            side_effect=_simple_bulk_create,
+            side_effect=_bulk_create,
         )
         self.mock_bulk = patcher.start()
         self.addCleanup(patcher.stop)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
+    def _csv(self, rows, header="Title,Year,Rating,Type"):
+        lines = [header] + [",".join(str(v) for v in r) for r in rows]
+        return "\r\n".join(lines) + "\r\n"
+
     @patch("app.providers.services.search")
-    def test_import_movie(self, mock_search, mock_scrape):
-        """Test importing a movie resolves to TMDB."""
-        mock_scrape.return_value = [_mock_product()]
-        mock_search.return_value = _mock_search_response()
-
-        importer = FilmAffinityImporter(self.user, "12345")
-        result = importer.run()
-
+    def test_import_movie(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        csv = self._csv([["Inception", 2010, 8, "movie"]])
+        importer = FilmAffinityCSVImporter(self.user)
+        importer.run(csv)
+        self.assertEqual(importer.imported, 1)
         self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
-        movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.item.title, "Inception")
-        self.assertEqual(movie.score, 80)  # 8 * 10
-        self.assertEqual(movie.status, Status.COMPLETED.value)
-        self.assertIn("imported", result)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_import_tv(self, mock_search, mock_scrape):
-        """Test importing a TV show."""
-        mock_scrape.return_value = [_mock_product(title="Breaking Bad", year=2008, media_type="tv", fa_id="99")]
-        mock_search.return_value = _mock_search_response(media_id=1396, title="Breaking Bad", year=2008)
-
-        importer = FilmAffinityImporter(self.user, "12345")
-        importer.run()
-
+    def test_import_tv(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "1396", "title": "Breaking Bad", "year": 2008}]
+        }
+        csv = self._csv([["Breaking Bad", 2008, 9, "tv"]])
+        FilmAffinityCSVImporter(self.user).run(csv)
         self.assertEqual(TV.objects.filter(user=self.user).count(), 1)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_score_conversion(self, mock_search, mock_scrape):
-        """Test FA 1-10 score converted to internal 0-100."""
-        mock_scrape.return_value = [_mock_product(score=7)]
-        mock_search.return_value = _mock_search_response()
-
-        FilmAffinityImporter(self.user, "12345").run()
-
+    def test_score_converted(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        csv = self._csv([["Inception", 2010, 7, "movie"]])
+        FilmAffinityCSVImporter(self.user).run(csv)
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.score, 70)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_none_score(self, mock_search, mock_scrape):
-        """Test that None score is stored as None."""
-        mock_scrape.return_value = [_mock_product(score=None)]
-        mock_search.return_value = _mock_search_response()
-
-        FilmAffinityImporter(self.user, "12345").run()
-
+    def test_no_score_stored_as_none(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        csv = self._csv([["Inception", 2010, "", "movie"]])
+        FilmAffinityCSVImporter(self.user).run(csv)
         movie = Movie.objects.get(user=self.user)
         self.assertIsNone(movie.score)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_fallback_to_manual_when_search_fails(self, mock_search, mock_scrape):
-        """Test that items with no TMDB match fall back to manual source."""
-        mock_scrape.return_value = [_mock_product(title="Obscure Film", fa_id="99999")]
-        mock_search.return_value = {"page": 1, "total_results": 0, "total_pages": 0, "results": []}
-
-        FilmAffinityImporter(self.user, "12345").run()
-
+    def test_fallback_to_manual(self, mock_search):
+        mock_search.return_value = {"results": []}
+        csv = self._csv([["Obscure Film XYZ", 2023, 6, "movie"]])
+        importer = FilmAffinityCSVImporter(self.user)
+        importer.run(csv)
+        self.assertEqual(importer.imported, 1)
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.item.source, "manual")
-        self.assertIn("fa_99999", movie.item.media_id)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_deduplication(self, mock_search, mock_scrape):
-        """Test that existing items are skipped."""
-        mock_scrape.return_value = [_mock_product()]
-        mock_search.return_value = _mock_search_response()
-
-        item = Item.objects.create(media_id="550", source="tmdb", media_type="movie", title="Inception", image="")
+    def test_deduplication(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        item = Item.objects.create(
+            media_id="550", source="tmdb", media_type="movie",
+            title="Inception", image=""
+        )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        importer = FilmAffinityImporter(self.user, "12345")
-        importer.run()
-
+        csv = self._csv([["Inception", 2010, 9, "movie"]])
+        importer = FilmAffinityCSVImporter(self.user)
+        importer.run(csv)
         self.assertEqual(importer.skipped, 1)
         self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_overwrite(self, mock_search, mock_scrape):
-        """Test that overwrite=True re-imports existing items."""
-        mock_scrape.return_value = [_mock_product()]
-        mock_search.return_value = _mock_search_response()
-
-        item = Item.objects.create(media_id="550", source="tmdb", media_type="movie", title="Inception", image="")
+    def test_overwrite(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        item = Item.objects.create(
+            media_id="550", source="tmdb", media_type="movie",
+            title="Inception", image=""
+        )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        importer = FilmAffinityImporter(self.user, "12345", overwrite=True)
-        result = importer.run()
-
+        csv = self._csv([["Inception", 2010, 9, "movie"]])
+        importer = FilmAffinityCSVImporter(self.user, overwrite=True)
+        importer.run(csv)
         self.assertEqual(importer.skipped, 0)
-        self.assertIn("imported", result)
+        self.assertEqual(importer.imported, 1)
 
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
-    def test_empty_collection(self, mock_scrape):
-        """Test importing an empty FA profile."""
-        mock_scrape.return_value = []
+    def test_empty_csv(self):
+        csv = "Title,Year,Rating,Type\r\n"
+        result = FilmAffinityCSVImporter(self.user).run(csv)
+        self.assertIn("No valid items", result)
 
-        importer = FilmAffinityImporter(self.user, "12345")
-        result = importer.run()
+    def test_invalid_user(self):
+        result = import_from_filmaffinity_csv(user_id=99999, csv_content="", overwrite=False)
+        self.assertIn("not found", result)
 
-        self.assertEqual(Movie.objects.filter(user=self.user).count(), 0)
-        self.assertIn("0 imported", result)
-
-    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
-    def test_year_matching(self, mock_search, mock_scrape):
-        """Test that year matching picks exact year match over first result."""
-        mock_scrape.return_value = [_mock_product(title="Batman", year=1989)]
+    def test_year_matching(self, mock_search):
         mock_search.return_value = {
-            "page": 1, "total_results": 3, "total_pages": 1,
             "results": [
-                {"media_id": 100, "title": "Batman", "release_date": "2022-01-01", "year": 2022},
-                {"media_id": 200, "title": "Batman", "release_date": "1989-01-01", "year": 1989},
-                {"media_id": 300, "title": "Batman", "release_date": "2005-01-01", "year": 2005},
-            ],
+                {"media_id": "100", "title": "Batman", "year": 2022},
+                {"media_id": "200", "title": "Batman", "year": 1989},
+            ]
         }
-
-        FilmAffinityImporter(self.user, "12345").run()
-
+        csv = self._csv([["Batman", 1989, 8, "movie"]])
+        FilmAffinityCSVImporter(self.user).run(csv)
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.item.media_id, "200")
 
-    def test_invalid_user(self):
-        """Test task with invalid user_id returns error."""
-        result = import_from_filmaffinity(user_id=99999, fa_user_id="12345")
-        self.assertIn("not found", result)
+    @patch("app.providers.services.search")
+    def test_unknown_type_defaults_to_movie(self, mock_search):
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        csv = self._csv([["Inception", 2010, 8, "documentary"]])
+        FilmAffinityCSVImporter(self.user).run(csv)
+        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)

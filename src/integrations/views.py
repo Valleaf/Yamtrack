@@ -567,79 +567,6 @@ def emby_webhook(request, token):
     return HttpResponse(status=200)
 
 
-def import_senscritique(request):
-    """View for importing media from SensCritique."""
-    if request.method != "POST":
-        return redirect("import_data")
-
-    username = request.POST.get("sc_username")
-    if not username:
-        messages.error(request, "SensCritique username is required.")
-        return redirect("import_data")
-
-    password = request.POST.get("sc_password")
-    if not password:
-        messages.error(request, "SensCritique password is required.")
-        return redirect("import_data")
-    mode = request.POST.get("mode", "new")
-    overwrite = mode == "overwrite"
-
-    from integrations.imports.senscritique import import_from_senscritique
-    import_from_senscritique.delay(
-        user_id=request.user.id,
-        username=username,
-        password=password,
-        overwrite=overwrite,
-    )
-    messages.info(request, "The task to import media from SensCritique has been queued.")
-    return redirect("import_data")
-
-
-def import_filmaffinity(request):
-    """View for importing media from FilmAffinity."""
-    if request.method != "POST":
-        return redirect("import_data")
-
-    fa_user_id = request.POST.get("fa_user_id")
-    if not fa_user_id:
-        messages.error(request, "FilmAffinity user ID is required.")
-        return redirect("import_data")
-
-    mode = request.POST.get("mode", "new")
-    overwrite = mode == "overwrite"
-
-    from integrations.imports.filmaffinity import import_from_filmaffinity
-    import_from_filmaffinity.delay(
-        user_id=request.user.id,
-        fa_user_id=fa_user_id,
-        overwrite=overwrite,
-    )
-    messages.info(request, "The task to import media from FilmAffinity has been queued.")
-    return redirect("import_data")
-
-"""
-SensCritique browser-based import view.
-The bookmarklet runs in the user's browser while logged into SC,
-fetches their collection with their real session cookies (bypassing Cloudflare),
-then POSTs the raw data here for processing.
-"""
-
-import json
-import logging
-
-from django.contrib import messages
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-
-from integrations.imports.senscritique import import_from_senscritique_data
-
-logger = logging.getLogger(__name__)
-
-
-@csrf_exempt
-@require_POST
 
 def import_senscritique_csv(request):
     """Handle SC CSV file upload and queue import."""
@@ -657,7 +584,7 @@ def import_senscritique_csv(request):
     try:
         csv_content = csv_file.read().decode("utf-8-sig")
     except Exception:
-        messages.error(request, "Could not read CSV file.")
+        messages.error(request, "Could not read CSV file. Please upload a valid UTF-8 CSV.")
         return redirect("import_data")
 
     from integrations.imports.senscritique import import_from_senscritique_csv
@@ -670,64 +597,31 @@ def import_senscritique_csv(request):
     return redirect("import_data")
 
 
-def import_senscritique_scrape(request):
-    """Scrape SC profile server-side and import all categories."""
+def import_filmaffinity_csv(request):
+    """Handle FilmAffinity CSV file upload and queue import."""
     if request.method != "POST":
         return redirect("import_data")
 
-    username = request.POST.get("sc_username", "").strip()
-    if not username:
-        messages.error(request, "SensCritique username is required.")
+    csv_file = request.FILES.get("fa_csv")
+    if not csv_file:
+        messages.error(request, "No CSV file provided.")
         return redirect("import_data")
 
     mode = request.POST.get("mode", "new")
     overwrite = mode == "overwrite"
 
-    from integrations.imports.senscritique import import_from_senscritique_scraper
-    import_from_senscritique_scraper.delay(
+    try:
+        csv_content = csv_file.read().decode("utf-8-sig")
+    except Exception:
+        messages.error(request, "Could not read CSV file. Please upload a valid UTF-8 CSV.")
+        return redirect("import_data")
+
+    from integrations.imports.filmaffinity import import_from_filmaffinity_csv
+    import_from_filmaffinity_csv.delay(
         user_id=request.user.id,
-        username=username,
+        csv_content=csv_content,
         overwrite=overwrite,
     )
-    messages.info(
-        request,
-        f"SensCritique import started for '{username}'. "
-        "This may take a few minutes depending on your collection size."
-    )
+    messages.info(request, "FilmAffinity CSV import started in the background.")
     return redirect("import_data")
-
-def sc_browser_receive(request):
-    """Receive collection data POSTed by the SC bookmarklet."""
-    # Verify the request comes from our bookmarklet
-    if request.headers.get("X-SC-Import") != "1":
-        return JsonResponse({"error": "Forbidden"}, status=403)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
-    try:
-        body = json.loads(request.body)
-        products = body.get("products", [])
-        username = body.get("username", "")
-    except (json.JSONDecodeError, KeyError):
-        return JsonResponse({"error": "Invalid payload"}, status=400)
-
-    if not products:
-        return JsonResponse({"error": "No products received"}, status=400)
-
-    # Queue the import task with the raw products data
-    import_from_senscritique_data.delay(
-        user_id=request.user.id,
-        products=products,
-        username=username,
-    )
-
-    logger.info("SC browser import: %d items queued for user %s", len(products), request.user)
-    return JsonResponse({"status": "ok", "count": len(products)})
-
-
-
-def sc_import_page(request):
-    """Show the SC bookmarklet import page."""
-    return render(request, "users/import_senscritique.html", {})
 
