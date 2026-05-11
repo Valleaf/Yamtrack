@@ -32,7 +32,7 @@ def _mock_search_response(media_id=550, title="Inception", year=2010):
         "page": 1,
         "total_results": 1,
         "total_pages": 1,
-        "results": [{"media_id": media_id, "title": title, "year": year}],
+        "results": [{"media_id": media_id, "title": title, "release_date": f"{year}-01-01", "year": year}],
     }
 
 
@@ -62,7 +62,7 @@ class TestFilmAffinityImporter(TestCase):
         self.mock_bulk = patcher.start()
         self.addCleanup(patcher.stop)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_import_movie(self, mock_search, mock_scrape):
         """Test importing a movie resolves to TMDB."""
@@ -79,7 +79,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(movie.status, Status.COMPLETED.value)
         self.assertIn("imported", result)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_import_tv(self, mock_search, mock_scrape):
         """Test importing a TV show."""
@@ -91,7 +91,7 @@ class TestFilmAffinityImporter(TestCase):
 
         self.assertEqual(TV.objects.filter(user=self.user).count(), 1)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_score_conversion(self, mock_search, mock_scrape):
         """Test FA 1-10 score converted to internal 0-100."""
@@ -103,7 +103,7 @@ class TestFilmAffinityImporter(TestCase):
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.score, 70)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_none_score(self, mock_search, mock_scrape):
         """Test that None score is stored as None."""
@@ -115,7 +115,7 @@ class TestFilmAffinityImporter(TestCase):
         movie = Movie.objects.get(user=self.user)
         self.assertIsNone(movie.score)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_fallback_to_manual_when_search_fails(self, mock_search, mock_scrape):
         """Test that items with no TMDB match fall back to manual source."""
@@ -128,7 +128,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(movie.item.source, "manual")
         self.assertIn("fa_99999", movie.item.media_id)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_deduplication(self, mock_search, mock_scrape):
         """Test that existing items are skipped."""
@@ -144,7 +144,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(importer.skipped, 1)
         self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_overwrite(self, mock_search, mock_scrape):
         """Test that overwrite=True re-imports existing items."""
@@ -160,7 +160,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(importer.skipped, 0)
         self.assertIn("imported", result)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     def test_empty_collection(self, mock_scrape):
         """Test importing an empty FA profile."""
         mock_scrape.return_value = []
@@ -171,7 +171,7 @@ class TestFilmAffinityImporter(TestCase):
         self.assertEqual(Movie.objects.filter(user=self.user).count(), 0)
         self.assertIn("0 imported", result)
 
-    @patch("app.providers.filmaffinity.scrape_user_ratings")
+    @patch("integrations.imports.filmaffinity.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")
     def test_year_matching(self, mock_search, mock_scrape):
         """Test that year matching picks exact year match over first result."""
@@ -179,9 +179,9 @@ class TestFilmAffinityImporter(TestCase):
         mock_search.return_value = {
             "page": 1, "total_results": 3, "total_pages": 1,
             "results": [
-                {"media_id": 100, "title": "Batman", "year": 2022},
-                {"media_id": 200, "title": "Batman", "year": 1989},
-                {"media_id": 300, "title": "Batman", "year": 2005},
+                {"media_id": 100, "title": "Batman", "release_date": "2022-01-01", "year": 2022},
+                {"media_id": 200, "title": "Batman", "release_date": "1989-01-01", "year": 1989},
+                {"media_id": 300, "title": "Batman", "release_date": "2005-01-01", "year": 2005},
             ],
         }
 

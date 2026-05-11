@@ -12,8 +12,8 @@ from celery import shared_task
 from django.apps import apps
 from django.contrib.auth import get_user_model
 
-from app.models import Item, MediaTypes
-from app.providers import filmaffinity
+from app.models import Item, MediaTypes, Status
+from app.providers import filmaffinity, services
 from integrations.imports import helpers
 
 logger = logging.getLogger(__name__)
@@ -99,13 +99,12 @@ class FilmAffinityImporter:
             item=item,
             user=self.user,
             score=score * 10 if score is not None else None,
-            status=Item.Status.COMPLETED,
+            status=Status.COMPLETED.value,
         )
 
     def _resolve_tmdb(self, title: str, year, yamtrack_type: str) -> tuple[str | None, str]:
         """Search TMDB for this item. Returns (media_id, source) or (None, '')."""
         try:
-            from app.providers import services
             response = services.search(yamtrack_type, title, page=1)
             results = response.get("results", [])
             if not results:
