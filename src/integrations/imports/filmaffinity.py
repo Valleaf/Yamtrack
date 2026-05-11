@@ -13,7 +13,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 
 from app.models import Item, MediaTypes
-from app.providers import filmaffinity
+from app.providers import filmaffinity, services
 from integrations.imports import helpers
 
 logger = logging.getLogger(__name__)
@@ -105,7 +105,6 @@ class FilmAffinityImporter:
     def _resolve_tmdb(self, title: str, year, yamtrack_type: str) -> tuple[str | None, str]:
         """Search TMDB for this item. Returns (media_id, source) or (None, '')."""
         try:
-            from app.providers import services
             response = services.search(yamtrack_type, title, page=1)
             results = response.get("results", [])
             if not results:
