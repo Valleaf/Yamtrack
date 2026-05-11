@@ -37,12 +37,13 @@ class ImportSensCritique(TestCase):
         self.credentials = {"username": "test", "password": "12345"}
         self.user = User.objects.create_user(**self.credentials)
         # Patch bulk_create_with_history to avoid Redis dependency
+        def _simple_bulk_create(objs, model, batch_size=500, default_user=None):
+            model.objects.bulk_create(objs)
+            return objs
+
         patcher = unittest.mock.patch(
-            "integrations.imports.helpers.bulk_create_with_history",
-            side_effect=lambda objs, model, **kwargs: [model.objects.create(
-                **{f.name: getattr(obj, f.name) for f in obj._meta.fields
-                   if f.name != "id" and hasattr(obj, f.name) and getattr(obj, f.name) is not None}
-            ) for obj in objs]
+            "simple_history.utils.bulk_create_with_history",
+            side_effect=_simple_bulk_create,
         )
         self.mock_bulk = patcher.start()
         self.addCleanup(patcher.stop)
