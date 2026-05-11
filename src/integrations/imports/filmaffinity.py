@@ -12,7 +12,7 @@ from celery import shared_task
 from django.apps import apps
 from django.contrib.auth import get_user_model
 
-from app.models import Item, MediaTypes
+from app.models import Item, MediaTypes, Status
 from app.providers import filmaffinity, services
 from integrations.imports import helpers
 
@@ -99,7 +99,7 @@ class FilmAffinityImporter:
             item=item,
             user=self.user,
             score=score * 10 if score is not None else None,
-            status=Item.Status.COMPLETED,
+            status=Status.COMPLETED.value,
         )
 
     def _resolve_tmdb(self, title: str, year, yamtrack_type: str) -> tuple[str | None, str]:
