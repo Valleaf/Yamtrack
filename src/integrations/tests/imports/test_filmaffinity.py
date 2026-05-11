@@ -1,5 +1,6 @@
 """Tests for FilmAffinity import functionality."""
 
+import unittest.mock
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -50,6 +51,15 @@ class TestFilmAffinityImporter(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="test", password="12345")
+        patcher = unittest.mock.patch(
+            "integrations.imports.helpers.bulk_create_with_history",
+            side_effect=lambda objs, model, **kwargs: [model.objects.create(
+                **{f.name: getattr(obj, f.name) for f in obj._meta.fields
+                   if f.name != "id" and hasattr(obj, f.name) and getattr(obj, f.name) is not None}
+            ) for obj in objs]
+        )
+        self.mock_bulk = patcher.start()
+        self.addCleanup(patcher.stop)
 
     @patch("app.providers.filmaffinity.scrape_user_ratings")
     @patch("app.providers.services.search")

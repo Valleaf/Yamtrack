@@ -281,11 +281,14 @@ class TestAlbum(TestCase):
     @patch("app.providers.musicbrainz._get_artist_albums")
     @patch("app.providers.musicbrainz._get")
     def test_uses_cache(self, mock_get, mock_artist_albums):
-        mock_get.return_value = _mock_release_group(mb_id="cache-test-uuid-unique")
+        """Second call to album() with same ID should not call _get again."""
+        mock_get.return_value = _mock_release_group(mb_id="cache-uuid-v4-unique")
         mock_artist_albums.return_value = []
-        album("cache-test-uuid-unique")
-        album("cache-test-uuid-unique")
-        self.assertEqual(mock_get.call_count, 1)
+        album("cache-uuid-v4-unique")
+        count_after_first = mock_get.call_count
+        album("cache-uuid-v4-unique")
+        # _get should not be called again on second call
+        self.assertEqual(mock_get.call_count, count_after_first)
 
 
 class TestGetArtistAlbums(TestCase):

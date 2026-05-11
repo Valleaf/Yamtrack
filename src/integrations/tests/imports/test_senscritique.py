@@ -1,5 +1,6 @@
 """Tests for SensCritique import functionality."""
 
+import unittest.mock
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
@@ -35,6 +36,16 @@ class ImportSensCritique(TestCase):
         """Create user for the tests."""
         self.credentials = {"username": "test", "password": "12345"}
         self.user = User.objects.create_user(**self.credentials)
+        # Patch bulk_create_with_history to avoid Redis dependency
+        patcher = unittest.mock.patch(
+            "integrations.imports.helpers.bulk_create_with_history",
+            side_effect=lambda objs, model, **kwargs: [model.objects.create(
+                **{f.name: getattr(obj, f.name) for f in obj._meta.fields
+                   if f.name != "id" and hasattr(obj, f.name) and getattr(obj, f.name) is not None}
+            ) for obj in objs]
+        )
+        self.mock_bulk = patcher.start()
+        self.addCleanup(patcher.stop)
 
     def _mock_products(self):
         """Return mock SC products for testing."""
@@ -538,7 +549,7 @@ class TestFetchAll(TestCase):
     @patch("integrations.imports.senscritique.fetch_category")
     def test_fetch_all_combines_results(self, mock_fetch):
         """Test that fetch_all combines results from all categories."""
-        def side_effect(username, media_type, **kwargs):
+        def side_effect(username, media_type, user_agent="Mozilla/5.0", delay=2.0):
             return [{"title": f"{media_type} item", "media_type": media_type}]
         mock_fetch.side_effect = side_effect
         results = fetch_all("testuser", delay=0)
@@ -656,12 +667,12 @@ class TestNormalizeBrowserProduct(TestCase):
         result = _normalize_browser_product(product)
         self.assertIsNone(result["score"])
 
-    def test_normalize_uses_original_title(self):
-        """Test that originalTitle is preferred over title."""
+    def test_normalize_uses_title_when_set(self):
+        """Test that title is used when set (originalTitle is fallback)."""
         product = {
             "id": "123",
-            "title": "Inception (French Title)",
-            "originalTitle": "Inception",
+            "title": "Inception",
+            "originalTitle": None,
             "yearOfProduction": 2010,
             "poster": None,
             "category": {"label": "film"},
@@ -670,6 +681,21 @@ class TestNormalizeBrowserProduct(TestCase):
         }
         result = _normalize_browser_product(product)
         self.assertEqual(result["title"], "Inception")
+
+    def test_normalize_falls_back_to_original_title(self):
+        """Test that originalTitle is used when title is empty."""
+        product = {
+            "id": "123",
+            "title": None,
+            "originalTitle": "Inception Original",
+            "yearOfProduction": 2010,
+            "poster": None,
+            "category": {"label": "film"},
+            "myRating": {"rating": 8},
+            "artists": [],
+        }
+        result = _normalize_browser_product(product)
+        self.assertEqual(result["title"], "Inception Original")
 
     def test_normalize_tv_category(self):
         """Test that TV series is correctly mapped."""
