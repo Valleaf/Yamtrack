@@ -1,4 +1,4 @@
-"""Tests for FilmAffinity CSV import."""
+"""Tests for FilmAffinity HTML import."""
 
 import unittest.mock
 from unittest.mock import patch
@@ -6,25 +6,105 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from app.models import Item, Movie, TV, Status
+from app.models import Item, Movie, Status
 from integrations.imports.filmaffinity import (
-    FilmAffinityCSVImporter,
-    import_from_filmaffinity_csv,
-    FA_TYPE_MAP,
+    FilmAffinityHTMLImporter,
+    import_from_filmaffinity_html,
 )
 
 User = get_user_model()
 
+SAMPLE_HTML = """
+<html><body>
+<table class="ml movie-ratings">
+    <tr>
+        <td><div class="user-rating">8</div></td>
+        <td>Inception (2010)</td>
+        <td><em>10 de mayo de 2026, 15:06</em></td>
+    </tr>
+    <tr>
+        <td><div class="user-rating">6</div></td>
+        <td>The Dark Knight (2008)</td>
+        <td><em>1 de enero de 2026, 12:00</em></td>
+    </tr>
+    <tr>
+        <td><div class="user-rating">9</div></td>
+        <td>Film Without Year</td>
+        <td><em>5 de marzo de 2025, 10:00</em></td>
+    </tr>
+</table>
+</body></html>
+"""
 
-class TestFATypeMap(TestCase):
-    def test_movie_mapped(self):
-        self.assertIn("movie", FA_TYPE_MAP)
-
-    def test_tv_mapped(self):
-        self.assertIn("tv", FA_TYPE_MAP)
+EMPTY_HTML = """<html><body><table class="ml movie-ratings"></table></body></html>"""
 
 
-class TestFilmAffinityCSVImporter(TestCase):
+class TestParseHTML(TestCase):
+    """Test HTML parsing logic."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="test", password="12345")
+        self.importer = FilmAffinityHTMLImporter(self.user)
+
+    def test_parses_title_and_year(self):
+        films = self.importer.parse_html(SAMPLE_HTML)
+        self.assertEqual(films[0]["title"], "Inception")
+        self.assertEqual(films[0]["year"], 2010)
+
+    def test_parses_rating(self):
+        films = self.importer.parse_html(SAMPLE_HTML)
+        self.assertEqual(films[0]["score"], 8)
+
+    def test_parses_all_rows(self):
+        films = self.importer.parse_html(SAMPLE_HTML)
+        self.assertEqual(len(films), 3)
+
+    def test_film_without_year(self):
+        films = self.importer.parse_html(SAMPLE_HTML)
+        no_year = next(f for f in films if f["title"] == "Film Without Year")
+        self.assertIsNone(no_year["year"])
+
+    def test_empty_table_returns_empty_list(self):
+        films = self.importer.parse_html(EMPTY_HTML)
+        self.assertEqual(films, [])
+
+    def test_all_items_are_movies(self):
+        films = self.importer.parse_html(SAMPLE_HTML)
+        for film in films:
+            self.assertEqual(film["media_type"], "movie")
+
+
+class TestParseDate(TestCase):
+    """Test Spanish date parsing."""
+
+    def test_standard_date(self):
+        result = FilmAffinityHTMLImporter._parse_date("10 de mayo de 2026, 15:06")
+        self.assertEqual(result, "2026-05-10")
+
+    def test_january(self):
+        result = FilmAffinityHTMLImporter._parse_date("1 de enero de 2026, 12:00")
+        self.assertEqual(result, "2026-01-01")
+
+    def test_december(self):
+        result = FilmAffinityHTMLImporter._parse_date("31 de diciembre de 2025, 23:59")
+        self.assertEqual(result, "2025-12-31")
+
+    def test_invalid_returns_none(self):
+        result = FilmAffinityHTMLImporter._parse_date("invalid string")
+        self.assertIsNone(result)
+
+    def test_empty_returns_none(self):
+        result = FilmAffinityHTMLImporter._parse_date("")
+        self.assertIsNone(result)
+
+    def test_single_digit_day_padded(self):
+        result = FilmAffinityHTMLImporter._parse_date("5 de marzo de 2025, 10:00")
+        self.assertEqual(result, "2025-03-05")
+
+
+class TestFilmAffinityHTMLImporter(TestCase):
+    """Test full import flow."""
+
     def setUp(self):
         self.user = User.objects.create_user(username="test", password="12345")
 
@@ -39,62 +119,44 @@ class TestFilmAffinityCSVImporter(TestCase):
         self.mock_bulk = patcher.start()
         self.addCleanup(patcher.stop)
 
-    def _csv(self, rows, header="Title,Year,Rating,Type"):
-        lines = [header] + [",".join(str(v) for v in r) for r in rows]
-        return "\r\n".join(lines) + "\r\n"
-
     @patch("app.providers.services.search")
-    def test_import_movie(self, mock_search):
+    def test_import_creates_movies(self, mock_search):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        csv = self._csv([["Inception", 2010, 8, "movie"]])
-        importer = FilmAffinityCSVImporter(self.user)
-        importer.run(csv)
-        self.assertEqual(importer.imported, 1)
-        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
+        importer = FilmAffinityHTMLImporter(self.user)
+        importer.run(SAMPLE_HTML)
+        self.assertGreater(Movie.objects.filter(user=self.user).count(), 0)
 
     @patch("app.providers.services.search")
-    def test_import_tv(self, mock_search):
-        mock_search.return_value = {
-            "results": [{"media_id": "1396", "title": "Breaking Bad", "year": 2008}]
-        }
-        csv = self._csv([["Breaking Bad", 2008, 9, "tv"]])
-        FilmAffinityCSVImporter(self.user).run(csv)
-        self.assertEqual(TV.objects.filter(user=self.user).count(), 1)
-
-    @patch("app.providers.services.search")
-    def test_score_converted(self, mock_search):
+    def test_score_converted_to_internal(self, mock_search):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        csv = self._csv([["Inception", 2010, 7, "movie"]])
-        FilmAffinityCSVImporter(self.user).run(csv)
-        movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.score, 70)
+        FilmAffinityHTMLImporter(self.user).run(SAMPLE_HTML)
+        movie = Movie.objects.filter(user=self.user, item__title="Inception").first()
+        self.assertIsNotNone(movie)
+        self.assertEqual(movie.score, 80)  # 8 * 10
 
     @patch("app.providers.services.search")
-    def test_no_score_stored_as_none(self, mock_search):
+    def test_status_is_completed(self, mock_search):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        csv = self._csv([["Inception", 2010, "", "movie"]])
-        FilmAffinityCSVImporter(self.user).run(csv)
-        movie = Movie.objects.get(user=self.user)
-        self.assertIsNone(movie.score)
+        FilmAffinityHTMLImporter(self.user).run(SAMPLE_HTML)
+        movie = Movie.objects.filter(user=self.user).first()
+        self.assertEqual(movie.status, Status.COMPLETED.value)
 
     @patch("app.providers.services.search")
-    def test_fallback_to_manual(self, mock_search):
+    def test_fallback_to_manual_when_search_fails(self, mock_search):
         mock_search.return_value = {"results": []}
-        csv = self._csv([["Obscure Film XYZ", 2023, 6, "movie"]])
-        importer = FilmAffinityCSVImporter(self.user)
-        importer.run(csv)
-        self.assertEqual(importer.imported, 1)
-        movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.item.source, "manual")
+        importer = FilmAffinityHTMLImporter(self.user)
+        importer.run(SAMPLE_HTML)
+        manual_movies = Movie.objects.filter(user=self.user, item__source="manual")
+        self.assertGreater(manual_movies.count(), 0)
 
     @patch("app.providers.services.search")
-    def test_deduplication(self, mock_search):
+    def test_deduplication_skips_existing(self, mock_search):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
@@ -104,14 +166,13 @@ class TestFilmAffinityCSVImporter(TestCase):
         )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        csv = self._csv([["Inception", 2010, 9, "movie"]])
-        importer = FilmAffinityCSVImporter(self.user)
-        importer.run(csv)
-        self.assertEqual(importer.skipped, 1)
-        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
+        importer = FilmAffinityHTMLImporter(self.user)
+        importer.run(SAMPLE_HTML)
+        self.assertGreater(importer.skipped, 0)
+        self.assertEqual(Movie.objects.filter(user=self.user, item__media_id="550").count(), 1)
 
     @patch("app.providers.services.search")
-    def test_overwrite(self, mock_search):
+    def test_overwrite_reimports(self, mock_search):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
@@ -121,39 +182,42 @@ class TestFilmAffinityCSVImporter(TestCase):
         )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        csv = self._csv([["Inception", 2010, 9, "movie"]])
-        importer = FilmAffinityCSVImporter(self.user, overwrite=True)
-        importer.run(csv)
+        importer = FilmAffinityHTMLImporter(self.user, overwrite=True)
+        importer.run(SAMPLE_HTML)
         self.assertEqual(importer.skipped, 0)
-        self.assertEqual(importer.imported, 1)
 
-    def test_empty_csv(self):
-        csv = "Title,Year,Rating,Type\r\n"
-        result = FilmAffinityCSVImporter(self.user).run(csv)
-        self.assertIn("No valid items", result)
+    def test_empty_html_returns_message(self):
+        result = FilmAffinityHTMLImporter(self.user).run(EMPTY_HTML)
+        self.assertIn("No films found", result)
 
-    def test_invalid_user(self):
-        result = import_from_filmaffinity_csv(user_id=99999, csv_content="", overwrite=False)
+    def test_invalid_user_id(self):
+        result = import_from_filmaffinity_html(user_id=99999, html_content="", overwrite=False)
         self.assertIn("not found", result)
 
     @patch("app.providers.services.search")
-    def test_year_matching(self, mock_search):
+    def test_year_matching_prefers_exact_year(self, mock_search):
         mock_search.return_value = {
             "results": [
-                {"media_id": "100", "title": "Batman", "year": 2022},
-                {"media_id": "200", "title": "Batman", "year": 1989},
+                {"media_id": "100", "title": "Inception", "year": 2020},
+                {"media_id": "550", "title": "Inception", "year": 2010},
             ]
         }
-        csv = self._csv([["Batman", 1989, 8, "movie"]])
-        FilmAffinityCSVImporter(self.user).run(csv)
+        html = """<html><body><table class="ml movie-ratings">
+            <tr>
+                <td><div class="user-rating">8</div></td>
+                <td>Inception (2010)</td>
+                <td><em>10 de mayo de 2026, 15:06</em></td>
+            </tr>
+        </table></body></html>"""
+        FilmAffinityHTMLImporter(self.user).run(html)
         movie = Movie.objects.get(user=self.user)
-        self.assertEqual(movie.item.media_id, "200")
+        self.assertEqual(movie.item.media_id, "550")
 
     @patch("app.providers.services.search")
-    def test_unknown_type_defaults_to_movie(self, mock_search):
-        mock_search.return_value = {
-            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
-        }
-        csv = self._csv([["Inception", 2010, 8, "documentary"]])
-        FilmAffinityCSVImporter(self.user).run(csv)
-        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
+    def test_result_message_contains_counts(self, mock_search):
+        mock_search.return_value = {"results": []}
+        importer = FilmAffinityHTMLImporter(self.user)
+        result = importer.run(SAMPLE_HTML)
+        self.assertIn("imported", result)
+        self.assertIn("skipped", result)
+        self.assertIn("errors", result)

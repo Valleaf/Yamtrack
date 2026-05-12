@@ -597,31 +597,31 @@ def import_senscritique_csv(request):
     return redirect("import_data")
 
 
-def import_filmaffinity_csv(request):
-    """Handle FilmAffinity CSV file upload and queue import."""
+def import_filmaffinity_html(request):
+    """Handle FilmAffinity HTML export upload (movie-ratings.html)."""
     if request.method != "POST":
         return redirect("import_data")
 
-    csv_file = request.FILES.get("fa_csv")
-    if not csv_file:
-        messages.error(request, "No CSV file provided.")
+    html_file = request.FILES.get("fa_html")
+    if not html_file:
+        messages.error(request, "No file provided.")
         return redirect("import_data")
 
     mode = request.POST.get("mode", "new")
     overwrite = mode == "overwrite"
 
     try:
-        csv_content = csv_file.read().decode("utf-8-sig")
+        html_content = html_file.read().decode("utf-8", errors="replace")
     except Exception:
-        messages.error(request, "Could not read CSV file. Please upload a valid UTF-8 CSV.")
+        messages.error(request, "Could not read the file.")
         return redirect("import_data")
 
-    from integrations.imports.filmaffinity import import_from_filmaffinity_csv
-    import_from_filmaffinity_csv.delay(
+    from integrations.imports.filmaffinity import import_from_filmaffinity_html
+    import_from_filmaffinity_html.delay(
         user_id=request.user.id,
-        csv_content=csv_content,
+        html_content=html_content,
         overwrite=overwrite,
     )
-    messages.info(request, "FilmAffinity CSV import started in the background.")
+    messages.info(request, "FilmAffinity import started. This may take a few minutes.")
     return redirect("import_data")
 
