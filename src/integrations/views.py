@@ -598,7 +598,7 @@ def import_senscritique_csv(request):
 
 
 def import_filmaffinity_html(request):
-    """Handle FilmAffinity HTML export upload (movie-ratings.html)."""
+    """Handle FilmAffinity HTML export upload (movie-ratings.html or list-N.html)."""
     if request.method != "POST":
         return redirect("import_data")
 
@@ -609,6 +609,13 @@ def import_filmaffinity_html(request):
 
     mode = request.POST.get("mode", "new")
     overwrite = mode == "overwrite"
+    filename = html_file.name.lower()
+
+    # Detect whether this is a ratings file or a list file
+    if "list" in filename:
+        import_type = "list"
+    else:
+        import_type = "ratings"
 
     try:
         html_content = html_file.read().decode("utf-8", errors="replace")
@@ -621,7 +628,9 @@ def import_filmaffinity_html(request):
         user_id=request.user.id,
         html_content=html_content,
         overwrite=overwrite,
+        import_type=import_type,
     )
-    messages.info(request, "FilmAffinity import started. This may take a few minutes.")
+    label = "list" if import_type == "list" else "ratings"
+    messages.info(request, f"FilmAffinity {label} import started. This may take a few minutes.")
     return redirect("import_data")
 

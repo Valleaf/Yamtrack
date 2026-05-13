@@ -416,7 +416,7 @@
         <div class="bg-[#39404b] p-4 rounded-lg">
           <div class="flex items-center mb-3">{% source_display "filmaffinity" %}</div>
           <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Upload movie-ratings.html from your FA data export' : 'File uploads are not available for periodic imports'">
+             x-text="importFrequency === 'once' ? 'Upload HTML files from your FA data export' : 'File uploads are not available for periodic imports'">
           </p>
           <form method="post"
                 action="{% url 'import_filmaffinity_html' %}"
@@ -428,10 +428,13 @@
               <input name="fa_html" accept=".html" class="hidden" type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
-              Upload movie-ratings.html
+              Upload HTML file
             </label>
           </form>
-          <p class="text-xs text-gray-500 mt-2">From FilmAffinity → Settings → Request my data → html/movie-ratings.html</p>
+          <p class="text-xs text-gray-500 mt-2">
+            Ratings: upload <code class="text-indigo-400">html/movie-ratings.html</code><br>
+            Lists: upload any <code class="text-indigo-400">html/list/list-N.html</code>
+          </p>
         </div>
       
 

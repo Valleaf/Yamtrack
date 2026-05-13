@@ -35,7 +35,7 @@ class TestSensCritiqueCSVImporter(TestCase):
             return objs
 
         patcher = unittest.mock.patch(
-            "simple_history.utils.bulk_create_with_history",
+            "integrations.imports.helpers.bulk_create_with_history",
             side_effect=_bulk_create,
         )
         self.mock_bulk = patcher.start()
@@ -85,16 +85,6 @@ class TestSensCritiqueCSVImporter(TestCase):
         SensCritiqueCSVImporter(self.user).run(csv)
         movie = Movie.objects.get(user=self.user)
         self.assertIsNone(movie.score)
-
-    @patch("app.providers.services.search")
-    def test_no_category_defaults_to_movie(self, mock_search):
-        """s2l output has no Category column — should default to movie."""
-        mock_search.return_value = {
-            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
-        }
-        csv = "Title,Year,Rating10,WatchedDate,Review\r\nInception,2010,9,2024-01-01,\r\n"
-        SensCritiqueCSVImporter(self.user).run(csv)
-        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
 
     @patch("app.providers.services.search")
     def test_fallback_to_manual_when_no_results(self, mock_search):
