@@ -8,7 +8,7 @@ from django.test import TestCase
 
 from app.models import Item, Movie, Status
 from integrations.imports.filmaffinity import (
-    FilmAffinityHTMLImporter,
+    FilmAffinityRatingsImporter,
     import_from_filmaffinity_html,
 )
 
@@ -44,7 +44,7 @@ class TestParseHTML(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="test", password="12345")
-        self.importer = FilmAffinityHTMLImporter(self.user)
+        self.importer = FilmAffinityRatingsImporter(self.user)
 
     def test_parses_title_and_year(self):
         films = self.importer.parse_html(SAMPLE_HTML)
@@ -78,31 +78,31 @@ class TestParseDate(TestCase):
     """Test Spanish date parsing."""
 
     def test_standard_date(self):
-        result = FilmAffinityHTMLImporter._parse_date("10 de mayo de 2026, 15:06")
+        result = parse_spanish_date("10 de mayo de 2026, 15:06")
         self.assertEqual(result, "2026-05-10")
 
     def test_january(self):
-        result = FilmAffinityHTMLImporter._parse_date("1 de enero de 2026, 12:00")
+        result = parse_spanish_date("1 de enero de 2026, 12:00")
         self.assertEqual(result, "2026-01-01")
 
     def test_december(self):
-        result = FilmAffinityHTMLImporter._parse_date("31 de diciembre de 2025, 23:59")
+        result = parse_spanish_date("31 de diciembre de 2025, 23:59")
         self.assertEqual(result, "2025-12-31")
 
     def test_invalid_returns_none(self):
-        result = FilmAffinityHTMLImporter._parse_date("invalid string")
+        result = parse_spanish_date("invalid string")
         self.assertIsNone(result)
 
     def test_empty_returns_none(self):
-        result = FilmAffinityHTMLImporter._parse_date("")
+        result = parse_spanish_date("")
         self.assertIsNone(result)
 
     def test_single_digit_day_padded(self):
-        result = FilmAffinityHTMLImporter._parse_date("5 de marzo de 2025, 10:00")
+        result = parse_spanish_date("5 de marzo de 2025, 10:00")
         self.assertEqual(result, "2025-03-05")
 
 
-class TestFilmAffinityHTMLImporter(TestCase):
+class TestFilmAffinityRatingsImporter(TestCase):
     """Test full import flow."""
 
     def setUp(self):
@@ -124,7 +124,7 @@ class TestFilmAffinityHTMLImporter(TestCase):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        importer = FilmAffinityHTMLImporter(self.user)
+        importer = FilmAffinityRatingsImporter(self.user)
         importer.run(SAMPLE_HTML)
         self.assertGreater(Movie.objects.filter(user=self.user).count(), 0)
 
@@ -133,7 +133,7 @@ class TestFilmAffinityHTMLImporter(TestCase):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        FilmAffinityHTMLImporter(self.user).run(SAMPLE_HTML)
+        FilmAffinityRatingsImporter(self.user).run(SAMPLE_HTML)
         movies = Movie.objects.filter(user=self.user)
         self.assertGreater(movies.count(), 0)
         movie = movies.filter(score=80).first()
@@ -144,14 +144,14 @@ class TestFilmAffinityHTMLImporter(TestCase):
         mock_search.return_value = {
             "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
         }
-        FilmAffinityHTMLImporter(self.user).run(SAMPLE_HTML)
+        FilmAffinityRatingsImporter(self.user).run(SAMPLE_HTML)
         movie = Movie.objects.filter(user=self.user).first()
         self.assertEqual(movie.status, Status.COMPLETED.value)
 
     @patch("app.providers.services.search")
     def test_fallback_to_manual_when_search_fails(self, mock_search):
         mock_search.return_value = {"results": []}
-        importer = FilmAffinityHTMLImporter(self.user)
+        importer = FilmAffinityRatingsImporter(self.user)
         importer.run(SAMPLE_HTML)
         manual_movies = Movie.objects.filter(user=self.user, item__source="manual")
         self.assertGreater(manual_movies.count(), 0)
@@ -167,7 +167,7 @@ class TestFilmAffinityHTMLImporter(TestCase):
         )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        importer = FilmAffinityHTMLImporter(self.user)
+        importer = FilmAffinityRatingsImporter(self.user)
         importer.run(SAMPLE_HTML)
         self.assertGreater(importer.skipped, 0)
         self.assertEqual(Movie.objects.filter(user=self.user, item__media_id="550").count(), 1)
@@ -183,12 +183,12 @@ class TestFilmAffinityHTMLImporter(TestCase):
         )
         Movie.objects.create(item=item, user=self.user, status=Status.COMPLETED.value)
 
-        importer = FilmAffinityHTMLImporter(self.user, overwrite=True)
+        importer = FilmAffinityRatingsImporter(self.user, overwrite=True)
         importer.run(SAMPLE_HTML)
         self.assertEqual(importer.skipped, 0)
 
     def test_empty_html_returns_message(self):
-        result = FilmAffinityHTMLImporter(self.user).run(EMPTY_HTML)
+        result = FilmAffinityRatingsImporter(self.user).run(EMPTY_HTML)
         self.assertIn("No films found", result)
 
     def test_invalid_user_id(self):
@@ -210,14 +210,14 @@ class TestFilmAffinityHTMLImporter(TestCase):
                 <td><em>10 de mayo de 2026, 15:06</em></td>
             </tr>
         </table></body></html>"""
-        FilmAffinityHTMLImporter(self.user).run(html)
+        FilmAffinityRatingsImporter(self.user).run(html)
         movie = Movie.objects.get(user=self.user)
         self.assertEqual(movie.item.media_id, "550")
 
     @patch("app.providers.services.search")
     def test_result_message_contains_counts(self, mock_search):
         mock_search.return_value = {"results": []}
-        importer = FilmAffinityHTMLImporter(self.user)
+        importer = FilmAffinityRatingsImporter(self.user)
         result = importer.run(SAMPLE_HTML)
         self.assertIn("imported", result)
         self.assertIn("skipped", result)

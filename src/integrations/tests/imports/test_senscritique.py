@@ -87,6 +87,16 @@ class TestSensCritiqueCSVImporter(TestCase):
         self.assertIsNone(movie.score)
 
     @patch("app.providers.services.search")
+    def test_no_category_defaults_to_movie(self, mock_search):
+        """s2l output has no Category column — should default to movie."""
+        mock_search.return_value = {
+            "results": [{"media_id": "550", "title": "Inception", "year": 2010}]
+        }
+        csv = "Title,Year,Rating10,WatchedDate,Review\r\nInception,2010,9,2024-01-01,\r\n"
+        SensCritiqueCSVImporter(self.user).run(csv)
+        self.assertEqual(Movie.objects.filter(user=self.user).count(), 1)
+
+    @patch("app.providers.services.search")
     def test_fallback_to_manual_when_no_results(self, mock_search):
         mock_search.return_value = {"results": []}
         csv = self._csv([["Obscure Film XYZ", 2023, 7, "2024-01-01", "", "movie"]])
