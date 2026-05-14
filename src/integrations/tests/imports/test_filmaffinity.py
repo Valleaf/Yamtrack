@@ -243,16 +243,15 @@ class TestFilmAffinityRatingsImporter(TestCase):
         self.assertIn("errors", result)
 
     @patch("integrations.imports.filmaffinity.resolve_tmdb")
-    def test_tv_show_creates_tv_object(self, mock_resolve):
-        """When resolve_tmdb returns tv type, a TV object should be created."""
-        from app.models import TV
+    def test_tv_show_creates_item_with_tv_type(self, mock_resolve):
+        """When resolve_tmdb returns tv type, an Item with media_type=tv is created."""
         mock_resolve.return_value = ("1396", "tmdb", "tv")
         html = """<html><body><table class="ml movie-ratings">
             <tr><td><div class="user-rating">10</div></td>
                 <td>Breaking Bad (2008)</td><td><em>1 de enero de 2026, 10:00</em></td></tr>
         </table></body></html>"""
         FilmAffinityRatingsImporter(self.user).run(html)
-        self.assertEqual(TV.objects.filter(user=self.user).count(), 1)
+        self.assertTrue(Item.objects.filter(media_id="1396", media_type="tv").exists())
 
 
 class TestFilmAffinityListImporter(TestCase):
