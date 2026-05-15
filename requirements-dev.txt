@@ -9,3 +9,4 @@ ruff==0.15.10
 tblib==3.2.2
 
 -r requirements.txt
+fakeredis[lua]
