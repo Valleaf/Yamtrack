@@ -65,6 +65,7 @@ class MediaSearchViewTests(TestCase):
                 {
                     "media_id": "12345",
                     "title": "Abbey Road",
+                    "media_type": "music",
                     "source": "musicbrainz",
                     "image": "http://example.com/image.jpg",
                     "year": "1969",
