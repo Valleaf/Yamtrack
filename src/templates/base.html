@@ -165,6 +165,23 @@
 
           <div class="p-4 border-t border-[#2c3136] mt-auto">
             <div class="space-y-2">
+
+              {# User toggle — only shown when exactly 2 users exist #}
+              {% with other_users=request.user|get_other_users %}
+              {% if other_users %}
+                {% with other=other_users.0 %}
+                <form method="post" action="{% url 'switch_user' %}" class="w-full">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="w-full flex items-center space-x-3 px-4 py-2 rounded-md text-gray-400 hover:bg-indigo-600 hover:text-white transition-colors duration-200 text-sm cursor-pointer group">
+                    <span class="w-5 h-5 flex items-center justify-center rounded-full bg-indigo-500 text-white text-xs font-bold group-hover:bg-white group-hover:text-indigo-600">{{ other.username|slice:":1"|upper }}</span>
+                    <span>Switch to {{ other.username }}</span>
+                  </button>
+                </form>
+                {% endwith %}
+              {% endif %}
+              {% endwith %}
+
               {% url 'account' as account_url %}
               {% url 'notifications' as notifications_url %}
               {% url 'sidebar' as sidebar_url %}

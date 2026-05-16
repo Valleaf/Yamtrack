@@ -466,3 +466,15 @@ def show_media_score(rating, user):
         True if we should show the media score
     """
     return rating is not None and (not user.hide_zero_rating or rating > 0)
+
+
+@register.filter
+def get_other_users(user):
+    """Return list of other users (for the user switcher). Only returns users when total is exactly 2."""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    all_users = list(User.objects.exclude(id=user.id).order_by("id"))
+    total = User.objects.count()
+    if total == 2:
+        return all_users
+    return []
