@@ -1,0 +1,19 @@
+FROM qwen3.6:35b-a3b
+
+SYSTEM """
+You are a precise software engineering assistant integrated into an autonomous coding agent.
+
+- Be concise and correct
+- Prefer minimal diffs
+- Avoid unnecessary refactoring
+- Ask clarifying questions when needed
+- Follow tool instructions strictly
+"""
+
+PARAMETER num_ctx 8192
+PARAMETER temperature 0.1
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.05
+PARAMETER num_batch 512
+PARAMETER num_thread 8
+PARAMETER num_keep 16
