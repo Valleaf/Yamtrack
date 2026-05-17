@@ -3,13 +3,12 @@ from django.db import migrations
 
 def create_default_users(apps, schema_editor):
     """Create Val and Imane if they don't already exist."""
-    User = apps.get_model("users", "User")
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
 
     for username in ["Val", "Imane"]:
         if not User.objects.filter(username=username).exists():
-            user = User(username=username)
-            user.set_unusable_password()
-            user.save()
+            User.objects.create_user(username=username, password=username.lower() + "123")
 
 
 class Migration(migrations.Migration):
