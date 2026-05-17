@@ -1,0 +1,63 @@
+{% extends "users/base.html" %}
+{% load app_tags %}
+
+{% block title %}Import SensCritique - Yamtrack{% endblock title %}
+
+{% block settings_content %}
+<div class="space-y-6">
+  <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="flex items-center mb-4">
+      {% include "app/icons/database.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
+      <h2 class="text-xl font-semibold">Import from SensCritique</h2>
+    </div>
+    <p class="text-gray-400 mb-6 text-sm">
+      SensCritique protects its API with Cloudflare, so we use a bookmarklet that runs directly in your browser while you&#39;re logged in.
+    </p>
+
+    <div class="bg-[#39404b] rounded-lg p-5 space-y-5">
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">1</span>
+        <div>
+          <p class="text-white font-medium mb-1">Add the bookmarklet to your browser</p>
+          <p class="text-gray-400 text-sm mb-3">Drag this button to your bookmarks bar:</p>
+          <a id="sc-bookmarklet"
+             class="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md cursor-grab transition-colors select-none"
+             title="Drag me to your bookmarks bar!">
+            ⭐ Import to Yamtrack
+          </a>
+          <p class="text-gray-500 text-xs mt-2">Can&#39;t drag? Right-click the button → Bookmark this link</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">2</span>
+        <div>
+          <p class="text-white font-medium mb-1">Go to SensCritique and log in</p>
+          <a href="https://www.senscritique.com" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-sm underline">Open SensCritique &#8594;</a>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">3</span>
+        <div>
+          <p class="text-white font-medium mb-1">Click the bookmarklet</p>
+          <p class="text-gray-400 text-sm">A prompt will ask for your SC username, then a progress overlay will appear and fetch your entire collection.</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">4</span>
+        <div>
+          <p class="text-white font-medium mb-1">Check your import history</p>
+          <p class="text-gray-400 text-sm">Come back here to see the results once the &#10003; appears.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var code = "(async function() { var YAMTRACK_URL = window.location.origin; var SC_GQL = 'https://gql.senscritique.com/graphql'; var QUERY = 'query UserCollection($username: String!, $limit: Int, $offset: Int) { userByUsername(username: $username) { id username collection(limit: $limit, offset: $offset) { totalCount products { id title originalTitle yearOfProduction poster category { label } myRating { rating } artists { name } } } } }'; var username = prompt('Enter your SensCritique username:'); if (!username) return; var all = [], offset = 0, total = null; var statusDiv = document.createElement('div'); statusDiv.style = 'position:fixed;top:20px;right:20px;background:#1a1a2e;color:white;padding:16px 20px;border-radius:8px;z-index:99999;font-family:sans-serif;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,0.5);min-width:220px;border:1px solid #333;'; document.body.appendChild(statusDiv); function update(msg) { statusDiv.innerHTML = '<b>Yamtrack SC Import</b><br>' + msg; } update('Starting...'); try { do { update('Fetching ' + (offset+1) + (total?' of '+total:'') + '...'); var r = await fetch(SC_GQL, {method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({query:QUERY,variables:{username:username,limit:100,offset:offset}})}); var d = await r.json(); var col = d && d.data && d.data.userByUsername && d.data.userByUsername.collection; if (!col) { update('Error: not logged in to SC?'); return; } total = col.totalCount; all = all.concat(col.products); offset += 100; } while (offset < total); update('Sending ' + all.length + ' items...'); var p = await fetch(YAMTRACK_URL + '/import/senscritique/browser/', {method:'POST',headers:{'Content-Type':'application/json','X-SC-Import':'1'},credentials:'include',body:JSON.stringify({username:username,products:all})}); update(p.ok ? 'Done! ' + all.length + ' items imported.' : 'Error: ' + p.status); } catch(e) { update('Error: ' + e.message); } setTimeout(function(){ statusDiv.remove(); }, 6000); })();";
+  document.getElementById('sc-bookmarklet').href = 'javascript:' + encodeURIComponent(code);
+</script>
+{% endblock settings_content %}

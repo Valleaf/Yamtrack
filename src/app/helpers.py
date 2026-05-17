@@ -11,10 +11,8 @@ from django.utils import timezone
 from django.utils.encoding import iri_to_uri
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from app.date_utils import is_released_date
 from app.models import BasicMedia, MediaTypes, Status
-
-YEAR_ONLY_PARTS = 1
-YEAR_MONTH_PARTS = 2
 
 
 def get_configured_app_url():
@@ -102,33 +100,7 @@ def format_search_response(page, per_page, total_results, results):
     }
 
 
-def is_released_date(air_date, current_date=None):
-    """Return whether the supplied air date has already passed."""
-    current_date = current_date or timezone.localdate()
-    normalized_air_date = None
 
-    if isinstance(air_date, datetime):
-        if timezone.is_naive(air_date):
-            normalized_air_date = air_date.date()
-        else:
-            normalized_air_date = timezone.localtime(air_date).date()
-    elif isinstance(air_date, date):
-        normalized_air_date = air_date
-    elif isinstance(air_date, str):
-        parts = air_date.split("-")
-        if len(parts) == YEAR_ONLY_PARTS:
-            air_date = f"{air_date}-01-01"
-        elif len(parts) == YEAR_MONTH_PARTS:
-            air_date = f"{air_date}-01"
-
-        try:
-            normalized_air_date = date.fromisoformat(air_date)
-        except ValueError:
-            return False
-    else:
-        return False
-
-    return normalized_air_date <= current_date
 
 
 def enrich_items_with_user_data(request, items, section_name):

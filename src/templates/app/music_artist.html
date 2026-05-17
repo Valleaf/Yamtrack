@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block title %}{{ artist.name }} - Yamtrack{% endblock title %}
+
+{% block content %}
+<div class="space-y-8">
+
+  {# Artist Header #}
+  <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="flex flex-col sm:flex-row items-start gap-6">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-3xl font-bold truncate">{{ artist.name }}</h1>
+          {% if artist.type %}
+            <span class="text-xs px-2 py-1 bg-fuchsia-500/20 text-fuchsia-300 rounded-full">{{ artist.type }}</span>
+          {% endif %}
+        </div>
+        {% if artist.begin %}
+          <p class="text-gray-400 text-sm mb-3">
+            Active since {{ artist.begin|slice:":4" }}{% if artist.ended and artist.end %} – {{ artist.end|slice:":4" }}{% endif %}
+          </p>
+        {% endif %}
+        {% if artist.genres %}
+          <div class="flex flex-wrap gap-2 mb-4">
+            {% for genre in artist.genres %}
+              <span class="px-2 py-1 bg-[#39404b] text-gray-300 text-xs rounded-full">{{ genre }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="flex gap-3">
+          <a href="{{ artist.source_url }}" target="_blank"
+             class="text-sm text-indigo-400 hover:text-indigo-300 underline">MusicBrainz →</a>
+          {% if artist.bio_url %}
+            <a href="{{ artist.bio_url }}" target="_blank"
+               class="text-sm text-indigo-400 hover:text-indigo-300 underline">Wikipedia →</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Discography #}
+  {% for rg_type, releases in artist.discography.items %}
+    {% if releases %}
+      <div>
+        <h2 class="text-xl font-semibold mb-4">{{ rg_type }}s</h2>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4">
+          {% for release in releases %}
+            <a href="{% url 'media_details' source='musicbrainz' media_type='music' media_id=release.media_id title=release.title|default:'album'|slug %}"
+               class="group bg-[#2a2f35] rounded-lg overflow-hidden hover:bg-[#39404b] transition-colors">
+              <div class="aspect-square bg-[#39404b] overflow-hidden">
+                <img src="{{ release.image }}"
+                     alt="{{ release.title }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-4xl\'>🎵</div>'">
+              </div>
+              <div class="p-2">
+                <p class="text-sm font-medium truncate">{{ release.title }}</p>
+                {% if release.year %}<p class="text-xs text-gray-400">{{ release.year }}</p>{% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+
+</div>
+{% endblock content %}

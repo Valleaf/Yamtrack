@@ -1,14 +1,18 @@
 from unittest.mock import MagicMock, patch
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from app.helpers import (
     build_absolute_app_url,
     enrich_items_with_user_data,
     form_error_messages,
+    format_search_response,
     get_configured_app_url,
+    is_released_date,
     minutes_to_hhmm,
     redirect_back,
 )
@@ -282,3 +286,144 @@ class EnrichItemsWithUserDataTest(TestCase):
             self.request, raw_items, "recommendations"
         )
         self.assertEqual(len(enriched_items), 2)
+
+
+class IsReleasedDateTest(TestCase):
+    """Test the is_released_date function."""
+
+    def test_is_released_date_with_datetime_naive(self):
+        """Test is_released_date with naive datetime."""
+        past_datetime = timezone.localtime() - timedelta(days=10)
+        self.assertTrue(is_released_date(past_datetime.replace(tzinfo=None)))
+
+        future_datetime = timezone.localtime() + timedelta(days=10)
+        self.assertFalse(is_released_date(future_datetime.replace(tzinfo=None)))
+
+    def test_is_released_date_with_datetime_aware(self):
+        """Test is_released_date with timezone-aware datetime."""
+        past_datetime = timezone.now() - timedelta(days=10)
+        self.assertTrue(is_released_date(past_datetime))
+
+        future_datetime = timezone.now() + timedelta(days=10)
+        self.assertFalse(is_released_date(future_datetime))
+
+    def test_is_released_date_with_date_object(self):
+        """Test is_released_date with date object."""
+        past_date = timezone.localdate() - timedelta(days=5)
+        self.assertTrue(is_released_date(past_date))
+
+        future_date = timezone.localdate() + timedelta(days=5)
+        self.assertFalse(is_released_date(future_date))
+
+    def test_is_released_date_with_year_only(self):
+        """Test is_released_date with year-only string format."""
+        past_year = str(timezone.localdate().year - 1)
+        self.assertTrue(is_released_date(past_year))
+
+        future_year = str(timezone.localdate().year + 1)
+        self.assertFalse(is_released_date(future_year))
+
+    def test_is_released_date_with_year_month(self):
+        """Test is_released_date with YYYY-MM string format."""
+        past_date_str = "2020-01"
+        self.assertTrue(is_released_date(past_date_str))
+
+        future_date_str = "2099-12"
+        self.assertFalse(is_released_date(future_date_str))
+
+    def test_is_released_date_with_full_date(self):
+        """Test is_released_date with YYYY-MM-DD string format."""
+        past_date_str = "2020-05-15"
+        self.assertTrue(is_released_date(past_date_str))
+
+        future_date_str = "2099-12-31"
+        self.assertFalse(is_released_date(future_date_str))
+
+    def test_is_released_date_with_invalid_string(self):
+        """Test is_released_date with invalid date string format."""
+        invalid_dates = [
+            "not-a-date",
+            "2020-13-01",  # Invalid month
+            "2020-01-32",  # Invalid day
+            "20-01-01",    # Invalid year format
+            "",
+        ]
+        for invalid_date in invalid_dates:
+            self.assertFalse(is_released_date(invalid_date))
+
+    def test_is_released_date_with_none(self):
+        """Test is_released_date with None value."""
+        self.assertFalse(is_released_date(None))
+
+    def test_is_released_date_with_custom_current_date(self):
+        """Test is_released_date with explicit current_date parameter."""
+        test_date = date(2020, 5, 15)
+        current_date = date(2020, 5, 20)
+
+        # Test date is before current date
+        self.assertTrue(is_released_date(test_date, current_date))
+
+        # Test date is after current date
+        current_date = date(2020, 5, 10)
+        self.assertFalse(is_released_date(test_date, current_date))
+
+        # Test date equals current date
+        current_date = date(2020, 5, 15)
+        self.assertTrue(is_released_date(test_date, current_date))
+
+    def test_is_released_date_with_today(self):
+        """Test is_released_date with today's date."""
+        today = timezone.localdate()
+        self.assertTrue(is_released_date(today))
+
+
+class FormatSearchResponseTest(TestCase):
+    """Test the format_search_response function."""
+
+    def test_format_search_response_single_page(self):
+        """Test format_search_response with results on single page."""
+        results = [{"id": 1, "title": "Result 1"}]
+        response = format_search_response(page=1, per_page=10, total_results=5, results=results)
+
+        self.assertEqual(response["page"], 1)
+        self.assertEqual(response["total_results"], 5)
+        self.assertEqual(response["total_pages"], 1)
+        self.assertEqual(response["results"], results)
+
+    def test_format_search_response_multiple_pages(self):
+        """Test format_search_response with results spanning multiple pages."""
+        results = [{"id": i, "title": f"Result {i}"} for i in range(10)]
+        response = format_search_response(page=2, per_page=10, total_results=25, results=results)
+
+        self.assertEqual(response["page"], 2)
+        self.assertEqual(response["total_results"], 25)
+        self.assertEqual(response["total_pages"], 3)
+        self.assertEqual(len(response["results"]), 10)
+
+    def test_format_search_response_no_results(self):
+        """Test format_search_response with no results."""
+        response = format_search_response(page=1, per_page=10, total_results=0, results=[])
+
+        self.assertEqual(response["page"], 1)
+        self.assertEqual(response["total_results"], 0)
+        self.assertEqual(response["total_pages"], 1)
+        self.assertEqual(response["results"], [])
+
+    def test_format_search_response_exact_page_boundary(self):
+        """Test format_search_response with results at exact page boundary."""
+        # Exactly 2 pages of 10 results
+        results = [{"id": i, "title": f"Result {i}"} for i in range(10)]
+        response = format_search_response(page=2, per_page=10, total_results=20, results=results)
+
+        self.assertEqual(response["page"], 2)
+        self.assertEqual(response["total_pages"], 2)
+
+    def test_format_search_response_partial_last_page(self):
+        """Test format_search_response with partial results on last page."""
+        results = [{"id": i, "title": f"Result {i}"} for i in range(5)]
+        response = format_search_response(page=2, per_page=10, total_results=15, results=results)
+
+        self.assertEqual(response["page"], 2)
+        self.assertEqual(response["total_results"], 15)
+        self.assertEqual(response["total_pages"], 2)
+        self.assertEqual(len(response["results"]), 5)

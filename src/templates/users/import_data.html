@@ -392,6 +392,51 @@
             </label>
           </form>
         </div>
+        {# SensCritique #}
+        <div class="bg-[#39404b] p-4 rounded-lg">
+          <div class="flex items-center mb-3">{% source_display "senscritique" %}</div>
+          <p class="text-sm text-gray-400 mb-3"
+             x-text="importFrequency === 'once' ? 'Import from SensCritique CSV export' : 'File uploads are not available for periodic imports'">
+          </p>
+          <form method="post"
+                action="{% url 'import_senscritique_csv' %}"
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="mode" x-model="importMode">
+            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
+                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'">
+              <input name="sc_csv" accept=".csv" class="hidden" type="file"
+                     :disabled="importFrequency !== 'once'"
+                     @change="importFrequency === 'once' && $el.form.submit()">
+              Upload CSV
+            </label>
+          </form>
+        </div>
+        {# FilmAffinity #}
+        <div class="bg-[#39404b] p-4 rounded-lg">
+          <div class="flex items-center mb-3">{% source_display "filmaffinity" %}</div>
+          <p class="text-sm text-gray-400 mb-3"
+             x-text="importFrequency === 'once' ? 'Upload HTML files from your FA data export' : 'File uploads are not available for periodic imports'">
+          </p>
+          <form method="post"
+                action="{% url 'import_filmaffinity_html' %}"
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="mode" x-model="importMode">
+            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
+                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'">
+              <input name="fa_html" accept=".html" class="hidden" type="file"
+                     :disabled="importFrequency !== 'once'"
+                     @change="importFrequency === 'once' && $el.form.submit()">
+              Upload HTML file
+            </label>
+          </form>
+          <p class="text-xs text-gray-500 mt-2">
+            Ratings: upload <code class="text-indigo-400">html/movie-ratings.html</code><br>
+            Lists: upload any <code class="text-indigo-400">html/list/list-N.html</code>
+          </p>
+        </div>
+      
 
       </div>
     </div>

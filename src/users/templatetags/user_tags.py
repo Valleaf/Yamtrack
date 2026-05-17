@@ -52,6 +52,14 @@ SOURCES_CONFIG = {
         "name": "GoodReads",
         "logo": static("img/logo-goodreads.svg"),
     },
+    "senscritique": {
+        "name": "SensCritique",
+        "logo": static("img/sc-logo.jpg"),
+    },
+    "filmaffinity": {
+        "name": "FilmAffinity",
+        "logo": static("img/fa-logo.png"),
+    },
 }
 
 

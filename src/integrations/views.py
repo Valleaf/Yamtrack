@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, StreamingHttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -565,3 +565,72 @@ def emby_webhook(request, token):
     processor = emby.EmbyWebhookProcessor()
     processor.process_payload(payload, user)
     return HttpResponse(status=200)
+
+
+
+def import_senscritique_csv(request):
+    """Handle SC CSV file upload and queue import."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    csv_file = request.FILES.get("sc_csv")
+    if not csv_file:
+        messages.error(request, "No CSV file provided.")
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+
+    try:
+        csv_content = csv_file.read().decode("utf-8-sig")
+    except Exception:
+        messages.error(request, "Could not read CSV file. Please upload a valid UTF-8 CSV.")
+        return redirect("import_data")
+
+    from integrations.imports.senscritique import import_from_senscritique_csv
+    import_from_senscritique_csv.delay(
+        user_id=request.user.id,
+        csv_content=csv_content,
+        overwrite=overwrite,
+    )
+    messages.info(request, "SensCritique CSV import started in the background.")
+    return redirect("import_data")
+
+
+def import_filmaffinity_html(request):
+    """Handle FilmAffinity HTML export upload (movie-ratings.html or list-N.html)."""
+    if request.method != "POST":
+        return redirect("import_data")
+
+    html_file = request.FILES.get("fa_html")
+    if not html_file:
+        messages.error(request, "No file provided.")
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+    overwrite = mode == "overwrite"
+    filename = html_file.name.lower()
+
+    # Detect whether this is a ratings file or a list file
+    if "list" in filename:
+        import_type = "list"
+    else:
+        import_type = "ratings"
+
+    try:
+        html_content = html_file.read().decode("utf-8", errors="replace")
+    except Exception:
+        messages.error(request, "Could not read the file.")
+        return redirect("import_data")
+
+    from integrations.imports.filmaffinity import import_from_filmaffinity_html
+    import_from_filmaffinity_html.delay(
+        user_id=request.user.id,
+        html_content=html_content,
+        overwrite=overwrite,
+        import_type=import_type,
+    )
+    label = "list" if import_type == "list" else "ratings"
+    messages.info(request, f"FilmAffinity {label} import started. This may take a few minutes.")
+    return redirect("import_data")
+

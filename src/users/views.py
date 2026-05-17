@@ -375,3 +375,27 @@ def clear_search_cache(request):
     )
 
     return redirect("advanced")
+
+
+@require_POST
+def switch_user(request):
+    """Switch to the other local user (no password required — local use only)."""
+    from django.contrib.auth import get_user_model, login as auth_login
+
+    User = get_user_model()
+    all_users = list(User.objects.order_by("id"))
+
+    if len(all_users) != 2:
+        messages.error(request, "User switching only works with exactly 2 users.")
+        return redirect("home")
+
+    # Switch to the other user
+    other_user = next((u for u in all_users if u.id != request.user.id), None)
+    if not other_user:
+        return redirect("home")
+
+    # Log in as the other user without password (local only)
+    other_user.backend = "django.contrib.auth.backends.ModelBackend"
+    auth_login(request, other_user)
+    messages.success(request, f"Switched to {other_user.username}")
+    return redirect("home")
