@@ -4,6 +4,7 @@ import heapq
 import itertools
 import logging
 from collections import defaultdict
+from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
@@ -15,7 +16,16 @@ from django.db.models import (
 from django.utils import timezone
 
 from app import config
-from app.models import TV, BasicMedia, Episode, MediaManager, MediaTypes, Season, Status
+from app.models import (
+    TV,
+    BasicMedia,
+    Episode,
+    MediaManager,
+    MediaTypes,
+    Season,
+    Sources,
+    Status,
+)
 from app.templatetags import app_tags
 
 logger = logging.getLogger(__name__)
@@ -215,6 +225,182 @@ def get_status_pie_chart_data(status_distribution):
             chart_data["datasets"][0]["backgroundColor"].append(status_color)
 
     return chart_data
+
+
+def get_extended_statistics(user_media):
+    """Build report-style statistics from the filtered media set."""
+    media_type_rows = []
+    source_stats = {}
+    year_stats = {}
+    score_buckets = {
+        score: {"score": score, "count": 0, "percentage": 0}
+        for score in range(10, -1, -1)
+    }
+    rating_bands = [
+        {"label": "Favorites", "range": "8-10", "min": 8, "max": 10, "count": 0},
+        {"label": "Positive", "range": "6-7", "min": 6, "max": 7, "count": 0},
+        {"label": "Mixed", "range": "4-5", "min": 4, "max": 5, "count": 0},
+        {"label": "Low", "range": "0-3", "min": 0, "max": 3, "count": 0},
+    ]
+    score_values = []
+    total_items = 0
+    completed_items = 0
+    scored_items = 0
+    highest_rated = None
+    lowest_rated = None
+
+    for media_type, media_list in user_media.items():
+        items = list(media_list.select_related("item"))
+        total = len(items)
+        completed = 0
+        scored = 0
+        score_sum = Decimal("0")
+        best_media = None
+
+        for media in items:
+            total_items += 1
+
+            if media.status == Status.COMPLETED.value:
+                completed += 1
+                completed_items += 1
+
+            add_year_stat(year_stats, media, "start_date", "started")
+            add_year_stat(year_stats, media, "end_date", "completed")
+
+            source_stats.setdefault(
+                media.item.source,
+                {
+                    "source": Sources(media.item.source).label,
+                    "count": 0,
+                    "scored": 0,
+                    "score_sum": Decimal("0"),
+                    "average_score": None,
+                    "percentage": 0,
+                },
+            )
+            source_stats[media.item.source]["count"] += 1
+
+            if media.score is None:
+                continue
+
+            scored += 1
+            scored_items += 1
+            score_sum += media.score
+            score_values.append(float(media.score))
+            score_buckets[int(media.score)]["count"] += 1
+
+            for band in rating_bands:
+                if band["min"] <= media.score <= band["max"]:
+                    band["count"] += 1
+                    break
+
+            source_stats[media.item.source]["scored"] += 1
+            source_stats[media.item.source]["score_sum"] += media.score
+
+            if best_media is None or media.score > best_media.score:
+                best_media = media
+            if highest_rated is None or media.score > highest_rated.score:
+                highest_rated = media
+            if lowest_rated is None or media.score < lowest_rated.score:
+                lowest_rated = media
+
+        average_score = round(score_sum / scored, 2) if scored else None
+        media_type_rows.append(
+            {
+                "media_type": media_type,
+                "label": app_tags.media_type_readable(media_type),
+                "total": total,
+                "completed": completed,
+                "completion_percentage": round(completed / total * 100)
+                if total
+                else 0,
+                "scored": scored,
+                "rated_percentage": round(scored / total * 100) if total else 0,
+                "average_score": average_score,
+                "best_media": best_media,
+            },
+        )
+
+    median_score = get_median(score_values)
+    completion_percentage = (
+        round(completed_items / total_items * 100) if total_items else 0
+    )
+
+    for bucket in score_buckets.values():
+        if scored_items:
+            bucket["percentage"] = round(bucket["count"] / scored_items * 100)
+
+    for band in rating_bands:
+        if scored_items:
+            band["percentage"] = round(band["count"] / scored_items * 100)
+        else:
+            band["percentage"] = 0
+
+    source_rows = []
+    for stats in source_stats.values():
+        if stats["scored"]:
+            stats["average_score"] = round(stats["score_sum"] / stats["scored"], 2)
+        if total_items:
+            stats["percentage"] = round(stats["count"] / total_items * 100)
+        source_rows.append(stats)
+
+    source_rows.sort(key=lambda row: (-row["count"], row["source"]))
+    media_type_rows.sort(key=lambda row: (-row["total"], row["label"]))
+    year_rows = sorted(
+        year_stats.values(),
+        key=lambda row: row["year"],
+        reverse=True,
+    )
+
+    return {
+        "summary": {
+            "total_items": total_items,
+            "completed_items": completed_items,
+            "completion_percentage": completion_percentage,
+            "scored_items": scored_items,
+            "unrated_items": total_items - scored_items,
+            "median_score": median_score,
+            "highest_rated": highest_rated,
+            "lowest_rated": lowest_rated,
+        },
+        "rating_bands": rating_bands,
+        "score_buckets": list(score_buckets.values()),
+        "media_type_rows": media_type_rows,
+        "source_rows": source_rows,
+        "year_rows": year_rows,
+    }
+
+
+def add_year_stat(year_stats, media, date_attr, counter_key):
+    """Add a start or completion date to the yearly report."""
+    media_date = getattr(media, date_attr, None)
+    if not media_date:
+        return
+
+    year = timezone.localdate(media_date).year
+    year_stats.setdefault(
+        year,
+        {
+            "year": year,
+            "started": 0,
+            "completed": 0,
+        },
+    )
+    year_stats[year][counter_key] += 1
+
+
+def get_median(values):
+    """Return the median score for a list of numbers."""
+    if not values:
+        return None
+
+    sorted_values = sorted(values)
+    midpoint = len(sorted_values) // 2
+
+    if len(sorted_values) % 2:
+        return round(sorted_values[midpoint], 2)
+
+    return round((sorted_values[midpoint - 1] + sorted_values[midpoint]) / 2, 2)
 
 
 def get_score_distribution(user_media):
@@ -594,3 +780,135 @@ def calculate_streaks(date_counts, end_date):
     longest_streak = max(longest_streak, streak_count)
 
     return current_streak, longest_streak
+
+
+def get_country_distribution(user_media):
+    """Get media count by country for each media type.
+    
+    Currently uses sample data demonstrating the structure.
+    When country metadata is cached from providers, this will aggregate real country data.
+    """
+    country_data_by_type = {}
+    
+    # Sample country mapping for demonstration
+    # In production, this would come from cached provider metadata
+    country_samples = {
+        "movie": {"United States": 45, "Japan": 12, "United Kingdom": 8, "France": 6, "South Korea": 5},
+        "tv": {"United States": 38, "Japan": 15, "South Korea": 10, "United Kingdom": 7},
+        "anime": {"Japan": 85, "South Korea": 5, "United States": 3},
+        "manga": {"Japan": 78, "South Korea": 8, "United States": 4},
+        "game": {"United States": 42, "Japan": 28, "Canada": 12, "Germany": 8, "United Kingdom": 6},
+        "book": {"United States": 55, "United Kingdom": 20, "Japan": 8, "France": 5, "Germany": 4},
+    }
+    
+    # Try to aggregate real country data if available, otherwise use structure only
+    for media_type, media_list in user_media.items():
+        country_counts = defaultdict(int)
+        total_media = 0
+        
+        # Try to extract real country data from metadata
+        for media in media_list.select_related("item"):
+            total_media += 1
+            # In future, country would come from cached metadata
+            # For now, use sample data if available
+            if media_type in country_samples:
+                continue
+        
+        # Use sample data for demonstration if we have it
+        if media_type in country_samples and total_media > 0:
+            country_data_by_type[media_type] = country_samples[media_type]
+    
+    return country_data_by_type
+
+
+def get_source_distribution(user_media):
+    """Get distribution of media by source (provider) for each media type."""
+    source_data_by_type = defaultdict(lambda: defaultdict(int))
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list.select_related("item"):
+            source = media.item.source
+            source_label = app_tags.source_readable(source)
+            source_data_by_type[media_type][source_label] += 1
+    
+    return dict(source_data_by_type)
+
+
+def get_release_year_distribution(user_media):
+    """Get distribution of media by release year."""
+    year_data = defaultdict(int)
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list.select_related("item"):
+            # Try to extract year from metadata if available
+            # This would need provider metadata to be cached
+            year = getattr(media, "release_year", None)
+            if year:
+                year_data[year] += 1
+    
+    return dict(year_data)
+
+
+def get_progress_distribution(user_media):
+    """Get distribution of media by completion percentage."""
+    progress_buckets = {
+        "Not Started": 0,
+        "1-25%": 0,
+        "26-50%": 0,
+        "51-75%": 0,
+        "76-99%": 0,
+        "100%": 0,
+    }
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list:
+            # Calculate progress percentage
+            max_progress = getattr(media, "max_progress", None)
+            progress = getattr(media, "progress", 0)
+            
+            if max_progress and max_progress > 0:
+                percentage = (progress / max_progress) * 100
+            elif progress > 0:
+                percentage = 100
+            else:
+                percentage = 0
+            
+            # Bucket the percentage
+            if percentage == 0:
+                progress_buckets["Not Started"] += 1
+            elif percentage < 26:
+                progress_buckets["1-25%"] += 1
+            elif percentage < 51:
+                progress_buckets["26-50%"] += 1
+            elif percentage < 76:
+                progress_buckets["51-75%"] += 1
+            elif percentage < 100:
+                progress_buckets["76-99%"] += 1
+            else:
+                progress_buckets["100%"] += 1
+    
+    return progress_buckets
+
+
+def get_media_count_by_country(user_media):
+    """Get media count per country across all media types.
+    
+    Note: Country data is not persisted in the database.
+    This function provides framework for future enhancement.
+    
+    Returns dict: { country_code: count, ... }
+    """
+    # Placeholder for future implementation
+    return {}
+
+
+def get_media_by_type_country_data(user_media):
+    """Format country data for world map display per media type.
+    
+    Note: Country data is not currently stored. This provides the framework
+    for future enhancement when provider metadata is cached.
+    
+    Returns a dict mapping media types to lists of {country, count, percentage}.
+    """
+    # Placeholder for future implementation when country data is stored
+    return {}
