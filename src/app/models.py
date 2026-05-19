@@ -262,8 +262,19 @@ class MediaManager(models.Manager):
         if media_type == MediaTypes.TV.value:
             return queryset.prefetch_related(
                 Prefetch(
+                    "item__event_set",
+                    queryset=events.models.Event.objects.all(),
+                    to_attr="prefetched_events",
+                ),
+                Prefetch(
                     "seasons",
-                    queryset=Season.objects.select_related("item"),
+                    queryset=Season.objects.select_related("item").prefetch_related(
+                        Prefetch(
+                            "item__event_set",
+                            queryset=events.models.Event.objects.all(),
+                            to_attr="prefetched_events",
+                        ),
+                    ),
                 ),
                 Prefetch(
                     "seasons__episodes",
@@ -422,7 +433,11 @@ class MediaManager(models.Manager):
     ):
         """Get a home media list for a specific status grouped by media type."""
         list_by_type = {}
-        media_types = self._get_media_types_to_process(user, specific_media_type)
+        media_types = self._get_media_types_to_process(
+            user,
+            specific_media_type,
+            status,
+        )
 
         for media_type in media_types:
             # Get base media list for the requested status
@@ -432,6 +447,9 @@ class MediaManager(models.Manager):
                 status_filter=status,
                 sort_filter=None,
             )
+
+            if media_type == MediaTypes.TV.value:
+                media_list = self._filter_tv_with_unwatched_seasons(media_list)
 
             if not media_list:
                 continue
@@ -457,16 +475,32 @@ class MediaManager(models.Manager):
 
         return list_by_type
 
-    def _get_media_types_to_process(self, user, specific_media_type):
+    def _get_media_types_to_process(self, user, specific_media_type, status=None):
         """Determine which media types to process based on user settings."""
         if specific_media_type:
             return [specific_media_type]
 
-        # Get active types excluding TV
+        media_types = []
+        for media_type in user.get_active_media_types():
+            if media_type == MediaTypes.TV.value:
+                if status == Status.IN_PROGRESS.value:
+                    media_types.append(media_type)
+                continue
+
+            media_types.append(media_type)
+
+        return media_types
+
+    def _filter_tv_with_unwatched_seasons(self, tv_list):
+        """Return TV shows with regular seasons still left to watch."""
         return [
-            media_type
-            for media_type in user.get_active_media_types()
-            if media_type != MediaTypes.TV.value
+            tv
+            for tv in tv_list
+            if any(
+                season.item.season_number != 0
+                and season.status == Status.PLANNING.value
+                for season in tv.seasons.all()
+            )
         ]
 
     def _annotate_next_event(self, media_list):
@@ -474,11 +508,20 @@ class MediaManager(models.Manager):
         current_time = timezone.now()
 
         for media in media_list:
+            event_sources = [media.item]
+            if media.item.media_type == MediaTypes.TV.value:
+                event_sources.extend(
+                    season.item
+                    for season in media.seasons.all()
+                    if season.item.season_number != 0
+                )
+
             # Get future events sorted by datetime
             future_events = sorted(
                 [
                     event
-                    for event in getattr(media.item, "prefetched_events", [])
+                    for item in event_sources
+                    for event in getattr(item, "prefetched_events", [])
                     if event.datetime > current_time
                 ],
                 key=lambda e: e.datetime,

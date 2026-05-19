@@ -303,7 +303,7 @@ class MediaManagerTests(TestCase):
 
         self.assertTrue(hasattr(prefetched_queryset, "_prefetch_related_lookups"))
         prefetch_lookups = prefetched_queryset._prefetch_related_lookups
-        self.assertEqual(len(prefetch_lookups), 2)
+        self.assertEqual(len(prefetch_lookups), 3)
 
         queryset = Season.objects.filter(user=self.user.id)
         prefetched_queryset = manager._apply_prefetch_related(
@@ -558,6 +558,18 @@ class MediaManagerTests(TestCase):
         self.assertNotIn(MediaTypes.MANGA.value, media_types)
         self.assertIn(MediaTypes.MOVIE.value, media_types)
 
+    def test_get_media_types_to_process_includes_tv_for_in_progress(self):
+        """Test in-progress home processing includes TV shows."""
+        manager = MediaManager()
+
+        media_types = manager._get_media_types_to_process(
+            self.user,
+            None,
+            Status.IN_PROGRESS.value,
+        )
+
+        self.assertIn(MediaTypes.TV.value, media_types)
+
     def test_get_home_status_groups_media_and_annotates_home_fields(self):
         """Test get_home_status groups media and annotates max_progress/events."""
         manager = MediaManager()
@@ -610,6 +622,43 @@ class MediaManagerTests(TestCase):
         movie = home_status[MediaTypes.MOVIE.value]["items"][0]
         self.assertEqual(movie.max_progress, 1)
         self.assertIsNone(movie.next_event)
+
+    def test_get_home_status_includes_tv_with_planning_season(self):
+        """Test in-progress TV shows with unwatched seasons appear on home."""
+        manager = MediaManager()
+
+        season2_item = Item.objects.create(
+            media_id="1668",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Friends",
+            image="http://example.com/friends-s2.jpg",
+            season_number=2,
+        )
+        Season.objects.create(
+            item=season2_item,
+            user=self.user,
+            related_tv=self.tv,
+            status=Status.PLANNING.value,
+        )
+        Event.objects.create(
+            item=season2_item,
+            content_number=1,
+            datetime=timezone.now() + timedelta(days=7),
+            notification_sent=False,
+        )
+
+        home_status = manager.get_home_status(
+            user=self.user,
+            status=Status.IN_PROGRESS.value,
+            sort_by=HomeSortChoices.UPCOMING,
+            items_limit=14,
+        )
+
+        self.assertIn(MediaTypes.TV.value, home_status)
+        tv = home_status[MediaTypes.TV.value]["items"][0]
+        self.assertEqual(tv, self.tv)
+        self.assertEqual(tv.next_event.item, season2_item)
 
     def test_get_home_status_specific_media_type_returns_remaining_items(self):
         """Test get_home_status returns the remaining items for load-more."""

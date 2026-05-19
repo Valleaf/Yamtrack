@@ -14,6 +14,7 @@ from app.models import (
     Season,
     Sources,
     Status,
+    TV,
 )
 from users.models import HomeSortChoices
 
@@ -190,6 +191,48 @@ class HomeViewTests(TestCase):
         planning_movies = planning_section["media_types"][MediaTypes.MOVIE.value]
         self.assertEqual(len(planning_movies["items"]), 1)
         self.assertEqual(planning_movies["items"][0].status, Status.PLANNING.value)
+
+    def test_home_view_includes_in_progress_tv_with_unwatched_seasons(self):
+        """Test in-progress TV with unwatched seasons appears on home."""
+        tv_item = Item.objects.create(
+            media_id="tv-with-new-season",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.TV.value,
+            title="Returning Show",
+            image="http://example.com/returning-show.jpg",
+        )
+        tv = TV.objects.create(
+            item=tv_item,
+            user=self.user,
+            status=Status.IN_PROGRESS.value,
+        )
+
+        unwatched_season_item = Item.objects.create(
+            media_id="tv-with-new-season",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Returning Show",
+            image="http://example.com/returning-show.jpg",
+            season_number=2,
+        )
+        Season.objects.create(
+            item=unwatched_season_item,
+            user=self.user,
+            related_tv=tv,
+            status=Status.PLANNING.value,
+        )
+
+        response = self.client.get(reverse("home"))
+
+        sections_by_key = {
+            section["key"]: section for section in response.context["home_sections"]
+        }
+        in_progress_section = sections_by_key[Status.IN_PROGRESS.value]
+
+        self.assertIn(MediaTypes.TV.value, in_progress_section["media_types"])
+        tv_media = in_progress_section["media_types"][MediaTypes.TV.value]
+        self.assertEqual(tv_media["total"], 1)
+        self.assertEqual(tv_media["items"][0].item.title, "Returning Show")
 
     def test_home_view_with_sort(self):
         """Test the home view with sorting parameter."""

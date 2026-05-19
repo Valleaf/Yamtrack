@@ -964,9 +964,15 @@ def statistics(request):
     status_pie_chart_data = stats.get_status_pie_chart_data(
         status_distribution,
     )
+    extended_statistics = stats.get_extended_statistics(user_media)
     timeline = stats.get_timeline(user_media)
 
     activity_data = stats.get_activity_data(request.user, start_date, end_date)
+    
+    # New statistics for enhanced visualizations
+    progress_distribution = stats.get_progress_distribution(user_media)
+    country_distribution = stats.get_country_distribution(user_media)
+    media_by_type_country = stats.get_media_by_type_country_data(user_media)
 
     context = {
         "start_date": start_date,
@@ -978,8 +984,12 @@ def statistics(request):
         "top_rated": top_rated,
         "status_distribution": status_distribution,
         "status_pie_chart_data": status_pie_chart_data,
+        "extended_statistics": extended_statistics,
         "timeline": timeline,
         "date_format_values": DateFormatChoices.values,
+        "progress_distribution": progress_distribution,
+        "country_distribution": country_distribution,
+        "media_by_type_country": media_by_type_country,
     }
 
     return render(request, "app/statistics.html", context)

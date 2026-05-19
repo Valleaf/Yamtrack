@@ -26,6 +26,7 @@ class StatisticsViewTests(TestCase):
         self.assertIn("score_distribution", response.context)
         self.assertIn("status_distribution", response.context)
         self.assertIn("status_pie_chart_data", response.context)
+        self.assertIn("extended_statistics", response.context)
         self.assertIn("timeline", response.context)
 
     def test_statistics_view_custom_date_range(self):
@@ -46,6 +47,7 @@ class StatisticsViewTests(TestCase):
         self.assertIn("score_distribution", response.context)
         self.assertIn("status_distribution", response.context)
         self.assertIn("status_pie_chart_data", response.context)
+        self.assertIn("extended_statistics", response.context)
         self.assertIn("timeline", response.context)
 
     def test_statistics_view_invalid_date_format(self):
