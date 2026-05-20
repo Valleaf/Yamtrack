@@ -2,10 +2,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    """Add country field to Item as well (merge of two 0063 migrations)."""
+    """Merge both 0063 migrations and add Item.country."""
 
     dependencies = [
         ("app", "0063_add_media_country"),
+        ("app", "0063_item_country"),
     ]
 
     operations = [
