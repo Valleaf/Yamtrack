@@ -611,6 +611,28 @@
     </div>
 
   </div>
+
+    {% if world_map.combined %}
+    <div class="bg-[#2a2f35] rounded-lg p-6" x-data="{ wmTab: 'combined' }">
+      <h2 class="text-xl font-semibold mb-4">Media World Map</h2>
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button @click="wmTab = 'combined'"
+                :class="wmTab === 'combined' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#434b57]'"
+                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">All</button>
+        {% for mt in world_map.media_types %}
+        <button @click="wmTab = '{{ mt }}'"
+                :class="wmTab === '{{ mt }}' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#434b57]'"
+                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">{{ mt|title }}</button>
+        {% endfor %}
+      </div>
+      <div style="min-height:320px;">
+        <canvas id="worldmap-combined" x-show="wmTab === 'combined'" class="w-full" style="max-height:440px;"></canvas>
+        {% for mt in world_map.media_types %}
+        <canvas id="worldmap-{{ mt }}" x-show="wmTab === '{{ mt }}'" class="w-full" style="max-height:440px;"></canvas>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 {% endblock content %}
 
 {% block js %}
@@ -628,185 +650,89 @@
   {{ score_distribution|json_script:"score_distribution" }}
 
   <script src="{% static 'js/statistics-charts.js' %}{% get_static_file_mtime 'js/statistics-charts.js' %}"></script>
-{% endblock js %}
 
-{% if world_map.combined %}
-<div class="mt-4">
-  <h4 class="mb-3">{% trans "Media World Map" %}</h4>
-
-  {# Tab buttons #}
-  <ul class="nav nav-tabs mb-3" id="worldMapTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="wm-tab-combined" data-bs-toggle="tab"
-              data-bs-target="#wm-combined" type="button" role="tab"
-              aria-controls="wm-combined" aria-selected="true">
-        {% trans "All" %}
-      </button>
-    </li>
-    {% for mt in world_map.media_types %}
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="wm-tab-{{ mt }}" data-bs-toggle="tab"
-              data-bs-target="#wm-{{ mt }}" type="button" role="tab"
-              aria-controls="wm-{{ mt }}" aria-selected="false">
-        {{ mt|title }}
-      </button>
-    </li>
-    {% endfor %}
-  </ul>
-
-  {# Tab panes — one canvas per tab #}
-  <div class="tab-content" id="worldMapTabsContent">
-    <div class="tab-pane fade show active" id="wm-combined" role="tabpanel" aria-labelledby="wm-tab-combined">
-      <canvas id="worldmap-combined" style="width:100%;max-height:420px;"></canvas>
-    </div>
-    {% for mt in world_map.media_types %}
-    <div class="tab-pane fade" id="wm-{{ mt }}" role="tabpanel" aria-labelledby="wm-tab-{{ mt }}">
-      <canvas id="worldmap-{{ mt }}" style="width:100%;max-height:420px;"></canvas>
-    </div>
-    {% endfor %}
-  </div>
-</div>
-
-{# World map data passed to JS #}
-<script>
-window.WORLD_MAP_DATA = {
-  combined: {{ world_map.combined|safe }},
-  byType:   {{ world_map.by_type|safe }},
-  names:    {{ world_map.country_names|safe }},
-  types:    {{ world_map.media_types|safe }},
-};
-</script>
-
-<script>
-(function () {
-  'use strict';
-
-  // Only load Chart.js geo if we have data — lazy-load to keep page fast
-  const cdn = 'https://cdn.jsdelivr.net/npm/';
-  function loadScript(src, cb) {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = cb;
-    document.head.appendChild(s);
-  }
-
-  function buildMap(canvasId, countryData) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-      .then(r => r.json())
-      .then(worldData => {
-        // topojson → feature collection
-        const countries = ChartGeo.topojson.feature(worldData, worldData.objects.countries);
-        const maxVal = Math.max(...Object.values(countryData), 1);
-
-        const data = countries.features.map(f => {
-          // UN numeric → alpha-2 via a small runtime lookup
-          // We use the name match from our server-side names dict
-          // Chart.js geo identifies countries by their ISO numeric id in topojson
-          const id = String(f.id);
-          // We pass alpha-2 data; resolve via a tiny inline map
-          const alpha2 = NUMERIC_TO_ALPHA2[id];
-          const value = alpha2 ? (countryData[alpha2] || 0) : 0;
-          return { feature: f, value };
+  {% if world_map.combined %}
+  {{ world_map.combined|json_script:"wm-combined" }}
+  {{ world_map.by_type|json_script:"wm-by-type" }}
+  {{ world_map.country_names|json_script:"wm-names" }}
+  {{ world_map.media_types|json_script:"wm-types" }}
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js"></script>
+  <script>
+  (function () {
+    var combined = JSON.parse(document.getElementById('wm-combined').textContent);
+    var byType   = JSON.parse(document.getElementById('wm-by-type').textContent);
+    var names    = JSON.parse(document.getElementById('wm-names').textContent);
+    var N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","32":"AR","36":"AU","40":"AT","50":"BD","56":"BE","68":"BO","76":"BR","100":"BG","104":"MM","116":"KH","120":"CM","124":"CA","140":"CF","144":"LK","152":"CL","156":"CN","170":"CO","180":"CD","188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","208":"DK","214":"DO","218":"EC","818":"EG","222":"SV","233":"EE","231":"ET","246":"FI","250":"FR","266":"GA","276":"DE","288":"GH","300":"GR","320":"GT","324":"GN","332":"HT","340":"HN","348":"HU","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","388":"JM","392":"JP","400":"JO","398":"KZ","404":"KE","408":"KP","410":"KR","414":"KW","418":"LA","422":"LB","430":"LR","434":"LY","440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","484":"MX","504":"MA","508":"MZ","516":"NA","524":"NP","528":"NL","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","694":"SL","706":"SO","710":"ZA","724":"ES","729":"SD","752":"SE","756":"CH","760":"SY","764":"TH","792":"TR","800":"UG","804":"UA","784":"AE","826":"GB","840":"US","858":"UY","860":"UZ","862":"VE","704":"VN","887":"YE","894":"ZM","716":"ZW","51":"AM","31":"AZ","112":"BY","70":"BA","795":"TM","762":"TJ","496":"MN","498":"MD","703":"SK","705":"SI","688":"RS","807":"MK"};
+    var worldCache = null;
+    function getWorld() {
+      if (worldCache) return Promise.resolve(worldCache);
+      return fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(function(r){return r.json();}).then(function(d){worldCache=d;return d;});
+    }
+    function buildMap(canvasId, data) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas || canvas._wm) return;
+      canvas._wm = true;
+      getWorld().then(function(wd) {
+        var countries = ChartGeo.topojson.feature(wd, wd.objects.countries);
+        var vals = Object.values(data);
+        var maxVal = vals.length ? Math.max.apply(null, vals.concat([1])) : 1;
+        var chartData = countries.features.map(function(f) {
+          var a = N2A[String(f.id)];
+          return {feature: f, value: a ? (data[a] || 0) : 0};
         });
-
         new Chart(canvas, {
           type: 'choropleth',
           data: {
-            labels: countries.features.map(f => {
-              const alpha2 = NUMERIC_TO_ALPHA2[String(f.id)];
-              return alpha2
-                ? (window.WORLD_MAP_DATA.names[alpha2] || alpha2)
-                : (f.properties.name || f.id);
+            labels: countries.features.map(function(f) {
+              var a = N2A[String(f.id)];
+              return a ? (names[a] || a) : (f.properties && f.properties.name || String(f.id));
             }),
             datasets: [{
               label: 'Items',
-              data,
-              backgroundColor(ctx) {
-                if (!ctx.raw) return 'rgba(0,0,0,0)';
-                const v = ctx.raw.value || 0;
-                if (v === 0) return 'rgba(200,200,200,0.4)';
-                const t = v / maxVal;
-                // Blue gradient: light → deep
-                const r = Math.round(220 - t * 180);
-                const g = Math.round(220 - t * 130);
-                const b = Math.round(255 - t * 60);
-                return `rgba(${r},${g},${b},0.85)`;
-              },
-            }],
+              data: chartData,
+              backgroundColor: function(ctx) {
+                var v = ctx.raw ? ctx.raw.value : 0;
+                if (!v) return 'rgba(55,65,81,0.5)';
+                var t = v / maxVal;
+                var r = Math.round(99  + (1-t)*60);
+                var g = Math.round(102 + (1-t)*40);
+                var b = Math.round(241 - (1-t)*60);
+                return 'rgba('+r+','+g+','+b+',0.85)';
+              }
+            }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: true,
             plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label(ctx) {
-                    const v = ctx.raw ? ctx.raw.value : 0;
-                    return v ? `${v} item${v !== 1 ? 's' : ''}` : 'No items';
-                  },
-                },
-              },
+              legend: {display: false},
+              tooltip: {callbacks: {label: function(ctx) {
+                var v = ctx.raw ? ctx.raw.value : 0;
+                return v ? v + ' item' + (v !== 1 ? 's' : '') : 'No items tracked';
+              }}}
             },
             scales: {
-              projection: { axis: 'x', projection: 'naturalEarth1' },
-              color: { display: false },
-            },
-          },
+              projection: {axis: 'x', projection: 'naturalEarth1'},
+              color: {display: false}
+            }
+          }
         });
       });
-  }
-
-  // Compact UN numeric → ISO alpha-2 for countries that appear in topojson
-  const NUMERIC_TO_ALPHA2 = {
-    "4":"AF","8":"AL","12":"DZ","24":"AO","32":"AR","36":"AU","40":"AT","50":"BD",
-    "56":"BE","68":"BO","76":"BR","100":"BG","104":"MM","116":"KH","120":"CM",
-    "124":"CA","140":"CF","144":"LK","152":"CL","156":"CN","170":"CO","180":"CD",
-    "188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","208":"DK","214":"DO",
-    "218":"EC","818":"EG","222":"SV","233":"EE","231":"ET","246":"FI","250":"FR",
-    "266":"GA","276":"DE","288":"GH","300":"GR","320":"GT","324":"GN","332":"HT",
-    "340":"HN","348":"HU","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE",
-    "376":"IL","380":"IT","388":"JM","392":"JP","400":"JO","398":"KZ","404":"KE",
-    "408":"KP","410":"KR","414":"KW","418":"LA","422":"LB","430":"LR","434":"LY",
-    "440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","484":"MX","504":"MA",
-    "508":"MZ","516":"NA","524":"NP","528":"NL","540":"NC","554":"NZ","558":"NI",
-    "562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY",
-    "604":"PE","608":"PH","616":"PL","620":"PT","630":"PR","642":"RO","643":"RU",
-    "646":"RW","682":"SA","686":"SN","694":"SL","706":"SO","710":"ZA","724":"ES",
-    "729":"SD","752":"SE","756":"CH","760":"SY","764":"TH","792":"TR","800":"UG",
-    "804":"UA","784":"AE","826":"GB","840":"US","858":"UY","860":"UZ","862":"VE",
-    "704":"VN","887":"YE","894":"ZM","716":"ZW","051":"AM","031":"AZ","112":"BY",
-    "070":"BA","076":"BR","100":"BG","795":"TM","762":"TJ","496":"MN","498":"MD",
-    "703":"SK","705":"SI","688":"RS","807":"MK","008":"AL","070":"BA"
-  };
-
-  function initMaps() {
-    const D = window.WORLD_MAP_DATA;
-
-    // Build combined map
-    buildMap('worldmap-combined', D.combined);
-
-    // Build per-type maps (lazy: only when tab is first shown)
-    D.types.forEach(mt => {
-      const tabEl = document.getElementById('wm-tab-' + mt);
-      if (!tabEl) return;
-      let built = false;
-      tabEl.addEventListener('shown.bs.tab', () => {
-        if (!built) {
-          buildMap('worldmap-' + mt, D.byType[mt] || {});
-          built = true;
-        }
+    }
+    window.__wmBuild   = buildMap;
+    window.__wmByType  = byType;
+    buildMap('worldmap-combined', combined);
+    document.addEventListener('alpine:initialized', function() {
+      document.querySelectorAll('[id^="worldmap-"]').forEach(function(canvas) {
+        canvas.addEventListener('x-show-changed', function() {
+          if (!canvas.hidden) {
+            var mt = canvas.id.replace('worldmap-', '');
+            buildMap(canvas.id, byType[mt] || {});
+          }
+        });
       });
     });
-  }
-
-  // Load Chart.js → chartjs-chart-geo → then init
-  loadScript(cdn + 'chart.js@4/dist/chart.umd.min.js', () => {
-    loadScript(cdn + 'chartjs-chart-geo@4/build/index.umd.min.js', initMaps);
-  });
-})();
-</script>
-{% endif %}
+  })();
+  </script>
+  {% endif %}
+{% endblock js %}
