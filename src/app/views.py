@@ -606,7 +606,7 @@ def media_save(request):
             },
         )
         model = apps.get_model(app_label="app", model_name=media_type)
-        instance = model(item=item, user=request.user)
+        instance = model(item=item, user=request.user, country=metadata.get("country") or "")
 
     # Validate the form and save the instance if it's valid
     form_class = get_form_class(media_type)
