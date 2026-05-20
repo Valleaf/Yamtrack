@@ -438,7 +438,6 @@ def sync_metadata(request, source, media_type, media_id, season_number=None):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
-                "country": metadata.get("country", "") or "",
             },
         )
         title = metadata["title"]
@@ -969,6 +968,11 @@ def statistics(request):
     timeline = stats.get_timeline(user_media)
 
     activity_data = stats.get_activity_data(request.user, start_date, end_date)
+    
+    # New statistics for enhanced visualizations
+    progress_distribution = stats.get_progress_distribution(user_media)
+    country_distribution = stats.get_country_distribution(user_media)
+    media_by_type_country = stats.get_media_by_type_country_data(user_media)
 
     context = {
         "start_date": start_date,
@@ -983,6 +987,9 @@ def statistics(request):
         "extended_statistics": extended_statistics,
         "timeline": timeline,
         "date_format_values": DateFormatChoices.values,
+        "progress_distribution": progress_distribution,
+        "country_distribution": country_distribution,
+        "media_by_type_country": media_by_type_country,
     }
 
     return render(request, "app/statistics.html", context)

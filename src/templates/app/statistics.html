@@ -505,6 +505,93 @@
       </div>
     </div>
 
+    <!-- Progress Distribution Section -->
+    <div class="bg-[#2a2f35] rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Completion Progress</h2>
+      
+      {% if progress_distribution %}
+        <div class="space-y-3">
+          {% for progress_label, count in progress_distribution.items %}
+            {% if count > 0 %}
+              <div class="space-y-1">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-300">{{ progress_label }}</span>
+                  <span class="text-gray-400">{{ count }} item{{ count|pluralize }}</span>
+                </div>
+                <div class="h-2 bg-[#39404b] rounded-full overflow-hidden">
+                  {% if progress_label == "Not Started" %}
+                    <div class="h-full bg-gray-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "1-25%" %}
+                    <div class="h-full bg-red-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "26-50%" %}
+                    <div class="h-full bg-orange-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "51-75%" %}
+                    <div class="h-full bg-yellow-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "76-99%" %}
+                    <div class="h-full bg-emerald-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% else %}
+                    <div class="h-full bg-indigo-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No progress data</h3>
+          <p class="text-gray-400 text-center max-w-md">Track your media to see completion progress statistics.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- World Map by Media Type Section -->
+    <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Media by Country</h2>
+        <p class="text-sm text-gray-400">Distribution of media by production country</p>
+      </div>
+
+      {% if country_distribution %}
+        <!-- Media Type Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
+          {% for media_type, countries in country_distribution.items %}
+            <button data-media-type-btn="{{ media_type }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400"
+                    :class="{'bg-indigo-600/20 text-indigo-400 border-indigo-500': active_media_type === '{{ media_type }}'}">
+              {{ media_type|upper }}
+            </button>
+          {% endfor %}
+        </div>
+
+        <!-- World Map Container -->
+        <div id="world-map-container" class="space-y-4">
+          {% for media_type, countries in country_distribution.items %}
+            <div id="map-{{ media_type }}" class="world-map-view">
+              <!-- Map will be rendered here by JavaScript -->
+            </div>
+            <!-- Hidden JSON data for each media type -->
+            <script id="country-data-{{ media_type }}" type="application/json">
+              {{ countries|safe }}
+            </script>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0l6-3m-6 3v13m6-13l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.553.894L15 13"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium mb-2">No geographic data available</h3>
+          <p class="text-gray-400 text-center max-w-md">Country metadata will appear here as media is tracked from providers.</p>
+        </div>
+      {% endif %}
+    </div>
+
     <!-- Top Rated Media Section -->
     <div class="bg-[#2a2f35] rounded-lg p-6">
       <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
@@ -522,6 +609,39 @@
           </div>
           <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
           <p class="text-gray-400 text-center max-w-md">Rate your media items to see score distribution statistics.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Source Distribution Section -->
+    <div class="bg-[#2a2f35] rounded-lg p-6 overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4">Media by Source</h2>
+      
+      {% if country_distribution %}
+        <div class="space-y-3">
+          {% for media_type, sources in country_distribution.items %}
+            {% if sources %}
+              <div class="mb-4">
+                <h3 class="text-sm font-medium text-gray-400 mb-2">{{ media_type|upper }}</h3>
+                <div class="space-y-2 pl-2">
+                  {% for source, count in sources.items %}
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-gray-300">{{ source }}</span>
+                      <span class="bg-[#39404b] px-2 py-1 rounded text-gray-400">{{ count }}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No source data</h3>
+          <p class="text-gray-400 text-center max-w-md">Add media from different sources to see this breakdown.</p>
         </div>
       {% endif %}
     </div>
@@ -611,28 +731,6 @@
     </div>
 
   </div>
-
-    {% if world_map.combined %}
-    <div class="bg-[#2a2f35] rounded-lg p-6" x-data="{ wmTab: 'combined' }">
-      <h2 class="text-xl font-semibold mb-4">Media World Map</h2>
-      <div class="flex flex-wrap gap-2 mb-4">
-        <button @click="wmTab = 'combined'"
-                :class="wmTab === 'combined' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#434b57]'"
-                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">All</button>
-        {% for mt in world_map.media_types %}
-        <button @click="wmTab = '{{ mt }}'"
-                :class="wmTab === '{{ mt }}' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#434b57]'"
-                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">{{ mt|title }}</button>
-        {% endfor %}
-      </div>
-      <div style="min-height:320px;">
-        <canvas id="worldmap-combined" x-show="wmTab === 'combined'" class="w-full" style="max-height:440px;"></canvas>
-        {% for mt in world_map.media_types %}
-        <canvas id="worldmap-{{ mt }}" x-show="wmTab === '{{ mt }}'" class="w-full" style="max-height:440px;"></canvas>
-        {% endfor %}
-      </div>
-    </div>
-    {% endif %}
 {% endblock content %}
 
 {% block js %}
@@ -650,89 +748,5 @@
   {{ score_distribution|json_script:"score_distribution" }}
 
   <script src="{% static 'js/statistics-charts.js' %}{% get_static_file_mtime 'js/statistics-charts.js' %}"></script>
-
-  {% if world_map.combined %}
-  {{ world_map.combined|json_script:"wm-combined" }}
-  {{ world_map.by_type|json_script:"wm-by-type" }}
-  {{ world_map.country_names|json_script:"wm-names" }}
-  {{ world_map.media_types|json_script:"wm-types" }}
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js"></script>
-  <script>
-  (function () {
-    var combined = JSON.parse(document.getElementById('wm-combined').textContent);
-    var byType   = JSON.parse(document.getElementById('wm-by-type').textContent);
-    var names    = JSON.parse(document.getElementById('wm-names').textContent);
-    var N2A = {"4":"AF","8":"AL","12":"DZ","24":"AO","32":"AR","36":"AU","40":"AT","50":"BD","56":"BE","68":"BO","76":"BR","100":"BG","104":"MM","116":"KH","120":"CM","124":"CA","140":"CF","144":"LK","152":"CL","156":"CN","170":"CO","180":"CD","188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","208":"DK","214":"DO","218":"EC","818":"EG","222":"SV","233":"EE","231":"ET","246":"FI","250":"FR","266":"GA","276":"DE","288":"GH","300":"GR","320":"GT","324":"GN","332":"HT","340":"HN","348":"HU","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","388":"JM","392":"JP","400":"JO","398":"KZ","404":"KE","408":"KP","410":"KR","414":"KW","418":"LA","422":"LB","430":"LR","434":"LY","440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","484":"MX","504":"MA","508":"MZ","516":"NA","524":"NP","528":"NL","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","694":"SL","706":"SO","710":"ZA","724":"ES","729":"SD","752":"SE","756":"CH","760":"SY","764":"TH","792":"TR","800":"UG","804":"UA","784":"AE","826":"GB","840":"US","858":"UY","860":"UZ","862":"VE","704":"VN","887":"YE","894":"ZM","716":"ZW","51":"AM","31":"AZ","112":"BY","70":"BA","795":"TM","762":"TJ","496":"MN","498":"MD","703":"SK","705":"SI","688":"RS","807":"MK"};
-    var worldCache = null;
-    function getWorld() {
-      if (worldCache) return Promise.resolve(worldCache);
-      return fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(function(r){return r.json();}).then(function(d){worldCache=d;return d;});
-    }
-    function buildMap(canvasId, data) {
-      var canvas = document.getElementById(canvasId);
-      if (!canvas || canvas._wm) return;
-      canvas._wm = true;
-      getWorld().then(function(wd) {
-        var countries = ChartGeo.topojson.feature(wd, wd.objects.countries);
-        var vals = Object.values(data);
-        var maxVal = vals.length ? Math.max.apply(null, vals.concat([1])) : 1;
-        var chartData = countries.features.map(function(f) {
-          var a = N2A[String(f.id)];
-          return {feature: f, value: a ? (data[a] || 0) : 0};
-        });
-        new Chart(canvas, {
-          type: 'choropleth',
-          data: {
-            labels: countries.features.map(function(f) {
-              var a = N2A[String(f.id)];
-              return a ? (names[a] || a) : (f.properties && f.properties.name || String(f.id));
-            }),
-            datasets: [{
-              label: 'Items',
-              data: chartData,
-              backgroundColor: function(ctx) {
-                var v = ctx.raw ? ctx.raw.value : 0;
-                if (!v) return 'rgba(55,65,81,0.5)';
-                var t = v / maxVal;
-                var r = Math.round(99  + (1-t)*60);
-                var g = Math.round(102 + (1-t)*40);
-                var b = Math.round(241 - (1-t)*60);
-                return 'rgba('+r+','+g+','+b+',0.85)';
-              }
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: {display: false},
-              tooltip: {callbacks: {label: function(ctx) {
-                var v = ctx.raw ? ctx.raw.value : 0;
-                return v ? v + ' item' + (v !== 1 ? 's' : '') : 'No items tracked';
-              }}}
-            },
-            scales: {
-              projection: {axis: 'x', projection: 'naturalEarth1'},
-              color: {display: false}
-            }
-          }
-        });
-      });
-    }
-    window.__wmBuild   = buildMap;
-    window.__wmByType  = byType;
-    buildMap('worldmap-combined', combined);
-    document.addEventListener('alpine:initialized', function() {
-      document.querySelectorAll('[id^="worldmap-"]').forEach(function(canvas) {
-        canvas.addEventListener('x-show-changed', function() {
-          if (!canvas.hidden) {
-            var mt = canvas.id.replace('worldmap-', '');
-            buildMap(canvas.id, byType[mt] || {});
-          }
-        });
-      });
-    });
-  })();
-  </script>
-  {% endif %}
+  <script src="{% static 'js/world-map-stats.js' %}{% get_static_file_mtime 'js/world-map-stats.js' %}"></script>
 {% endblock js %}

@@ -782,113 +782,119 @@ def calculate_streaks(date_counts, end_date):
     return current_streak, longest_streak
 
 
-# ISO 3166-1 alpha-2 → English country name for map tooltips
-_ISO_TO_NAME: dict[str, str] = {
-    "AD": "Andorra", "AE": "United Arab Emirates", "AF": "Afghanistan",
-    "AG": "Antigua and Barbuda", "AL": "Albania", "AM": "Armenia",
-    "AO": "Angola", "AR": "Argentina", "AT": "Austria", "AU": "Australia",
-    "AZ": "Azerbaijan", "BA": "Bosnia and Herzegovina", "BB": "Barbados",
-    "BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria",
-    "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BN": "Brunei",
-    "BO": "Bolivia", "BR": "Brazil", "BS": "Bahamas", "BT": "Bhutan",
-    "BW": "Botswana", "BY": "Belarus", "BZ": "Belize", "CA": "Canada",
-    "CD": "DR Congo", "CF": "Central African Republic", "CG": "Congo",
-    "CH": "Switzerland", "CI": "Côte d'Ivoire", "CL": "Chile",
-    "CM": "Cameroon", "CN": "China", "CO": "Colombia", "CR": "Costa Rica",
-    "CU": "Cuba", "CV": "Cape Verde", "CY": "Cyprus", "CZ": "Czechia",
-    "DE": "Germany", "DJ": "Djibouti", "DK": "Denmark", "DM": "Dominica",
-    "DO": "Dominican Republic", "DZ": "Algeria", "EC": "Ecuador",
-    "EE": "Estonia", "EG": "Egypt", "ER": "Eritrea", "ES": "Spain",
-    "ET": "Ethiopia", "FI": "Finland", "FJ": "Fiji", "FR": "France",
-    "GA": "Gabon", "GB": "United Kingdom", "GD": "Grenada", "GE": "Georgia",
-    "GH": "Ghana", "GM": "Gambia", "GN": "Guinea", "GQ": "Equatorial Guinea",
-    "GR": "Greece", "GT": "Guatemala", "GW": "Guinea-Bissau", "GY": "Guyana",
-    "HN": "Honduras", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary",
-    "ID": "Indonesia", "IE": "Ireland", "IL": "Israel", "IN": "India",
-    "IQ": "Iraq", "IR": "Iran", "IS": "Iceland", "IT": "Italy",
-    "JM": "Jamaica", "JO": "Jordan", "JP": "Japan", "KE": "Kenya",
-    "KG": "Kyrgyzstan", "KH": "Cambodia", "KI": "Kiribati", "KM": "Comoros",
-    "KN": "Saint Kitts and Nevis", "KP": "North Korea", "KR": "South Korea",
-    "KW": "Kuwait", "KZ": "Kazakhstan", "LA": "Laos", "LB": "Lebanon",
-    "LC": "Saint Lucia", "LI": "Liechtenstein", "LK": "Sri Lanka",
-    "LR": "Liberia", "LS": "Lesotho", "LT": "Lithuania", "LU": "Luxembourg",
-    "LV": "Latvia", "LY": "Libya", "MA": "Morocco", "MC": "Monaco",
-    "MD": "Moldova", "ME": "Montenegro", "MG": "Madagascar",
-    "MH": "Marshall Islands", "MK": "North Macedonia", "ML": "Mali",
-    "MM": "Myanmar", "MN": "Mongolia", "MR": "Mauritania", "MT": "Malta",
-    "MU": "Mauritius", "MV": "Maldives", "MW": "Malawi", "MX": "Mexico",
-    "MY": "Malaysia", "MZ": "Mozambique", "NA": "Namibia", "NE": "Niger",
-    "NG": "Nigeria", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway",
-    "NP": "Nepal", "NR": "Nauru", "NZ": "New Zealand", "OM": "Oman",
-    "PA": "Panama", "PE": "Peru", "PG": "Papua New Guinea", "PH": "Philippines",
-    "PK": "Pakistan", "PL": "Poland", "PT": "Portugal", "PW": "Palau",
-    "PY": "Paraguay", "QA": "Qatar", "RO": "Romania", "RS": "Serbia",
-    "RU": "Russia", "RW": "Rwanda", "SA": "Saudi Arabia",
-    "SB": "Solomon Islands", "SC": "Seychelles", "SD": "Sudan",
-    "SE": "Sweden", "SG": "Singapore", "SI": "Slovenia", "SK": "Slovakia",
-    "SL": "Sierra Leone", "SM": "San Marino", "SN": "Senegal",
-    "SO": "Somalia", "SR": "Suriname", "SS": "South Sudan",
-    "ST": "São Tomé and Príncipe", "SV": "El Salvador", "SY": "Syria",
-    "SZ": "Eswatini", "TD": "Chad", "TG": "Togo", "TH": "Thailand",
-    "TJ": "Tajikistan", "TL": "Timor-Leste", "TM": "Turkmenistan",
-    "TN": "Tunisia", "TO": "Tonga", "TR": "Turkey", "TT": "Trinidad and Tobago",
-    "TV": "Tuvalu", "TZ": "Tanzania", "UA": "Ukraine", "UG": "Uganda",
-    "US": "United States", "UY": "Uruguay", "UZ": "Uzbekistan",
-    "VA": "Vatican City", "VC": "Saint Vincent and the Grenadines",
-    "VE": "Venezuela", "VN": "Vietnam", "VU": "Vanuatu", "WS": "Samoa",
-    "YE": "Yemen", "ZA": "South Africa", "ZM": "Zambia", "ZW": "Zimbabwe",
-}
-
-
-def get_world_map_data(user_media: dict) -> dict:
-    """Aggregate item counts by country and media type for the world map.
-
-    Returns a dict with:
-      - "by_type": { media_type: { "XX": count, ... }, ... }
-      - "combined": { "XX": count, ... }
-      - "country_names": { "XX": "Full Name", ... }
-      - "media_types": [list of media types that have country data]
+def get_country_distribution(user_media):
+    """Get media count by country for each media type.
+    
+    Returns country distribution from the stored country field.
     """
-    from app.models import Item  # avoid circular import
+    country_data_by_type = {}
+    
+    for media_type, media_list in user_media.items():
+        country_counts = defaultdict(int)
+        
+        for media in media_list.select_related("item"):
+            country = getattr(media, "country", None)
+            if country and country.lower() != "unknown":
+                country_counts[country] += 1
+        
+        if country_counts:
+            country_data_by_type[media_type] = dict(sorted(
+                country_counts.items(),
+                key=lambda x: x[1],
+                reverse=True
+            ))
+    
+    return country_data_by_type
 
-    # Collect all item PKs across every media type list
-    all_items = []
-    for media_list in user_media.values():
-        for entry in media_list:
-            item = getattr(entry, "item", None)
-            if item is not None:
-                all_items.append(item)
 
-    # Deduplicate by item pk
-    seen = set()
-    unique_items = []
-    for item in all_items:
-        if item.pk not in seen:
-            seen.add(item.pk)
-            unique_items.append(item)
+def get_source_distribution(user_media):
+    """Get distribution of media by source (provider) for each media type."""
+    source_data_by_type = defaultdict(lambda: defaultdict(int))
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list.select_related("item"):
+            source = media.item.source
+            source_label = app_tags.source_readable(source)
+            source_data_by_type[media_type][source_label] += 1
+    
+    return dict(source_data_by_type)
 
-    by_type: dict[str, dict[str, int]] = {}
-    combined: dict[str, int] = {}
 
-    for item in unique_items:
-        code = (item.country or "").strip().upper()
-        if not code or len(code) != 2:
-            continue
-        media_type = item.media_type
-        by_type.setdefault(media_type, {})
-        by_type[media_type][code] = by_type[media_type].get(code, 0) + 1
-        combined[code] = combined.get(code, 0) + 1
+def get_release_year_distribution(user_media):
+    """Get distribution of media by release year."""
+    year_data = defaultdict(int)
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list.select_related("item"):
+            # Try to extract year from metadata if available
+            # This would need provider metadata to be cached
+            year = getattr(media, "release_year", None)
+            if year:
+                year_data[year] += 1
+    
+    return dict(year_data)
 
-    # Build country name lookup for codes actually present in the data
-    all_codes = set(combined.keys())
-    country_names = {code: _ISO_TO_NAME.get(code, code) for code in all_codes}
 
-    # Only list media types that have at least one country
-    media_types_with_data = sorted(by_type.keys())
-
-    return {
-        "by_type": by_type,
-        "combined": combined,
-        "country_names": country_names,
-        "media_types": media_types_with_data,
+def get_progress_distribution(user_media):
+    """Get distribution of media by completion percentage."""
+    progress_buckets = {
+        "Not Started": 0,
+        "1-25%": 0,
+        "26-50%": 0,
+        "51-75%": 0,
+        "76-99%": 0,
+        "100%": 0,
     }
+    
+    for media_type, media_list in user_media.items():
+        for media in media_list:
+            # Calculate progress percentage
+            max_progress = getattr(media, "max_progress", None)
+            progress = getattr(media, "progress", 0)
+            
+            if max_progress and max_progress > 0:
+                percentage = (progress / max_progress) * 100
+            elif progress > 0:
+                percentage = 100
+            else:
+                percentage = 0
+            
+            # Bucket the percentage
+            if percentage == 0:
+                progress_buckets["Not Started"] += 1
+            elif percentage < 26:
+                progress_buckets["1-25%"] += 1
+            elif percentage < 51:
+                progress_buckets["26-50%"] += 1
+            elif percentage < 76:
+                progress_buckets["51-75%"] += 1
+            elif percentage < 100:
+                progress_buckets["76-99%"] += 1
+            else:
+                progress_buckets["100%"] += 1
+    
+    return progress_buckets
+
+
+def get_media_count_by_country(user_media):
+    """Get media count per country across all media types.
+    
+    Note: Country data is not persisted in the database.
+    This function provides framework for future enhancement.
+    
+    Returns dict: { country_code: count, ... }
+    """
+    # Placeholder for future implementation
+    return {}
+
+
+def get_media_by_type_country_data(user_media):
+    """Format country data for world map display per media type.
+    
+    Note: Country data is not currently stored. This provides the framework
+    for future enhancement when provider metadata is cached.
+    
+    Returns a dict mapping media types to lists of {country, count, percentage}.
+    """
+    # Placeholder for future implementation when country data is stored
+    return {}

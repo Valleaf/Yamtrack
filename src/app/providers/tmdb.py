@@ -198,7 +198,6 @@ def movie(media_id):
             item for item in recommended_items if item["id"] not in collection_ids
         ]
 
-        country = get_country(response["production_countries"])
         cast = response.get("credits", {}).get("cast", [])
         filtered_cast = [
             {
@@ -210,7 +209,6 @@ def movie(media_id):
             for member in cast[:30]
         ]
 
-        country = get_country(response["production_countries"])
         data = {
             "media_id": media_id,
             "source": Sources.TMDB.value,
@@ -223,15 +221,13 @@ def movie(media_id):
             "genres": get_genres(response["genres"]),
             "score": get_score(response["vote_average"]),
             "score_count": response["vote_count"],
-            # Top-level country (ISO 3166-1 alpha-2) used to populate Item.country
-            "country": country,
             "details": {
                 "format": "Movie",
                 "release_date": get_start_date(response["release_date"]),
                 "status": response["status"],
                 "runtime": get_readable_duration(response["runtime"]),
                 "studios": get_companies(response["production_companies"]),
-                "country": country,
+                "country": get_country(response["production_countries"]),
                 "languages": get_languages(response["spoken_languages"]),
             },
             "cast": filtered_cast,
@@ -282,8 +278,6 @@ def enrich_season_with_tv_data(season_data, tv_data, media_id, season_number):
     season_data["tvdb_id"] = tv_data["tvdb_id"]
     season_data["external_links"] = tv_data["external_links"]
     season_data["genres"] = tv_data["genres"]
-    # Propagate country from the parent TV show to the season
-    season_data["country"] = tv_data.get("country")
     if season_data["synopsis"] == "No synopsis available.":
         season_data["synopsis"] = tv_data["synopsis"]
     return season_data
@@ -420,7 +414,6 @@ def process_tv(response):
     num_episodes = response["number_of_episodes"]
     next_episode = response.get("next_episode_to_air")
     last_episode = response.get("last_episode_to_air")
-    country = get_country(response["production_countries"])
     return {
         "media_id": response["id"],
         "source": Sources.TMDB.value,
@@ -433,8 +426,6 @@ def process_tv(response):
         "genres": get_genres(response["genres"]),
         "score": get_score(response["vote_average"]),
         "score_count": response["vote_count"],
-        # Top-level country (ISO 3166-1 alpha-2) used to populate Item.country
-        "country": country,
         "details": {
             "format": "TV",
             "first_air_date": get_start_date(response["first_air_date"]),
@@ -444,7 +435,7 @@ def process_tv(response):
             "episodes": num_episodes,
             "runtime": get_runtime_tv(response["episode_run_time"]),
             "studios": get_companies(response["production_companies"]),
-            "country": country,
+            "country": get_country(response["production_countries"]),
             "languages": get_languages(response["spoken_languages"]),
         },
         "related": {
@@ -505,8 +496,6 @@ def process_season(response, providers_response):
         },
         "episodes": response["episodes"],
         "providers": providers_response.get("results", {}),
-        # country will be set by enrich_season_with_tv_data from the parent TV show
-        "country": None,
     }
 
 
@@ -595,11 +584,11 @@ def get_genres(genres):
 
 
 def get_country(countries):
-    """Return the ISO 3166-1 alpha-2 production country code for the media."""
+    """Return the production country for the media."""
     # when unknown production country, value from response is empty list
     # e.g tv: 24795
     if countries:
-        return countries[0]["iso_3166_1"]
+        return countries[0]["name"]
     return None
 
 
