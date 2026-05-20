@@ -4,6 +4,7 @@ import heapq
 import itertools
 import logging
 from collections import defaultdict
+from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
@@ -15,7 +16,16 @@ from django.db.models import (
 from django.utils import timezone
 
 from app import config
-from app.models import TV, BasicMedia, Episode, MediaManager, MediaTypes, Season, Status
+from app.models import (
+    TV,
+    BasicMedia,
+    Episode,
+    MediaManager,
+    MediaTypes,
+    Season,
+    Sources,
+    Status,
+)
 from app.templatetags import app_tags
 
 logger = logging.getLogger(__name__)
@@ -215,6 +225,182 @@ def get_status_pie_chart_data(status_distribution):
             chart_data["datasets"][0]["backgroundColor"].append(status_color)
 
     return chart_data
+
+
+def get_extended_statistics(user_media):
+    """Build report-style statistics from the filtered media set."""
+    media_type_rows = []
+    source_stats = {}
+    year_stats = {}
+    score_buckets = {
+        score: {"score": score, "count": 0, "percentage": 0}
+        for score in range(10, -1, -1)
+    }
+    rating_bands = [
+        {"label": "Favorites", "range": "8-10", "min": 8, "max": 10, "count": 0},
+        {"label": "Positive", "range": "6-7", "min": 6, "max": 7, "count": 0},
+        {"label": "Mixed", "range": "4-5", "min": 4, "max": 5, "count": 0},
+        {"label": "Low", "range": "0-3", "min": 0, "max": 3, "count": 0},
+    ]
+    score_values = []
+    total_items = 0
+    completed_items = 0
+    scored_items = 0
+    highest_rated = None
+    lowest_rated = None
+
+    for media_type, media_list in user_media.items():
+        items = list(media_list.select_related("item"))
+        total = len(items)
+        completed = 0
+        scored = 0
+        score_sum = Decimal("0")
+        best_media = None
+
+        for media in items:
+            total_items += 1
+
+            if media.status == Status.COMPLETED.value:
+                completed += 1
+                completed_items += 1
+
+            add_year_stat(year_stats, media, "start_date", "started")
+            add_year_stat(year_stats, media, "end_date", "completed")
+
+            source_stats.setdefault(
+                media.item.source,
+                {
+                    "source": Sources(media.item.source).label,
+                    "count": 0,
+                    "scored": 0,
+                    "score_sum": Decimal("0"),
+                    "average_score": None,
+                    "percentage": 0,
+                },
+            )
+            source_stats[media.item.source]["count"] += 1
+
+            if media.score is None:
+                continue
+
+            scored += 1
+            scored_items += 1
+            score_sum += media.score
+            score_values.append(float(media.score))
+            score_buckets[int(media.score)]["count"] += 1
+
+            for band in rating_bands:
+                if band["min"] <= media.score <= band["max"]:
+                    band["count"] += 1
+                    break
+
+            source_stats[media.item.source]["scored"] += 1
+            source_stats[media.item.source]["score_sum"] += media.score
+
+            if best_media is None or media.score > best_media.score:
+                best_media = media
+            if highest_rated is None or media.score > highest_rated.score:
+                highest_rated = media
+            if lowest_rated is None or media.score < lowest_rated.score:
+                lowest_rated = media
+
+        average_score = round(score_sum / scored, 2) if scored else None
+        media_type_rows.append(
+            {
+                "media_type": media_type,
+                "label": app_tags.media_type_readable(media_type),
+                "total": total,
+                "completed": completed,
+                "completion_percentage": round(completed / total * 100)
+                if total
+                else 0,
+                "scored": scored,
+                "rated_percentage": round(scored / total * 100) if total else 0,
+                "average_score": average_score,
+                "best_media": best_media,
+            },
+        )
+
+    median_score = get_median(score_values)
+    completion_percentage = (
+        round(completed_items / total_items * 100) if total_items else 0
+    )
+
+    for bucket in score_buckets.values():
+        if scored_items:
+            bucket["percentage"] = round(bucket["count"] / scored_items * 100)
+
+    for band in rating_bands:
+        if scored_items:
+            band["percentage"] = round(band["count"] / scored_items * 100)
+        else:
+            band["percentage"] = 0
+
+    source_rows = []
+    for stats in source_stats.values():
+        if stats["scored"]:
+            stats["average_score"] = round(stats["score_sum"] / stats["scored"], 2)
+        if total_items:
+            stats["percentage"] = round(stats["count"] / total_items * 100)
+        source_rows.append(stats)
+
+    source_rows.sort(key=lambda row: (-row["count"], row["source"]))
+    media_type_rows.sort(key=lambda row: (-row["total"], row["label"]))
+    year_rows = sorted(
+        year_stats.values(),
+        key=lambda row: row["year"],
+        reverse=True,
+    )
+
+    return {
+        "summary": {
+            "total_items": total_items,
+            "completed_items": completed_items,
+            "completion_percentage": completion_percentage,
+            "scored_items": scored_items,
+            "unrated_items": total_items - scored_items,
+            "median_score": median_score,
+            "highest_rated": highest_rated,
+            "lowest_rated": lowest_rated,
+        },
+        "rating_bands": rating_bands,
+        "score_buckets": list(score_buckets.values()),
+        "media_type_rows": media_type_rows,
+        "source_rows": source_rows,
+        "year_rows": year_rows,
+    }
+
+
+def add_year_stat(year_stats, media, date_attr, counter_key):
+    """Add a start or completion date to the yearly report."""
+    media_date = getattr(media, date_attr, None)
+    if not media_date:
+        return
+
+    year = timezone.localdate(media_date).year
+    year_stats.setdefault(
+        year,
+        {
+            "year": year,
+            "started": 0,
+            "completed": 0,
+        },
+    )
+    year_stats[year][counter_key] += 1
+
+
+def get_median(values):
+    """Return the median score for a list of numbers."""
+    if not values:
+        return None
+
+    sorted_values = sorted(values)
+    midpoint = len(sorted_values) // 2
+
+    if len(sorted_values) % 2:
+        return round(sorted_values[midpoint], 2)
+
+    return round((sorted_values[midpoint - 1] + sorted_values[midpoint]) / 2, 2)
 
 
 def get_score_distribution(user_media):
@@ -594,3 +780,115 @@ def calculate_streaks(date_counts, end_date):
     longest_streak = max(longest_streak, streak_count)
 
     return current_streak, longest_streak
+
+
+# ISO 3166-1 alpha-2 → English country name for map tooltips
+_ISO_TO_NAME: dict[str, str] = {
+    "AD": "Andorra", "AE": "United Arab Emirates", "AF": "Afghanistan",
+    "AG": "Antigua and Barbuda", "AL": "Albania", "AM": "Armenia",
+    "AO": "Angola", "AR": "Argentina", "AT": "Austria", "AU": "Australia",
+    "AZ": "Azerbaijan", "BA": "Bosnia and Herzegovina", "BB": "Barbados",
+    "BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria",
+    "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BN": "Brunei",
+    "BO": "Bolivia", "BR": "Brazil", "BS": "Bahamas", "BT": "Bhutan",
+    "BW": "Botswana", "BY": "Belarus", "BZ": "Belize", "CA": "Canada",
+    "CD": "DR Congo", "CF": "Central African Republic", "CG": "Congo",
+    "CH": "Switzerland", "CI": "Côte d'Ivoire", "CL": "Chile",
+    "CM": "Cameroon", "CN": "China", "CO": "Colombia", "CR": "Costa Rica",
+    "CU": "Cuba", "CV": "Cape Verde", "CY": "Cyprus", "CZ": "Czechia",
+    "DE": "Germany", "DJ": "Djibouti", "DK": "Denmark", "DM": "Dominica",
+    "DO": "Dominican Republic", "DZ": "Algeria", "EC": "Ecuador",
+    "EE": "Estonia", "EG": "Egypt", "ER": "Eritrea", "ES": "Spain",
+    "ET": "Ethiopia", "FI": "Finland", "FJ": "Fiji", "FR": "France",
+    "GA": "Gabon", "GB": "United Kingdom", "GD": "Grenada", "GE": "Georgia",
+    "GH": "Ghana", "GM": "Gambia", "GN": "Guinea", "GQ": "Equatorial Guinea",
+    "GR": "Greece", "GT": "Guatemala", "GW": "Guinea-Bissau", "GY": "Guyana",
+    "HN": "Honduras", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary",
+    "ID": "Indonesia", "IE": "Ireland", "IL": "Israel", "IN": "India",
+    "IQ": "Iraq", "IR": "Iran", "IS": "Iceland", "IT": "Italy",
+    "JM": "Jamaica", "JO": "Jordan", "JP": "Japan", "KE": "Kenya",
+    "KG": "Kyrgyzstan", "KH": "Cambodia", "KI": "Kiribati", "KM": "Comoros",
+    "KN": "Saint Kitts and Nevis", "KP": "North Korea", "KR": "South Korea",
+    "KW": "Kuwait", "KZ": "Kazakhstan", "LA": "Laos", "LB": "Lebanon",
+    "LC": "Saint Lucia", "LI": "Liechtenstein", "LK": "Sri Lanka",
+    "LR": "Liberia", "LS": "Lesotho", "LT": "Lithuania", "LU": "Luxembourg",
+    "LV": "Latvia", "LY": "Libya", "MA": "Morocco", "MC": "Monaco",
+    "MD": "Moldova", "ME": "Montenegro", "MG": "Madagascar",
+    "MH": "Marshall Islands", "MK": "North Macedonia", "ML": "Mali",
+    "MM": "Myanmar", "MN": "Mongolia", "MR": "Mauritania", "MT": "Malta",
+    "MU": "Mauritius", "MV": "Maldives", "MW": "Malawi", "MX": "Mexico",
+    "MY": "Malaysia", "MZ": "Mozambique", "NA": "Namibia", "NE": "Niger",
+    "NG": "Nigeria", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway",
+    "NP": "Nepal", "NR": "Nauru", "NZ": "New Zealand", "OM": "Oman",
+    "PA": "Panama", "PE": "Peru", "PG": "Papua New Guinea", "PH": "Philippines",
+    "PK": "Pakistan", "PL": "Poland", "PT": "Portugal", "PW": "Palau",
+    "PY": "Paraguay", "QA": "Qatar", "RO": "Romania", "RS": "Serbia",
+    "RU": "Russia", "RW": "Rwanda", "SA": "Saudi Arabia",
+    "SB": "Solomon Islands", "SC": "Seychelles", "SD": "Sudan",
+    "SE": "Sweden", "SG": "Singapore", "SI": "Slovenia", "SK": "Slovakia",
+    "SL": "Sierra Leone", "SM": "San Marino", "SN": "Senegal",
+    "SO": "Somalia", "SR": "Suriname", "SS": "South Sudan",
+    "ST": "São Tomé and Príncipe", "SV": "El Salvador", "SY": "Syria",
+    "SZ": "Eswatini", "TD": "Chad", "TG": "Togo", "TH": "Thailand",
+    "TJ": "Tajikistan", "TL": "Timor-Leste", "TM": "Turkmenistan",
+    "TN": "Tunisia", "TO": "Tonga", "TR": "Turkey", "TT": "Trinidad and Tobago",
+    "TV": "Tuvalu", "TZ": "Tanzania", "UA": "Ukraine", "UG": "Uganda",
+    "US": "United States", "UY": "Uruguay", "UZ": "Uzbekistan",
+    "VA": "Vatican City", "VC": "Saint Vincent and the Grenadines",
+    "VE": "Venezuela", "VN": "Vietnam", "VU": "Vanuatu", "WS": "Samoa",
+    "YE": "Yemen", "ZA": "South Africa", "ZM": "Zambia", "ZW": "Zimbabwe",
+}
+
+
+def get_world_map_data(user_media: dict) -> dict:
+    """Aggregate item counts by country and media type for the world map.
+
+    Returns a dict with:
+      - "by_type": { media_type: { "XX": count, ... }, ... }
+      - "combined": { "XX": count, ... }
+      - "country_names": { "XX": "Full Name", ... }
+      - "media_types": [list of media types that have country data]
+    """
+    from app.models import Item  # avoid circular import
+
+    # Collect all item PKs across every media type list
+    all_items = []
+    for media_list in user_media.values():
+        for entry in media_list:
+            item = getattr(entry, "item", None)
+            if item is not None:
+                all_items.append(item)
+
+    # Deduplicate by item pk
+    seen = set()
+    unique_items = []
+    for item in all_items:
+        if item.pk not in seen:
+            seen.add(item.pk)
+            unique_items.append(item)
+
+    by_type: dict[str, dict[str, int]] = {}
+    combined: dict[str, int] = {}
+
+    for item in unique_items:
+        code = (item.country or "").strip().upper()
+        if not code or len(code) != 2:
+            continue
+        media_type = item.media_type
+        by_type.setdefault(media_type, {})
+        by_type[media_type][code] = by_type[media_type].get(code, 0) + 1
+        combined[code] = combined.get(code, 0) + 1
+
+    # Build country name lookup for codes actually present in the data
+    all_codes = set(combined.keys())
+    country_names = {code: _ISO_TO_NAME.get(code, code) for code in all_codes}
+
+    # Only list media types that have at least one country
+    media_types_with_data = sorted(by_type.keys())
+
+    return {
+        "by_type": by_type,
+        "combined": combined,
+        "country_names": country_names,
+        "media_types": media_types_with_data,
+    }

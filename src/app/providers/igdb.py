@@ -39,6 +39,24 @@ class ExternalGameSource(IntEnum):
     GAMEJOLT = 55
 
 
+# IGDB returns ISO 3166-1 numeric country codes on company objects.
+_IGDB_COUNTRY_NUMERIC_TO_ALPHA2: dict[int, str] = {
+    36: "AU", 40: "AT", 56: "BE", 76: "BR", 124: "CA", 156: "CN",
+    203: "CZ", 208: "DK", 246: "FI", 250: "FR", 276: "DE", 300: "GR",
+    344: "HK", 356: "IN", 372: "IE", 376: "IL", 380: "IT", 392: "JP",
+    410: "KR", 528: "NL", 554: "NZ", 578: "NO", 616: "PL", 620: "PT",
+    643: "RU", 724: "ES", 752: "SE", 756: "CH", 804: "UA", 826: "GB",
+    840: "US",
+}
+
+
+def _igdb_country_to_alpha2(numeric) -> str | None:
+    """Convert IGDB numeric country code to ISO 3166-1 alpha-2."""
+    if numeric is None:
+        return None
+    return _IGDB_COUNTRY_NUMERIC_TO_ALPHA2.get(int(numeric))
+
+
 def handle_error(error):
     """Handle IGDB API errors."""
     error_resp = error.response
@@ -275,7 +293,7 @@ def game(media_id):
         data = (
             "fields name,cover.image_id,artworks.image_id,"
             "url,summary,game_type,first_release_date,total_rating,total_rating_count,"
-            "genres.name,themes.name,platforms.name,involved_companies.company.name,"
+            "genres.name,themes.name,platforms.name,involved_companies.company.name,involved_companies.company.country,"
             "parent_game.name,parent_game.cover.image_id,"
             "remasters.name,remasters.cover.image_id,"
             "remakes.name,remakes.cover.image_id,"
@@ -333,6 +351,7 @@ def game(media_id):
             "genres": get_list(response, "genres"),
             "score": get_score(response),
             "score_count": response.get("total_rating_count"),
+            "country": _igdb_country_to_alpha2(get_developer_country(response)),
             "details": {
                 "format": get_game_type(response["game_type"]),
                 "release_date": get_start_date(response),
@@ -410,6 +429,15 @@ def get_list(response, field):
         return [item["name"] for item in response[field]]
     except KeyError:
         return None
+
+
+def get_developer_country(response) -> int | None:
+    """Return the numeric country code of the first company that has one set."""
+    for ic in response.get("involved_companies") or []:
+        company = ic.get("company") or {}
+        if company.get("country") is not None:
+            return company["country"]
+    return None
 
 
 def get_companies(response):

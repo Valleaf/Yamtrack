@@ -64,6 +64,23 @@ def _artist_id(obj: dict) -> str | None:
     return None
 
 
+def _get_artist_country(obj: dict) -> str | None:
+    """Extract ISO 3166-1 alpha-2 country code from the first artist credit area.
+
+    Requires the release-group to be fetched with inc containing artists so
+    that artist-credit[].artist.area is populated.
+    """
+    for ac in obj.get("artist-credit", []):
+        if not isinstance(ac, dict):
+            continue
+        artist = ac.get("artist") or {}
+        area = artist.get("area") or {}
+        codes = area.get("iso-3166-1-codes") or []
+        if codes:
+            return codes[0]
+    return None
+
+
 def search_music(query: str, page: int = 1, mb_type: str = "") -> dict:
     """Search MusicBrainz. mb_type: album|ep|single|artist or empty for all."""
     if mb_type == "artist":
@@ -158,6 +175,7 @@ def album(mb_id: str) -> dict:
 
     artist_names = _format_artists(data)
     artist_id = _artist_id(data)
+    country = _get_artist_country(data)
 
     genres = [g["name"] for g in (data.get("genres") or [])]
     if not genres:
@@ -200,6 +218,7 @@ def album(mb_id: str) -> dict:
         "genres": genres,
         "score": None,
         "score_count": 0,
+        "country": country,
         "details": {
             "format": type_label or "Album",
             "release_date": first_release,

@@ -438,6 +438,7 @@ def sync_metadata(request, source, media_type, media_id, season_number=None):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
+                "country": metadata.get("country", "") or "",
             },
         )
         title = metadata["title"]
@@ -964,6 +965,7 @@ def statistics(request):
     status_pie_chart_data = stats.get_status_pie_chart_data(
         status_distribution,
     )
+    extended_statistics = stats.get_extended_statistics(user_media)
     timeline = stats.get_timeline(user_media)
 
     activity_data = stats.get_activity_data(request.user, start_date, end_date)
@@ -978,6 +980,7 @@ def statistics(request):
         "top_rated": top_rated,
         "status_distribution": status_distribution,
         "status_pie_chart_data": status_pie_chart_data,
+        "extended_statistics": extended_statistics,
         "timeline": timeline,
         "date_format_values": DateFormatChoices.values,
     }

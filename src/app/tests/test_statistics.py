@@ -715,6 +715,62 @@ class StatisticsTests(TestCase):
             7.5,
         )  # Movie should be second
 
+    def test_get_extended_statistics(self):
+        """Test extended report-style statistics."""
+        TV.objects.filter(user=self.user).update(score=8.5)
+
+        user_media = {
+            MediaTypes.TV.value: TV.objects.filter(user=self.user),
+            MediaTypes.MOVIE.value: Movie.objects.filter(user=self.user),
+            MediaTypes.ANIME.value: Anime.objects.filter(user=self.user),
+        }
+
+        report = statistics.get_extended_statistics(user_media)
+
+        self.assertEqual(report["summary"]["total_items"], 3)
+        self.assertEqual(report["summary"]["completed_items"], 1)
+        self.assertEqual(report["summary"]["completion_percentage"], 33)
+        self.assertEqual(report["summary"]["scored_items"], 2)
+        self.assertEqual(report["summary"]["unrated_items"], 1)
+        self.assertEqual(report["summary"]["median_score"], 8.0)
+        self.assertEqual(report["summary"]["highest_rated"].score, 8.5)
+        self.assertEqual(report["summary"]["lowest_rated"].score, 7.5)
+
+        movie_row = next(
+            row
+            for row in report["media_type_rows"]
+            if row["media_type"] == MediaTypes.MOVIE.value
+        )
+        self.assertEqual(movie_row["total"], 1)
+        self.assertEqual(movie_row["scored"], 1)
+        self.assertEqual(movie_row["average_score"], 7.5)
+        self.assertEqual(movie_row["best_media"], self.movie)
+
+        score_8 = next(
+            bucket for bucket in report["score_buckets"] if bucket["score"] == 8
+        )
+        self.assertEqual(score_8["count"], 1)
+        self.assertEqual(score_8["percentage"], 50)
+
+        favorites = next(
+            band for band in report["rating_bands"] if band["label"] == "Favorites"
+        )
+        self.assertEqual(favorites["count"], 1)
+        self.assertEqual(favorites["percentage"], 50)
+
+        tmdb_row = next(
+            row
+            for row in report["source_rows"]
+            if row["source"] == Sources.TMDB.label
+        )
+        self.assertEqual(tmdb_row["count"], 2)
+        self.assertEqual(tmdb_row["scored"], 2)
+        self.assertEqual(tmdb_row["average_score"], 8.0)
+
+        year_2025 = next(row for row in report["year_rows"] if row["year"] == 2025)
+        self.assertEqual(year_2025["started"], 3)
+        self.assertEqual(year_2025["completed"], 3)
+
     def test_get_status_color(self):
         """Test the get_status_color function."""
         # Test all status colors
