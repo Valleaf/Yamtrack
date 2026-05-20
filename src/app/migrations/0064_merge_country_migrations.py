@@ -1,12 +1,17 @@
-from django.db import migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    """Merge the two 0063 migrations: add_media_country and item_country."""
+    """Add country field to Item as well (merge of two 0063 migrations)."""
 
     dependencies = [
         ("app", "0063_add_media_country"),
-        ("app", "0063_item_country"),
     ]
 
-    operations = []
+    operations = [
+        migrations.AddField(
+            model_name="item",
+            name="country",
+            field=models.CharField(blank=True, default="", max_length=2),
+        ),
+    ]
