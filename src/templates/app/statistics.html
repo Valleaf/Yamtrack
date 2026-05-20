@@ -548,6 +548,50 @@
       {% endif %}
     </div>
 
+    <!-- World Map by Media Type Section -->
+    <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Media by Country</h2>
+        <p class="text-sm text-gray-400">Distribution of media by production country</p>
+      </div>
+
+      {% if country_distribution %}
+        <!-- Media Type Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
+          {% for media_type, countries in country_distribution.items %}
+            <button data-media-type-btn="{{ media_type }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400"
+                    :class="{'bg-indigo-600/20 text-indigo-400 border-indigo-500': active_media_type === '{{ media_type }}'}">
+              {{ media_type|upper }}
+            </button>
+          {% endfor %}
+        </div>
+
+        <!-- World Map Container -->
+        <div id="world-map-container" class="space-y-4">
+          {% for media_type, countries in country_distribution.items %}
+            <div id="map-{{ media_type }}" class="world-map-view">
+              <!-- Map will be rendered here by JavaScript -->
+            </div>
+            <!-- Hidden JSON data for each media type -->
+            <script id="country-data-{{ media_type }}" type="application/json">
+              {{ countries|safe }}
+            </script>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0l6-3m-6 3v13m6-13l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.553.894L15 13"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium mb-2">No geographic data available</h3>
+          <p class="text-gray-400 text-center max-w-md">Country metadata will appear here as media is tracked from providers.</p>
+        </div>
+      {% endif %}
+    </div>
+
     <!-- Top Rated Media Section -->
     <div class="bg-[#2a2f35] rounded-lg p-6">
       <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
@@ -704,4 +748,5 @@
   {{ score_distribution|json_script:"score_distribution" }}
 
   <script src="{% static 'js/statistics-charts.js' %}{% get_static_file_mtime 'js/statistics-charts.js' %}"></script>
+  <script src="{% static 'js/world-map-stats.js' %}{% get_static_file_mtime 'js/world-map-stats.js' %}"></script>
 {% endblock js %}

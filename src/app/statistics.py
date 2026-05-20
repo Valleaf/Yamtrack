@@ -785,38 +785,24 @@ def calculate_streaks(date_counts, end_date):
 def get_country_distribution(user_media):
     """Get media count by country for each media type.
     
-    Currently uses sample data demonstrating the structure.
-    When country metadata is cached from providers, this will aggregate real country data.
+    Returns country distribution from the stored country field.
     """
     country_data_by_type = {}
     
-    # Sample country mapping for demonstration
-    # In production, this would come from cached provider metadata
-    country_samples = {
-        "movie": {"United States": 45, "Japan": 12, "United Kingdom": 8, "France": 6, "South Korea": 5},
-        "tv": {"United States": 38, "Japan": 15, "South Korea": 10, "United Kingdom": 7},
-        "anime": {"Japan": 85, "South Korea": 5, "United States": 3},
-        "manga": {"Japan": 78, "South Korea": 8, "United States": 4},
-        "game": {"United States": 42, "Japan": 28, "Canada": 12, "Germany": 8, "United Kingdom": 6},
-        "book": {"United States": 55, "United Kingdom": 20, "Japan": 8, "France": 5, "Germany": 4},
-    }
-    
-    # Try to aggregate real country data if available, otherwise use structure only
     for media_type, media_list in user_media.items():
         country_counts = defaultdict(int)
-        total_media = 0
         
-        # Try to extract real country data from metadata
         for media in media_list.select_related("item"):
-            total_media += 1
-            # In future, country would come from cached metadata
-            # For now, use sample data if available
-            if media_type in country_samples:
-                continue
+            country = getattr(media, "country", None)
+            if country and country.lower() != "unknown":
+                country_counts[country] += 1
         
-        # Use sample data for demonstration if we have it
-        if media_type in country_samples and total_media > 0:
-            country_data_by_type[media_type] = country_samples[media_type]
+        if country_counts:
+            country_data_by_type[media_type] = dict(sorted(
+                country_counts.items(),
+                key=lambda x: x[1],
+                reverse=True
+            ))
     
     return country_data_by_type
 

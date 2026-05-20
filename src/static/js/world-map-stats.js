@@ -11,24 +11,33 @@ document.addEventListener("DOMContentLoaded", function() {
   const firstButton = mediaTypeButtons[0];
   if (firstButton) {
     showMediaTypeMap(firstButton.dataset.mediaTypeBtn);
-    firstButton.classList.add('active');
+    firstButton.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
   }
 
   // Add click handlers
   mediaTypeButtons.forEach(button => {
     button.addEventListener('click', function() {
       // Remove active class from all buttons
-      mediaTypeButtons.forEach(btn => btn.classList.remove('active'));
+      mediaTypeButtons.forEach(btn => {
+        btn.classList.remove('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
+      });
       // Add active class to clicked button
-      this.classList.add('active');
+      this.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
       // Show map for this media type
       showMediaTypeMap(this.dataset.mediaTypeBtn);
     });
   });
 
   function showMediaTypeMap(mediaType) {
+    // Hide all maps
+    document.querySelectorAll('.world-map-view').forEach(map => {
+      map.style.display = 'none';
+    });
+    
     const mapElement = document.getElementById(`map-${mediaType}`);
     if (!mapElement) return;
+    
+    mapElement.style.display = 'block';
 
     // Get country data for this media type
     const dataElement = document.getElementById(`country-data-${mediaType}`);
@@ -42,13 +51,13 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    // Create SVG-based world map with simple color coding
-    createWorldMap(mapElement, countryData, mediaType);
+    // Create world map visualization
+    if (Object.keys(countryData).length > 0 && mapElement.innerHTML === '') {
+      createWorldMap(mapElement, countryData, mediaType);
+    }
   }
 
   function createWorldMap(container, countryData, mediaType) {
-    container.innerHTML = '';
-    
     if (!Object.keys(countryData).length) {
       container.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16">
@@ -64,26 +73,35 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    // Create a table showing country distribution
+    // Create a list showing country distribution sorted by count
     const countryList = Object.entries(countryData)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 20);
+      .slice(0, 25); // Show top 25 countries
 
     const maxCount = Math.max(...countryList.map(([_, count]) => count));
 
     let html = '<div class="space-y-3">';
-    countryList.forEach(([country, count]) => {
+    countryList.forEach(([country, count], index) => {
       const percentage = ((count / maxCount) * 100);
-      const width = Math.max(percentage, 5); // Minimum 5% for visibility
+      const width = Math.max(percentage, 5);
+      
+      // Color gradient based on rank
+      let colorClass = 'from-indigo-600 to-indigo-400';
+      if (index < 3) {
+        colorClass = index === 0 ? 'from-yellow-500 to-yellow-400' : index === 1 ? 'from-gray-300 to-gray-200' : 'from-orange-600 to-orange-500';
+      }
       
       html += `
         <div class="space-y-1">
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-300 font-medium">🌍 ${country}</span>
-            <span class="text-gray-400 bg-[#39404b] px-2 py-0.5 rounded text-xs">${count}</span>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-gray-500 w-6 text-right">#${index + 1}</span>
+              <span class="text-gray-300 font-medium truncate">🌍 ${country}</span>
+            </div>
+            <span class="text-gray-400 bg-[#39404b] px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ml-2">${count}</span>
           </div>
           <div class="h-2 bg-[#39404b] rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full" style="width: ${width}%"></div>
+            <div class="h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-300" style="width: ${width}%"></div>
           </div>
         </div>
       `;
@@ -93,3 +111,4 @@ document.addEventListener("DOMContentLoaded", function() {
     container.innerHTML = html;
   }
 });
+

@@ -900,6 +900,12 @@ class Media(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True, default="")
+    country = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Country of origin/production",
+    )
 
     class Meta:
         """Meta options for the model."""
