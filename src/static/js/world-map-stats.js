@@ -1,114 +1,217 @@
-// World map statistics visualization
-document.addEventListener("DOMContentLoaded", function() {
-  const mediaTypeButtons = document.querySelectorAll('[data-media-type-btn]');
-  const worldMapContainer = document.getElementById('world-map-container');
-  
-  if (!mediaTypeButtons.length || !worldMapContainer) {
-    return;
+// World map statistics visualization using Chart.js + chartjs-chart-geo
+(function () {
+  'use strict';
+
+  // UN numeric id → ISO 3166-1 alpha-2 (covers all countries in topojson 110m)
+  var N2A = {
+    "4":"AF","8":"AL","12":"DZ","24":"AO","32":"AR","36":"AU","40":"AT","50":"BD",
+    "56":"BE","68":"BO","76":"BR","100":"BG","104":"MM","116":"KH","120":"CM",
+    "124":"CA","140":"CF","144":"LK","152":"CL","156":"CN","170":"CO","180":"CD",
+    "188":"CR","191":"HR","192":"CU","196":"CY","203":"CZ","208":"DK","214":"DO",
+    "218":"EC","818":"EG","222":"SV","233":"EE","231":"ET","246":"FI","250":"FR",
+    "266":"GA","276":"DE","288":"GH","300":"GR","320":"GT","324":"GN","332":"HT",
+    "340":"HN","348":"HU","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE",
+    "376":"IL","380":"IT","388":"JM","392":"JP","400":"JO","398":"KZ","404":"KE",
+    "408":"KP","410":"KR","414":"KW","418":"LA","422":"LB","430":"LR","434":"LY",
+    "440":"LT","442":"LU","450":"MG","454":"MW","458":"MY","484":"MX","504":"MA",
+    "508":"MZ","516":"NA","524":"NP","528":"NL","554":"NZ","558":"NI","562":"NE",
+    "566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE",
+    "608":"PH","616":"PL","620":"PT","642":"RO","643":"RU","646":"RW","682":"SA",
+    "686":"SN","694":"SL","706":"SO","710":"ZA","724":"ES","729":"SD","752":"SE",
+    "756":"CH","760":"SY","764":"TH","792":"TR","800":"UG","804":"UA","784":"AE",
+    "826":"GB","840":"US","858":"UY","860":"UZ","862":"VE","704":"VN","887":"YE",
+    "894":"ZM","716":"ZW","51":"AM","31":"AZ","112":"BY","70":"BA","795":"TM",
+    "762":"TJ","496":"MN","498":"MD","703":"SK","705":"SI","688":"RS","807":"MK"
+  };
+
+  // English country name → ISO alpha-2 (for matching against country_distribution names)
+  var NAME_TO_A2 = {
+    "Afghanistan":"AF","Albania":"AL","Algeria":"DZ","Angola":"AO","Argentina":"AR",
+    "Armenia":"AM","Australia":"AU","Austria":"AT","Azerbaijan":"AZ","Bahamas":"BS",
+    "Bahrain":"BH","Bangladesh":"BD","Belarus":"BY","Belgium":"BE","Bolivia":"BO",
+    "Bosnia and Herzegovina":"BA","Botswana":"BW","Brazil":"BR","Bulgaria":"BG",
+    "Burkina Faso":"BF","Cambodia":"KH","Cameroon":"CM","Canada":"CA","Chad":"TD",
+    "Chile":"CL","China":"CN","Colombia":"CO","Congo":"CG","Costa Rica":"CR",
+    "Croatia":"HR","Cuba":"CU","Czechia":"CZ","DR Congo":"CD","Denmark":"DK",
+    "Dominican Republic":"DO","Ecuador":"EC","Egypt":"EG","El Salvador":"SV",
+    "Equatorial Guinea":"GQ","Estonia":"EE","Ethiopia":"ET","Finland":"FI","France":"FR",
+    "Gabon":"GA","Georgia":"GE","Germany":"DE","Ghana":"GH","Greece":"GR",
+    "Guatemala":"GT","Guinea":"GN","Haiti":"HT","Honduras":"HN","Hungary":"HU",
+    "Iceland":"IS","India":"IN","Indonesia":"ID","Iran":"IR","Iraq":"IQ","Ireland":"IE",
+    "Israel":"IL","Italy":"IT","Jamaica":"JM","Japan":"JP","Jordan":"JO",
+    "Kazakhstan":"KZ","Kenya":"KE","Kosovo":"XK","Kyrgyzstan":"KG","Laos":"LA",
+    "Latvia":"LV","Lebanon":"LB","Liberia":"LR","Libya":"LY","Lithuania":"LT",
+    "Luxembourg":"LU","Madagascar":"MG","Malawi":"MW","Malaysia":"MY","Mali":"ML",
+    "Mauritania":"MR","Mexico":"MX","Moldova":"MD","Mongolia":"MN","Morocco":"MA",
+    "Mozambique":"MZ","Myanmar":"MM","Namibia":"NA","Nepal":"NP","Netherlands":"NL",
+    "New Zealand":"NZ","Nicaragua":"NI","Niger":"NE","Nigeria":"NG","North Korea":"KP",
+    "North Macedonia":"MK","Norway":"NO","Oman":"OM","Pakistan":"PK","Panama":"PA",
+    "Papua New Guinea":"PG","Paraguay":"PY","Peru":"PE","Philippines":"PH","Poland":"PL",
+    "Portugal":"PT","Qatar":"QA","Romania":"RO","Russia":"RU","Rwanda":"RW",
+    "Saudi Arabia":"SA","Senegal":"SN","Serbia":"RS","Sierra Leone":"SL","Slovakia":"SK",
+    "Slovenia":"SI","Somalia":"SO","South Africa":"ZA","South Korea":"KR","South Sudan":"SS",
+    "Spain":"ES","Sri Lanka":"LK","Sudan":"SD","Suriname":"SR","Sweden":"SE",
+    "Switzerland":"CH","Syria":"SY","Taiwan":"TW","Tajikistan":"TJ","Tanzania":"TZ",
+    "Thailand":"TH","Togo":"TG","Trinidad and Tobago":"TT","Tunisia":"TN","Turkey":"TR",
+    "Turkmenistan":"TM","Uganda":"UG","Ukraine":"UA","United Arab Emirates":"AE",
+    "United Kingdom":"GB","United States":"US","Uruguay":"UY","Uzbekistan":"UZ",
+    "Venezuela":"VE","Vietnam":"VN","Yemen":"YE","Zambia":"ZM","Zimbabwe":"ZW",
+    "Cote d'Ivoire":"CI","Ivory Coast":"CI","Eswatini":"SZ"
+  };
+
+  var worldCache = null;
+
+  function getWorld() {
+    if (worldCache) return Promise.resolve(worldCache);
+    return fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { worldCache = d; return d; });
   }
 
-  // Initialize with first available media type
-  const firstButton = mediaTypeButtons[0];
-  if (firstButton) {
-    showMediaTypeMap(firstButton.dataset.mediaTypeBtn);
-    firstButton.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
-  }
+  // Track Chart instances so we can destroy before re-creating
+  var chartInstances = {};
 
-  // Add click handlers
-  mediaTypeButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      // Remove active class from all buttons
-      mediaTypeButtons.forEach(btn => {
-        btn.classList.remove('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
-      });
-      // Add active class to clicked button
-      this.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
-      // Show map for this media type
-      showMediaTypeMap(this.dataset.mediaTypeBtn);
+  function buildChoropleth(container, countryNameData) {
+    // countryNameData = { "United States": 5, "Japan": 3, ... }
+
+    // Convert name-keyed data → alpha-2 keyed
+    var alpha2Data = {};
+    Object.keys(countryNameData).forEach(function(name) {
+      var code = NAME_TO_A2[name];
+      if (code) alpha2Data[code] = countryNameData[name];
     });
-  });
 
-  function showMediaTypeMap(mediaType) {
-    // Hide all maps
-    document.querySelectorAll('.world-map-view').forEach(map => {
-      map.style.display = 'none';
-    });
-    
-    const mapElement = document.getElementById(`map-${mediaType}`);
-    if (!mapElement) return;
-    
-    mapElement.style.display = 'block';
-
-    // Get country data for this media type
-    const dataElement = document.getElementById(`country-data-${mediaType}`);
-    let countryData = {};
-    
-    if (dataElement) {
-      try {
-        countryData = JSON.parse(dataElement.textContent);
-      } catch (e) {
-        console.warn('Failed to parse country data for', mediaType);
-      }
-    }
-
-    // Create world map visualization
-    if (Object.keys(countryData).length > 0 && mapElement.innerHTML === '') {
-      createWorldMap(mapElement, countryData, mediaType);
-    }
-  }
-
-  function createWorldMap(container, countryData, mediaType) {
-    if (!Object.keys(countryData).length) {
-      container.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0l6-3m-6 3v13m6-13l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.553.894L15 13"></path>
-            </svg>
-          </div>
-          <h3 class="text-lg font-medium mb-2">No geographic data available</h3>
-          <p class="text-gray-400 text-center max-w-md">Country metadata will appear here as media is tracked from providers.</p>
-        </div>
-      `;
+    if (!Object.keys(alpha2Data).length) {
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">No geographic data available for this media type yet.</p>';
       return;
     }
 
-    // Create a list showing country distribution sorted by count
-    const countryList = Object.entries(countryData)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 25); // Show top 25 countries
+    // Create canvas
+    container.innerHTML = '<canvas style="width:100%;max-height:480px;"></canvas>';
+    var canvas = container.querySelector('canvas');
+    var canvasId = container.id + '-canvas';
+    canvas.id = canvasId;
 
-    const maxCount = Math.max(...countryList.map(([_, count]) => count));
+    if (chartInstances[canvasId]) {
+      chartInstances[canvasId].destroy();
+      delete chartInstances[canvasId];
+    }
 
-    let html = '<div class="space-y-3">';
-    countryList.forEach(([country, count], index) => {
-      const percentage = ((count / maxCount) * 100);
-      const width = Math.max(percentage, 5);
-      
-      // Color gradient based on rank
-      let colorClass = 'from-indigo-600 to-indigo-400';
-      if (index < 3) {
-        colorClass = index === 0 ? 'from-yellow-500 to-yellow-400' : index === 1 ? 'from-gray-300 to-gray-200' : 'from-orange-600 to-orange-500';
-      }
-      
-      html += `
-        <div class="space-y-1">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-gray-500 w-6 text-right">#${index + 1}</span>
-              <span class="text-gray-300 font-medium truncate">🌍 ${country}</span>
-            </div>
-            <span class="text-gray-400 bg-[#39404b] px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ml-2">${count}</span>
-          </div>
-          <div class="h-2 bg-[#39404b] rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-300" style="width: ${width}%"></div>
-          </div>
-        </div>
-      `;
+    var maxVal = Math.max.apply(null, Object.values(alpha2Data).concat([1]));
+
+    getWorld().then(function(wd) {
+      var countries = ChartGeo.topojson.feature(wd, wd.objects.countries);
+
+      var chartData = countries.features.map(function(f) {
+        var a2 = N2A[String(f.id)];
+        return { feature: f, value: a2 ? (alpha2Data[a2] || 0) : 0 };
+      });
+
+      var labels = countries.features.map(function(f) {
+        var a2 = N2A[String(f.id)];
+        if (!a2) return f.properties && f.properties.name || String(f.id);
+        // find the name from our data or fall back to code
+        var found = Object.keys(NAME_TO_A2).find(function(n) { return NAME_TO_A2[n] === a2; });
+        return found || a2;
+      });
+
+      chartInstances[canvasId] = new Chart(canvas, {
+        type: 'choropleth',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Items',
+            data: chartData,
+            backgroundColor: function(ctx) {
+              var v = ctx.raw ? ctx.raw.value : 0;
+              if (!v) return 'rgba(55,65,81,0.4)';
+              var t = v / maxVal;
+              // indigo gradient
+              var r = Math.round(99  + (1 - t) * 80);
+              var g = Math.round(102 + (1 - t) * 50);
+              var b = Math.round(241 - (1 - t) * 60);
+              return 'rgba(' + r + ',' + g + ',' + b + ',0.9)';
+            },
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  var v = ctx.raw ? ctx.raw.value : 0;
+                  return v ? v + ' item' + (v !== 1 ? 's' : '') : 'No items';
+                },
+              },
+            },
+          },
+          scales: {
+            projection: { axis: 'x', projection: 'naturalEarth1' },
+            color: { display: false },
+          },
+        },
+      });
     });
-    html += '</div>';
-
-    container.innerHTML = html;
   }
-});
 
+  // Load chartjs-chart-geo from CDN (Chart.js is already loaded as a local static)
+  function loadGeo(cb) {
+    if (window.ChartGeo) { cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var mediaTypeButtons = document.querySelectorAll('[data-media-type-btn]');
+    var worldMapContainer = document.getElementById('world-map-container');
+
+    if (!mediaTypeButtons.length || !worldMapContainer) return;
+
+    loadGeo(function() {
+      function showMap(mediaType) {
+        // Hide all map divs
+        document.querySelectorAll('.world-map-view').forEach(function(el) {
+          el.style.display = 'none';
+        });
+
+        var mapEl = document.getElementById('map-' + mediaType);
+        if (!mapEl) return;
+        mapEl.style.display = 'block';
+
+        // Only build once
+        if (mapEl.dataset.built) return;
+        mapEl.dataset.built = '1';
+
+        var dataEl = document.getElementById('country-data-' + mediaType);
+        var countryData = {};
+        if (dataEl) {
+          try { countryData = JSON.parse(dataEl.textContent); } catch(e) {}
+        }
+
+        buildChoropleth(mapEl, countryData);
+      }
+
+      // Activate first tab
+      var firstBtn = mediaTypeButtons[0];
+      if (firstBtn) {
+        firstBtn.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
+        showMap(firstBtn.dataset.mediaTypeBtn);
+      }
+
+      mediaTypeButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          mediaTypeButtons.forEach(function(b) {
+            b.classList.remove('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
+          });
+          btn.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
+          showMap(btn.dataset.mediaTypeBtn);
+        });
+      });
+    });
+  });
+})();
