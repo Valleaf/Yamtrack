@@ -1,0 +1,21 @@
+{% if results %}
+  <div class="mt-2 bg-[#1e2227] rounded-lg border border-gray-700 overflow-hidden max-h-64 overflow-y-auto">
+    {% for r in results %}
+      <button type="button"
+              class="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#2a2f35] transition-colors cursor-pointer text-left border-b border-gray-800 last:border-0"
+              @click="selectSource('{{ r.id }}', '{{ r.name|escapejs }}', '{{ r.overview|default:''|escapejs|truncatechars:120 }}')">
+        <img src="{{ r.image }}" alt="{{ r.name }}"
+             class="w-10 h-14 object-cover rounded flex-shrink-0 bg-[#39404b]"
+             onerror="this.src=''">
+        <div class="min-w-0">
+          <p class="font-medium text-white text-sm truncate">{{ r.name }}</p>
+          {% if r.overview %}
+            <p class="text-gray-400 text-xs mt-0.5 line-clamp-2">{{ r.overview }}</p>
+          {% endif %}
+        </div>
+      </button>
+    {% endfor %}
+  </div>
+{% elif request.GET.q %}
+  <p class="text-sm text-gray-500 mt-2 px-1">No results found for "{{ request.GET.q }}".</p>
+{% endif %}

@@ -22,6 +22,7 @@ def collections(request):
     return render(request, "collections/collections.html", {
         "collections": user_collections,
         "form": form,
+        "source_choices": col_providers.SOURCE_CHOICES,
     })
 
 
@@ -50,6 +51,7 @@ def collection_detail(request, collection_id):
         "form": form,
         "media_type_filter": media_type_filter,
         "media_types": MediaTypes.values,
+        "source_choices": col_providers.SOURCE_CHOICES,
     })
 
 
