@@ -1,0 +1,12 @@
+<div class="p-2">
+  <h3 class="text-sm font-semibold text-gray-400 mb-3 px-2">Add to Collection</h3>
+  {% if user_collections %}
+    <div class="space-y-1">
+      {% for collection in user_collections %}
+        {% include "collections/components/collection_item_button.html" with collection=collection item=item has_item=collection.has_item %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-sm text-gray-500 px-2">No collections yet. <a href="{% url 'collections' %}" class="text-indigo-400 hover:underline">Create one</a>.</p>
+  {% endif %}
+</div>

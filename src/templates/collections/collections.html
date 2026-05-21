@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block extra_head %}{{ form.media.css }}{% endblock %}
+
+{% block title %}Collections - Yamtrack{% endblock %}
+
+{% block content %}
+<div x-data="{ showModal: false }" class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold mb-1">Collections</h1>
+      <p class="text-gray-400 text-sm">Franchise universes, series, and cross-media groups</p>
+    </div>
+    <button @click="showModal = true"
+            class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition-colors cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New Collection
+    </button>
+  </div>
+
+  {% include "collections/components/collection_form.html" %}
+
+  {% if collections %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {% for col in collections %}
+        {% with items=col.collectionitem_set.all %}
+        <a href="{% url 'collection_detail' col.id %}"
+           class="group bg-[#2a2f35] rounded-lg overflow-hidden hover:bg-[#313840] transition-colors border border-transparent hover:border-indigo-500/30">
+          <div class="aspect-[3/2] bg-[#1a1d20] overflow-hidden">
+            {% if items %}
+              <div class="grid {% if items|length >= 4 %}grid-cols-2{% else %}grid-cols-1{% endif %} h-full">
+                {% for ci in items|slice:":4" %}
+                  <img src="{{ ci.item.image }}" alt="{{ ci.item.title }}"
+                       class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="w-full h-full flex items-center justify-center text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+              </div>
+            {% endif %}
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">{{ col.name }}</h3>
+            {% if col.description %}
+              <p class="text-gray-400 text-xs mt-1 line-clamp-2">{{ col.description }}</p>
+            {% endif %}
+            <div class="flex items-center gap-3 mt-3 text-xs text-gray-500">
+              <span>{{ items|length }} item{{ items|length|pluralize }}</span>
+              {% with types=items|map_attr:"item.media_type"|unique_list %}
+                {% if types %}
+                  <span class="flex gap-1">
+                    {% for mt in types|slice:":4" %}
+                      <span class="px-1.5 py-0.5 bg-[#39404b] rounded text-gray-400">{{ mt|media_type_readable }}</span>
+                    {% endfor %}
+                  </span>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </a>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="flex flex-col items-center justify-center py-24 bg-[#2a2f35] rounded-lg">
+      <div class="bg-[#39404b] rounded-full p-5 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2">No collections yet</h3>
+      <p class="text-gray-400 mb-6">Group your MCU movies, Game of Thrones books and shows, or any franchise across media types.</p>
+      <button @click="showModal = true"
+              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition-colors cursor-pointer">
+        Create your first collection
+      </button>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}{{ form.media.js }}{% endblock %}
