@@ -83,6 +83,7 @@ class Item(CalendarTriggerMixin, models.Model):
     )
     title = models.TextField()
     image = models.URLField()  # if add default, custom media entry will show the value
+    country = models.CharField(max_length=2, blank=True, default="")
     season_number = models.PositiveIntegerField(null=True, blank=True)
     episode_number = models.PositiveIntegerField(null=True, blank=True)
 
