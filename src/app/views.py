@@ -438,7 +438,6 @@ def sync_metadata(request, source, media_type, media_id, season_number=None):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
-                "country": metadata.get("country") or "",
             },
         )
         title = metadata["title"]
@@ -604,7 +603,6 @@ def media_save(request):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
-                "country": metadata.get("country") or "",
             },
         )
         model = apps.get_model(app_label="app", model_name=media_type)
@@ -707,7 +705,6 @@ def episode_save(request):
             defaults={
                 "title": tv_with_seasons_metadata["title"],
                 "image": season_metadata["image"],
-                "country": season_metadata.get("country") or "",
             },
         )
         related_season = Season.objects.create(
