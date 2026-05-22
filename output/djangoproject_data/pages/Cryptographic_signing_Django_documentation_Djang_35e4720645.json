@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/signing/",
+  "title": "Cryptographic signing | Django documentation | Django",
+  "content": "The golden rule of web application security is to never trust data from untrusted sources. Sometimes it can be useful to pass data through an untrusted medium. Cryptographically signed values can be passed through an untrusted channel safe in the knowledge that any tampering will be detected.\n\nDjango provides both a low-level API for signing values and a high-level API for setting and reading signed cookies, one of the most common uses of signing in web applications.\n\nYou may also find signing useful for the following:\n\nGenerating “recover my account” URLs for sending to users who have lost their password.\n\nEnsuring data stored in hidden form fields has not been tampered with.\n\nGenerating one-time secret URLs for allowing temporary access to a protected resource, for example a downloadable file that a user has paid for.\n\nWhen you create a new Django project using startproject, the settings.py file is generated automatically and gets a random SECRET_KEY value. This value is the key to securing signed data – it is vital you keep this secure, or attackers could use it to generate their own signed values.\n\nSECRET_KEY_FALLBACKS can be used to rotate secret keys. The values will not be used to sign data, but if specified, they will be used to validate signed data and must be kept secure.\n\nDjango’s signing methods live in the django.core.signing module. To sign a value, first instantiate a Signer instance:\n\nThe signature is appended to the end of the string, following the colon. You can retrieve the original value using the unsign method:\n\nIf you pass a non-string value to sign, the value will be forced to string before being signed, and the unsign result will give you that string value:\n\nIf you wish to protect a list, tuple, or dictionary you can do so using the sign_object() and unsign_object() methods:\n\nSee Protecting complex data structures for more details.\n\nIf the signature or value have been altered in any way, a django.core.signing.BadSignature exception will be raised:\n\nBy default, the Signer class uses the SECRET_KEY setting to generate signatures. You can use a different secret by passing it to the Signer constructor:\n\nReturns a signer which uses key to generate signatures and sep to separate values. sep cannot be in the URL safe base64 alphabet. This alphabet contains alphanumeric characters, hyphens, and underscores. algorithm must be an algorithm supported by hashlib, it defaults to 'sha256'. fallback_keys is a list of additional values used to validate signed data, defaults to SECRET_KEY_FALLBACKS.\n\nIf you do not wish for every occurrence of a particular string to have the same signature hash, you can use the optional salt argument to the Signer class. Using a salt will seed the signing hash function with both the salt and your SECRET_KEY:\n\nUsing salt in this way puts the different signatures into different namespaces. A signature that comes from one namespace (a particular salt value) cannot be used to validate the same plaintext string in a different namespace that is using a different salt setting. The result is to prevent an attacker from using a signed string generated in one place in the code as input to another piece of code that is generating (and verifying) signatures using a different salt.\n\nUnlike your SECRET_KEY, your salt argument does not need to stay secret.\n\nTimestampSigner is a subclass of Signer that appends a signed timestamp to the value. This allows you to confirm that a signed value was created within a specified period of time:\n\nSign value and append current timestamp to it.\n\nChecks if value was signed less than max_age seconds ago, otherwise raises SignatureExpired. The max_age parameter can accept an integer or a datetime.timedelta object.\n\nEncode, optionally compress, append current timestamp, and sign complex data structure (e.g. list, tuple, or dictionary).\n\nChecks if signed_obj was signed less than max_age seconds ago, otherwise raises SignatureExpired. The max_age parameter can accept an integer or a datetime.timedelta object.\n\nIf you wish to protect a list, tuple or dictionary you can do so using the Signer.sign_object() and unsign_object() methods, or signing module’s dumps() or loads() functions (which are shortcuts for TimestampSigner(salt='django.core.signing').sign_object()/unsign_object()). These use JSON serialization under the hood. JSON ensures that even if your SECRET_KEY is stolen an attacker will not be able to execute arbitrary commands by exploiting the pickle format:\n\nBecause of the nature of JSON (there is no native distinction between lists and tuples) if you pass in a tuple, you will get a list from signing.loads(object):\n\nReturns URL-safe, signed base64 compressed JSON string. Serialized object is signed using TimestampSigner.\n\nReverse of dumps(), raises BadSignature if signature fails. Checks max_age (in seconds) if given.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Cryptographic signing¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Protecting SECRET_KEY and SECRET_KEY_FALLBACKS¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using the low-level API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using the salt argument¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Verifying timestamped values¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Protecting complex data structures¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/signing/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/composite-primary-key/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

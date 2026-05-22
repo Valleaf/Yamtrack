@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.22/",
+  "title": "Django 1.4.22 release notes | Django documentation | Django",
+  "content": "Django 1.4.22 fixes a security issue in 1.4.21.\n\nIt also fixes support with pip 7+ by disabling wheel support. Older versions of 1.4 would silently build a broken wheel when installed with those versions of pip.\n\nPreviously, a session could be created when anonymously accessing the django.contrib.auth.views.logout() view (provided it wasn’t decorated with login_required() as done in the admin). This could allow an attacker to easily create many new session records by sending repeated requests, potentially filling up the session store or causing other users’ session records to be evicted.\n\nThe SessionMiddleware has been modified to no longer create empty session records, including when SESSION_SAVE_EVERY_REQUEST is active.\n\nAdditionally, the contrib.sessions.backends.base.SessionBase.flush() and cache_db.SessionStore.flush() methods have been modified to avoid creating a new empty session. Maintainers of third-party session backends should check if the same vulnerability is present in their backend and correct it if so.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.22 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service possibility in logout() view by filling session store¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.22/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.21/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

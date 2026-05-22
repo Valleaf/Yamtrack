@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.1.14/",
+  "title": "Django 2.1.14 release notes | Django documentation | Django",
+  "content": "Django 2.1.14 fixes a regression in 2.1.13.\n\nFixed a crash when using a contains, contained_by, has_key, has_keys, or has_any_keys lookup on django.contrib.postgres.fields.JSONField, if the right or left hand side of an expression is a key transform (#30826).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.1.14 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.1.14/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.15/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

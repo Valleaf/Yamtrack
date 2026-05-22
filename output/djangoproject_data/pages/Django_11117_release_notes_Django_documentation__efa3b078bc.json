@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.17/",
+  "title": "Django 1.11.17 release notes | Django documentation | Django",
+  "content": "Django 1.11.17 fixes several bugs in 1.11.16 and adds compatibility with Python 3.7.\n\nPrevented repetitive calls to geos_version_tuple() in the WKBWriter class in an attempt to fix a random crash involving LooseVersion since Django 1.11.14 (#29959).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.17 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.17/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.18/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.16/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

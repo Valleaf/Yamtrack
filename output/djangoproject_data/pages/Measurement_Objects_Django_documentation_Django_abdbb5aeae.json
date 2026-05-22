@@ -1,0 +1,68 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+  "title": "Measurement Objects | Django documentation | Django",
+  "content": "The django.contrib.gis.measure module contains objects that allow for convenient representation of distance and area units of measure. [1] Specifically, it implements two objects, Distance and Area – both of which may be accessed via the D and A convenience aliases, respectively.\n\nDistance objects may be instantiated using a keyword argument indicating the context of the units. In the example below, two different distance objects are instantiated in units of kilometers (km) and miles (mi):\n\nFor conversions, access the preferred unit attribute to get a converted distance quantity:\n\nMoreover, arithmetic operations may be performed between the distance objects:\n\nTwo Distance objects multiplied together will yield an Area object, which uses squared units of measure:\n\nTo determine what the attribute abbreviation of a unit is, the unit_attname class method may be used:\n\nFull name or alias(es)\n\nFoot, Foot (International)\n\nU.S. Foot, US survey foot\n\nMillimetre, Millimeter\n\nMicrometer, Micrometre\n\nBritish foot (Sears 1922)\n\nBritish yard (Sears 1922)\n\nBritish chain (Sears 1922)\n\nIndian yard, Yard (Indian)\n\nBritish chain (Benoit 1895 B)\n\nbritish_chain_sears_truncated\n\nBritish chain (Sears 1922 truncated)\n\nArea attributes are the same as Distance attributes, except they are prefixed with sq_ (area units are square in nature). For example, Area(sq_m=2) creates an Area object representing two square meters.\n\nIn addition to unit with the sq_ prefix, the following units are also supported on Area:\n\nFull name or alias(es)\n\nTo initialize a distance object, pass in a keyword corresponding to the desired unit attribute name set with desired value. For example, the following creates a distance object representing 5 miles:\n\nReturns the distance value in units corresponding to the given unit attribute. For example:\n\nReturns the distance unit attribute name for the given full unit name. For example:\n\nAlias for Distance class.\n\nTo initialize an area object, pass in a keyword corresponding to the desired unit attribute name set with desired value. For example, the following creates an area object representing 5 square miles:\n\nReturns the area value in units corresponding to the given unit attribute. For example:\n\nReturns the area unit attribute name for the given full unit name. For example:\n\nAlias for Area class.\n\nRobert Coup is the initial author of the measure objects, and was inspired by Brian Beck’s work in geopy and Geoff Biggs’ PhD work on dimensioned units for robotics.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Measurement Objects¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Supported units¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Measurement API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Distance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Area¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Returns the distance value in units corresponding to the given unit attribute. For example:",
+      "code": ">>> print(dist.km)\n8.04672"
+    },
+    {
+      "description": "Returns the distance unit attribute name for the given full unit name. For example:",
+      "code": ">>> Distance.unit_attname(\"Mile\")\n'mi'"
+    },
+    {
+      "description": "Returns the area value in units corresponding to the given unit attribute. For example:",
+      "code": ">>> print(a.sq_km)\n12.949940551680001"
+    },
+    {
+      "description": "Returns the area unit attribute name for the given full unit name. For example:",
+      "code": ">>> Area.unit_attname(\"Kilometer\")\n'sq_km'"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

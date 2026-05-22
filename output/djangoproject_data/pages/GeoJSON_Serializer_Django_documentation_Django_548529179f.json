@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+  "title": "GeoJSON Serializer | Django documentation | Django",
+  "content": "GeoDjango provides a specific serializer for the GeoJSON format. See Serializing Django objects for more information on serialization.\n\nThe geojson serializer is not meant for round-tripping data, as it has no deserializer equivalent. For example, you cannot use loaddata to reload the output produced by this serializer. If you plan to reload the outputted data, use the plain json serializer instead.\n\nIn addition to the options of the json serializer, the geojson serializer accepts the following additional option when it is called by serializers.serialize():\n\ngeometry_field: A string containing the name of a geometry field to use for the geometry key of the GeoJSON feature. This is only needed when you have a model with more than one geometry field and you don’t want to use the first defined geometry field (by default, the first geometry field is picked).\n\nid_field: A string containing the name of a field to use for the id key of the GeoJSON feature. By default, the primary key of objects is used.\n\nsrid: The SRID to use for the geometry content. Defaults to 4326 (WGS 84).\n\nThe fields option can be used to limit fields that will be present in the properties key, as it works with all other serializers.\n\nWhen the fields parameter is not specified, the geojson serializer adds a pk key to the properties dictionary with the primary key of the object as the value.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoJSON Serializer¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example:",
+      "code": "from django.core.serializers import serialize\nfrom my_app.models import City\n\nserialize(\"geojson\", City.objects.all(), geometry_field=\"point\", fields=[\"name\"])"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/ogrinspect/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/commands/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

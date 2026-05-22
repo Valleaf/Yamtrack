@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.1.6/",
+  "title": "Django 2.1.6 release notes | Django documentation | Django",
+  "content": "Django 2.1.6 fixes a security issue and a bug in 2.1.5.\n\nIf django.utils.numberformat.format() – used by contrib.admin as well as the floatformat, filesizeformat, and intcomma templates filters – received a Decimal with a large number of digits or a large exponent, it could lead to significant memory usage due to a call to '{:f}'.format().\n\nTo avoid this, decimals with more than 200 digits are now formatted using scientific notation.\n\nMade the obj argument of InlineModelAdmin.has_add_permission() optional to restore backwards compatibility with third-party code that doesn’t provide it (#30097).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.1.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2019-6975: Memory exhaustion in django.utils.numberformat.format()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.1.6/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

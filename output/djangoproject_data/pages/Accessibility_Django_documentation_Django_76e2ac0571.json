@@ -1,0 +1,52 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/accessibility/",
+  "title": "Accessibility | Django documentation | Django",
+  "content": "The Django project is committed to ensuring that websites built with Django are usable by everyone, including people with disabilities. Django’s built-in components, such as the admin interface and default form rendering, should adhere to established accessibility standards and meet our own targets for supporting specific input devices and assistive technologies.\n\nWe work to conform with the Web Content Accessibility Guidelines (WCAG), version 2.2, at the AA level. WCAG is the most established standard for web accessibility. AA-level guidelines are the most common legal compliance target worldwide.\n\nWe also aim to follow other best practices, such as:\n\nWCAG 2.2 AAA-level guidelines – stricter criteria that go beyond the AA level.\n\nThe upcoming WCAG 3.0 guidelines – a new, evolving standard that aims to unify and improve upon previous versions of WCAG.\n\nAuthoring Tool Accessibility Guidelines (ATAG) 2.0 – guidelines for software and services that are used to produce web content.\n\nTo learn more about accessibility without diving straight into standards, we recommend The A11Y Project, a community-driven effort to make digital accessibility easier.\n\nBeyond standards, we want to make sure Django actually works for people using a wide range of input devices and assistive technologies. This has benefits to make sure Django works better for everyone. The best way to do this effectively is to take accessibility considerations into account as part of designing features. If in doubt, consult with users who rely on assistive technologies or with accessibility experts. You can reach out to the Accessibility team via the Accessibility Django forum topic or via the #accessibility channel on the Django Discord server.\n\nDesign the UI with accessibility in mind, and the testing will only be needed as a final check. For more complex interfaces, confer with other contributors to decide on testing targets. Reach out to the Accessibility team for support and to coordinate testing.\n\nAlways test user interface changes with:\n\nKeyboard-only navigation. Common issues include:\n\nAn interactive element can’t be reached using the Tab or arrow keys.\n\nAn interactive element “traps” input focus and prevents navigating away.\n\nAn interactive element doesn’t give a visible indication when it has input focus.\n\nThe focus order is inconsistent with the logical order that’s communicated visually.\n\nThe Accessibility Insights browser extension’s automated checks feature, or an equivalent tool with the Axe checker.\n\nWhere the UI changes could affect those modalities, also test with:\n\nTouch-only navigation. Common issues include:\n\nA touch target (interactive element) is too small.\n\nHover-based based interaction which does not translate to touch, such as a hover only tooltip.\n\n400% browser zoom. Common issues include:\n\nContent is cut off or disappears when zoomed.\n\nContent that does not inherently require a two-dimensional layout causes scrolling in both directions (vertical and horizontal). Two-dimensional scrolling is acceptable for content like images, maps, videos, and data tables, which require both dimensions to be usable.\n\nForced-colors mode (for example Windows Contrast Themes). Note that this can be tested via the \"high_contrast\" mode in the screenshot tests. Common issues include:\n\nOver-reliance on color for meaning, which is lost in forced-colors mode.\n\nUse of !important or inline styles may break forced-colors mode.\n\nWhere the UI changes could affect assistive technologies, here are popular free options we recommend testing with.\n\nNVDA - recommended with Firefox ESR\n\nNarrator - recommended with Microsoft Edge\n\nWindows Speech Recognition\n\nVoiceOver - recommended with Safari\n\nOrca - recommended with Firefox ESR\n\nFor mobile or tablet:\n\nVoiceOver on iOS, or TalkBack on Android\n\nThe following are popular licensed options. If you are a user of these, or can work with a user holding a license, also test against:\n\nThere are parts of Django that do not meet our accessibility targets. We actively work on fixing issues, both as part of ongoing maintenance and bigger overhauls. To learn about known issues, and get involved, see:\n\n#accessibility on the Django Discord server.\n\nThe Accessibility Django forum topic.\n\nAccessibility issues on the ticket tracker.\n\nOur django accessibility improvements project board.\n\nThe Accessibility team.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Accessibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Accessibility standards¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Support targets and testing¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Testing baseline¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Recommended assistive technologies¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Known issues and how to help¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/accessibility/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/committing-code/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

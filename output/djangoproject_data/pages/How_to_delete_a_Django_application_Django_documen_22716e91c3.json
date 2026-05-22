@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/delete-app/",
+  "title": "How to delete a Django application | Django documentation | Django",
+  "content": "Django provides the ability to group sets of features into Python packages called applications. When requirements change, apps may become obsolete or unnecessary. The following steps will help you delete an application safely.\n\nRemove all references to the app (imports, foreign keys etc.).\n\nRemove all models from the corresponding models.py file.\n\nCreate relevant migrations by running makemigrations. This step generates a migration that deletes tables for the removed models, and any other required migration for updating relationships connected to those models.\n\nSquash out references to the app in other apps’ migrations.\n\nApply migrations locally, run tests, and verify the correctness of your project.\n\nDeploy/release your updated Django project.\n\nRemove the app from INSTALLED_APPS.\n\nFinally, remove the app’s directory.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to delete a Django application¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/delete-app/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/howto/error-reporting/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

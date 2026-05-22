@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.1.6/",
+  "title": "Django 5.1.6 release notes | Django documentation | Django",
+  "content": "Django 5.1.6 fixes several bugs in 5.1.5.\n\nFixed a regression in Django 5.1.5 that caused validate_ipv6_address() and validate_ipv46_address() to crash when handling non-string values (#36098).\n\nFixed a regression in Django 5.1 where password fields, despite being set to required=False, were still treated as required in forms derived from BaseUserCreationForm (#36140).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.1.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.1.6/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

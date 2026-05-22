@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.1.3/",
+  "title": "Django 1.1.3 release notes | Django documentation | Django",
+  "content": "Welcome to Django 1.1.3!\n\nThis is the third “bugfix” release in the Django 1.1 series, improving the stability and performance of the Django 1.1 codebase.\n\nWith one exception, Django 1.1.3 maintains backwards compatibility with Django 1.1.2. It also contains a number of fixes and other improvements. Django 1.1.2 is a recommended upgrade for any development or deployment currently using or targeting Django 1.1.\n\nFor full details on the new features, backwards incompatibilities, and deprecated features in the 1.1 branch, see the Django 1.1 release notes.\n\nThe Django administrative interface, django.contrib.admin, supports filtering of displayed lists of objects by fields on the corresponding models, including across database-level relationships. This is implemented by passing lookup arguments in the querystring portion of the URL, and options on the ModelAdmin class allow developers to specify particular fields or relationships which will generate automatic links for filtering.\n\nOne historically-undocumented and -unofficially-supported feature has been the ability for a user with sufficient knowledge of a model’s structure and the format of these lookup arguments to invent useful new filters on the fly by manipulating the querystring.\n\nHowever, it has been demonstrated that this can be abused to gain access to information outside of an admin user’s permissions; for example, an attacker with access to the admin and sufficient knowledge of model structure and relations could construct query strings which – with repeated use of regular-expression lookups supported by the Django database API – expose sensitive information such as users’ password hashes.\n\nTo remedy this, django.contrib.admin will now validate that querystring lookup arguments either specify only fields on the model being viewed, or cross relations which have been explicitly allowed by the application developer using the preexisting mechanism mentioned above. This is backwards-incompatible for any users relying on the prior ability to insert arbitrary lookups.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.1.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Restricted filters in admin interface¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.1.3/",
+    "https://docs.djangoproject.com/en/stable/releases/1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/1.1.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

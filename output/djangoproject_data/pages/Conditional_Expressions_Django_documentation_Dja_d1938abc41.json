@@ -1,0 +1,68 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/conditional-expressions/",
+  "title": "Conditional Expressions | Django documentation | Django",
+  "content": "Conditional expressions let you use if … elif … else logic within filters, annotations, aggregations, and updates. A conditional expression evaluates a series of conditions for each row of a table and returns the matching result expression. Conditional expressions can also be combined and nested like other expressions.\n\nWe’ll be using the following model in the subsequent examples:\n\nA When() object is used to encapsulate a condition and its result for use in the conditional expression. Using a When() object is similar to using the filter() method. The condition can be specified using field lookups, Q objects, or Expression objects that have an output_field that is a BooleanField. The result is provided using the then keyword.\n\nKeep in mind that each of these values can be an expression.\n\nSince the then keyword argument is reserved for the result of the When(), there is a potential conflict if a Model has a field named then. This can be resolved in two ways:\n\nA Case() expression is like the if … elif … else statement in Python. Each condition in the provided When() objects is evaluated in order, until one evaluates to a truthful value. The result expression from the matching When() object is returned.\n\nCase() accepts any number of When() objects as individual arguments. Other options are provided using keyword arguments. If none of the conditions evaluate to TRUE, then the expression given with the default keyword argument is returned. If a default argument isn’t provided, None is used.\n\nIf we wanted to change our previous query to get the discount based on how long the Client has been with us, we could do so using lookups:\n\nRemember that the conditions are evaluated in order, so in the above example we get the correct result even though the second condition matches both Jane Doe and Jack Black. This works just like an if … elif … else statement in Python.\n\nCase() also works in a filter() clause. For example, to find gold clients that registered more than a month ago and platinum clients that registered more than a year ago:\n\nConditional expressions can be used in annotations, aggregations, filters, lookups, and updates. They can also be combined and nested with other expressions. This allows you to make powerful conditional queries.\n\nLet’s say we want to change the account_type for our clients to match their registration dates. We can do this using a conditional expression and the update() method:\n\nWhat if we want to find out how many clients there are for each account_type? We can use the filter argument of aggregate functions to achieve this:\n\nThis aggregate produces a query with the SQL 2003 FILTER WHERE syntax on databases that support it:\n\nOn other databases, this is emulated using a CASE statement:\n\nThe two SQL statements are functionally equivalent but the more explicit FILTER may perform better.\n\nWhen a conditional expression returns a boolean value, it is possible to use it directly in filters. This means that it will not be added to the SELECT columns, but you can still use it to filter results:\n\nIn SQL terms, that evaluates to:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Conditional Expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The conditional expression classes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "When¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Case¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Advanced queries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Conditional update¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Conditional aggregation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Conditional filter¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "An example:",
+      "code": ">>>\n>>> from datetime import date, timedelta\n>>> from django.db.models import Case, Value, When\n>>> Client.objects.create(\n...     name=\"Jane Doe\",\n...     account_type=Client.REGULAR,\n...     registered_on=date.today() - timedelta(days=36),\n... )\n>>> Client.objects.create(\n...     name=\"James Smith\",\n...     account_type=Client.GOLD,\n...     registered_on=date.today() - timedelta(days=5),\n... )\n>>> Client.objects.create(\n...     name=\"Jack Black\",\n...     account_type=Client.PLATINUM,\n...     registered_on=date.today() - timedelta(days=10 * 365),\n... )\n>>> # Get the discount for each Client based on the account type\n>>> Client.objects.annotate(\n...     discount=Case(\n...         When(account_type=Client.GOLD, then=Value(\"5%\")),\n...         When(account_type=Client.PLATINUM, then=Value(\"10%\")),\n...         default=Value(\"0%\"),\n...     ),\n... ).values_list(\"name\", \"discount\")\n<QuerySet [('Jane Doe', '0%'), ('James Smith', '5%'), ('Jack Black', '10%')]>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/conditional-expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

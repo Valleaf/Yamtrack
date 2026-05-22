@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.5/",
+  "title": "Django 2.2.5 release notes | Django documentation | Django",
+  "content": "Django 2.2.5 fixes several bugs in 2.2.4.\n\nRelaxed the system check added in Django 2.2 for models to reallow use of the same db_table by multiple models when database routers are installed (#30673).\n\nFixed crash of KeyTransform() for django.contrib.postgres.fields.JSONField and HStoreField when using on expressions with params (#30672).\n\nFixed a regression in Django 2.2 where ModelAdmin.list_filter choices to foreign objects don’t respect a model’s Meta.ordering (#30449).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.5/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.6/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

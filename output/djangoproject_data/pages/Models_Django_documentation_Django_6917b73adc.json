@@ -1,0 +1,247 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/models/",
+  "title": "Models | Django documentation | Django",
+  "content": "A model is the single, definitive source of information about your data. It contains the essential fields and behaviors of the data you’re storing. Generally, each model maps to a single database table.\n\nEach model is a Python class that subclasses django.db.models.Model.\n\nEach attribute of the model represents a database field.\n\nWith all of this, Django gives you an automatically-generated database-access API; see Making queries.\n\nThis example model defines a Person, which has a first_name and last_name:\n\nfirst_name and last_name are fields of the model. Each field is specified as a class attribute, and each attribute maps to a database column.\n\nThe above Person model would create a database table like this:\n\nSome technical notes:\n\nThe name of the table, myapp_person, is automatically derived from some model metadata but can be overridden. See Table names for more details.\n\nAn id field is added automatically, but this behavior can be overridden. See Automatic primary key fields.\n\nThe CREATE TABLE SQL in this example is formatted using PostgreSQL syntax, but it’s worth noting Django uses SQL tailored to the database backend specified in your settings file.\n\nOnce you have defined your models, you need to tell Django you’re going to use those models. Do this by editing your settings file and changing the INSTALLED_APPS setting to add the name of the module that contains your models.py.\n\nFor example, if the models for your application live in the module myapp.models (the package structure that is created for an application by the manage.py startapp script), INSTALLED_APPS should read, in part:\n\nWhen you add new apps to INSTALLED_APPS, be sure to run manage.py migrate, optionally making migrations for them first with manage.py makemigrations.\n\nThe most important part of a model – and the only required part of a model – is the list of database fields it defines. Fields are specified by class attributes. Be careful not to choose field names that conflict with the models API like clean, save, or delete.\n\nEach field in your model should be an instance of the appropriate Field class. Django uses the field class types to determine a few things:\n\nThe column type, which tells the database what kind of data to store (e.g. INTEGER, VARCHAR, TEXT).\n\nThe default HTML widget to use when rendering a form field (e.g. <input type=\"text\">, <select>).\n\nThe minimal validation requirements, used in Django’s admin and in automatically-generated forms.\n\nDjango ships with dozens of built-in field types; you can find the complete list in the model field reference. You can easily write your own fields if Django’s built-in ones don’t do the trick; see How to create custom model fields.\n\nEach field takes a certain set of field-specific arguments (documented in the model field reference). For example, CharField (and its subclasses) require a max_length argument which specifies the size of the VARCHAR database field used to store the data.\n\nThere’s also a set of common arguments available to all field types. All are optional. They’re fully explained in the reference, but here’s a quick summary of the most often-used ones:\n\nIf True, Django will store empty values as NULL in the database. Default is False.\n\nIf True, the field is allowed to be blank. Default is False.\n\nNote that this is different than null. null is purely database-related, whereas blank is validation-related. If a field has blank=True, form validation will allow entry of an empty value. If a field has blank=False, the field will be required.\n\nA sequence of 2-value tuples, a mapping, an enumeration type, or a callable (that expects no arguments and returns any of the previous formats), to use as choices for this field. If this is given, the default form widget will be a select box instead of the standard text field and will limit choices to the choices given.\n\nA choices list looks like this:\n\nA new migration is created each time the order of choices changes.\n\nThe first element in each tuple is the value that will be stored in the database. The second element is displayed by the field’s form widget.\n\nGiven a model instance, the display value for a field with choices can be accessed using the get_FOO_display() method. For example:\n\nYou can also use enumeration classes to define choices in a concise way:\n\nFurther examples are available in the model field reference.\n\nThe default value for the field. This can be a value or a callable object. If callable it will be called every time a new object is created.\n\nThe database-computed default value for the field. This can be a literal value or a database function.\n\nIf both db_default and Field.default are set, default will take precedence when creating instances in Python code. db_default will still be set at the database level and will be used when inserting rows outside of the ORM or when adding a new field in a migration.\n\nExtra “help” text to be displayed with the form widget. It’s useful for documentation even if your field isn’t used on a form.\n\nIf True, this field is the primary key for the model.\n\nIf you don’t specify primary_key=True for any fields in your model, Django will automatically add a field to hold the primary key, so you don’t need to set primary_key=True on any of your fields unless you want to override the default primary-key behavior. For more, see Automatic primary key fields.\n\nThe primary key field is read-only. If you change the value of the primary key on an existing object and then save it, a new object will be created alongside the old one. For example:\n\nIf True, this field must be unique throughout the table.\n\nAgain, these are just short descriptions of the most common field options. Full details can be found in the common model field option reference.\n\nBy default, Django gives each model an auto-incrementing primary key with the type specified per app in AppConfig.default_auto_field or globally in the DEFAULT_AUTO_FIELD setting. For example:\n\nIf you’d like to specify a custom primary key, specify primary_key=True on one of your fields. If Django sees you’ve explicitly set Field.primary_key, it won’t add the automatic id column.\n\nEach model requires exactly one field to have primary_key=True (either explicitly declared or automatically added).\n\nEach field type, except for ForeignKey, ManyToManyField and OneToOneField, takes an optional first positional argument – a verbose name. If the verbose name isn’t given, Django will automatically create it using the field’s attribute name, converting underscores to spaces.\n\nIn this example, the verbose name is \"person's first name\":\n\nIn this example, the verbose name is \"first name\":\n\nForeignKey, ManyToManyField and OneToOneField require the first argument to be a model class, so use the verbose_name keyword argument:\n\nThe convention is not to capitalize the first letter of the verbose_name. Django will automatically capitalize the first letter where it needs to.\n\nClearly, the power of relational databases lies in relating tables to each other. Django offers ways to define the three most common types of database relationships: many-to-one, many-to-many and one-to-one.\n\nTo define a many-to-one relationship, use django.db.models.ForeignKey. You use it just like any other Field type: by including it as a class attribute of your model.\n\nForeignKey requires a positional argument: the class to which the model is related.\n\nFor example, if a Car model has a Manufacturer – that is, a Manufacturer makes multiple cars but each Car only has one Manufacturer – use the following definitions:\n\nYou can also create recursive relationships (an object with a many-to-one relationship to itself) and relationships to models not yet defined; see the model field reference for details.\n\nIt’s suggested, but not required, that the name of a ForeignKey field (manufacturer in the example above) be the name of the model, lowercase. You can call the field whatever you want. For example:\n\nForeignKey fields accept a number of extra arguments which are explained in the model field reference. These options help define how the relationship should work; all are optional.\n\nFor details on accessing backwards-related objects, see the Following relationships backward example.\n\nFor sample code, see the Many-to-one relationship model example.\n\nTo define a many-to-many relationship, use ManyToManyField. You use it just like any other Field type: by including it as a class attribute of your model.\n\nManyToManyField requires a positional argument: the class to which the model is related.\n\nFor example, if a Pizza has multiple Topping objects – that is, a Topping can be on multiple pizzas and each Pizza has multiple toppings – here’s how you’d represent that:\n\nAs with ForeignKey, you can also create recursive relationships (an object with a many-to-many relationship to itself) and relationships to models not yet defined.\n\nIt’s suggested, but not required, that the name of a ManyToManyField (toppings in the example above) be a plural describing the set of related model objects.\n\nIt doesn’t matter which model has the ManyToManyField, but you should only put it in one of the models – not both.\n\nGenerally, ManyToManyField instances should go in the object that’s going to be edited on a form. In the above example, toppings is in Pizza (rather than Topping having a pizzas ManyToManyField ) because it’s more natural to think about a pizza having toppings than a topping being on multiple pizzas. The way it’s set up above, the Pizza form would let users select the toppings.\n\nSee the Many-to-many relationship model example for a full example.\n\nManyToManyField fields also accept a number of extra arguments which are explained in the model field reference. These options help define how the relationship should work; all are optional.\n\nWhen you’re only dealing with many-to-many relationships such as mixing and matching pizzas and toppings, a standard ManyToManyField is all you need. However, sometimes you may need to associate data with the relationship between two models.\n\nFor example, consider the case of an application tracking the musical groups which musicians belong to. There is a many-to-many relationship between a person and the groups of which they are a member, so you could use a ManyToManyField to represent this relationship. However, there is a lot of detail about the membership that you might want to collect, such as the date at which the person joined the group.\n\nFor these situations, Django allows you to specify the model that will be used to govern the many-to-many relationship. You can then put extra fields on the intermediate model. The intermediate model is associated with the ManyToManyField using the through argument to point to the model that will act as an intermediary. For our musician example, the code would look something like this:\n\nWhen you set up the intermediary model, you explicitly specify foreign keys to the models that are involved in the many-to-many relationship. This explicit declaration defines how the two models are related.\n\nIf you don’t want multiple associations between the same instances, add a UniqueConstraint including the from and to fields. Django’s automatically generated many-to-many tables include such a constraint.\n\nThere are a few restrictions on the intermediate model:\n\nYour intermediate model must contain one - and only one - foreign key to the source model (this would be Group in our example), or you must explicitly specify the foreign keys Django should use for the relationship using ManyToManyField.through_fields. If you have more than one foreign key and through_fields is not specified, a validation error will be raised. A similar restriction applies to the foreign key to the target model (this would be Person in our example).\n\nFor a model which has a many-to-many relationship to itself through an intermediary model, two foreign keys to the same model are permitted, but they will be treated as the two (different) sides of the many-to-many relationship. If through_fields is not specified, the first foreign key will be taken to represent the source side of the ManyToManyField, while the second will be taken to represent the target side. If there are more than two foreign keys though, you must specify through_fields to explicitly indicate which foreign keys to use, otherwise a validation error will be raised.\n\nNow that you have set up your ManyToManyField to use your intermediary model (Membership, in this case), you’re ready to start creating some many-to-many relationships. You do this by creating instances of the intermediate model:\n\nYou can also use add(), create(), or set() to create relationships, as long as you specify through_defaults for any required fields:\n\nYou may prefer to create instances of the intermediate model directly.\n\nIf the custom through table defined by the intermediate model does not enforce uniqueness on the (model1, model2) pair, allowing multiple values, the remove() call will remove all intermediate model instances:\n\nThe clear() method can be used to remove all many-to-many relationships for an instance:\n\nOnce you have established the many-to-many relationships, you can issue queries. Just as with normal many-to-many relationships, you can query using the attributes of the many-to-many-related model:\n\nAs you are using an intermediate model, you can also query on its attributes:\n\nIf you need to access a membership’s information you may do so by directly querying the Membership model:\n\nAnother way to access the same information is by querying the many-to-many reverse relationship from a Person object:\n\nTo define a one-to-one relationship, use OneToOneField. You use it just like any other Field type: by including it as a class attribute of your model.\n\nThis is most useful on the primary key of an object when that object “extends” another object in some way.\n\nOneToOneField requires a positional argument: the class to which the model is related.\n\nFor example, if you were building a database of “places”, you would build pretty standard stuff such as address, phone number, etc. in the database. Then, if you wanted to build a database of restaurants on top of the places, instead of repeating yourself and replicating those fields in the Restaurant model, you could make Restaurant have a OneToOneField to Place (because a restaurant “is a” place; in fact, to handle this you’d typically use inheritance, which involves an implicit one-to-one relation).\n\nAs with ForeignKey, a recursive relationship can be defined and references to as-yet undefined models can be made.\n\nSee the One-to-one relationship model example for a full example.\n\nOneToOneField fields also accept an optional parent_link argument.\n\nOneToOneField classes used to automatically become the primary key on a model. This is no longer true (although you can manually pass in the primary_key argument if you like). Thus, it’s now possible to have multiple fields of type OneToOneField on a single model.\n\nIt’s perfectly OK to relate a model to one from another app. To do this, import the related model at the top of the file where your model is defined. Then, refer to the other model class wherever needed. For example:\n\nAlternatively, you can use a lazy reference to the related model, specified as a string in the format \"app_label.ModelName\". This does not require the related model to be imported. For example:\n\nSee lazy relationships for more details.\n\nDjango places some restrictions on model field names:\n\nA field name cannot be a Python reserved word, because that would result in a Python syntax error. For example:\n\nA field name cannot contain more than one underscore in a row, due to the way Django’s query lookup syntax works. For example:\n\nA field name cannot end with an underscore, for similar reasons.\n\nA field name cannot be check, as this would override the check framework’s Model.check() method.\n\nThese limitations can be worked around, though, because your field name doesn’t necessarily have to match your database column name. See the db_column option.\n\nSQL reserved words, such as join, where or select, are allowed as model field names, because Django escapes all database table names and column names in every underlying SQL query. It uses the quoting syntax of your particular database engine.\n\nIf one of the existing model fields cannot be used to fit your purposes, or if you wish to take advantage of some less common database column types, you can create your own field class. Full coverage of creating your own fields is provided in How to create custom model fields.\n\nGive your model metadata by using an inner class Meta, like so:\n\nModel metadata is “anything that’s not a field”, such as ordering options (ordering), database table name (db_table), or human-readable singular and plural names (verbose_name and verbose_name_plural). None are required, and adding class Meta to a model is completely optional.\n\nA complete list of all possible Meta options can be found in the model option reference.\n\nThe most important attribute of a model is the Manager. It’s the interface through which database query operations are provided to Django models and is used to retrieve the instances from the database. If no custom Manager is defined, the default name is objects. Managers are only accessible via model classes, not the model instances.\n\nDefine custom methods on a model to add custom “row-level” functionality to your objects. Whereas Manager methods are intended to do “table-wide” things, model methods should act on a particular model instance.\n\nThis is a valuable technique for keeping business logic in one place – the model.\n\nFor example, this model has a few custom methods:\n\nThe last method in this example is a property.\n\nThe model instance reference has a complete list of methods automatically given to each model. You can override most of these – see overriding predefined model methods, below – but there are a couple that you’ll almost always want to define:\n\nA Python “magic method” that returns a string representation of any object. This is what Python and Django will use whenever a model instance needs to be coerced and displayed as a plain string. Most notably, this happens when you display an object in an interactive console or in the admin.\n\nYou’ll always want to define this method; the default isn’t very helpful at all.\n\nThis tells Django how to calculate the URL for an object. Django uses this in its admin interface, and any time it needs to figure out a URL for an object.\n\nAny object that has a URL that uniquely identifies it should define this method.\n\nThere’s another set of model methods that encapsulate a bunch of database behavior that you’ll want to customize. In particular you’ll often want to change the way save() and delete() work.\n\nYou’re free to override these methods (and any other model method) to alter behavior.\n\nA classic use-case for overriding the built-in methods is if you want something to happen whenever you save an object. For example (see save() for documentation of the parameters it accepts):\n\nYou can also prevent saving:\n\nIt’s important to remember to call the superclass method – that’s that super().save(**kwargs) business – to ensure that the object still gets saved into the database. If you forget to call the superclass method, the default behavior won’t happen and the database won’t get touched.\n\nIt’s also important that you pass through the arguments that can be passed to the model method – that’s what the **kwargs bit does. Django will, from time to time, extend the capabilities of built-in model methods, adding new keyword arguments. If you use **kwargs in your method definitions, you are guaranteed that your code will automatically support those arguments when they are added.\n\nIf you wish to update a field value in the save() method, you may also want to have this field added to the update_fields keyword argument. This will ensure the field is saved when update_fields is specified. For example:\n\nSee Specifying which fields to save for more details.\n\nOverridden model methods are not called on bulk operations\n\nNote that the delete() method for an object is not necessarily called when deleting objects in bulk using a QuerySet or as a result of a cascading delete. To ensure customized delete logic gets executed, you can use pre_delete and/or post_delete signals.\n\nUnfortunately, there isn’t a workaround when creating or updating objects in bulk, since none of save(), pre_save, and post_save are called.\n\nAnother common pattern is writing custom SQL statements in model methods and module-level methods. For more details on using raw SQL, see the documentation on using raw SQL.\n\nModel inheritance in Django works almost identically to the way normal class inheritance works in Python, but the basics at the beginning of the page should still be followed. That means the base class should subclass django.db.models.Model.\n\nThe only decision you have to make is whether you want the parent models to be models in their own right (with their own database tables), or if the parents are just holders of common information that will only be visible through the child models.\n\nThere are three styles of inheritance that are possible in Django.\n\nOften, you will just want to use the parent class to hold information that you don’t want to have to type out for each child model. This class isn’t going to ever be used in isolation, so Abstract base classes are what you’re after.\n\nIf you’re subclassing an existing model (perhaps something from another application entirely) and want each model to have its own database table, Multi-table inheritance is the way to go.\n\nFinally, if you only want to modify the Python-level behavior of a model, without changing the models fields in any way, you can use Proxy models.\n\nAbstract base classes are useful when you want to put some common information into a number of other models. You write your base class and put abstract=True in the Meta class. This model will then not be used to create any database table. Instead, when it is used as a base class for other models, its fields will be added to those of the child class.\n\nThe Student model will have three fields: name, age and home_group. The CommonInfo model cannot be used as a normal Django model, since it is an abstract base class. It does not generate a database table or have a manager, and cannot be instantiated or saved directly.\n\nFields inherited from abstract base classes can be overridden with another field or value, or be removed with None.\n\nFor many uses, this type of model inheritance will be exactly what you want. It provides a way to factor out common information at the Python level, while still only creating one database table per child model at the database level.\n\nWhen an abstract base class is created, Django makes any Meta inner class you declared in the base class available as an attribute. If a child class does not declare its own Meta class, it will inherit the parent’s Meta. If the child wants to extend the parent’s Meta class, it can subclass it. For example:\n\nDjango does make one adjustment to the Meta class of an abstract base class: before installing the Meta attribute, it sets abstract=False. This means that children of abstract base classes don’t automatically become abstract classes themselves. To make an abstract base class that inherits from another abstract base class, you need to explicitly set abstract=True on the child.\n\nSome attributes won’t make sense to include in the Meta class of an abstract base class. For example, including db_table would mean that all the child classes (the ones that don’t specify their own Meta) would use the same database table, which is almost certainly not what you want.\n\nDue to the way Python inheritance works, if a child class inherits from multiple abstract base classes, only the Meta options from the first listed class will be inherited by default. To inherit Meta options from multiple abstract base classes, you must explicitly declare the Meta inheritance. For example:\n\nIf you are using related_name or related_query_name on a ForeignKey or ManyToManyField, you must always specify a unique reverse name and query name for the field. This would normally cause a problem in abstract base classes, since the fields on this class are included into each of the child classes, with exactly the same values for the attributes (including related_name and related_query_name) each time.\n\nTo work around this problem, when you are using related_name or related_query_name in an abstract base class (only), part of the value should contain '%(app_label)s' and '%(class)s'.\n\n'%(class)s' is replaced by the lowercased name of the child class that the field is used in.\n\n'%(app_label)s' is replaced by the lowercased name of the app the child class is contained within. Each installed application name must be unique and the model class names within each app must also be unique, therefore the resulting name will end up being different.\n\nFor example, given an app common/models.py:\n\nAlong with another app rare/models.py:\n\nThe reverse name of the common.ChildA.m2m field will be common_childa_related and the reverse query name will be common_childas. The reverse name of the common.ChildB.m2m field will be common_childb_related and the reverse query name will be common_childbs. Finally, the reverse name of the rare.ChildB.m2m field will be rare_childb_related and the reverse query name will be rare_childbs. It’s up to you how you use the '%(class)s' and '%(app_label)s' portion to construct your related name or related query name but if you forget to use it, Django will raise errors when you perform system checks (or run migrate).\n\nIf you don’t specify a related_name attribute for a field in an abstract base class, the default reverse name will be the name of the child class followed by '_set', just as it normally would be if you’d declared the field directly on the child class. For example, in the above code, if the related_name attribute was omitted, the reverse name for the m2m field would be childa_set in the ChildA case and childb_set for the ChildB field.\n\nThe second type of model inheritance supported by Django is when each model in the hierarchy is a model all by itself. Each model corresponds to its own database table and can be queried and created individually. The inheritance relationship introduces links between the child model and each of its parents (via an automatically-created OneToOneField). For example:\n\nAll of the fields of Place will also be available in Restaurant, although the data will reside in a different database table. So these are both possible:\n\nIf you have a Place that is also a Restaurant, you can get from the Place object to the Restaurant object by using the lowercase version of the model name:\n\nHowever, if p in the above example was not a Restaurant (it had been created directly as a Place object or was the parent of some other class), referring to p.restaurant would raise a Restaurant.DoesNotExist exception.\n\nThe automatically-created OneToOneField on Restaurant that links it to Place looks like this:\n\nYou can override that field by declaring your own OneToOneField with parent_link=True on Restaurant.\n\nIn the multi-table inheritance situation, it doesn’t make sense for a child class to inherit from its parent’s Meta class. All the Meta options have already been applied to the parent class and applying them again would normally only lead to contradictory behavior (this is in contrast with the abstract base class case, where the base class doesn’t exist in its own right).\n\nSo a child model does not have access to its parent’s Meta class. However, there are a few limited cases where the child inherits behavior from the parent: if the child does not specify an ordering attribute or a get_latest_by attribute, it will inherit these from its parent.\n\nIf the parent has an ordering and you don’t want the child to have any natural ordering, you can explicitly disable it:\n\nBecause multi-table inheritance uses an implicit OneToOneField to link the child and the parent, it’s possible to move from the parent down to the child, as in the above example. However, this uses up the name that is the default related_name value for ForeignKey and ManyToManyField relations. If you are putting those types of relations on a subclass of the parent model, you must specify the related_name attribute on each such field. If you forget, Django will raise a validation error.\n\nFor example, using the above Place class again, let’s create another subclass with a ManyToManyField:\n\nThis results in the error:\n\nAdding related_name to the customers field as follows would resolve the error: models.ManyToManyField(Place, related_name='provider').\n\nAs mentioned, Django will automatically create a OneToOneField linking your child class back to any non-abstract parent models. If you want to control the name of the attribute linking back to the parent, you can create your own OneToOneField and set parent_link=True to indicate that your field is the link back to the parent class.\n\nWhen using multi-table inheritance, a new database table is created for each subclass of a model. This is usually the desired behavior, since the subclass needs a place to store any additional data fields that are not present on the base class. Sometimes, however, you only want to change the Python behavior of a model – perhaps to change the default manager, or add a new method.\n\nThis is what proxy model inheritance is for: creating a proxy for the original model. You can create, delete and update instances of the proxy model and all the data will be saved as if you were using the original (non-proxied) model. The difference is that you can change things like the default model ordering or the default manager in the proxy, without having to alter the original.\n\nProxy models are declared like normal models. You tell Django that it’s a proxy model by setting the proxy attribute of the Meta class to True.\n\nFor example, suppose you want to add a method to the Person model. You can do it like this:\n\nThe MyPerson class operates on the same database table as its parent Person class. In particular, any new instances of Person will also be accessible through MyPerson, and vice-versa:\n\nYou could also use a proxy model to define a different default ordering on a model. You might not always want to order the Person model, but regularly order by the last_name attribute when you use the proxy:\n\nNow normal Person queries will be unordered and OrderedPerson queries will be ordered by last_name.\n\nProxy models inherit Meta attributes in the same way as regular models.\n\nThere is no way to have Django return, say, a MyPerson object whenever you query for Person objects. A queryset for Person objects will return those types of objects. The whole point of proxy objects is that code relying on the original Person will use those and your own code can use the extensions you included (that no other code is relying on anyway). It is not a way to replace the Person (or any other) model everywhere with something of your own creation.\n\nA proxy model must inherit from exactly one non-abstract model class. You can’t inherit from multiple non-abstract models as the proxy model doesn’t provide any connection between the rows in the different database tables. A proxy model can inherit from any number of abstract model classes, providing they do not define any model fields. A proxy model may also inherit from any number of proxy models that share a common non-abstract parent class.\n\nIf you don’t specify any model managers on a proxy model, it inherits the managers from its model parents. If you define a manager on the proxy model, it will become the default, although any managers defined on the parent classes will still be available.\n\nContinuing our example from above, you could change the default manager used when you query the Person model like this:\n\nIf you wanted to add a new manager to the Proxy, without replacing the existing default, you can use the techniques described in the custom manager documentation: create a base class containing the new managers and inherit that after the primary base class:\n\nYou probably won’t need to do this very often, but, when you do, it’s possible.\n\nProxy model inheritance might look fairly similar to creating an unmanaged model, using the managed attribute on a model’s Meta class.\n\nWith careful setting of Meta.db_table you could create an unmanaged model that shadows an existing model and adds Python methods to it. However, that would be very repetitive and fragile as you need to keep both copies synchronized if you make any changes.\n\nOn the other hand, proxy models are intended to behave exactly like the model they are proxying for. They are always in sync with the parent model since they directly inherit its fields and managers.\n\nThe general rules are:\n\nIf you are mirroring an existing model or database table and don’t want all the original database table columns, use Meta.managed=False. That option is normally useful for modeling database views and tables not under the control of Django.\n\nIf you are wanting to change the Python-only behavior of a model, but keep all the same fields as in the original, use Meta.proxy=True. This sets things up so that the proxy model is an exact copy of the storage structure of the original model when data is saved.\n\nJust as with Python’s subclassing, it’s possible for a Django model to inherit from multiple parent models. Keep in mind that normal Python name resolution rules apply. The first base class that a particular name (e.g. Meta) appears in will be the one that is used; for example, this means that if multiple parents contain a Meta class, only the first one is going to be used, and all others will be ignored.\n\nGenerally, you won’t need to inherit from multiple parents. The main use-case where this is useful is for “mix-in” classes: adding a particular extra field or method to every class that inherits the mix-in. Try to keep your inheritance hierarchies as simple and straightforward as possible so that you won’t have to struggle to work out where a particular piece of information is coming from.\n\nNote that inheriting from multiple models that have a common id primary key field will raise an error. To properly use multiple inheritance, you can use an explicit AutoField in the base models:\n\nOr use a common ancestor to hold the AutoField. This requires using an explicit OneToOneField from each parent model to the common ancestor to avoid a clash between the fields that are automatically generated and inherited by the child:\n\nIn normal Python class inheritance, it is permissible for a child class to override any attribute from the parent class. In Django, this isn’t usually permitted for model fields. If a non-abstract model base class has a field called author, you can’t create another model field or define an attribute called author in any class that inherits from that base class.\n\nThis restriction doesn’t apply to model fields inherited from an abstract model. Such fields may be overridden with another field or value, or be removed by setting field_name = None.\n\nModel managers are inherited from abstract base classes. Overriding an inherited field which is referenced by an inherited Manager may cause subtle bugs. See custom managers and model inheritance.\n\nSome fields define extra attributes on the model, e.g. a ForeignKey defines an extra attribute with _id appended to the field name, as well as related_name and related_query_name on the foreign model.\n\nThese extra attributes cannot be overridden unless the field that defines it is changed or removed so that it no longer defines the extra attribute.\n\nOverriding fields in a parent model leads to difficulties in areas such as initializing new instances (specifying which field is being initialized in Model.__init__) and serialization. These are features which normal Python class inheritance doesn’t have to deal with in quite the same way, so the difference between Django model inheritance and Python class inheritance isn’t arbitrary.\n\nThis restriction only applies to attributes which are Field instances. Normal Python attributes can be overridden if you wish. It also only applies to the name of the attribute as Python sees it: if you are manually specifying the database column name, you can have the same column name appearing in both a child and an ancestor model for multi-table inheritance (they are columns in two different database tables).\n\nDjango will raise a FieldError if you override any model field in any ancestor model.\n\nNote that because of the way fields are resolved during class definition, model fields inherited from multiple abstract parent models are resolved in a strict depth-first order. This contrasts with standard Python MRO, which is resolved breadth-first in cases of diamond shaped inheritance. This difference only affects complex model hierarchies, which (as per the advice above) you should try to avoid.\n\nThe manage.py startapp command creates an application structure that includes a models.py file. If you have many models, organizing them in separate files may be useful.\n\nTo do so, create a models package. Remove models.py and create a myapp/models/ directory with an __init__.py file and the files to store your models. You must import the models in the __init__.py file.\n\nFor example, if you had organic.py and synthetic.py in the models directory:\n\nExplicitly importing each model rather than using from .models import * has the advantages of not cluttering the namespace, making code more readable, and keeping code analysis tools useful.\n\nCovers all the model related APIs including model fields, related objects, and QuerySet.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Quick example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using models¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field types¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field options¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Automatic primary key fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Verbose field names¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Many-to-one relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Many-to-many relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Extra fields on many-to-many relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "One-to-one relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Models across files¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field name restrictions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Custom field types¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Meta options¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Overriding predefined model methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Executing custom SQL¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Abstract base classes¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Meta inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Be careful with related_name and related_query_name¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Multi-table inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Meta and multi-table inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Inheritance and reverse relations¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Specifying the parent link field¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Proxy models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "QuerySets still return the model that was requested¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Base class restrictions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Proxy model managers¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Differences between proxy inheritance and unmanaged models¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Multiple inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field name “hiding” is not permitted¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Organizing models in a package¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example:",
+      "code": "from django.db import models\n\n\nclass Musician(models.Model):\n    first_name = models.CharField(max_length=50)\n    last_name = models.CharField(max_length=50)\n    instrument = models.CharField(max_length=100)\n\n\nclass Album(models.Model):\n    artist = models.ForeignKey(Musician, on_delete=models.CASCADE)\n    name = models.CharField(max_length=100)\n    release_date = models.DateField()\n    num_stars = models.IntegerField()"
+    },
+    {
+      "description": "Given a model instance, the display value for a field with choices can be accessed using the get_FOO_display() method. For example:",
+      "code": "from django.db import models\n\n\nclass Person(models.Model):\n    SHIRT_SIZES = {\n        \"S\": \"Small\",\n        \"M\": \"Medium\",\n        \"L\": \"Large\",\n    }\n    name = models.CharField(max_length=60)\n    shirt_size = models.CharField(max_length=1, choices=SHIRT_SIZES)"
+    },
+    {
+      "description": "The primary key field is read-only. If you change the value of the primary key on an existing object and then save it, a new object will be created alongside the old one. For example:",
+      "code": "from django.db import models\n\n\nclass Fruit(models.Model):\n    name = models.CharField(max_length=100, primary_key=True)"
+    },
+    {
+      "description": "By default, Django gives each model an auto-incrementing primary key with the type specified per app in AppConfig.default_auto_field or globally in the DEFAULT_AUTO_FIELD setting. For example:",
+      "code": "id = models.BigAutoField(primary_key=True)"
+    },
+    {
+      "description": "It’s suggested, but not required, that the name of a ForeignKey field (manufacturer in the example above) be the name of the model, lowercase. You can call the field whatever you want. For example:",
+      "code": "class Car(models.Model):\n    company_that_makes_it = models.ForeignKey(\n        Manufacturer,\n        on_delete=models.CASCADE,\n    )\n    # ..."
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_many/",
+    "https://docs.djangoproject.com/en/stable/ref/models/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/one_to_one/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/ref/models/class/",
+    "https://docs.djangoproject.com/en/stable/glossary/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

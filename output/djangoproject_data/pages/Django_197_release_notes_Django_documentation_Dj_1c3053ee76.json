@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.7/",
+  "title": "Django 1.9.7 release notes | Django documentation | Django",
+  "content": "Django 1.9.7 fixes several bugs in 1.9.6.\n\nRemoved the need for the request context processor on the admin login page to fix a regression in 1.9 (#26558).\n\nFixed translation of password validators’ help_text in forms (#26544).\n\nFixed a regression causing the cached template loader to crash when using lazy template names (#26603).\n\nFixed on_commit callbacks execution order when callbacks make transactions (#26627).\n\nFixed HStoreField to raise a ValidationError instead of crashing on non-dictionary JSON input (#26672).\n\nFixed dbshell crash on PostgreSQL with an empty database name (#26698).\n\nFixed a regression in queries on a OneToOneField that has to_field and primary_key=True (#26667).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

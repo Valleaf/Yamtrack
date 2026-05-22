@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.8/",
+  "title": "Django 2.0.8 release notes | Django documentation | Django",
+  "content": "Django 2.0.8 fixes a security issue and several bugs in 2.0.7.\n\nIf the CommonMiddleware and the APPEND_SLASH setting are both enabled, and if the project has a URL pattern that accepts any path ending in a slash (many content management systems have such a pattern), then a request to a maliciously crafted URL of that site could lead to a redirect to another site, enabling phishing and other attacks.\n\nCommonMiddleware now escapes leading slashes to prevent redirects to other domains.\n\nFixed a regression in Django 2.0.7 that broke the regex lookup on MariaDB (even though MariaDB isn’t officially supported) (#29544).\n\nFixed a regression where django.template.Template crashed if the template_string argument is lazy (#29617).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-14574: Open redirect possibility in CommonMiddleware¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.8/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.9/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

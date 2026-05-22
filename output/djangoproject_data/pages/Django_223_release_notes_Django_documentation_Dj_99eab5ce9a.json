@@ -1,0 +1,37 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.3/",
+  "title": "Django 2.2.3 release notes | Django documentation | Django",
+  "content": "Django 2.2.3 fixes a security issue and several bugs in 2.2.2. Also, the latest string translations from Transifex are incorporated.\n\nWhen deployed behind a reverse-proxy connecting to Django via HTTPS, django.http.HttpRequest.scheme would incorrectly detect client requests made via HTTP as using HTTPS. This entails incorrect results for is_secure(), and build_absolute_uri(), and that HTTP requests would not be redirected to HTTPS in accordance with SECURE_SSL_REDIRECT.\n\nHttpRequest.scheme now respects SECURE_PROXY_SSL_HEADER, if it is configured, and the appropriate header is set on the request, for both HTTP and HTTPS requests.\n\nIf you deploy Django behind a reverse-proxy that forwards HTTP requests, and that connects to Django via HTTPS, be sure to verify that your application correctly handles code paths relying on scheme, is_secure(), build_absolute_uri(), and SECURE_SSL_REDIRECT.\n\nFixed a regression in Django 2.2 where Avg, StdDev, and Variance crash with filter argument (#30542).\n\nFixed a regression in Django 2.2.2 where auto-reloader crashes with AttributeError, e.g. when using ipdb (#30588).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2019-12781: Incorrect HTTP detection with reverse-proxy connecting via HTTPS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.3/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.4/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

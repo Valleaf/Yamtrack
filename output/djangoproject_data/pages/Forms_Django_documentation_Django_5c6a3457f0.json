@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/forms/",
+  "title": "Forms | Django documentation | Django",
+  "content": "Detailed form API reference. For introductory material, see the Working with forms topic guide.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Forms¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/forms/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/models/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/renderers/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/validation/",
+    "https://docs.djangoproject.com/en/stable/ref/files/uploads/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

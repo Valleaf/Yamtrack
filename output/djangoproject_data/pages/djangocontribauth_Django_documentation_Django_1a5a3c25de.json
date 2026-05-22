@@ -1,0 +1,131 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+  "title": "django.contrib.auth | Django documentation | Django",
+  "content": "This document provides API reference material for the components of Django’s authentication system. For more details on the usage of these components or how to customize authentication and authorization see the authentication topic guide.\n\nUser objects have the following fields:\n\nRequired. 150 characters or fewer. Usernames may contain alphanumeric, _, @, +, . and - characters.\n\nThe max_length should be sufficient for many use cases. If you need a longer length, please use a custom user model.\n\nOptional (blank=True). 150 characters or fewer.\n\nOptional (blank=True). 150 characters or fewer.\n\nOptional (blank=True). Email address.\n\nRequired. A hash of, and metadata about, the password. (Django doesn’t store the raw password.) Raw passwords can be arbitrarily long and can contain any character. The metadata in this field may mark the password as unusable. See the password documentation.\n\nMany-to-many relationship to Group\n\nMany-to-many relationship to Permission\n\nBoolean. Allows this user to access the admin site.\n\nBoolean. Marks this user account as active. We recommend that you set this flag to False instead of deleting accounts. That way, if your applications have any foreign keys to users, the foreign keys won’t break.\n\nThis doesn’t necessarily control whether or not the user can log in. Authentication backends aren’t required to check for the is_active flag but the default backend (ModelBackend) and the RemoteUserBackend do. You can use AllowAllUsersModelBackend or AllowAllUsersRemoteUserBackend if you want to allow inactive users to login. In this case, you’ll also want to customize the AuthenticationForm used by the LoginView as it rejects inactive users. Be aware that the permission-checking methods such as has_perm() and the authentication in the Django admin all return False for inactive users.\n\nBoolean. Treats this user as having all permissions without assigning any permission to it in particular.\n\nA datetime of the user’s last login.\n\nThe date/time when the account was created.\n\nRead-only attribute which is always True (as opposed to AnonymousUser.is_authenticated which is always False). This is a way to tell if the user has been authenticated. This does not imply any permissions and doesn’t check if the user is active or has a valid session. Even though normally you will check this attribute on request.user to find out whether it has been populated by the AuthenticationMiddleware (representing the currently logged-in user), you should know this attribute is True for any User instance.\n\nRead-only attribute which is always False. This is a way of differentiating User and AnonymousUser objects. Generally, you should prefer using is_authenticated to this attribute.\n\nReturns the username for the user. Since the User model can be swapped out, you should use this method instead of referencing the username attribute directly.\n\nReturns the first_name plus the last_name, with a space in between.\n\nReturns the first_name.\n\nSets the user’s password to the given raw string, taking care of the password hashing. Doesn’t save the User object.\n\nWhen the raw_password is None, the password will be set to an unusable password, as if set_unusable_password() were used.\n\nAsynchronous version: acheck_password()\n\nReturns True if the given raw string is the correct password for the user. (This takes care of the password hashing in making the comparison.)\n\nMarks the user as having no password set by updating the metadata in the password field. This isn’t the same as having a blank string for a password. check_password() for this user will never return True. Doesn’t save the User object.\n\nYou may need this if authentication for your application takes place against an existing external source such as an LDAP directory.\n\nPassword reset restriction\n\nUsers having an unusable password will not able to request a password reset email via PasswordResetView.\n\nReturns False if set_unusable_password() has been called for this user.\n\nAsynchronous version: aget_user_permissions()\n\nReturns a set of permission strings that the user has directly.\n\nIf obj is passed in, only returns the user permissions for this specific object.\n\naget_user_permissions() method was added.\n\nAsynchronous version: aget_group_permissions()\n\nReturns a set of permission strings that the user has, through their groups.\n\nIf obj is passed in, only returns the group permissions for this specific object.\n\naget_group_permissions() method was added.\n\nAsynchronous version: aget_all_permissions()\n\nReturns a set of permission strings that the user has, both through group and user permissions.\n\nIf obj is passed in, only returns the permissions for this specific object.\n\naget_all_permissions() method was added.\n\nAsynchronous version: ahas_perm()\n\nReturns True if the user has the specified permission, where perm is in the format \"<app label>.<permission codename>\". (see documentation on permissions). If the user is inactive, this method will always return False. For an active superuser, this method will always return True.\n\nIf obj is passed in, this method won’t check for a permission for the model, but for this specific object.\n\nahas_perm() method was added.\n\nAsynchronous version: ahas_perms()\n\nReturns True if the user has each of the specified permissions, where each perm is in the format \"<app label>.<permission codename>\". If the user is inactive, this method will always return False. For an active superuser, this method will always return True.\n\nIf obj is passed in, this method won’t check for permissions for the model, but for the specific object.\n\nahas_perms() method was added.\n\nAsynchronous version: ahas_module_perms()\n\nReturns True if the user has any permissions in the given package (the Django app label). If the user is inactive, this method will always return False. For an active superuser, this method will always return True.\n\nahas_module_perms() method was added.\n\nSends an email to the user. If from_email is None, Django uses the DEFAULT_FROM_EMAIL. Any **kwargs are passed to the underlying send_mail() call.\n\nThe User model has a custom manager that has the following helper methods (in addition to the methods provided by BaseUserManager):\n\nAsynchronous version: acreate_user()\n\nCreates, saves and returns a User.\n\nThe username and password are set as given. The domain portion of email is automatically converted to lowercase, and the returned User object will have is_active set to True.\n\nIf no password is provided, set_unusable_password() will be called.\n\nIf no email is provided, email will be set to an empty string.\n\nThe extra_fields keyword arguments are passed through to the User’s __init__ method to allow setting arbitrary fields on a custom user model.\n\nSee Creating users for example usage.\n\nacreate_user() method was added.\n\nAsynchronous version: acreate_superuser()\n\nSame as create_user(), but sets is_staff and is_superuser to True.\n\nacreate_superuser() method was added.\n\nReturns users that have the given permission perm either in the \"<app label>.<permission codename>\" format or as a Permission instance. Returns an empty queryset if no users who have the perm found.\n\nIf is_active is True (default), returns only active users, or if False, returns only inactive users. Use None to return all users irrespective of active state.\n\nIf include_superusers is True (default), the result will include superusers.\n\nIf backend is passed in and it’s defined in AUTHENTICATION_BACKENDS, then this method will use it. Otherwise, it will use the backend in AUTHENTICATION_BACKENDS, if there is only one, or raise an exception.\n\ndjango.contrib.auth.models.AnonymousUser is a class that implements the django.contrib.auth.models.User interface, with these differences:\n\nusername is always the empty string.\n\nget_username() always returns the empty string.\n\nis_anonymous is True instead of False.\n\nis_authenticated is False instead of True.\n\nis_staff and is_superuser are always False.\n\nis_active is always False.\n\ngroups and user_permissions are always empty.\n\nset_password(), check_password(), save() and delete() raise NotImplementedError.\n\nIn practice, you probably won’t need to use AnonymousUser objects on your own, but they’re used by web requests, as explained in the next section.\n\nPermission objects have the following fields:\n\nRequired. 255 characters or fewer. Example: 'Can vote'.\n\nRequired. A foreign key to the ContentType model.\n\nRequired. 100 characters or fewer. Example: 'can_vote'.\n\nPermission objects have the standard data-access methods like any other Django model.\n\nGroup objects have the following fields:\n\nRequired. 150 characters or fewer. Any characters are permitted. Example: 'Awesome Users'.\n\nMany-to-many field to Permission:\n\nA field validator allowing only ASCII letters and numbers, in addition to @, ., +, -, and _.\n\nA field validator allowing Unicode characters, in addition to @, ., +, -, and _. The default validator for User.username.\n\nThe auth framework uses the following signals that can be used for notification when a user logs in or out.\n\nSent when a user logs in successfully.\n\nArguments sent with this signal:\n\nThe class of the user that just logged in.\n\nThe current HttpRequest instance.\n\nThe user instance that just logged in.\n\nSent when the logout method is called.\n\nAs above: the class of the user that just logged out or None if the user was not authenticated.\n\nThe current HttpRequest instance.\n\nThe user instance that just logged out or None if the user was not authenticated.\n\nSent when the user failed to login successfully\n\nThe name of the module used for authentication.\n\nA dictionary of keyword arguments containing the user credentials that were passed to authenticate() or your own custom authentication backend. Credentials matching a set of ‘sensitive’ patterns (including password) will not be sent in the clear as part of the signal.\n\nThe HttpRequest object, if one was provided to authenticate().\n\nThis section details the authentication backends that come with Django. For information on how to use them and how to write your own authentication backends, see the Other authentication sources section of the User authentication guide.\n\nThe following backends are available in django.contrib.auth.backends:\n\nA base class that provides default implementations for all required methods. By default, it will reject any user and provide no permissions.\n\nAsynchronous version: aget_user_permissions()\n\nReturns an empty set.\n\naget_user_permissions() function was added.\n\nAsynchronous version: aget_group_permissions()\n\nReturns an empty set.\n\naget_group_permissions() function was added.\n\nAsynchronous version: aget_all_permissions()\n\nUses get_user_permissions() and get_group_permissions() to get the set of permission strings the user_obj has.\n\naget_all_permissions() function was added.\n\nAsynchronous version: ahas_perm()\n\nUses get_all_permissions() to check if user_obj has the permission string perm.\n\nahas_perm() function was added.\n\nThis is the default authentication backend used by Django. It authenticates using credentials consisting of a user identifier and password. For Django’s default user model, the user identifier is the username, for custom user models it is the field specified by USERNAME_FIELD (see Customizing Users and authentication).\n\nIt also handles the default permissions model as defined for User and PermissionsMixin.\n\nhas_perm(), get_all_permissions(), get_user_permissions(), and get_group_permissions() allow an object to be passed as a parameter for object-specific permissions, but this backend does not implement them other than returning an empty set of permissions if obj is not None.\n\nwith_perm() also allows an object to be passed as a parameter, but unlike others methods it returns an empty queryset if obj is not None.\n\nAsynchronous version: aauthenticate()\n\nTries to authenticate username with password by calling User.check_password. If no username is provided, it tries to fetch a username from kwargs using the key CustomUser.USERNAME_FIELD. Returns an authenticated user or None.\n\nrequest is an HttpRequest and may be None if it wasn’t provided to authenticate() (which passes it on to the backend).\n\naauthenticate() function was added.\n\nAsynchronous version: aget_user_permissions()\n\nReturns the set of permission strings the user_obj has from their own user permissions. Returns an empty set if is_anonymous or is_active is False.\n\naget_user_permissions() function was added.\n\nAsynchronous version: aget_group_permissions()\n\nReturns the set of permission strings the user_obj has from the permissions of the groups they belong. Returns an empty set if is_anonymous or is_active is False.\n\naget_group_permissions() function was added.\n\nAsynchronous version: aget_all_permissions()\n\nReturns the set of permission strings the user_obj has, including both user permissions and group permissions. Returns an empty set if is_anonymous or is_active is False.\n\naget_all_permissions() function was added.\n\nAsynchronous version: ahas_perm()\n\nUses get_all_permissions() to check if user_obj has the permission string perm. Returns False if the user is not is_active.\n\nahas_perm() function was added.\n\nAsynchronous version: ahas_module_perms()\n\nReturns whether the user_obj has any permissions on the app app_label.\n\nahas_module_perms() function was added.\n\nReturns whether the user is allowed to authenticate. To match the behavior of AuthenticationForm which prohibits inactive users from logging in, this method returns False for users with is_active=False. Custom user models that don’t have an is_active field are allowed.\n\nReturns all active users who have the permission perm either in the form of \"<app label>.<permission codename>\" or a Permission instance. Returns an empty queryset if no users who have the perm found.\n\nIf is_active is True (default), returns only active users, or if False, returns only inactive users. Use None to return all users irrespective of active state.\n\nIf include_superusers is True (default), the result will include superusers.\n\nSame as ModelBackend except that it doesn’t reject inactive users because user_can_authenticate() always returns True.\n\nWhen using this backend, you’ll likely want to customize the AuthenticationForm used by the LoginView by overriding the confirm_login_allowed() method as it rejects inactive users.\n\nUse this backend to take advantage of external-to-Django-handled authentication. It authenticates using usernames passed in request.META['REMOTE_USER']. See the Authenticating against REMOTE_USER documentation.\n\nIf you need more control, you can create your own authentication backend that inherits from this class and override these attributes or methods:\n\nTrue or False. Determines whether or not a user object is created if not already in the database Defaults to True.\n\nAsynchronous version: aauthenticate()\n\nThe username passed as remote_user is considered trusted. This method returns the user object with the given username, creating a new user object if create_unknown_user is True.\n\nReturns None if create_unknown_user is False and a User object with the given username is not found in the database.\n\nrequest is an HttpRequest and may be None if it wasn’t provided to authenticate() (which passes it on to the backend).\n\naauthenticate() function was added.\n\nPerforms any cleaning on the username (e.g. stripping LDAP DN information) prior to using it to get or create a user object. Returns the cleaned username.\n\nAsynchronous version: aconfigure_user()\n\nConfigures the user on each authentication attempt. This method is called immediately after fetching or creating the user being authenticated, and can be used to perform custom setup actions, such as setting the user’s groups based on attributes in an LDAP directory. Returns the user object. When fetching or creating an user is called from a synchronous context, configure_user is called, aconfigure_user is called from async contexts.\n\nThe setup can be performed either once when the user is created (created is True) or on existing users (created is False) as a way of synchronizing attributes between the remote and the local systems.\n\nrequest is an HttpRequest and may be None if it wasn’t provided to authenticate() (which passes it on to the backend).\n\naconfigure_user() function was added.\n\nReturns whether the user is allowed to authenticate. This method returns False for users with is_active=False. Custom user models that don’t have an is_active field are allowed.\n\nSame as RemoteUserBackend except that it doesn’t reject inactive users because user_can_authenticate always returns True.\n\nAsynchronous version: aget_user()\n\nReturns the user model instance associated with the given request’s session.\n\nIt checks if the authentication backend stored in the session is present in AUTHENTICATION_BACKENDS. If so, it uses the backend’s get_user() method to retrieve the user model instance and then verifies the session by calling the user model’s get_session_auth_hash() method. If the verification fails and SECRET_KEY_FALLBACKS are provided, it verifies the session against each fallback key using get_session_auth_fallback_hash().\n\nReturns an instance of AnonymousUser if the authentication backend stored in the session is no longer in AUTHENTICATION_BACKENDS, if a user isn’t returned by the backend’s get_user() method, or if the session auth hash doesn’t validate.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "User model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Manager methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "AnonymousUser object¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Permission model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Group model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Validators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Login and logout signals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Authentication backends¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Available authentication backends¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Utility functions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Required. 255 characters or fewer. Example: 'Can vote'.",
+      "code": "group.permissions.set([permission_list])\ngroup.permissions.add(permission, permission, ...)\ngroup.permissions.remove(permission, permission, ...)\ngroup.permissions.clear()"
+    },
+    {
+      "description": "Required. 100 characters or fewer. Example: 'can_vote'.",
+      "code": "group.permissions.set([permission_list])\ngroup.permissions.add(permission, permission, ...)\ngroup.permissions.remove(permission, permission, ...)\ngroup.permissions.clear()"
+    },
+    {
+      "description": "Required. 150 characters or fewer. Any characters are permitted. Example: 'Awesome Users'.",
+      "code": "group.permissions.set([permission_list])\ngroup.permissions.add(permission, permission, ...)\ngroup.permissions.remove(permission, permission, ...)\ngroup.permissions.clear()"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/passwords/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/howto/auth-remote-user/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/javascript/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

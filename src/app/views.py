@@ -220,13 +220,31 @@ def media_search(request):
     # For music, mb_type is the type filter (album/ep/single/artist)
     mb_type = request.GET.get("mb_type", "")
 
-    # only receives source when searching with secondary source
-    source = request.GET.get(
-        "source",
-        mb_type if media_type == "music" and mb_type else config.get_default_source_name(media_type).value,
-    )
+    # Determine all potential sources for aggregation
+    sources_to_check = set()
+    if media_type == "music":
+        # For music, include known music sources
+        sources_to_check.add(config.get_default_source_name(media_type).value)
+        sources_to_check.add("musicbrainz") # Assuming musicbrainz is a source
+    else:
+        # For other media, include all sources available in the config/system
+        sources_to_check.update(config.get_all_available_sources())
 
-    data = services.search(media_type, query, page, source)
+    # Initial search structure to hold aggregated results
+    all_results = {"results": []}
+
+    # Iterate over sources and aggregate results
+    for source in sources_to_check:
+        # Only search if the source is relevant for the current media type
+        if source != "all" and services.is_source_available(source, media_type):
+            source_data = services.search(media_type, query, page, source)
+            if source_data.get("results"):
+                all_results["results"].extend(source_data["results"])
+                # Optionally store results grouped by source if needed in the template context
+                all_results[f"results_{source}"] = source_data["results"]
+
+    # Use the aggregated results list
+    data = all_results
 
     # Enrich search results with user tracking data
     # Skip enrichment for artist results (not trackable items)

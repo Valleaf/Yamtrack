@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.12/",
+  "title": "Django 1.8.12 release notes | Django documentation | Django",
+  "content": "Django 1.8.12 fixes several bugs in 1.8.11.\n\nMade MultiPartParser ignore filenames that normalize to an empty string to fix crash in MemoryFileUploadHandler on specially crafted user input (#26325).\n\nFixed data loss on SQLite where DurationField values with fractional seconds could be saved as None (#26324).\n\nRestored the functionality of the admin’s raw_id_fields in list_editable (#26387).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.12 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.12/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.13/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.11/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

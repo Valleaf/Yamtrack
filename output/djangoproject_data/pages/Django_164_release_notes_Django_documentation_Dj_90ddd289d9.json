@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.6.4/",
+  "title": "Django 1.6.4 release notes | Django documentation | Django",
+  "content": "Django 1.6.4 fixes several bugs in 1.6.3.\n\nAdded backwards compatibility support for the django.contrib.messages cookie format of Django 1.4 and earlier to facilitate upgrading to 1.6 from 1.4 (#22426).\n\nRestored the ability to reverse() views created using functools.partial() (#22486).\n\nFixed the object_id of the LogEntry that’s created after a user password change in the admin (#22515).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.6.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.6.4/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

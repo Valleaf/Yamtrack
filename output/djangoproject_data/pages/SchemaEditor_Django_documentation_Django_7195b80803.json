@@ -1,0 +1,122 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/schema-editor/",
+  "title": "SchemaEditor | Django documentation | Django",
+  "content": "Django’s migration system is split into two parts; the logic for calculating and storing what operations should be run (django.db.migrations), and the database abstraction layer that turns things like “create a model” or “delete a field” into SQL - which is the job of the SchemaEditor.\n\nIt’s unlikely that you will want to interact directly with SchemaEditor as a normal developer using Django, but if you want to write your own migration system, or have more advanced needs, it’s a lot nicer than writing SQL.\n\nEach database backend in Django supplies its own version of SchemaEditor, and it’s always accessible via the connection.schema_editor() context manager:\n\nIt must be used via the context manager as this allows it to manage things like transactions and deferred SQL (like creating ForeignKey constraints).\n\nIt exposes all possible operations as methods, that should be called in the order you wish changes to be applied. Some possible operations or types of change are not possible on all databases - for example, MyISAM does not support foreign key constraints.\n\nIf you are writing or maintaining a third-party database backend for Django, you will need to provide a SchemaEditor implementation in order to work with Django’s migration functionality - however, as long as your database is relatively standard in its use of SQL and relational design, you should be able to subclass one of the built-in Django SchemaEditor classes and tweak the syntax a little.\n\nExecutes the SQL statement passed in, with parameters if supplied. This is a wrapper around the normal database cursors that allows capture of the SQL to a .sql file if the user wishes.\n\nCreates a new table in the database for the provided model, along with any unique constraints or indexes it requires.\n\nDrops the model’s table in the database along with any unique constraints or indexes it has.\n\nAdds index to model’s table.\n\nRemoves index from model’s table.\n\nRenames old_index from model’s table to new_index.\n\nAdds constraint to model’s table.\n\nRemoves constraint from model’s table.\n\nChanges a model’s unique_together value; this will add or remove unique constraints from the model’s table until they match the new value.\n\nChanges a model’s index_together value; this will add or remove indexes from the model’s table until they match the new value.\n\nRenames the model’s table from old_db_table to new_db_table.\n\nChange the model’s table comment to new_db_table_comment.\n\nMoves the model’s table from one tablespace to another.\n\nAdds a column (or sometimes multiple) to the model’s table to represent the field. This will also add indexes or a unique constraint if the field has db_index=True or unique=True.\n\nIf the field is a ManyToManyField without a value for through, instead of creating a column, it will make a table to represent the relationship. If through is provided, it is a no-op.\n\nIf the field is a ForeignKey, this will also add the foreign key constraint to the column.\n\nRemoves the column(s) representing the field from the model’s table, along with any unique constraints, foreign key constraints, or indexes caused by that field.\n\nIf the field is a ManyToManyField without a value for through, it will remove the table created to track the relationship. If through is provided, it is a no-op.\n\nThis transforms the field on the model from the old field to the new one. This includes changing the name of the column (the db_column attribute), changing the type of the field (if the field class changes), changing the NULL status of the field, adding or removing field-only unique constraints and indexes, changing primary key, and changing the destination of ForeignKey constraints.\n\nThe most common transformation this cannot do is transforming a ManyToManyField into a normal Field or vice-versa; Django cannot do this without losing data, and so it will refuse to do it. Instead, remove_field() and add_field() should be called separately.\n\nIf the database has the supports_combined_alters, Django will try and do as many of these in a single database call as possible; otherwise, it will issue a separate ALTER statement for each change, but will not issue ALTERs where no change is required.\n\nAll attributes should be considered read-only unless stated otherwise.\n\nA connection object to the database. A useful attribute of the connection is alias which can be used to determine the name of the database being accessed.\n\nThis is useful when doing data migrations for migrations with multiple databases.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "SchemaEditor¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "execute()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "create_model()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "delete_model()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "add_index()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "remove_index()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "rename_index()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "add_constraint()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "remove_constraint()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_unique_together()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_index_together()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_db_table()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_db_table_comment()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_db_tablespace()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "add_field()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "remove_field()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "alter_field()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "connection¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/schema-editor/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/howto/writing-migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

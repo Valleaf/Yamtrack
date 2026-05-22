@@ -1,0 +1,77 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/signals/",
+  "title": "Signals | Django documentation | Django",
+  "content": "Django includes a “signal dispatcher” which helps decoupled applications get notified when actions occur elsewhere in the framework. In a nutshell, signals allow certain senders to notify a set of receivers that some action has taken place. They’re especially useful when many pieces of code may be interested in the same events.\n\nFor example, a third-party app can register to be notified of settings changes:\n\nDjango’s built-in signals let user code get notified of certain actions.\n\nYou can also define and send your own custom signals. See Defining and sending signals below.\n\nSignals give the appearance of loose coupling, but they can quickly lead to code that is hard to understand, adjust and debug.\n\nWhere possible you should opt for directly calling the handling code, rather than dispatching via a signal.\n\nTo receive a signal, register a receiver function using the Signal.connect() method. The receiver function is called when the signal is sent. All of the signal’s receiver functions are called one at a time, in the order they were registered.\n\nreceiver – The callback function which will be connected to this signal. See Receiver functions for more information.\n\nsender – Specifies a particular sender to receive signals from. See Connecting to signals sent by specific senders for more information.\n\nweak – Django stores signal handlers as weak references by default. Thus, if your receiver is a local function, it may be garbage collected. To prevent this, pass weak=False when you call the signal’s connect() method.\n\ndispatch_uid – A unique identifier for a signal receiver in cases where duplicate signals may be sent. See Preventing duplicate signals for more information.\n\nLet’s see how this works by registering a signal that gets called after each HTTP request is finished. We’ll be connecting to the request_finished signal.\n\nFirst, we need to define a receiver function. A receiver can be any Python function or method:\n\nNotice that the function takes a sender argument, along with wildcard keyword arguments (**kwargs); all signal handlers must take these arguments.\n\nWe’ll look at senders a bit later, but right now look at the **kwargs argument. All signals send keyword arguments, and may change those keyword arguments at any time. In the case of request_finished, it’s documented as sending no arguments, which means we might be tempted to write our signal handling as my_callback(sender).\n\nThis would be wrong – in fact, Django will throw an error if you do so. That’s because at any point arguments could get added to the signal and your receiver must be able to handle those new arguments.\n\nReceivers may also be asynchronous functions, with the same signature but declared using async def:\n\nSignals can be sent either synchronously or asynchronously, and receivers will automatically be adapted to the correct call-style. See sending signals for more information.\n\nThere are two ways you can connect a receiver to a signal. You can take the manual connect route:\n\nAlternatively, you can use a receiver() decorator:\n\nsignal – A signal or a list of signals to connect a function to.\n\nkwargs – Wildcard keyword arguments to pass to a function.\n\nHere’s how you connect with the decorator:\n\nNow, our my_callback function will be called each time a request finishes.\n\nWhere should this code live?\n\nStrictly speaking, signal handling and registration code can live anywhere you like, although it’s recommended to avoid the application’s root module and its models module to minimize side-effects of importing code.\n\nIn practice, signal handlers are usually defined in a signals submodule of the application they relate to. Signal receivers are connected in the ready() method of your application configuration class. If you’re using the receiver() decorator, import the signals submodule inside ready(), this will implicitly connect signal handlers:\n\nThe ready() method may be executed more than once during testing, so you may want to guard your signals from duplication if your receiver is a bound method on an instance that may be recreated.\n\nSome signals get sent many times, but you’ll only be interested in receiving a certain subset of those signals. For example, consider the django.db.models.signals.pre_save signal sent before a model gets saved. Most of the time, you don’t need to know when any model gets saved – just when one specific model is saved.\n\nIn these cases, you can register to receive signals sent only by particular senders. In the case of django.db.models.signals.pre_save, the sender will be the model class being saved, so you can indicate that you only want signals sent by some model:\n\nThe my_handler function will only be called when an instance of MyModel is saved.\n\nDifferent signals use different objects as their senders; you’ll need to consult the built-in signal documentation for details of each particular signal.\n\nWhen dispatch_uid is not provided, Django identifies each receiver using its Python object identity and registers it only once. For module-level functions, static methods, and class methods, the identity is stable, so connecting the same receiver more than once has no effect:\n\nBound methods, which take a self argument, are different. Their identity is tied to the specific instance, so connecting the same method from a new instance registers it as an additional receiver:\n\nWhen using a bound method as a receiver, multiple registrations can be prevented by supplying a unique dispatch_uid. This identifier will usually be a string, although any hashable object will suffice. The receiver will only be bound to the signal once for each unique dispatch_uid value:\n\nYour applications can take advantage of the signal infrastructure and provide its own signals.\n\nWhen to use custom signals\n\nSignals are implicit function calls which make debugging harder. If the sender and receiver of your custom signal are both within your project, you’re better off using an explicit function call.\n\nAll signals are django.dispatch.Signal instances.\n\nThis declares a pizza_done signal.\n\nThere are two ways to send signals synchronously in Django.\n\nSignals may also be sent asynchronously.\n\nTo send a signal, call either Signal.send(), Signal.send_robust(), await Signal.asend(), or await Signal.asend_robust(). You must provide the sender argument (which is a class most of the time) and may provide as many other keyword arguments as you like.\n\nFor example, here’s how sending our pizza_done signal might look:\n\nAll four methods return a list of tuple pairs [(receiver, response), ...], representing the list of called receiver functions and their response values.\n\nsend() differs from send_robust() in how exceptions raised by receiver functions are handled. send() does not catch any exceptions raised by receivers; it simply allows errors to propagate. Thus not all receivers may be notified of a signal in the face of an error.\n\nsend_robust() catches all errors derived from Python’s Exception class, and ensures all receivers are notified of the signal. If an error occurs, the error instance is returned in the tuple pair for the receiver that raised the error.\n\nThe tracebacks are present on the __traceback__ attribute of the errors returned when calling send_robust().\n\nasend() is similar to send(), but it is a coroutine that must be awaited:\n\nWhether synchronous or asynchronous, receivers will be correctly adapted to whether send() or asend() is used. Synchronous receivers will be called using sync_to_async() when invoked via asend(). Asynchronous receivers will be called using async_to_sync() when invoked via send(). Similar to the case for middleware, there is a small performance cost to adapting receivers in this way. Note that in order to reduce the number of sync/async calling-style switches within a send() or asend() call, the receivers are grouped by whether or not they are async before being called. This means that an asynchronous receiver registered before a synchronous receiver may be executed after the synchronous receiver. In addition, async receivers are executed concurrently using asyncio.gather().\n\nAll built-in signals, except those in the async request-response cycle, are dispatched using Signal.send().\n\nTo disconnect a receiver from a signal, call Signal.disconnect(). The arguments are as described in Signal.connect(). The method returns True if a receiver was disconnected and False if not. When sender is passed as a lazy reference to <app label>.<model>, this method always returns None.\n\nThe receiver argument indicates the registered receiver to disconnect. It may be None if dispatch_uid is used to identify the receiver.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Signals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Listening to signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Receiver functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Connecting receiver functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Connecting to signals sent by specific senders¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Preventing duplicate signals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Defining and sending signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Defining signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sending signals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Disconnecting signals¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "import django.dispatch\n\npizza_done = django.dispatch.Signal()"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/checks/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

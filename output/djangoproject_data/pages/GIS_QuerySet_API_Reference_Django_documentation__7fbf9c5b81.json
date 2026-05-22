@@ -1,0 +1,268 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+  "title": "GIS QuerySet API Reference | Django documentation | Django",
+  "content": "The spatial lookups in this section are available for GeometryField and RasterField.\n\nFor an introduction, see the spatial lookups introduction. For an overview of what lookups are compatible with a particular spatial backend, refer to the spatial lookup compatibility table.\n\nAll examples in the reference below are given for geometry fields and inputs, but the lookups can be used the same way with rasters on both sides. Whenever a lookup doesn’t support raster input, the input is automatically converted to a geometry where necessary using the ST_Polygon function. See also the introduction to raster lookups.\n\nThe database operators used by the lookups can be divided into three categories:\n\nNative raster support N: the operator accepts rasters natively on both sides of the lookup, and raster input can be mixed with geometry inputs.\n\nBilateral raster support B: the operator supports rasters only if both sides of the lookup receive raster inputs. Raster data is automatically converted to geometries for mixed lookups.\n\nGeometry conversion support C. The lookup does not have native raster support, all raster data is automatically converted to geometries.\n\nThe examples below show the SQL equivalent for the lookups in the different types of raster support. The same pattern applies to all spatial lookups.\n\nST_Contains(rast, rst)\n\nrast__1__contains=(rst, 2)\n\nST_Contains(rast, 1, rst, 2)\n\nST_Contains(ST_Polygon(rast), geom)\n\nrast__1__contains=geom\n\nST_Contains(ST_Polygon(rast, 1), geom)\n\nST_Contains(poly, ST_Polygon(rst))\n\npoly__contains=(rst, 1)\n\nST_Contains(poly, ST_Polygon(rst, 1))\n\nST_Crosses(ST_Polygon(rast), ST_Polygon(rst))\n\nrast__1__crosses=(rst, 2)\n\nST_Crosses(ST_Polygon(rast, 1), ST_Polygon(rst, 2))\n\nST_Crosses(ST_Polygon(rast), geom)\n\nST_Crosses(poly, ST_Polygon(rst))\n\nSpatial lookups with rasters are only supported for PostGIS backends (denominated as PGRaster in this section).\n\nAvailability: PostGIS, MariaDB, MySQL, SpatiaLite, PGRaster (Native)\n\nTests if the geometry or raster field’s bounding box completely contains the lookup geometry’s bounding box.\n\nMBRContains(poly, geom)\n\nMBRContains(poly, geom)\n\nMbrContains(poly, geom)\n\nAvailability: PostGIS, MariaDB, MySQL, SpatiaLite, PGRaster (Native)\n\nTests if the geometry field’s bounding box overlaps the lookup geometry’s bounding box.\n\nMBROverlaps(poly, geom)\n\nMBROverlaps(poly, geom)\n\nMbrOverlaps(poly, geom)\n\nAvailability: PostGIS, MariaDB, MySQL, SpatiaLite, PGRaster (Native)\n\nTests if the geometry field’s bounding box is completely contained by the lookup geometry’s bounding box.\n\nMBRWithin(poly, geom)\n\nMBRWithin(poly, geom)\n\nMbrWithin(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field spatially contains the lookup geometry.\n\nST_Contains(poly, geom)\n\nSDO_CONTAINS(poly, geom)\n\nST_Contains(poly, geom)\n\nST_Contains(poly, geom)\n\nAvailability: PostGIS, PGRaster (Bilateral)\n\nReturns true if the lookup geometry intersects the interior of the geometry field, but not the boundary (or exterior).\n\nST_ContainsProperly(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, PGRaster (Bilateral), SpatiaLite\n\nTests if no point in the geometry field is outside the lookup geometry. [3]\n\nST_CoveredBy(poly, geom)\n\nSDO_COVEREDBY(poly, geom)\n\nMBRCoveredBy(poly, geom)\n\nMBRCoveredBy(poly, geom)\n\nCoveredBy(poly, geom)\n\nMySQL support was added.\n\nMariaDB 12.0.1+ support was added.\n\nAvailability: PostGIS, Oracle, MySQL, PGRaster (Bilateral), SpatiaLite\n\nTests if no point in the lookup geometry is outside the geometry field. [3]\n\nST_Covers(poly, geom)\n\nSDO_COVERS(poly, geom)\n\nMBRCovers(poly, geom)\n\nMySQL support was added.\n\nAvailability: PostGIS, MariaDB, MySQL, SpatiaLite, PGRaster (Conversion)\n\nTests if the geometry field spatially crosses the lookup geometry.\n\nST_Crosses(poly, geom)\n\nST_Crosses(poly, geom)\n\nST_Crosses(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field is spatially disjoint from the lookup geometry.\n\nST_Disjoint(poly, geom)\n\nSDO_GEOM.RELATE(poly, 'DISJOINT', geom, 0.05)\n\nST_Disjoint(poly, geom)\n\nST_Disjoint(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Conversion)\n\nTests if the geometry field is spatially equal to the lookup geometry.\n\nST_Equals(poly, geom)\n\nSDO_EQUAL(poly, geom)\n\nST_Equals(poly, geom)\n\nST_Equals(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field is “equal” to the lookup geometry. On Oracle, MySQL, and SpatiaLite, it tests spatial equality, while on PostGIS it tests equality of bounding boxes.\n\nSDO_EQUAL(poly, geom)\n\nST_Equals(poly, geom)\n\nST_Equals(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field spatially intersects the lookup geometry.\n\nST_Intersects(poly, geom)\n\nSDO_OVERLAPBDYINTERSECT(poly, geom)\n\nST_Intersects(poly, geom)\n\nST_Intersects(poly, geom)\n\nIntersects(poly, geom)\n\nAvailability: PostGIS\n\nTests if the geometry is empty.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nTests if the geometry is valid.\n\nMariaDB, MySQL, PostGIS, SpatiaLite\n\nSDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT(poly, 0.05) = 'TRUE'\n\nMariaDB 12.0.1+ support was added.\n\nAvailability: PostGIS, Oracle 23c+, MariaDB, MySQL, SpatiaLite\n\nReturns the geometry type of the geometry field.\n\nST_GeometryType(geom)\n\nST_GeometryType(geom)\n\nSDO_GEOMETRY.GET_GTYPE(geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field spatially overlaps the lookup geometry.\n\nST_Overlaps(poly, geom)\n\nSDO_OVERLAPS(poly, geom)\n\nST_Overlaps(poly, geom)\n\nST_Overlaps(poly, geom)\n\nAvailability: PostGIS, MariaDB, Oracle, SpatiaLite, PGRaster (Conversion)\n\nTests if the geometry field is spatially related to the lookup geometry by the values given in the given pattern. This lookup requires a tuple parameter, (geom, pattern); the form of pattern will depend on the spatial backend:\n\nOn these spatial backends the intersection pattern is a string comprising nine characters, which define intersections between the interior, boundary, and exterior of the geometry field and the lookup geometry. The intersection pattern matrix may only use the following characters: 1, 2, T, F, or *. This lookup type allows users to “fine tune” a specific geometric relationship consistent with the DE-9IM model. [1]\n\nPostGIS and MariaDB SQL equivalent:\n\nSpatiaLite SQL equivalent:\n\nPostGIS SQL equivalent:\n\nHere the relation pattern is comprised of at least one of the nine relation strings: TOUCH, OVERLAPBDYDISJOINT, OVERLAPBDYINTERSECT, EQUAL, INSIDE, COVEREDBY, CONTAINS, COVERS, ON, and ANYINTERACT. Multiple strings may be combined with the logical Boolean operator OR, for example, 'inside+touch'. [2] The relation strings are case-insensitive.\n\nOracle SQL equivalent:\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite\n\nTests if the geometry field spatially touches the lookup geometry.\n\nST_Touches(poly, geom)\n\nST_Touches(poly, geom)\n\nST_Touches(poly, geom)\n\nSDO_TOUCH(poly, geom)\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Bilateral)\n\nTests if the geometry field is spatially within the lookup geometry.\n\nST_Within(poly, geom)\n\nST_Within(poly, geom)\n\nST_Within(poly, geom)\n\nSDO_INSIDE(poly, geom)\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box is strictly to the left of the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box is strictly to the right of the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Bilateral)\n\nTests if the geometry field’s bounding box overlaps or is to the left of the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Bilateral)\n\nTests if the geometry field’s bounding box overlaps or is to the right of the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box overlaps or is above the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box overlaps or is below the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box is strictly above the lookup geometry’s bounding box.\n\nAvailability: PostGIS, PGRaster (Conversion)\n\nTests if the geometry field’s bounding box is strictly below the lookup geometry’s bounding box.\n\nAvailability: PostGIS, Oracle, MariaDB, MySQL, SpatiaLite, PGRaster (Native)\n\nFor an overview on performing distance queries, please refer to the distance queries introduction.\n\nDistance lookups take the following form:\n\nThe value passed into a distance lookup is a tuple; the first two values are mandatory, and are the geometry to calculate distances to, and a distance value (either a number in units of the field, a Distance object, or a query expression). To pass a band index to the lookup, use a 3-tuple where the second entry is the band index.\n\nOn every distance lookup except dwithin, an optional element, 'spheroid', may be included to use the more accurate spheroid distance calculation functions on fields with a geodetic coordinate system.\n\nOn PostgreSQL, the 'spheroid' option uses ST_DistanceSpheroid instead of ST_DistanceSphere. The simpler ST_Distance function is used with projected coordinate systems. Rasters are converted to geometries for spheroid based lookups.\n\nReturns models where the distance to the geometry field from the lookup geometry is greater than the given distance value.\n\nST_Distance/ST_Distance_Sphere(poly, geom) > 5\n\nST_Distance(poly, geom) > 5\n\nST_Distance(poly, geom) > 5\n\nSDO_GEOM.SDO_DISTANCE(poly, geom, 0.05) > 5\n\nDistance(poly, geom) > 5\n\nReturns models where the distance to the geometry field from the lookup geometry is greater than or equal to the given distance value.\n\nST_Distance/ST_Distance_Sphere(poly, geom) >= 5\n\nST_Distance(poly, geom) >= 5\n\nST_Distance(poly, geom) >= 5\n\nSDO_GEOM.SDO_DISTANCE(poly, geom, 0.05) >= 5\n\nDistance(poly, geom) >= 5\n\nReturns models where the distance to the geometry field from the lookup geometry is less than the given distance value.\n\nST_Distance/ST_Distance_Sphere(poly, geom) < 5\n\nST_Distance(poly, geom) < 5\n\nST_Distance(poly, geom) < 5\n\nSDO_GEOM.SDO_DISTANCE(poly, geom, 0.05) < 5\n\nDistance(poly, geom) < 5\n\nReturns models where the distance to the geometry field from the lookup geometry is less than or equal to the given distance value.\n\nST_Distance/ST_Distance_Sphere(poly, geom) <= 5\n\nST_Distance(poly, geom) <= 5\n\nST_Distance(poly, geom) <= 5\n\nSDO_GEOM.SDO_DISTANCE(poly, geom, 0.05) <= 5\n\nDistance(poly, geom) <= 5\n\nReturns models where the distance to the geometry field from the lookup geometry are within the given distance from one another. Note that you can only provide Distance objects if the targeted geometries are in a projected system. For geographic geometries, you should use units of the geometry field (e.g. degrees for WGS84) .\n\nST_DWithin(poly, geom, 5)\n\nSDO_WITHIN_DISTANCE(poly, geom, 5)\n\nPtDistWithin(poly, geom, 5)\n\nDjango provides some GIS-specific aggregate functions. For details on how to use these aggregate functions, see the topic guide on aggregation.\n\nThis keyword is for Oracle only. It is for the tolerance value used by the SDOAGGRTYPE procedure; the Oracle documentation has more details.\n\nAvailability: PostGIS, MariaDB, MySQL, SpatiaLite\n\nReturns a GEOMETRYCOLLECTION or a MULTI geometry object from the geometry column. This is analogous to a simplified version of the Union aggregate, except it can be several orders of magnitude faster than performing a union because it rolls up geometries into a collection or multi object, not caring about dissolving boundaries.\n\nMariaDB 12.0.1+ support was added.\n\nAvailability: PostGIS, Oracle, SpatiaLite\n\nReturns the extent of all geo_field in the QuerySet as a 4-tuple, comprising the lower left coordinate and the upper right coordinate.\n\nAvailability: PostGIS\n\nReturns the 3D extent of all geo_field in the QuerySet as a 6-tuple, comprising the lower left coordinate and upper right coordinate (each with x, y, and z coordinates).\n\nAvailability: PostGIS, SpatiaLite\n\nReturns a LineString constructed from the point field geometries in the QuerySet. Currently, ordering the queryset has no effect.\n\nAvailability: PostGIS, Oracle, SpatiaLite\n\nThis method returns a GEOSGeometry object comprising the union of every geometry in the queryset. Please note that use of Union is processor intensive and may take a significant amount of time on large querysets.\n\nIf the computation time for using this method is too expensive, consider using Collect instead.\n\nSee OpenGIS Simple Feature Specification For SQL, at Ch. 2.1.13.2, p. 2-13 (The Dimensionally Extended Nine-Intersection Model).\n\nSee SDO_RELATE documentation, from the Oracle Spatial and Graph Developer’s Guide.\n\nFor an explanation of this routine, read Quirks of the “Contains” Spatial Predicate by Martin Davis (a PostGIS developer).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GIS QuerySet API Reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Spatial Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Lookups with rasters¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "bbcontains¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "bboverlaps¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "contained¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "contains¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "contains_properly¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "coveredby¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "covers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "crosses¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "disjoint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "equals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "exact, same_as¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "intersects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "isempty¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "isvalid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "geom_type¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "overlaps¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "relate¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "MariaDB, PostGIS, and SpatiaLite¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Oracle¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "touches¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "within¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "left¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "right¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "overlaps_left¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "overlaps_right¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "overlaps_above¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "overlaps_below¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "strictly_above¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "strictly_below¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Distance Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "distance_gt¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "distance_gte¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "distance_lt¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "distance_lte¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "dwithin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Aggregate Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Collect¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Extent¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Extent3D¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "MakeLine¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Union¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example:",
+      "code": "Zipcode.objects.filter(poly__bbcontains=geom)"
+    },
+    {
+      "description": "Example:",
+      "code": "Zipcode.objects.filter(poly__bboverlaps=geom)"
+    },
+    {
+      "description": "Example:",
+      "code": "Zipcode.objects.filter(poly__contained=geom)"
+    },
+    {
+      "description": "Example:",
+      "code": "Zipcode.objects.filter(poly__contains=geom)"
+    },
+    {
+      "description": "Example:",
+      "code": "Zipcode.objects.filter(poly__contains_properly=geom)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/aggregation/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

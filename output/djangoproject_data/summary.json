@@ -1,0 +1,2781 @@
+{
+  "name": "djangoproject",
+  "total_pages": 693,
+  "base_url": "https://docs.djangoproject.com/en/stable/",
+  "llms_txt_detected": false,
+  "llms_txt_variant": null,
+  "pages": [
+    {
+      "title": "Django documentation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/"
+    },
+    {
+      "title": "Django at a glance | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/overview/"
+    },
+    {
+      "title": "Quick install guide | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/install/"
+    },
+    {
+      "title": "Writing your first Django app, part 1 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial01/"
+    },
+    {
+      "title": "Writing your first Django app, part 2 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial02/"
+    },
+    {
+      "title": "Writing your first Django app, part 3 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial03/"
+    },
+    {
+      "title": "Writing your first Django app, part 4 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial04/"
+    },
+    {
+      "title": "Writing your first Django app, part 5 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial05/"
+    },
+    {
+      "title": "Writing your first Django app, part 6 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial06/"
+    },
+    {
+      "title": "Writing your first Django app, part 7 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial07/"
+    },
+    {
+      "title": "Writing your first Django app, part 8 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/tutorial08/"
+    },
+    {
+      "title": "Advanced tutorial: How to write reusable apps | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/reusable-apps/"
+    },
+    {
+      "title": "Writing your first contribution for Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/contributing/"
+    },
+    {
+      "title": "Django FAQ | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/"
+    },
+    {
+      "title": "General Index | Django Documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/genindex/"
+    },
+    {
+      "title": "Module Index | Django Documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/py-modindex/"
+    },
+    {
+      "title": "Django documentation contents | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/contents/"
+    },
+    {
+      "title": "FAQ: Getting Help | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/help/"
+    },
+    {
+      "title": "Getting started | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/"
+    },
+    {
+      "title": "Using Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/"
+    },
+    {
+      "title": "API Reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/"
+    },
+    {
+      "title": "How-to guides | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/"
+    },
+    {
+      "title": "Models | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/models/"
+    },
+    {
+      "title": "Model field reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/fields/"
+    },
+    {
+      "title": "Model index reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/indexes/"
+    },
+    {
+      "title": "Model Meta options | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/options/"
+    },
+    {
+      "title": "Model class reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/class/"
+    },
+    {
+      "title": "Making queries | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/queries/"
+    },
+    {
+      "title": "QuerySet API reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/querysets/"
+    },
+    {
+      "title": "Lookup API reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/lookups/"
+    },
+    {
+      "title": "Model instance reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/instances/"
+    },
+    {
+      "title": "Related objects reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/relations/"
+    },
+    {
+      "title": "Migrations | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/migrations/"
+    },
+    {
+      "title": "Migration Operations | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/migration-operations/"
+    },
+    {
+      "title": "SchemaEditor | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/schema-editor/"
+    },
+    {
+      "title": "How to create database migrations | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/writing-migrations/"
+    },
+    {
+      "title": "Managers | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/managers/"
+    },
+    {
+      "title": "Performing raw SQL queries | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/sql/"
+    },
+    {
+      "title": "Database transactions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/transactions/"
+    },
+    {
+      "title": "Aggregation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/aggregation/"
+    },
+    {
+      "title": "Search | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/search/"
+    },
+    {
+      "title": "How to create custom model fields | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/"
+    },
+    {
+      "title": "Multiple databases | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/multi-db/"
+    },
+    {
+      "title": "How to write custom lookups | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-lookups/"
+    },
+    {
+      "title": "Query Expressions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/expressions/"
+    },
+    {
+      "title": "Conditional Expressions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/conditional-expressions/"
+    },
+    {
+      "title": "Database Functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/database-functions/"
+    },
+    {
+      "title": "Databases | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/databases/"
+    },
+    {
+      "title": "How to integrate Django with a legacy database | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/legacy-databases/"
+    },
+    {
+      "title": "How to provide initial data for models | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/initial-data/"
+    },
+    {
+      "title": "Database access optimization | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/optimization/"
+    },
+    {
+      "title": "django.contrib.postgres | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/"
+    },
+    {
+      "title": "URL dispatcher | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/urls/"
+    },
+    {
+      "title": "Writing views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/views/"
+    },
+    {
+      "title": "Django shortcut functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/"
+    },
+    {
+      "title": "View decorators | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/decorators/"
+    },
+    {
+      "title": "Asynchronous support | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/async/"
+    },
+    {
+      "title": "Built-in Views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/views/"
+    },
+    {
+      "title": "Request and response objects | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/request-response/"
+    },
+    {
+      "title": "TemplateResponse and SimpleTemplateResponse | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/template-response/"
+    },
+    {
+      "title": "File Uploads | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/file-uploads/"
+    },
+    {
+      "title": "The File object | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/file/"
+    },
+    {
+      "title": "File storage API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/storage/"
+    },
+    {
+      "title": "Managing files | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/files/"
+    },
+    {
+      "title": "How to write a custom storage class | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-file-storage/"
+    },
+    {
+      "title": "Class-based views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/"
+    },
+    {
+      "title": "Built-in class-based generic views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/generic-display/"
+    },
+    {
+      "title": "Form handling with class-based views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/generic-editing/"
+    },
+    {
+      "title": "Using mixins with class-based views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/mixins/"
+    },
+    {
+      "title": "Built-in class-based views API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/"
+    },
+    {
+      "title": "Class-based generic views - flattened index | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/"
+    },
+    {
+      "title": "How to create CSV output | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/outputting-csv/"
+    },
+    {
+      "title": "How to create PDF files | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/outputting-pdf/"
+    },
+    {
+      "title": "Middleware | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/middleware/"
+    },
+    {
+      "title": "Middleware | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/middleware/"
+    },
+    {
+      "title": "Templates | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/templates/"
+    },
+    {
+      "title": "The Django template language | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/templates/language/"
+    },
+    {
+      "title": "Built-in template tags and filters | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/templates/builtins/"
+    },
+    {
+      "title": "django.contrib.humanize | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/"
+    },
+    {
+      "title": "The Django template language: for Python programmers | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/templates/api/"
+    },
+    {
+      "title": "How to create custom template tags and filters | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-template-tags/"
+    },
+    {
+      "title": "How to implement a custom template backend | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-template-backend/"
+    },
+    {
+      "title": "Working with forms | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/forms/"
+    },
+    {
+      "title": "The Forms API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/api/"
+    },
+    {
+      "title": "Form fields | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/fields/"
+    },
+    {
+      "title": "Widgets | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/widgets/"
+    },
+    {
+      "title": "Creating forms from models | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/"
+    },
+    {
+      "title": "Form Assets (the Media class) | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/forms/media/"
+    },
+    {
+      "title": "Formsets | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/forms/formsets/"
+    },
+    {
+      "title": "Form and field validation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/validation/"
+    },
+    {
+      "title": "Django settings | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/settings/"
+    },
+    {
+      "title": "Settings | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/settings/"
+    },
+    {
+      "title": "Applications | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/applications/"
+    },
+    {
+      "title": "Django Exceptions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/exceptions/"
+    },
+    {
+      "title": "django-admin and manage.py | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/django-admin/"
+    },
+    {
+      "title": "How to create custom django-admin commands | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-management-commands/"
+    },
+    {
+      "title": "Testing in Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/testing/"
+    },
+    {
+      "title": "Writing and running tests | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/testing/overview/"
+    },
+    {
+      "title": "Testing tools | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/testing/tools/"
+    },
+    {
+      "title": "Advanced testing topics | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/testing/advanced/"
+    },
+    {
+      "title": "How to deploy Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/"
+    },
+    {
+      "title": "How to deploy with WSGI | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/"
+    },
+    {
+      "title": "How to deploy with ASGI | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/"
+    },
+    {
+      "title": "How to deploy static files | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/static-files/deployment/"
+    },
+    {
+      "title": "How to manage error reporting | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/error-reporting/"
+    },
+    {
+      "title": "Deployment checklist | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/checklist/"
+    },
+    {
+      "title": "The Django admin site | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/"
+    },
+    {
+      "title": "Admin actions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/actions/"
+    },
+    {
+      "title": "The Django admin documentation generator | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs/"
+    },
+    {
+      "title": "Security in Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/security/"
+    },
+    {
+      "title": "Archive of security issues | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/security/"
+    },
+    {
+      "title": "Clickjacking Protection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/clickjacking/"
+    },
+    {
+      "title": "Cross Site Request Forgery protection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/csrf/"
+    },
+    {
+      "title": "Cryptographic signing | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/signing/"
+    },
+    {
+      "title": "Content Security Policy | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/csp/"
+    },
+    {
+      "title": "Internationalization and localization | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/i18n/"
+    },
+    {
+      "title": "Translation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/i18n/translation/"
+    },
+    {
+      "title": "Format localization | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/i18n/formatting/"
+    },
+    {
+      "title": "Time zones | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/i18n/timezones/"
+    },
+    {
+      "title": "Performance and optimization | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/performance/"
+    },
+    {
+      "title": "GeoDjango | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/"
+    },
+    {
+      "title": "User authentication in Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/auth/"
+    },
+    {
+      "title": "Using the Django authentication system | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/auth/default/"
+    },
+    {
+      "title": "Password management in Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/auth/passwords/"
+    },
+    {
+      "title": "Customizing authentication in Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/auth/customizing/"
+    },
+    {
+      "title": "django.contrib.auth | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/auth/"
+    },
+    {
+      "title": "Django’s cache framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/cache/"
+    },
+    {
+      "title": "Logging | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/logging/"
+    },
+    {
+      "title": "Django’s Tasks framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/tasks/"
+    },
+    {
+      "title": "Sending email | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/email/"
+    },
+    {
+      "title": "The syndication feed framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/syndication/"
+    },
+    {
+      "title": "Pagination | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/pagination/"
+    },
+    {
+      "title": "The messages framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/messages/"
+    },
+    {
+      "title": "Serializing Django objects | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/serialization/"
+    },
+    {
+      "title": "How to use sessions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/sessions/"
+    },
+    {
+      "title": "The sitemap framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/"
+    },
+    {
+      "title": "The staticfiles app | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/"
+    },
+    {
+      "title": "Validators | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/validators/"
+    },
+    {
+      "title": "Conditional View Processing | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/conditional-view-processing/"
+    },
+    {
+      "title": "The contenttypes framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/"
+    },
+    {
+      "title": "The flatpages app | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/"
+    },
+    {
+      "title": "The redirects app | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/redirects/"
+    },
+    {
+      "title": "Signals | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/signals/"
+    },
+    {
+      "title": "System check framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/checks/"
+    },
+    {
+      "title": "The “sites” framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/sites/"
+    },
+    {
+      "title": "Unicode data | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/unicode/"
+    },
+    {
+      "title": "Contributing to Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/"
+    },
+    {
+      "title": "Django’s release process | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/release-process/"
+    },
+    {
+      "title": "Organization of the Django Project | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/organization/"
+    },
+    {
+      "title": "The Django source code repository | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/git/"
+    },
+    {
+      "title": "Django’s security policies | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/security/"
+    },
+    {
+      "title": "Mailing lists and Forum | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/mailing-lists/"
+    },
+    {
+      "title": "Design philosophies | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/misc/design-philosophies/"
+    },
+    {
+      "title": "Writing documentation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-documentation/"
+    },
+    {
+      "title": "Third-party distributions of Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/misc/distributions/"
+    },
+    {
+      "title": "API stability | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/misc/api-stability/"
+    },
+    {
+      "title": "Release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/"
+    },
+    {
+      "title": "Django Deprecation Timeline | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/deprecation/"
+    },
+    {
+      "title": "How to manage static files (e.g. images, JavaScript, CSS) | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/static-files/"
+    },
+    {
+      "title": "How to install Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/install/"
+    },
+    {
+      "title": "FAQ: Installation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/install/"
+    },
+    {
+      "title": "Glossary | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/glossary/"
+    },
+    {
+      "title": "Troubleshooting | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/troubleshooting/"
+    },
+    {
+      "title": "django.urls functions for use in URLconfs | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/urls/"
+    },
+    {
+      "title": "Django Utils | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/utils/"
+    },
+    {
+      "title": "django.urls utility functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/urlresolvers/"
+    },
+    {
+      "title": "Generic display views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/"
+    },
+    {
+      "title": "Multiple object mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/"
+    },
+    {
+      "title": "What to read next | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/intro/whatsnext/"
+    },
+    {
+      "title": "contrib packages | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/"
+    },
+    {
+      "title": "Reporting bugs and requesting features | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/bugs-and-features/"
+    },
+    {
+      "title": "Contributing code | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/"
+    },
+    {
+      "title": "How to install Django on Windows | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/windows/"
+    },
+    {
+      "title": "Unit tests | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/"
+    },
+    {
+      "title": "Committing code | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/committing-code/"
+    },
+    {
+      "title": "Working with Git and GitHub | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/working-with-git/"
+    },
+    {
+      "title": "Submitting contributions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/submitting-patches/"
+    },
+    {
+      "title": "Advice for new contributors | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/new-contributors/"
+    },
+    {
+      "title": "Triaging tickets | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/triaging-tickets/"
+    },
+    {
+      "title": "FAQ: General | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/general/"
+    },
+    {
+      "title": "FAQ: Using Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/usage/"
+    },
+    {
+      "title": "FAQ: Databases and models | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/models/"
+    },
+    {
+      "title": "FAQ: The admin | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/admin/"
+    },
+    {
+      "title": "FAQ: Contributing code | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/faq/contributing/"
+    },
+    {
+      "title": "How to customize the shell command | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-shell/"
+    },
+    {
+      "title": "GeoDjango Management Commands | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/commands/"
+    },
+    {
+      "title": "Measurement Objects | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/"
+    },
+    {
+      "title": "GDAL API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/"
+    },
+    {
+      "title": "Database migration operations | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/"
+    },
+    {
+      "title": "Logging | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/logging/"
+    },
+    {
+      "title": "Tasks | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/tasks/"
+    },
+    {
+      "title": "Paginator | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/paginator/"
+    },
+    {
+      "title": "Date-based mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/"
+    },
+    {
+      "title": "Generic date views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/"
+    },
+    {
+      "title": "Geographic Database Functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/"
+    },
+    {
+      "title": "GEOS API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/"
+    },
+    {
+      "title": "PostgreSQL specific aggregation functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/"
+    },
+    {
+      "title": "PostgreSQL specific model fields | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/"
+    },
+    {
+      "title": "PostgreSQL specific query expressions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/"
+    },
+    {
+      "title": "Base views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/"
+    },
+    {
+      "title": "PostgreSQL specific form fields and widgets | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/"
+    },
+    {
+      "title": "GeoDjango Forms API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/"
+    },
+    {
+      "title": "Constraints reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/constraints/"
+    },
+    {
+      "title": "The form rendering API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/renderers/"
+    },
+    {
+      "title": "GIS QuerySet API Reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/"
+    },
+    {
+      "title": "PostgreSQL specific model indexes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/"
+    },
+    {
+      "title": "Uploaded Files and Upload Handlers | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/uploads/"
+    },
+    {
+      "title": "System check framework | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/checks/"
+    },
+    {
+      "title": "Geolocation with GeoIP2 | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/"
+    },
+    {
+      "title": "Django 4.2.30 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.30/"
+    },
+    {
+      "title": "Django 5.2.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.13/"
+    },
+    {
+      "title": "Django 6.0.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.4/"
+    },
+    {
+      "title": "Django 3.2.22 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.22/"
+    },
+    {
+      "title": "Django 3.2.25 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.25/"
+    },
+    {
+      "title": "Django 4.1.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.12/"
+    },
+    {
+      "title": "Django 4.2.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.11/"
+    },
+    {
+      "title": "Django 4.2.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.6/"
+    },
+    {
+      "title": "Django 5.0.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.3/"
+    },
+    {
+      "title": "Django 4.2.25 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.25/"
+    },
+    {
+      "title": "Django 5.1.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.13/"
+    },
+    {
+      "title": "Django 5.2.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.7/"
+    },
+    {
+      "title": "Django 4.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2/"
+    },
+    {
+      "title": "Django 4.2.21 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.21/"
+    },
+    {
+      "title": "Django 5.1.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.9/"
+    },
+    {
+      "title": "Django 5.2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.1/"
+    },
+    {
+      "title": "Django 4.2.26 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.26/"
+    },
+    {
+      "title": "Django 5.1.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.14/"
+    },
+    {
+      "title": "Django 5.2.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.8/"
+    },
+    {
+      "title": "Django 4.2.23 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.23/"
+    },
+    {
+      "title": "Django 5.1.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.11/"
+    },
+    {
+      "title": "Django 5.2.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.3/"
+    },
+    {
+      "title": "PostgreSQL specific database constraints | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/"
+    },
+    {
+      "title": "Simple mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/"
+    },
+    {
+      "title": "Single object mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/"
+    },
+    {
+      "title": "Editing mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/"
+    },
+    {
+      "title": "GeoDjango Model API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/"
+    },
+    {
+      "title": "GeoDjango’s admin site | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/admin/"
+    },
+    {
+      "title": "GeoDjango Database API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/"
+    },
+    {
+      "title": "Geographic Feeds | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/feeds/"
+    },
+    {
+      "title": "GeoJSON Serializer | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/"
+    },
+    {
+      "title": "GeoDjango Utilities | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/"
+    },
+    {
+      "title": "LayerMapping data import utility | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/layermapping/"
+    },
+    {
+      "title": "OGR Inspection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/ogrinspect/"
+    },
+    {
+      "title": "Validators | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/"
+    },
+    {
+      "title": "File handling | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/"
+    },
+    {
+      "title": "Signals | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/signals/"
+    },
+    {
+      "title": "Models and databases | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/"
+    },
+    {
+      "title": "Model _meta API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/meta/"
+    },
+    {
+      "title": "Formset Functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/formsets/"
+    },
+    {
+      "title": "Model forms | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/models/"
+    },
+    {
+      "title": "Generic editing views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/"
+    },
+    {
+      "title": "Django 5.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2/"
+    },
+    {
+      "title": "Django 3.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.1/"
+    },
+    {
+      "title": "Django 1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2/"
+    },
+    {
+      "title": "Django 5.2.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.10/"
+    },
+    {
+      "title": "Django 6.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.1/"
+    },
+    {
+      "title": "How to use Django with uWSGI | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/"
+    },
+    {
+      "title": "Coding style | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/coding-style/"
+    },
+    {
+      "title": "Django 1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4/"
+    },
+    {
+      "title": "Django 1.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7/"
+    },
+    {
+      "title": "Django 2.2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.1/"
+    },
+    {
+      "title": "How to upgrade Django to a newer version | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/upgrade-version/"
+    },
+    {
+      "title": "Database instrumentation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/instrumentation/"
+    },
+    {
+      "title": "Full text search | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/"
+    },
+    {
+      "title": "PostgreSQL specific lookups | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/"
+    },
+    {
+      "title": "Testing GeoDjango apps | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/"
+    },
+    {
+      "title": "Django 1.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6/"
+    },
+    {
+      "title": "Django 2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1/"
+    },
+    {
+      "title": "Django 1.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8/"
+    },
+    {
+      "title": "Django 1.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10/"
+    },
+    {
+      "title": "PostgreSQL specific database functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/"
+    },
+    {
+      "title": "Django 1.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9/"
+    },
+    {
+      "title": "Django 5.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0/"
+    },
+    {
+      "title": "Django 1.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11/"
+    },
+    {
+      "title": "Django 1.8.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.15/"
+    },
+    {
+      "title": "Django 1.9.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.10/"
+    },
+    {
+      "title": "Django 3.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2/"
+    },
+    {
+      "title": "Django 3.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0/"
+    },
+    {
+      "title": "Django 3.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1/"
+    },
+    {
+      "title": "Applications | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/applications"
+    },
+    {
+      "title": "django.urls functions for use in URLconfs | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/urls"
+    },
+    {
+      "title": "Translation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/i18n/translation"
+    },
+    {
+      "title": "The Django admin site | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/index"
+    },
+    {
+      "title": "The Django admin documentation generator | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs"
+    },
+    {
+      "title": "File storage API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/storage"
+    },
+    {
+      "title": "Uploaded Files and Upload Handlers | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/files/uploads"
+    },
+    {
+      "title": "Sending email | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/email"
+    },
+    {
+      "title": "How to create custom django-admin commands | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/custom-management-commands"
+    },
+    {
+      "title": "Paginator | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/paginator"
+    },
+    {
+      "title": "Model field reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/fields"
+    },
+    {
+      "title": "Making queries | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/queries"
+    },
+    {
+      "title": "Database Functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/database-functions"
+    },
+    {
+      "title": "Model index reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/indexes"
+    },
+    {
+      "title": "Lookup API reference | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/lookups"
+    },
+    {
+      "title": "Model _meta API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/meta"
+    },
+    {
+      "title": "Database transactions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/transactions"
+    },
+    {
+      "title": "Signals | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/signals"
+    },
+    {
+      "title": "The Forms API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/api"
+    },
+    {
+      "title": "Form fields | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/fields"
+    },
+    {
+      "title": "Formset Functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/formsets"
+    },
+    {
+      "title": "Model forms | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/models"
+    },
+    {
+      "title": "The form rendering API | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/renderers"
+    },
+    {
+      "title": "Widgets | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/widgets"
+    },
+    {
+      "title": "Request and response objects | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/request-response"
+    },
+    {
+      "title": "Clickjacking Protection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/clickjacking"
+    },
+    {
+      "title": "Content Security Policy | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/csp"
+    },
+    {
+      "title": "Cross Site Request Forgery protection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/csrf"
+    },
+    {
+      "title": "Django shortcut functions | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/shortcuts"
+    },
+    {
+      "title": "Tasks | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/tasks"
+    },
+    {
+      "title": "Templates | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/templates"
+    },
+    {
+      "title": "Tablespaces | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/tablespaces/"
+    },
+    {
+      "title": "Fixtures | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/fixtures/"
+    },
+    {
+      "title": "Examples of model relationship API usage | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/"
+    },
+    {
+      "title": "Handling HTTP requests | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/"
+    },
+    {
+      "title": "Generic views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/http/generic-views/"
+    },
+    {
+      "title": "Introduction to class-based views | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/intro/"
+    },
+    {
+      "title": "Composite primary keys | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/composite-primary-key/"
+    },
+    {
+      "title": "External packages | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/external-packages/"
+    },
+    {
+      "title": "How to override templates | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/overriding-templates/"
+    },
+    {
+      "title": "How to configure and use logging | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/logging/"
+    },
+    {
+      "title": "How to delete a Django application | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/delete-app/"
+    },
+    {
+      "title": "How to authenticate using REMOTE_USER | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/auth-remote-user/"
+    },
+    {
+      "title": "How to use Django’s Content Security Policy | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/csp/"
+    },
+    {
+      "title": "How to use Django’s CSRF protection | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/csrf/"
+    },
+    {
+      "title": "Class-based views mixins | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/"
+    },
+    {
+      "title": "Forms | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/forms/"
+    },
+    {
+      "title": "Models | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/"
+    },
+    {
+      "title": "Templates | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/templates/"
+    },
+    {
+      "title": "Meta-documentation and miscellany | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/misc/"
+    },
+    {
+      "title": "Django internals | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/"
+    },
+    {
+      "title": "How to release Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/howto-release-django/"
+    },
+    {
+      "title": "Many-to-one relationships | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/"
+    },
+    {
+      "title": "Many-to-many relationships | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_many/"
+    },
+    {
+      "title": "One-to-one relationships | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/one_to_one/"
+    },
+    {
+      "title": "Deploying GeoDjango | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/"
+    },
+    {
+      "title": "How to use Django with Apache and mod_wsgi | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/"
+    },
+    {
+      "title": "How to use Django with Daphne | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/daphne/"
+    },
+    {
+      "title": "Canevas 1",
+      "url": "https://docs.djangoproject.com/en/stable/_images/django_unittest_classes_hierarchy.svg"
+    },
+    {
+      "title": "How to use Django with Gunicorn | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/"
+    },
+    {
+      "title": "How to authenticate against Django’s user database from Apache | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/apache-auth/"
+    },
+    {
+      "title": "How to use Django with Hypercorn | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/hypercorn/"
+    },
+    {
+      "title": "How to use Django with Uvicorn | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/"
+    },
+    {
+      "title": "ModelAdmin List Filters | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/filters/"
+    },
+    {
+      "title": "JavaScript customizations in the admin | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/javascript/"
+    },
+    {
+      "title": "Django version 0.95 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/0.95/"
+    },
+    {
+      "title": "GeoDjango Tutorial | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/tutorial/"
+    },
+    {
+      "title": "GeoDjango Installation | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/"
+    },
+    {
+      "title": "Geographic Sitemaps | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/sitemaps/"
+    },
+    {
+      "title": "Localizing Django | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/localizing/"
+    },
+    {
+      "title": "Django 6.0.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.6/"
+    },
+    {
+      "title": "Django 6.0.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.5/"
+    },
+    {
+      "title": "Django 6.0.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.3/"
+    },
+    {
+      "title": "Django 6.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0.2/"
+    },
+    {
+      "title": "Django 6.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/6.0/"
+    },
+    {
+      "title": "Django 5.2.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.14/"
+    },
+    {
+      "title": "Django 5.2.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.12/"
+    },
+    {
+      "title": "Django 5.2.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.11/"
+    },
+    {
+      "title": "Django 5.2.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.9/"
+    },
+    {
+      "title": "Django 5.2.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.6/"
+    },
+    {
+      "title": "Django 5.2.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.5/"
+    },
+    {
+      "title": "Django 5.2.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.4/"
+    },
+    {
+      "title": "Django 5.2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.2.2/"
+    },
+    {
+      "title": "Django 5.1.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.15/"
+    },
+    {
+      "title": "Django 5.1.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.12/"
+    },
+    {
+      "title": "Django 5.1.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.10/"
+    },
+    {
+      "title": "Django 5.1.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.8/"
+    },
+    {
+      "title": "Django 5.1.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.7/"
+    },
+    {
+      "title": "Django 5.1.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.6/"
+    },
+    {
+      "title": "Django 5.1.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.5/"
+    },
+    {
+      "title": "Django 5.1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.4/"
+    },
+    {
+      "title": "Django 5.1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.3/"
+    },
+    {
+      "title": "Django 5.1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.2/"
+    },
+    {
+      "title": "Django 5.1.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1.1/"
+    },
+    {
+      "title": "Django 5.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.1/"
+    },
+    {
+      "title": "Django 5.0.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.14/"
+    },
+    {
+      "title": "Django 5.0.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.13/"
+    },
+    {
+      "title": "Django 5.0.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.12/"
+    },
+    {
+      "title": "Django 5.0.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.11/"
+    },
+    {
+      "title": "Django 5.0.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.10/"
+    },
+    {
+      "title": "Django 5.0.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.9/"
+    },
+    {
+      "title": "Django 5.0.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.8/"
+    },
+    {
+      "title": "Django 5.0.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.7/"
+    },
+    {
+      "title": "Django 5.0.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.6/"
+    },
+    {
+      "title": "Django 5.0.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.5/"
+    },
+    {
+      "title": "Django 5.0.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.4/"
+    },
+    {
+      "title": "Django 5.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.2/"
+    },
+    {
+      "title": "Django 5.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/5.0.1/"
+    },
+    {
+      "title": "Django 4.2.29 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.29/"
+    },
+    {
+      "title": "Django 4.2.28 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.28/"
+    },
+    {
+      "title": "Django 4.2.27 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.27/"
+    },
+    {
+      "title": "Django 4.2.24 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.24/"
+    },
+    {
+      "title": "Django 4.2.22 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.22/"
+    },
+    {
+      "title": "Django 4.2.20 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.20/"
+    },
+    {
+      "title": "Django 4.2.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.19/"
+    },
+    {
+      "title": "Django 4.2.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.18/"
+    },
+    {
+      "title": "Django 4.2.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.17/"
+    },
+    {
+      "title": "Django 4.2.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.16/"
+    },
+    {
+      "title": "Django 4.2.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.15/"
+    },
+    {
+      "title": "Django 4.2.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.14/"
+    },
+    {
+      "title": "Django 4.2.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.13/"
+    },
+    {
+      "title": "Django 4.2.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.12/"
+    },
+    {
+      "title": "Django 4.2.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.10/"
+    },
+    {
+      "title": "Django 4.2.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.9/"
+    },
+    {
+      "title": "Django 4.2.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.8/"
+    },
+    {
+      "title": "Django 4.2.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.7/"
+    },
+    {
+      "title": "Django 4.2.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.5/"
+    },
+    {
+      "title": "Django 4.2.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.4/"
+    },
+    {
+      "title": "Django 4.2.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.3/"
+    },
+    {
+      "title": "Django 4.2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.2/"
+    },
+    {
+      "title": "Django 4.2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.2.1/"
+    },
+    {
+      "title": "Django 4.1.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.13/"
+    },
+    {
+      "title": "Django 4.1.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.11/"
+    },
+    {
+      "title": "Django 4.1.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.10/"
+    },
+    {
+      "title": "Django 4.1.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.9/"
+    },
+    {
+      "title": "Django 4.1.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.8/"
+    },
+    {
+      "title": "Django 4.1.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.7/"
+    },
+    {
+      "title": "Django 4.1.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.6/"
+    },
+    {
+      "title": "Django 4.1.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.5/"
+    },
+    {
+      "title": "Django 4.1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.4/"
+    },
+    {
+      "title": "Django 4.1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.3/"
+    },
+    {
+      "title": "Django 4.1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.2/"
+    },
+    {
+      "title": "Django 4.1.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1.1/"
+    },
+    {
+      "title": "Django 4.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.1/"
+    },
+    {
+      "title": "Django 4.0.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.10/"
+    },
+    {
+      "title": "Django 4.0.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.9/"
+    },
+    {
+      "title": "Django 4.0.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.8/"
+    },
+    {
+      "title": "Django 4.0.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.7/"
+    },
+    {
+      "title": "Django 4.0.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.6/"
+    },
+    {
+      "title": "Django 4.0.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.5/"
+    },
+    {
+      "title": "Django 4.0.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.4/"
+    },
+    {
+      "title": "Django 4.0.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.3/"
+    },
+    {
+      "title": "Django 4.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.2/"
+    },
+    {
+      "title": "Django 4.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0.1/"
+    },
+    {
+      "title": "Django 4.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/4.0/"
+    },
+    {
+      "title": "Django 3.2.24 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.24/"
+    },
+    {
+      "title": "Django 3.2.23 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.23/"
+    },
+    {
+      "title": "Django 3.2.21 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.21/"
+    },
+    {
+      "title": "Django 3.2.20 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.20/"
+    },
+    {
+      "title": "Django 3.2.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.19/"
+    },
+    {
+      "title": "Django 3.2.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.18/"
+    },
+    {
+      "title": "Django 3.2.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.17/"
+    },
+    {
+      "title": "Django 3.2.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.16/"
+    },
+    {
+      "title": "Django 3.2.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.15/"
+    },
+    {
+      "title": "Django 3.2.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.14/"
+    },
+    {
+      "title": "Django 3.2.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.13/"
+    },
+    {
+      "title": "Django 3.2.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.12/"
+    },
+    {
+      "title": "Django 3.2.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.11/"
+    },
+    {
+      "title": "Django 3.2.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.10/"
+    },
+    {
+      "title": "Django 3.2.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.9/"
+    },
+    {
+      "title": "Django 3.2.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.8/"
+    },
+    {
+      "title": "Django 3.2.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.7/"
+    },
+    {
+      "title": "Django 3.2.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.6/"
+    },
+    {
+      "title": "Django 3.2.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.5/"
+    },
+    {
+      "title": "Django 3.2.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.4/"
+    },
+    {
+      "title": "Django 3.2.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.3/"
+    },
+    {
+      "title": "Django 3.2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.2/"
+    },
+    {
+      "title": "Django 3.2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.2.1/"
+    },
+    {
+      "title": "Django 3.1.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.14/"
+    },
+    {
+      "title": "Django 3.1.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.13/"
+    },
+    {
+      "title": "Django 3.1.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.12/"
+    },
+    {
+      "title": "Django 3.1.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.11/"
+    },
+    {
+      "title": "Django 3.1.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.10/"
+    },
+    {
+      "title": "Django 3.1.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.9/"
+    },
+    {
+      "title": "Django 3.1.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.8/"
+    },
+    {
+      "title": "Django 3.1.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.7/"
+    },
+    {
+      "title": "Django 3.1.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.6/"
+    },
+    {
+      "title": "Django 3.1.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.5/"
+    },
+    {
+      "title": "Django 3.1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.4/"
+    },
+    {
+      "title": "Django 3.1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.3/"
+    },
+    {
+      "title": "Django 3.1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.2/"
+    },
+    {
+      "title": "Django 3.1.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.1.1/"
+    },
+    {
+      "title": "Django 3.0.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.14/"
+    },
+    {
+      "title": "Django 3.0.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.13/"
+    },
+    {
+      "title": "Django 3.0.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.12/"
+    },
+    {
+      "title": "Django 3.0.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.11/"
+    },
+    {
+      "title": "Django 3.0.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.10/"
+    },
+    {
+      "title": "Django 3.0.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.9/"
+    },
+    {
+      "title": "Django 3.0.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.8/"
+    },
+    {
+      "title": "Django 3.0.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.7/"
+    },
+    {
+      "title": "Django 3.0.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.6/"
+    },
+    {
+      "title": "Django 3.0.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.5/"
+    },
+    {
+      "title": "Django 3.0.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.4/"
+    },
+    {
+      "title": "Django 3.0.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.3/"
+    },
+    {
+      "title": "Django 3.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/3.0.2/"
+    },
+    {
+      "title": "Django 2.2.28 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.28/"
+    },
+    {
+      "title": "Django 2.2.27 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.27/"
+    },
+    {
+      "title": "Django 2.2.26 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.26/"
+    },
+    {
+      "title": "Django 2.2.25 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.25/"
+    },
+    {
+      "title": "Django 2.2.24 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.24/"
+    },
+    {
+      "title": "Django 2.2.23 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.23/"
+    },
+    {
+      "title": "Django 2.2.22 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.22/"
+    },
+    {
+      "title": "Django 2.2.21 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.21/"
+    },
+    {
+      "title": "Django 2.2.20 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.20/"
+    },
+    {
+      "title": "Django 2.2.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.19/"
+    },
+    {
+      "title": "Django 2.2.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.18/"
+    },
+    {
+      "title": "Django 2.2.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.17/"
+    },
+    {
+      "title": "Django 2.2.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.16/"
+    },
+    {
+      "title": "Django 2.2.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.15/"
+    },
+    {
+      "title": "Django 2.2.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.14/"
+    },
+    {
+      "title": "Django 2.2.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.13/"
+    },
+    {
+      "title": "Django 2.2.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.12/"
+    },
+    {
+      "title": "Django 2.2.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.11/"
+    },
+    {
+      "title": "Django 2.2.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.10/"
+    },
+    {
+      "title": "Django 2.2.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.9/"
+    },
+    {
+      "title": "Django 2.2.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.8/"
+    },
+    {
+      "title": "Django 2.2.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.7/"
+    },
+    {
+      "title": "Django 2.2.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.6/"
+    },
+    {
+      "title": "Django 2.2.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.5/"
+    },
+    {
+      "title": "Django 2.2.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.4/"
+    },
+    {
+      "title": "Django 2.2.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.3/"
+    },
+    {
+      "title": "Django 2.2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2.2/"
+    },
+    {
+      "title": "Django 2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.2/"
+    },
+    {
+      "title": "Django 2.1.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.15/"
+    },
+    {
+      "title": "Django 2.1.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.14/"
+    },
+    {
+      "title": "Django 2.1.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.13/"
+    },
+    {
+      "title": "Django 2.1.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.12/"
+    },
+    {
+      "title": "Django 2.1.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.11/"
+    },
+    {
+      "title": "Django 2.1.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.10/"
+    },
+    {
+      "title": "Django 2.1.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.9/"
+    },
+    {
+      "title": "Django 2.1.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.8/"
+    },
+    {
+      "title": "Django 2.1.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.7/"
+    },
+    {
+      "title": "Django 2.1.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.6/"
+    },
+    {
+      "title": "Django 2.1.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.5/"
+    },
+    {
+      "title": "Django 2.1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.4/"
+    },
+    {
+      "title": "Django 2.1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.3/"
+    },
+    {
+      "title": "Django 2.1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.2/"
+    },
+    {
+      "title": "Django 2.1.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.1.1/"
+    },
+    {
+      "title": "Django 2.0.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.13/"
+    },
+    {
+      "title": "Django 2.0.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.12/"
+    },
+    {
+      "title": "Django 2.0.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.11/"
+    },
+    {
+      "title": "Django 2.0.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.10/"
+    },
+    {
+      "title": "Django 2.0.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.9/"
+    },
+    {
+      "title": "Django 2.0.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.8/"
+    },
+    {
+      "title": "Django 2.0.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.7/"
+    },
+    {
+      "title": "Django 2.0.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.6/"
+    },
+    {
+      "title": "Django 2.0.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.5/"
+    },
+    {
+      "title": "Django 2.0.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.4/"
+    },
+    {
+      "title": "Django 2.0.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.3/"
+    },
+    {
+      "title": "Django 2.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.2/"
+    },
+    {
+      "title": "Django 2.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0.1/"
+    },
+    {
+      "title": "Django 2.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/2.0/"
+    },
+    {
+      "title": "Django 1.11.29 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.29/"
+    },
+    {
+      "title": "Django 1.11.28 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.28/"
+    },
+    {
+      "title": "Django 1.11.27 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.27/"
+    },
+    {
+      "title": "Django 1.11.26 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.26/"
+    },
+    {
+      "title": "Django 1.11.25 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.25/"
+    },
+    {
+      "title": "Django 1.11.24 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.24/"
+    },
+    {
+      "title": "Django 1.11.23 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.23/"
+    },
+    {
+      "title": "Django 1.11.22 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.22/"
+    },
+    {
+      "title": "Django 1.11.21 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.21/"
+    },
+    {
+      "title": "Django 1.11.20 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.20/"
+    },
+    {
+      "title": "Django 1.11.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.19/"
+    },
+    {
+      "title": "Django 1.11.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.18/"
+    },
+    {
+      "title": "Django 1.11.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.17/"
+    },
+    {
+      "title": "Django 1.11.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.16/"
+    },
+    {
+      "title": "Django 1.11.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.15/"
+    },
+    {
+      "title": "Django 1.11.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.14/"
+    },
+    {
+      "title": "Django 1.11.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.13/"
+    },
+    {
+      "title": "Django 1.11.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.12/"
+    },
+    {
+      "title": "Django 1.11.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.11/"
+    },
+    {
+      "title": "Django 1.11.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.10/"
+    },
+    {
+      "title": "Django 1.11.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.9/"
+    },
+    {
+      "title": "Django 1.11.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.8/"
+    },
+    {
+      "title": "Django 1.11.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.7/"
+    },
+    {
+      "title": "Django 1.11.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.6/"
+    },
+    {
+      "title": "Django 1.11.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.5/"
+    },
+    {
+      "title": "Django 1.11.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.4/"
+    },
+    {
+      "title": "Django 1.11.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.3/"
+    },
+    {
+      "title": "Django 1.11.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.2/"
+    },
+    {
+      "title": "Django 1.11.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.11.1/"
+    },
+    {
+      "title": "Django 1.10.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.8/"
+    },
+    {
+      "title": "Django 1.10.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.7/"
+    },
+    {
+      "title": "Django 1.10.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.6/"
+    },
+    {
+      "title": "Django 1.10.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.5/"
+    },
+    {
+      "title": "Django 1.10.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.4/"
+    },
+    {
+      "title": "Django 1.10.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.3/"
+    },
+    {
+      "title": "Django 1.10.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.2/"
+    },
+    {
+      "title": "Django 1.10.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.10.1/"
+    },
+    {
+      "title": "Django 1.9.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.13/"
+    },
+    {
+      "title": "Django 1.9.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.12/"
+    },
+    {
+      "title": "Django 1.9.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.11/"
+    },
+    {
+      "title": "Django 1.9.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.9/"
+    },
+    {
+      "title": "Django 1.9.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.8/"
+    },
+    {
+      "title": "Django 1.9.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.7/"
+    },
+    {
+      "title": "Django 1.9.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.6/"
+    },
+    {
+      "title": "Django 1.9.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.5/"
+    },
+    {
+      "title": "Django 1.9.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.4/"
+    },
+    {
+      "title": "Django 1.9.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.3/"
+    },
+    {
+      "title": "Django 1.9.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.2/"
+    },
+    {
+      "title": "Django 1.9.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.9.1/"
+    },
+    {
+      "title": "Django 1.8.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.19/"
+    },
+    {
+      "title": "Django 1.8.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.18/"
+    },
+    {
+      "title": "Django 1.8.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.17/"
+    },
+    {
+      "title": "Django 1.8.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.16/"
+    },
+    {
+      "title": "Django 1.8.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.14/"
+    },
+    {
+      "title": "Django 1.8.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.13/"
+    },
+    {
+      "title": "Django 1.8.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.12/"
+    },
+    {
+      "title": "Django 1.8.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.11/"
+    },
+    {
+      "title": "Django 1.8.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.10/"
+    },
+    {
+      "title": "Django 1.8.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.9/"
+    },
+    {
+      "title": "Django 1.8.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.8/"
+    },
+    {
+      "title": "Django 1.8.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.7/"
+    },
+    {
+      "title": "Django 1.8.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.6/"
+    },
+    {
+      "title": "Django 1.8.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.5/"
+    },
+    {
+      "title": "Django 1.8.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.4/"
+    },
+    {
+      "title": "Django 1.8.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.3/"
+    },
+    {
+      "title": "Django 1.8.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.2/"
+    },
+    {
+      "title": "Django 1.8.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.8.1/"
+    },
+    {
+      "title": "Django 1.7.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.11/"
+    },
+    {
+      "title": "Django 1.7.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.10/"
+    },
+    {
+      "title": "Django 1.7.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.9/"
+    },
+    {
+      "title": "Django 1.7.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.8/"
+    },
+    {
+      "title": "Django 1.7.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.7/"
+    },
+    {
+      "title": "Django 1.7.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.6/"
+    },
+    {
+      "title": "Django 1.7.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.5/"
+    },
+    {
+      "title": "Django 1.7.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.4/"
+    },
+    {
+      "title": "Django 1.7.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.3/"
+    },
+    {
+      "title": "Django 1.7.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.2/"
+    },
+    {
+      "title": "Django 1.7.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.7.1/"
+    },
+    {
+      "title": "Django 1.6.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.11/"
+    },
+    {
+      "title": "Django 1.6.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.10/"
+    },
+    {
+      "title": "Django 1.6.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.9/"
+    },
+    {
+      "title": "Django 1.6.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.8/"
+    },
+    {
+      "title": "Django 1.6.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.7/"
+    },
+    {
+      "title": "Django 1.6.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.6/"
+    },
+    {
+      "title": "Django 1.6.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.5/"
+    },
+    {
+      "title": "Django 1.6.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.4/"
+    },
+    {
+      "title": "Django 1.6.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.3/"
+    },
+    {
+      "title": "Django 1.6.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.2/"
+    },
+    {
+      "title": "Django 1.6.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.6.1/"
+    },
+    {
+      "title": "Django 1.5.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.12/"
+    },
+    {
+      "title": "Django 1.5.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.11/"
+    },
+    {
+      "title": "Django 1.5.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.10/"
+    },
+    {
+      "title": "Django 1.5.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.9/"
+    },
+    {
+      "title": "Django 1.5.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.8/"
+    },
+    {
+      "title": "Django 1.5.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.7/"
+    },
+    {
+      "title": "Django 1.5.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.6/"
+    },
+    {
+      "title": "Django 1.5.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.5/"
+    },
+    {
+      "title": "Django 1.5.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.4/"
+    },
+    {
+      "title": "Django 1.5.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.3/"
+    },
+    {
+      "title": "Django 1.5.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.2/"
+    },
+    {
+      "title": "Django 1.5.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5.1/"
+    },
+    {
+      "title": "Django 1.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.5/"
+    },
+    {
+      "title": "Django 1.4.22 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.22/"
+    },
+    {
+      "title": "Django 1.4.21 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.21/"
+    },
+    {
+      "title": "Django 1.4.20 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.20/"
+    },
+    {
+      "title": "Django 1.4.19 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.19/"
+    },
+    {
+      "title": "Django 1.4.18 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.18/"
+    },
+    {
+      "title": "Django 1.4.17 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.17/"
+    },
+    {
+      "title": "Django 1.4.16 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.16/"
+    },
+    {
+      "title": "Django 1.4.15 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.15/"
+    },
+    {
+      "title": "Django 1.4.14 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.14/"
+    },
+    {
+      "title": "Django 1.4.13 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.13/"
+    },
+    {
+      "title": "Django 1.4.12 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.12/"
+    },
+    {
+      "title": "Django 1.4.11 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.11/"
+    },
+    {
+      "title": "Django 1.4.10 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.10/"
+    },
+    {
+      "title": "Django 1.4.9 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.9/"
+    },
+    {
+      "title": "Django 1.4.8 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.8/"
+    },
+    {
+      "title": "Django 1.4.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.7/"
+    },
+    {
+      "title": "Django 1.4.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.6/"
+    },
+    {
+      "title": "Django 1.4.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.5/"
+    },
+    {
+      "title": "Django 1.4.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.4/"
+    },
+    {
+      "title": "Django 1.4.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.3/"
+    },
+    {
+      "title": "Django 1.4.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.2/"
+    },
+    {
+      "title": "Django 1.4.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.4.1/"
+    },
+    {
+      "title": "Django 1.3.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.7/"
+    },
+    {
+      "title": "Django 1.3.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.6/"
+    },
+    {
+      "title": "Django 1.3.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.5/"
+    },
+    {
+      "title": "Django 1.3.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.4/"
+    },
+    {
+      "title": "Django 1.3.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.3/"
+    },
+    {
+      "title": "Django 1.3.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.2/"
+    },
+    {
+      "title": "Django 1.3.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3.1/"
+    },
+    {
+      "title": "Django 1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.3/"
+    },
+    {
+      "title": "Django 1.2.7 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.7/"
+    },
+    {
+      "title": "Django 1.2.6 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.6/"
+    },
+    {
+      "title": "Django 1.2.5 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.5/"
+    },
+    {
+      "title": "Django 1.2.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.4/"
+    },
+    {
+      "title": "Django 1.2.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.3/"
+    },
+    {
+      "title": "Django 1.2.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.2/"
+    },
+    {
+      "title": "Django 1.2.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.2.1/"
+    },
+    {
+      "title": "Django 1.1.4 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.1.4/"
+    },
+    {
+      "title": "Django 1.1.3 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.1.3/"
+    },
+    {
+      "title": "Django 1.1.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.1.2/"
+    },
+    {
+      "title": "Django 1.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.1/"
+    },
+    {
+      "title": "Django 1.0.2 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.0.2/"
+    },
+    {
+      "title": "Django 1.0.1 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.0.1/"
+    },
+    {
+      "title": "Django 1.0 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/1.0/"
+    },
+    {
+      "title": "Django version 0.96 release notes | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/releases/0.96/"
+    },
+    {
+      "title": "Accessibility | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/accessibility/"
+    },
+    {
+      "title": "JavaScript code | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/"
+    },
+    {
+      "title": "Installing SpatiaLite | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/spatialite/"
+    },
+    {
+      "title": "Installing PostGIS | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/"
+    },
+    {
+      "title": "Installing Geospatial libraries | Django documentation | Django",
+      "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/geolibs/"
+    }
+  ]
+}

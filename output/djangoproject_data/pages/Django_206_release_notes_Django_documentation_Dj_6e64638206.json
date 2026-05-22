@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.6/",
+  "title": "Django 2.0.6 release notes | Django documentation | Django",
+  "content": "Django 2.0.6 fixes several bugs in 2.0.5.\n\nFixed a regression that broke custom template filters that use decorators (#29400).\n\nFixed detection of custom URL converters in included patterns (#29415).\n\nFixed a regression that added an unnecessary subquery to the GROUP BY clause on MySQL when using a RawSQL annotation (#29416).\n\nFixed WKBWriter.write() and write_hex() for empty polygons on GEOS 3.6.1+ (#29460).\n\nFixed a regression in Django 1.10 that could result in large memory usage when making edits using ModelAdmin.list_editable (#28462).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

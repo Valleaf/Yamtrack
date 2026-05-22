@@ -1,0 +1,110 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+  "title": "Form Assets (the Media class) | Django documentation | Django",
+  "content": "Rendering an attractive and easy-to-use web form requires more than just HTML - it also requires CSS stylesheets, and if you want to use fancy widgets, you may also need to include some JavaScript on each page. The exact combination of CSS and JavaScript that is required for any given page will depend upon the widgets that are in use on that page.\n\nThis is where asset definitions come in. Django allows you to associate different files – like stylesheets and scripts – with the forms and widgets that require those assets. For example, if you want to use a calendar to render DateFields, you can define a custom Calendar widget. This widget can then be associated with the CSS and JavaScript that is required to render the calendar. When the Calendar widget is used on a form, Django is able to identify the CSS and JavaScript files that are required, and provide the list of file names in a form suitable for inclusion on your web page.\n\nAssets and Django Admin\n\nThe Django Admin application defines a number of customized widgets for calendars, filtered selections, and so on. These widgets define asset requirements, and the Django Admin uses the custom widgets in place of the Django defaults. The Admin templates will only include those files that are required to render the widgets on any given page.\n\nIf you like the widgets that the Django Admin application uses, feel free to use them in your own application! They’re all stored in django.contrib.admin.widgets.\n\nWhich JavaScript toolkit?\n\nMany JavaScript toolkits exist, and many of them include widgets (such as calendar widgets) that can be used to enhance your application. Django has deliberately avoided blessing any one JavaScript toolkit. Each toolkit has its own relative strengths and weaknesses - use whichever toolkit suits your requirements. Django is able to integrate with any JavaScript toolkit.\n\nThe easiest way to define assets is as a static definition. Using this method, the declaration is an inner Media class. The properties of the inner class define the requirements.\n\nThis code defines a CalendarWidget, which will be based on TextInput. Every time the CalendarWidget is used on a form, that form will be directed to include the CSS file pretty.css, and the JavaScript files animations.js and actions.js.\n\nThis static definition is converted at runtime into a widget property named media. The list of assets for a CalendarWidget instance can be retrieved through this property:\n\nHere’s a list of all possible Media options. There are no required options.\n\nA dictionary describing the CSS files required for various forms of output media.\n\nThe values in the dictionary should be a tuple/list of file names. See the section on paths for details of how to specify paths to these files.\n\nThe keys in the dictionary are the output media types. These are the same types accepted by CSS files in media declarations: ‘all’, ‘aural’, ‘braille’, ‘embossed’, ‘handheld’, ‘print’, ‘projection’, ‘screen’, ‘tty’ and ‘tv’. If you need to have different stylesheets for different media types, provide a list of CSS files for each output medium. The following example would provide two CSS options – one for the screen, and one for print:\n\nIf a group of CSS files are appropriate for multiple output media types, the dictionary key can be a comma separated list of output media types. In the following example, TV’s and projectors will have the same media requirements:\n\nIf this last CSS definition were to be rendered, it would become the following HTML:\n\nA tuple describing the required JavaScript files. See the section on paths for details of how to specify paths to these files.\n\nRepresents a script file.\n\nThe first parameter, src, is the string path to the script file. See the section on paths for details on how to specify paths to these files.\n\nThe optional keyword arguments, **attributes, are HTML attributes that are set on the rendered <script> tag.\n\nSee Paths as objects for usage examples.\n\nA boolean defining inheritance behavior for Media declarations.\n\nBy default, any object using a static Media definition will inherit all the assets associated with the parent widget. This occurs regardless of how the parent defines its own requirements. For example, if we were to extend our basic Calendar widget from the example above:\n\nThe FancyCalendar widget inherits all the assets from its parent widget. If you don’t want Media to be inherited in this way, add an extend=False declaration to the Media declaration:\n\nIf you require even more control over inheritance, define your assets using a dynamic property. Dynamic properties give you complete control over which files are inherited, and which are not.\n\nIf you need to perform some more sophisticated manipulation of asset requirements, you can define the media property directly. This is done by defining a widget property that returns an instance of forms.Media. The constructor for forms.Media accepts css and js keyword arguments in the same format as that used in a static media definition.\n\nFor example, the static definition for our Calendar Widget could also be defined in a dynamic fashion:\n\nSee the section on Media objects for more details on how to construct return values for dynamic media properties.\n\nString paths used to specify assets can be either relative or absolute. If a path starts with /, http:// or https://, it will be interpreted as an absolute path, and left as-is. All other paths will be prepended with the value of the appropriate prefix. If the django.contrib.staticfiles app is installed, it will be used to serve assets.\n\nWhether or not you use django.contrib.staticfiles, the STATIC_URL and STATIC_ROOT settings are required to render a complete web page.\n\nTo find the appropriate prefix to use, Django will check if the STATIC_URL setting is not None and automatically fall back to using MEDIA_URL. For example, if the MEDIA_URL for your site was 'https://uploads.example.com/' and STATIC_URL was None:\n\nBut if STATIC_URL is 'https://static.example.com/':\n\nOr if staticfiles is configured using the ManifestStaticFilesStorage:\n\nAssets may also be object-based, using Script. Furthermore, these allow you to pass custom HTML attributes:\n\nIf this Media definition were to be rendered, it would become the following HTML:\n\nThe object class Script was added.\n\nWhen you interrogate the media attribute of a widget or form, the value that is returned is a forms.Media object. As we have already seen, the string representation of a Media object is the HTML required to include the relevant files in the <head> block of your HTML page.\n\nHowever, Media objects have some other interesting properties.\n\nIf you only want files of a particular type, you can use the subscript operator to filter out a medium of interest. For example:\n\nWhen you use the subscript operator, the value that is returned is a new Media object – but one that only contains the media of interest.\n\nMedia objects can also be added together. When two Media objects are added, the resulting Media object contains the union of the assets specified by both:\n\nThe order in which assets are inserted into the DOM is often important. For example, you may have a script that depends on jQuery. Therefore, combining Media objects attempts to preserve the relative order in which assets are defined in each Media class.\n\nCombining Media objects with assets in a conflicting order results in a MediaOrderConflictWarning.\n\nWidgets aren’t the only objects that can have media definitions – forms can also define media. The rules for media definitions on forms are the same as the rules for widgets: declarations can be static or dynamic; path and inheritance rules for those declarations are exactly the same.\n\nRegardless of whether you define a media declaration, all Form objects have a media property. The default value for this property is the result of adding the media definitions for all widgets that are part of the form:\n\nIf you want to associate additional assets with a form – for example, CSS for form layout – add a Media declaration to the form:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Form Assets (the Media class)¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Assets as a static definition¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "css¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "js¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Script objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "extend¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Media as a dynamic property¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Paths in asset definitions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Paths as strings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Paths as objects¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Media objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Subsets of assets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Combining Media objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Order of assets¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Media on Forms¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Here’s an example:",
+      "code": "from django import forms\n\n\nclass CalendarWidget(forms.TextInput):\n    class Media:\n        css = {\n            \"all\": [\"pretty.css\"],\n        }\n        js = [\"animations.js\", \"actions.js\"]"
+    },
+    {
+      "description": "If you only want files of a particular type, you can use the subscript operator to filter out a medium of interest. For example:",
+      "code": ">>> w = CalendarWidget()\n>>> print(w.media)\n<link href=\"https://static.example.com/pretty.css\" media=\"all\" rel=\"stylesheet\">\n<script src=\"https://static.example.com/animations.js\"></script>\n<script src=\"https://static.example.com/actions.js\"></script>\n\n>>> print(w.media[\"css\"])\n<link href=\"https://static.example.com/pretty.css\" media=\"all\" rel=\"stylesheet\">"
+    },
+    {
+      "description": "For example:",
+      "code": ">>> from django import forms\n>>> class CalendarWidget(forms.TextInput):\n...     class Media:\n...         js = [\"jQuery.js\", \"calendar.js\", \"noConflict.js\"]\n...\n>>> class TimeWidget(forms.TextInput):\n...     class Media:\n...         js = [\"jQuery.js\", \"time.js\", \"noConflict.js\"]\n...\n>>> w1 = CalendarWidget()\n>>> w2 = TimeWidget()\n>>> print(w1.media + w2.media)\n<script src=\"https://static.example.com/jQuery.js\"></script>\n<script src=\"https://static.example.com/calendar.js\"></script>\n<script src=\"https://static.example.com/time.js\"></script>\n<script src=\"https://static.example.com/noConflict.js\"></script>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

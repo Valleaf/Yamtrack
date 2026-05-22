@@ -1,0 +1,38 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.17/",
+  "title": "Django 4.2.17 release notes | Django documentation | Django",
+  "content": "Django 4.2.17 fixes one security issue with severity “high” and one security issue with severity “moderate” in 4.2.16.\n\nstrip_tags() would be extremely slow to evaluate certain inputs containing large sequences of nested incomplete HTML entities. The strip_tags() method is used to implement the corresponding striptags template filter, which was thus also vulnerable.\n\nstrip_tags() now has an upper limit of recursive calls to HTMLParser before raising a SuspiciousOperation exception.\n\nRemember that absolutely NO guarantee is provided about the results of strip_tags() being HTML safe. So NEVER mark safe the result of a strip_tags() call without escaping it first, for example with django.utils.html.escape().\n\nDirect usage of the django.db.models.fields.json.HasKey lookup on Oracle was subject to SQL injection if untrusted data was used as a lhs value.\n\nApplications that use the has_key lookup through the __ syntax are unaffected.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.17 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-53907: Denial-of-service possibility in strip_tags()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-53908: Potential SQL injection via HasKey(lhs, rhs) on Oracle¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.17/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.18/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.16/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

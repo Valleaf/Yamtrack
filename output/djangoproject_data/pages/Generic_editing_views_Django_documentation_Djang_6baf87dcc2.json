@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+  "title": "Generic editing views | Django documentation | Django",
+  "content": "The following views are described on this page and provide a foundation for editing content:\n\ndjango.views.generic.edit.FormView\n\ndjango.views.generic.edit.CreateView\n\ndjango.views.generic.edit.UpdateView\n\ndjango.views.generic.edit.DeleteView\n\nThe messages framework contains SuccessMessageMixin, which facilitates presenting messages about successful form submissions.\n\nSome of the examples on this page assume that an Author model has been defined as follows in myapp/models.py:\n\nA view that displays a form. On error, redisplays the form with validation errors; on success, redirects to a new URL.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.edit.BaseFormView\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.edit.ProcessFormView\n\ndjango.views.generic.base.View\n\nExample myapp/forms.py:\n\nExample myapp/views.py:\n\nExample myapp/contact.html:\n\nA base view for displaying a form. It is not intended to be used directly, but rather as a parent class of the django.views.generic.edit.FormView or other views displaying a form.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.edit.ProcessFormView\n\nA view that displays a form for creating an object, redisplaying the form with validation errors (if there are any) and saving the object.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.detail.SingleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.edit.BaseCreateView\n\ndjango.views.generic.edit.ModelFormMixin\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.edit.ProcessFormView\n\ndjango.views.generic.base.View\n\nThe CreateView page displayed to a GET request uses a template_name_suffix of '_form'. For example, changing this attribute to '_create_form' for a view creating objects for the example Author model would cause the default template_name to be 'myapp/author_create_form.html'.\n\nWhen using CreateView you have access to self.object, which is the object being created. If the object hasn’t been created yet, the value will be None.\n\nExample myapp/views.py:\n\nExample myapp/author_form.html:\n\nA base view for creating a new object instance. It is not intended to be used directly, but rather as a parent class of the django.views.generic.edit.CreateView.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.edit.ModelFormMixin\n\ndjango.views.generic.edit.ProcessFormView\n\nSets the current object instance (self.object) to None.\n\nSets the current object instance (self.object) to None.\n\nA view that displays a form for editing an existing object, redisplaying the form with validation errors (if there are any) and saving changes to the object. This uses a form automatically generated from the object’s model class (unless a form class is manually specified).\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.detail.SingleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.edit.BaseUpdateView\n\ndjango.views.generic.edit.ModelFormMixin\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.edit.ProcessFormView\n\ndjango.views.generic.base.View\n\nThe UpdateView page displayed to a GET request uses a template_name_suffix of '_form'. For example, changing this attribute to '_update_form' for a view updating objects for the example Author model would cause the default template_name to be 'myapp/author_update_form.html'.\n\nWhen using UpdateView you have access to self.object, which is the object being updated.\n\nExample myapp/views.py:\n\nExample myapp/author_update_form.html:\n\nA base view for updating an existing object instance. It is not intended to be used directly, but rather as a parent class of the django.views.generic.edit.UpdateView.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.edit.ModelFormMixin\n\ndjango.views.generic.edit.ProcessFormView\n\nSets the current object instance (self.object).\n\nSets the current object instance (self.object).\n\nA view that displays a confirmation page and deletes an existing object. The given object will only be deleted if the request method is POST. If this view is fetched via GET, it will display a confirmation page that should contain a form that POSTs to the same URL.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.detail.SingleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.edit.BaseDeleteView\n\ndjango.views.generic.edit.DeletionMixin\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.base.ContextMixin\n\ndjango.views.generic.detail.BaseDetailView\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.base.View\n\nInherited from BaseDeleteView. The form class that will be used to confirm the request. By default django.forms.Form, resulting in an empty form that is always valid.\n\nBy providing your own Form subclass, you can add additional requirements, such as a confirmation checkbox, for example.\n\nThe DeleteView page displayed to a GET request uses a template_name_suffix of '_confirm_delete'. For example, changing this attribute to '_check_delete' for a view deleting objects for the example Author model would cause the default template_name to be 'myapp/author_check_delete.html'.\n\nExample myapp/views.py:\n\nExample myapp/author_confirm_delete.html:\n\nA base view for deleting an object instance. It is not intended to be used directly, but rather as a parent class of the django.views.generic.edit.DeleteView.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.edit.DeletionMixin\n\ndjango.views.generic.edit.FormMixin\n\ndjango.views.generic.detail.BaseDetailView",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Generic editing views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "FormView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CreateView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "UpdateView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DeleteView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

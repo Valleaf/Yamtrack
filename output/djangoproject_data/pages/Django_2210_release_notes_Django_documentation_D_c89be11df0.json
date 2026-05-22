@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.10/",
+  "title": "Django 2.2.10 release notes | Django documentation | Django",
+  "content": "Django 2.2.10 fixes a security issue in 2.2.9.\n\nStringAgg aggregation function was subject to SQL injection, using a suitably crafted delimiter.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2020-7471: Potential SQL injection via StringAgg(delimiter)¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.10/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.11/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

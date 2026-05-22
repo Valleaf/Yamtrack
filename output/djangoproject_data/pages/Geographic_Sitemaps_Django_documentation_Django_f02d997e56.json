@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/sitemaps/",
+  "title": "Geographic Sitemaps | Django documentation | Django",
+  "content": "KML is an XML language focused on geographic visualization [1]. KMLSitemap and its compressed counterpart KMZSitemap allow you to present geolocated data in a machine-readable format.\n\nhttps://www.ogc.org/standard/kml/",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Geographic Sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Reference¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "KMLSitemap¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "KMZSitemap¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/feeds/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

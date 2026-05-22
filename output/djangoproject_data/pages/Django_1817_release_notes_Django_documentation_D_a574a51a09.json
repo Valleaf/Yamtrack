@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.17/",
+  "title": "Django 1.8.17 release notes | Django documentation | Django",
+  "content": "Django 1.8.17 fixes a regression in 1.8.16.\n\nQuoted the Oracle test user’s password in queries to fix the “ORA-00922: missing or invalid option” error when the password starts with a number or special character (#27420).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.17 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.17/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.18/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.16/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

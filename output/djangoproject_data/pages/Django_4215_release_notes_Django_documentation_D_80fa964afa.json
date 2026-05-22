@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.15/",
+  "title": "Django 4.2.15 release notes | Django documentation | Django",
+  "content": "Django 4.2.15 fixes three security issues with severity “moderate”, one security issue with severity “high”, and a regression in 4.2.14.\n\nIf floatformat received a string representation of a number in scientific notation with a large exponent, it could lead to significant memory consumption.\n\nTo avoid this, decimals with more than 200 digits are now returned as is.\n\nurlize and urlizetrunc were subject to a potential denial-of-service attack via very large inputs with a specific sequence of characters.\n\nurlize, urlizetrunc, and AdminURLFieldWidget were subject to a potential denial-of-service attack via certain inputs with a very large number of Unicode characters.\n\nQuerySet.values() and values_list() methods on models with a JSONField were subject to SQL injection in column aliases, via a crafted JSON object key as a passed *arg.\n\nFixed a regression in Django 4.2.14 that caused a crash in LocaleMiddleware when processing a language code over 500 characters (#35627).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.15 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41989: Memory exhaustion in django.utils.numberformat.floatformat()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41990: Potential denial-of-service vulnerability in django.utils.html.urlize()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41991: Potential denial-of-service vulnerability in django.utils.html.urlize() and AdminURLFieldWidget¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-42005: Potential SQL injection in QuerySet.values() and values_list()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.15/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.16/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.14/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

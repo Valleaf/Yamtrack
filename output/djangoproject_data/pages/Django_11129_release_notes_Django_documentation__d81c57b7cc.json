@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.29/",
+  "title": "Django 1.11.29 release notes | Django documentation | Django",
+  "content": "Django 1.11.29 fixes a security issue in 1.11.28.\n\nGIS functions and aggregates on Oracle were subject to SQL injection, using a suitably crafted tolerance.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.29 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2020-9402: Potential SQL injection via tolerance parameter in GIS functions and aggregates on Oracle¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.29/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.28/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

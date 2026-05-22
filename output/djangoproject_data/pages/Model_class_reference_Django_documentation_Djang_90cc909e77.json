@@ -1,0 +1,60 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/class/",
+  "title": "Model class reference | Django documentation | Django",
+  "content": "This document covers features of the Model class. For more information about models, see the complete list of Model reference guides.\n\nThis exception is raised by the ORM when an expected object is not found. For example, QuerySet.get() will raise it when no object is found for the given lookups.\n\nDjango provides a DoesNotExist exception as an attribute of each model class to identify the class of object that could not be found, allowing you to catch exceptions for a particular model class. The exception is a subclass of django.core.exceptions.ObjectDoesNotExist.\n\nThis exception is raised by QuerySet.get() when multiple objects are found for the given lookups.\n\nDjango provides a MultipleObjectsReturned exception as an attribute of each model class to identify the class of object for which multiple objects were found, allowing you to catch exceptions for a particular model class. The exception is a subclass of django.core.exceptions.MultipleObjectsReturned.\n\nThis exception is raised when a forced update of a Model instance does not affect any rows.\n\nDjango provides a NotUpdated exception as an attribute of each model class to identify the class of object that could not be updated, allowing you to catch exceptions for a particular model class. The exception is a subclass of django.core.exceptions.ObjectNotUpdated and inherits from django.db.DatabaseError for backward compatibility reasons.\n\nEach non-abstract Model class must have a Manager instance added to it. Django ensures that in your model class you have at least a default Manager specified. If you don’t add your own Manager, Django will add an attribute objects containing default Manager instance. If you add your own Manager instance attribute, the default one does not appear. Consider the following example:\n\nFor more details on model managers see Managers and Retrieving objects.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Model class reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DoesNotExist¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultipleObjectsReturned¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NotUpdated¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "objects¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Each non-abstract Model class must have a Manager instance added to it. Django ensures that in your model class you have at least a default Manager specified. If you don’t add your own Manager, Django will add an attribute objects containing default Manager instance. If you add your own Manager instance attribute, the default one does not appear. Consider the following example:",
+      "code": "from django.db import models\n\n\nclass Person(models.Model):\n    # Add manager with another name\n    people = models.Manager()"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/class/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

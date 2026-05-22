@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/instrumentation/",
+  "title": "Database instrumentation | Django documentation | Django",
+  "content": "To help you understand and control the queries issued by your code, Django provides a hook for installing wrapper functions around the execution of database queries. For example, wrappers can count queries, measure query duration, log queries, or even prevent query execution (e.g. to make sure that no queries are issued while rendering a template with prefetched data).\n\nThe wrappers are modeled after middleware – they are callables which take another callable as one of their arguments. They call that callable to invoke the (possibly wrapped) database query, and they can do what they want around that call. They are, however, created and installed by user code, and so don’t need a separate factory like middleware do.\n\nInstalling a wrapper is done in a context manager – so the wrappers are temporary and specific to some flow in your code.\n\nAs mentioned above, an example of a wrapper is a query execution blocker. It could look like this:\n\nAnd it would be used in a view to block queries from the template like so:\n\nThe parameters sent to the wrappers are:\n\nexecute – a callable, which should be invoked with the rest of the parameters in order to execute the query.\n\nsql – a str, the SQL query to be sent to the database.\n\nparams – a list/tuple of parameter values for the SQL command, or a list/tuple of lists/tuples if the wrapped call is executemany().\n\nmany – a bool indicating whether the ultimately invoked call is execute() or executemany() (and whether params is expected to be a sequence of values, or a sequence of sequences of values).\n\ncontext – a dictionary with further data about the context of invocation. This includes the connection and cursor.\n\nUsing the parameters, a slightly more complex version of the blocker could include the connection name in the error message:\n\nFor a more complete example, a query logger could look like this:\n\nTo use this, you would create a logger object and install it as a wrapper:\n\nReturns a context manager which, when entered, installs a wrapper around database query executions, and when exited, removes the wrapper. The wrapper is installed on the thread-local connection object.\n\nwrapper is a callable taking five arguments. It is called for every query execution in the scope of the context manager, with arguments execute, sql, params, many, and context as described above. It’s expected to call execute(sql, params, many, context) and return the return value of that call.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Database instrumentation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "connection.execute_wrapper()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/instrumentation/",
+    "https://docs.djangoproject.com/en/stable/topics/http/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/db/optimization/",
+    "https://docs.djangoproject.com/en/stable/topics/db/fixtures/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

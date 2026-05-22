@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/",
+  "title": "How to use Django with Gunicorn | Django documentation | Django",
+  "content": "Gunicorn (‘Green Unicorn’) is a pure-Python WSGI server for UNIX. It has no dependencies and can be installed using pip.\n\nInstall gunicorn by running python -m pip install gunicorn. For more details, see the gunicorn documentation.\n\nWhen Gunicorn is installed, a gunicorn command is available which starts the Gunicorn server process. The simplest invocation of gunicorn is to pass the location of a module containing a WSGI application object named application, which for a typical Django project would look like:\n\nThis will start one process running one thread listening on 127.0.0.1:8000. It requires that your project be on the Python path; the simplest way to ensure that is to run this command from the same directory as your manage.py file.\n\nSee Gunicorn’s deployment documentation for additional tips.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to use Django with Gunicorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing Gunicorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Running Django in Gunicorn as a generic WSGI application¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

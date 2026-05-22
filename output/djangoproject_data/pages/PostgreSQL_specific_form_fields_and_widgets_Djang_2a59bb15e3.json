@@ -1,0 +1,89 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+  "title": "PostgreSQL specific form fields and widgets | Django documentation | Django",
+  "content": "All of these fields and widgets are available from the django.contrib.postgres.forms module.\n\nA field which maps to an array. It is represented by an HTML <input>.\n\nThis is a required argument.\n\nIt specifies the underlying form field for the array. This is not used to render any HTML, but it is used to process the submitted data and validate it. For example:\n\nThis is an optional argument which defaults to a comma: ,. This value is used to split the submitted data. It allows you to chain SimpleArrayField for multidimensional data:\n\nThe field does not support escaping of the delimiter, so be careful in cases where the delimiter is a valid character in the underlying field. The delimiter does not need to be only one character.\n\nThis is an optional argument which validates that the array does not exceed the stated length.\n\nThis is an optional argument which validates that the array reaches at least the stated length.\n\nSimpleArrayField is not particularly user friendly in most cases, however it is a useful way to format data from a client-side widget for submission to the server.\n\nThis field handles arrays by reproducing the underlying field a fixed number of times.\n\nThis is a required argument. It specifies the form field to be repeated.\n\nThis is the fixed number of times the underlying field will be used.\n\nBy default, this is set to False. When False, each value from the repeated fields is stored. When set to True, any trailing values which are blank will be stripped from the result. If the underlying field has required=True, but remove_trailing_nulls is True, then null values are only allowed at the end, and will be stripped.\n\nA field which accepts JSON encoded data for an HStoreField. It casts all values (except nulls) to strings. It is represented by an HTML <textarea>.\n\nHStoreField is not particularly user friendly in most cases, however it is a useful way to format data from a client-side widget for submission to the server.\n\nOn occasions it may be useful to require or restrict the keys which are valid for a given field. This can be done using the KeysValidator.\n\nThis group of fields all share similar functionality for accepting range data. They are based on MultiValueField. They treat one omitted value as an unbounded range. They also validate that the lower bound is not greater than the upper bound. All of these fields use RangeWidget.\n\nBased on IntegerField and translates its input into django.db.backends.postgresql.psycopg_any.NumericRange. Default for IntegerRangeField and BigIntegerRangeField.\n\nBased on DecimalField and translates its input into django.db.backends.postgresql.psycopg_any.NumericRange. Default for DecimalRangeField.\n\nBased on DateTimeField and translates its input into django.db.backends.postgresql.psycopg_any.DateTimeTZRange. Default for DateTimeRangeField.\n\nBased on DateField and translates its input into django.db.backends.postgresql.psycopg_any.DateRange. Default for DateRangeField.\n\nWidget used by all of the range fields. Based on MultiWidget.\n\nRangeWidget has one required argument:\n\nA RangeWidget comprises a 2-tuple of base_widget.\n\nTakes a single “compressed” value of a field, for example a DateRangeField, and returns a tuple representing a lower and upper bound.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific form fields and widgets¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SimpleArrayField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SplitArrayField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "HStoreField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Range Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "IntegerRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DecimalRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateTimeRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Widgets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RangeWidget¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "It specifies the underlying form field for the array. This is not used to render any HTML, but it is used to process the submitted data and validate it. For example:",
+      "code": ">>> from django import forms\n>>> from django.contrib.postgres.forms import SimpleArrayField\n\n>>> class NumberListForm(forms.Form):\n...     numbers = SimpleArrayField(forms.IntegerField())\n...\n\n>>> form = NumberListForm({\"numbers\": \"1,2,3\"})\n>>> form.is_valid()\nTrue\n>>> form.cleaned_data\n{'numbers': [1, 2, 3]}\n\n>>> form = NumberListForm({\"numbers\": \"1,2,a\"})\n>>> form.is_valid()\nFalse"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

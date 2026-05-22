@@ -1,0 +1,290 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+  "title": "PostgreSQL specific model fields | Django documentation | Django",
+  "content": "All of these fields are available from the django.contrib.postgres.fields module.\n\nIndex and Field.db_index both create a B-tree index, which isn’t particularly helpful when querying complex data types. Indexes such as GinIndex and GistIndex are better suited, though the index choice is dependent on the queries that you’re using. Generally, GiST may be a good choice for the range fields and HStoreField, and GIN may be helpful for ArrayField.\n\nA field for storing lists of data. Most field types can be used, and you pass another field instance as the base_field. You may also specify a size. ArrayField can be nested to store multi-dimensional arrays.\n\nIf you give the field a default, ensure it’s a callable such as list (for an empty default) or a callable that returns a list (such as a function). Incorrectly using default=[] creates a mutable default that is shared between all instances of ArrayField.\n\nThis is a required argument.\n\nSpecifies the underlying data type and behavior for the array. It should be an instance of a subclass of Field. For example, it could be an IntegerField or a CharField. Most field types are permitted, with the exception of those handling relational data (ForeignKey, OneToOneField and ManyToManyField) and file fields (FileField and ImageField).\n\nIt is possible to nest array fields - you can specify an instance of ArrayField as the base_field. For example:\n\nTransformation of values between the database and the model, validation of data and configuration, and serialization are all delegated to the underlying base field.\n\nThis is an optional argument.\n\nIf passed, the array will have a maximum size as specified. This will be passed to the database, although PostgreSQL at present does not enforce the restriction.\n\nWhen nesting ArrayField, whether you use the size parameter or not, PostgreSQL requires that the arrays are rectangular:\n\nIf irregular shapes are required, then the underlying field should be made nullable and the values padded with None.\n\nThere are a number of custom lookups and transforms for ArrayField. We will use the following example model:\n\nThe contains lookup is overridden on ArrayField. The returned objects will be those where the values passed are a subset of the data. It uses the SQL operator @>. For example:\n\nThis is the inverse of the contains lookup - the objects returned will be those where the data is a subset of the values passed. It uses the SQL operator <@. For example:\n\nReturns objects where the data shares any results with the values passed. Uses the SQL operator &&. For example:\n\nReturns the length of the array. The lookups available afterward are those available for IntegerField. For example:\n\nIndex transforms index into the array. Any non-negative integer can be used. There are no errors if it exceeds the size of the array. The lookups available after the transform are those from the base_field. For example:\n\nPostgreSQL uses 1-based indexing for array fields when writing raw SQL. However these indexes and those used in slices use 0-based indexing to be consistent with Python.\n\nSlice transforms take a slice of the array. Any two non-negative integers can be used, separated by a single underscore. The lookups available after the transform do not change. For example:\n\nPostgreSQL uses 1-based indexing for array fields when writing raw SQL. However these slices and those used in indexes use 0-based indexing to be consistent with Python.\n\nMultidimensional arrays with indexes and slices\n\nPostgreSQL has some rather esoteric behavior when using indexes and slices on multidimensional arrays. It will always work to use indexes to reach down to the final underlying data, but most other slices behave strangely at the database level and cannot be supported in a logical, consistent fashion by Django.\n\nA field for storing key-value pairs. The Python data type used is a dict. Keys must be strings, and values may be either strings or nulls (None in Python).\n\nTo use this field, you’ll need to:\n\nAdd 'django.contrib.postgres' in your INSTALLED_APPS.\n\nSet up the hstore extension in PostgreSQL.\n\nYou’ll see an error like can't adapt type 'dict' if you skip the first step, or type \"hstore\" does not exist if you skip the second.\n\nOn occasions it may be useful to require or restrict the keys which are valid for a given field. This can be done using the KeysValidator.\n\nIn addition to the ability to query by key, there are a number of custom lookups available for HStoreField.\n\nWe will use the following example model:\n\nTo query based on a given key, you can use that key as the lookup name:\n\nYou can chain other lookups after key lookups:\n\nor use F() expressions to annotate a key value. For example:\n\nIf the key you wish to query by clashes with the name of another lookup, you need to use the hstorefield.contains lookup instead.\n\nKey transforms can also be chained with: contains, icontains, endswith, iendswith, iexact, regex, iregex, startswith, and istartswith lookups.\n\nSince any string could be a key in a hstore value, any lookup other than those listed below will be interpreted as a key lookup. No errors are raised. Be extra careful for typing mistakes, and always check your queries work as you intend.\n\nThe contains lookup is overridden on HStoreField. The returned objects are those where the given dict of key-value pairs are all contained in the field. It uses the SQL operator @>. For example:\n\nThis is the inverse of the contains lookup - the objects returned will be those where the key-value pairs on the object are a subset of those in the value passed. It uses the SQL operator <@. For example:\n\nReturns objects where the given key is in the data. Uses the SQL operator ?. For example:\n\nReturns objects where any of the given keys are in the data. Uses the SQL operator ?|. For example:\n\nReturns objects where all of the given keys are in the data. Uses the SQL operator ?&. For example:\n\nReturns objects where the array of keys is the given value. Note that the order is not guaranteed to be reliable, so this transform is mainly useful for using in conjunction with lookups on ArrayField. Uses the SQL function akeys(). For example:\n\nReturns objects where the array of values is the given value. Note that the order is not guaranteed to be reliable, so this transform is mainly useful for using in conjunction with lookups on ArrayField. Uses the SQL function avals(). For example:\n\nThere are five range field types, corresponding to the built-in range types in PostgreSQL. These fields are used to store a range of values; for example the start and end timestamps of an event, or the range of ages an activity is suitable for.\n\nAll of the range fields translate to psycopg Range objects in Python, but also accept tuples as input if no bounds information is necessary. The default is lower bound included, upper bound excluded, that is [) (see the PostgreSQL documentation for details about different bounds). The default bounds can be changed for non-discrete range fields (DateTimeRangeField and DecimalRangeField) by using the default_bounds argument.\n\nPostgreSQL normalizes a range with no points to the empty range\n\nA range with equal values specified for an included lower bound and an excluded upper bound, such as Range(datetime.date(2005, 6, 21), datetime.date(2005, 6, 21)) or [4, 4), has no points. PostgreSQL will normalize the value to empty when saving to the database, and the original bound values will be lost. See the PostgreSQL documentation for details.\n\nStores a range of integers. Based on an IntegerField. Represented by an int4range in the database and a django.db.backends.postgresql.psycopg_any.NumericRange in Python.\n\nRegardless of the bounds specified when saving the data, PostgreSQL always returns a range in a canonical form that includes the lower bound and excludes the upper bound, that is [).\n\nStores a range of large integers. Based on a BigIntegerField. Represented by an int8range in the database and a django.db.backends.postgresql.psycopg_any.NumericRange in Python.\n\nRegardless of the bounds specified when saving the data, PostgreSQL always returns a range in a canonical form that includes the lower bound and excludes the upper bound, that is [).\n\nStores a range of floating point values. Based on a DecimalField. Represented by a numrange in the database and a django.db.backends.postgresql.psycopg_any.NumericRange in Python.\n\nOptional. The value of bounds for list and tuple inputs. The default is lower bound included, upper bound excluded, that is [) (see the PostgreSQL documentation for details about different bounds). default_bounds is not used for django.db.backends.postgresql.psycopg_any.NumericRange inputs.\n\nStores a range of timestamps. Based on a DateTimeField. Represented by a tstzrange in the database and a django.db.backends.postgresql.psycopg_any.DateTimeTZRange in Python.\n\nOptional. The value of bounds for list and tuple inputs. The default is lower bound included, upper bound excluded, that is [) (see the PostgreSQL documentation for details about different bounds). default_bounds is not used for django.db.backends.postgresql.psycopg_any.DateTimeTZRange inputs.\n\nStores a range of dates. Based on a DateField. Represented by a daterange in the database and a django.db.backends.postgresql.psycopg_any.DateRange in Python.\n\nRegardless of the bounds specified when saving the data, PostgreSQL always returns a range in a canonical form that includes the lower bound and excludes the upper bound, that is [).\n\nThere are a number of custom lookups and transforms for range fields. They are available on all the above fields, but we will use the following example model:\n\nWe will also use the following example objects:\n\nAs with other PostgreSQL fields, there are three standard containment operators: contains, contained_by and overlap, using the SQL operators @>, <@, and && respectively.\n\nThe contained_by lookup is also available on the non-range field types: SmallAutoField, AutoField, BigAutoField, SmallIntegerField, IntegerField, BigIntegerField, DecimalField, FloatField, DateField, and DateTimeField. For example:\n\nRange fields support the standard lookups: lt, gt, lte and gte. These are not particularly helpful - they compare the lower bounds first and then the upper bounds only if necessary. This is also the strategy used to order by a range field. It is better to use the specific range comparison operators.\n\nThe returned ranges are strictly less than the passed range. In other words, all the points in the returned range are less than all those in the passed range.\n\nThe returned ranges are strictly greater than the passed range. In other words, the all the points in the returned range are greater than all those in the passed range.\n\nThe returned ranges do not contain any points less than the passed range, that is the lower bound of the returned range is at least the lower bound of the passed range.\n\nThe returned ranges do not contain any points greater than the passed range, that is the upper bound of the returned range is at most the upper bound of the passed range.\n\nThe returned ranges share a bound with the passed range.\n\nRange fields support several extra lookups.\n\nReturned objects have the given lower bound. Can be chained to valid lookups for the base field.\n\nReturned objects have the given upper bound. Can be chained to valid lookups for the base field.\n\nReturned objects are empty ranges. Can be chained to valid lookups for a BooleanField.\n\nReturns objects that have inclusive or exclusive lower bounds, depending on the boolean value passed. Can be chained to valid lookups for a BooleanField.\n\nReturns objects that have unbounded (infinite) or bounded lower bound, depending on the boolean value passed. Can be chained to valid lookups for a BooleanField.\n\nReturns objects that have inclusive or exclusive upper bounds, depending on the boolean value passed. Can be chained to valid lookups for a BooleanField.\n\nReturns objects that have unbounded (infinite) or bounded upper bound, depending on the boolean value passed. Can be chained to valid lookups for a BooleanField.\n\nPostgreSQL allows the definition of custom range types. Django’s model and form field implementations use base classes below, and psycopg provides a register_range() to allow use of custom range types.\n\nBase class for model range fields.\n\nThe model field class to use.\n\nThe range type to use.\n\nThe form field class to use. Should be a subclass of django.contrib.postgres.forms.BaseRangeField.\n\nBase class for form range fields.\n\nThe form field to use.\n\nThe range type to use.\n\nPostgreSQL provides a set of SQL operators that can be used together with the range data types (see the PostgreSQL documentation for the full details of range operators). This class is meant as a convenient method to avoid typos. The operator names overlap with the names of corresponding lookups.\n\nIf True (default), the lower bound is inclusive '[', otherwise it’s exclusive '('.\n\nIf False (default), the upper bound is exclusive ')', otherwise it’s inclusive ']'.\n\nA RangeBoundary() expression represents the range boundaries. It can be used with a custom range functions that expected boundaries, for example to define ExclusionConstraint. See the PostgreSQL documentation for the full details.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific model fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Indexing these fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ArrayField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Querying ArrayField¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "contains¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "contained_by¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "overlap¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "len¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Index transforms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Slice transforms¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "HStoreField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Querying HStoreField¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Key lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "contains¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "contained_by¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "has_key¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "has_any_keys¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "has_keys¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "keys¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "values¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Range Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "IntegerRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BigIntegerRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DecimalRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DateTimeRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DateRangeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Querying Range Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Containment functions¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "contains¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "contained_by¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "overlap¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Comparison functions¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "fully_lt¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "fully_gt¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "not_lt¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "not_gt¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "adjacent_to¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Querying using the bounds¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "startswith¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "endswith¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "isempty¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "lower_inc¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "lower_inf¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "upper_inc¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "upper_inf¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Defining your own range types¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Range operators¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RangeBoundary() expressions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "It is possible to nest array fields - you can specify an instance of ArrayField as the base_field. For example:",
+      "code": "from django.contrib.postgres.fields import ArrayField\nfrom django.db import models\n\n\nclass ChessBoard(models.Model):\n    board = ArrayField(\n        ArrayField(\n            models.CharField(max_length=10, blank=True),\n            size=8,\n        ),\n        size=8,\n    )"
+    },
+    {
+      "description": "The contains lookup is overridden on ArrayField. The returned objects will be those where the values passed are a subset of the data. It uses the SQL operator @>. For example:",
+      "code": ">>> Post.objects.create(name=\"First post\", tags=[\"thoughts\", \"django\"])\n>>> Post.objects.create(name=\"Second post\", tags=[\"thoughts\"])\n>>> Post.objects.create(name=\"Third post\", tags=[\"tutorial\", \"django\"])\n\n>>> Post.objects.filter(tags__contains=[\"thoughts\"])\n<QuerySet [<Post: First post>, <Post: Second post>]>\n\n>>> Post.objects.filter(tags__contains=[\"django\"])\n<QuerySet [<Post: First post>, <Post: Third post>]>\n\n>>> Post.objects.filter(tags__contains=[\"django\", \"thoughts\"])\n<QuerySet [<Post: First post>]>"
+    },
+    {
+      "description": "This is the inverse of the contains lookup - the objects returned will be those where the data is a subset of the values passed. It uses the SQL operator <@. For example:",
+      "code": ">>> Post.objects.create(name=\"First post\", tags=[\"thoughts\", \"django\"])\n>>> Post.objects.create(name=\"Second post\", tags=[\"thoughts\"])\n>>> Post.objects.create(name=\"Third post\", tags=[\"tutorial\", \"django\"])\n\n>>> Post.objects.filter(tags__contained_by=[\"thoughts\", \"django\"])\n<QuerySet [<Post: First post>, <Post: Second post>]>\n\n>>> Post.objects.filter(tags__contained_by=[\"thoughts\", \"django\", \"tutorial\"])\n<QuerySet [<Post: First post>, <Post: Second post>, <Post: Third post>]>"
+    },
+    {
+      "description": "Returns objects where the data shares any results with the values passed. Uses the SQL operator &&. For example:",
+      "code": ">>> Post.objects.create(name=\"First post\", tags=[\"thoughts\", \"django\"])\n>>> Post.objects.create(name=\"Second post\", tags=[\"thoughts\", \"tutorial\"])\n>>> Post.objects.create(name=\"Third post\", tags=[\"tutorial\", \"django\"])\n\n>>> Post.objects.filter(tags__overlap=[\"thoughts\"])\n<QuerySet [<Post: First post>, <Post: Second post>]>\n\n>>> Post.objects.filter(tags__overlap=[\"thoughts\", \"tutorial\"])\n<QuerySet [<Post: First post>, <Post: Second post>, <Post: Third post>]>\n\n>>> Post.objects.filter(tags__overlap=Post.objects.values_list(\"tags\"))\n<QuerySet [<Post: First post>, <Post: Second post>, <Post: Third post>]>"
+    },
+    {
+      "description": "Returns the length of the array. The lookups available afterward are those available for IntegerField. For example:",
+      "code": ">>> Post.objects.create(name=\"First post\", tags=[\"thoughts\", \"django\"])\n>>> Post.objects.create(name=\"Second post\", tags=[\"thoughts\"])\n\n>>> Post.objects.filter(tags__len=1)\n<QuerySet [<Post: Second post>]>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

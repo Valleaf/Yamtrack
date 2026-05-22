@@ -1,0 +1,43 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+  "title": "Base views | Django documentation | Django",
+  "content": "The following three classes provide much of the functionality needed to create Django views. You may think of them as parent views, which can be used by themselves or inherited from. They may not provide all the capabilities required for projects, in which case there are Mixins and Generic class-based views.\n\nMany of Django’s built-in class-based views inherit from other class-based views or various mixins. Because this inheritance chain is very important, the ancestor classes are documented under the section title of Ancestors (MRO). MRO is an acronym for Method Resolution Order.\n\nThe base view class. All other class-based views inherit from this base class. It isn’t strictly a generic view and thus can also be imported from django.views.\n\nhttp_method_not_allowed()\n\nThe list of HTTP method names that this view will accept.\n\nReturns a callable view that takes a request and returns a response:\n\nThe returned view has view_class and view_initkwargs attributes.\n\nWhen the view is called during the request/response cycle, the setup() method assigns the HttpRequest to the view’s request attribute, and any positional and/or keyword arguments captured from the URL pattern to the args and kwargs attributes, respectively. Then dispatch() is called.\n\nIf a View subclass defines asynchronous (async def) method handlers, as_view() will mark the returned callable as a coroutine function. An ImproperlyConfigured exception will be raised if both asynchronous (async def) and synchronous (def) handlers are defined on a single view-class.\n\nPerforms key view initialization prior to dispatch().\n\nAssigns the HttpRequest to the view’s request attribute, and any positional and/or keyword arguments captured from the URL pattern to the args and kwargs attributes, respectively.\n\nIf overriding this method, you must call super().\n\nThe view part of the view – the method that accepts a request argument plus arguments, and returns an HTTP response.\n\nThe default implementation will inspect the HTTP method and attempt to delegate to a method that matches the HTTP method; a GET will be delegated to get(), a POST to post(), and so on.\n\nBy default, a HEAD request will be delegated to get(). If you need to handle HEAD requests in a different way than GET, you can override the head() method. See Supporting other HTTP methods for an example.\n\nIf the view was called with an HTTP method it doesn’t support, this method is called instead.\n\nThe default implementation returns HttpResponseNotAllowed with a list of allowed methods in plain text.\n\nHandles responding to requests for the OPTIONS HTTP verb. Returns a response with the Allow header containing a list of the view’s allowed HTTP method names.\n\nIf the other HTTP methods handlers on the class are asynchronous (async def) then the response will be wrapped in a coroutine function for use with await.\n\nRenders a given template, with the context containing parameters captured in the URL.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.base.ContextMixin\n\ndjango.views.generic.base.View\n\nhttp_method_not_allowed()\n\nPopulated (through ContextMixin) with the keyword arguments captured from the URL pattern that served the view.\n\nYou can also add context using the extra_context keyword argument for as_view().\n\nRedirects to a given URL.\n\nThe given URL may contain dictionary-style string formatting, which will be interpolated against the parameters captured in the URL. Because keyword interpolation is always done (even if no arguments are passed in), any \"%\" characters in the URL must be written as \"%%\" so that Python will convert them to a single percent sign on output.\n\nIf the given URL is None, Django will return an HttpResponseGone (410).\n\nThis view inherits methods and attributes from the following view:\n\ndjango.views.generic.base.View\n\nhttp_method_not_allowed()\n\nThe URL to redirect to, as a string. Or None to raise a 410 (Gone) HTTP error.\n\nThe name of the URL pattern to redirect to. Reversing will be done using the same args and kwargs as are passed in for this view.\n\nWhether the redirect should be permanent. The only difference here is the HTTP status code returned. If True, then the redirect will use status code 301. If False, then the redirect will use status code 302. By default, permanent is False.\n\nWhether to pass along the GET query string to the new location. If True, then the query string is appended to the URL. If False, then the query string is discarded. By default, query_string is False.\n\nConstructs the target URL for redirection.\n\nThe args and kwargs arguments are positional and/or keyword arguments captured from the URL pattern, respectively.\n\nThe default implementation uses url as a starting string and performs expansion of % named parameters in that string using the named groups captured in the URL.\n\nIf url is not set, get_redirect_url() tries to reverse the pattern_name using what was captured in the URL (both named and unnamed groups are used).\n\nIf requested by query_string, it will also append the query string to the generated URL. Subclasses may implement any behavior they wish, as long as the method returns a redirect-ready URL string.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Base views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "View¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "TemplateView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "RedirectView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

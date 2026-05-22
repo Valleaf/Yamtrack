@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.6.10/",
+  "title": "Django 1.6.10 release notes | Django documentation | Django",
+  "content": "Django 1.6.10 fixes several security issues in 1.6.9.\n\nWhen HTTP headers are placed into the WSGI environ, they are normalized by converting to uppercase, converting all dashes to underscores, and prepending HTTP_. For instance, a header X-Auth-User would become HTTP_X_AUTH_USER in the WSGI environ (and thus also in Django’s request.META dictionary).\n\nUnfortunately, this means that the WSGI environ cannot distinguish between headers containing dashes and headers containing underscores: X-Auth-User and X-Auth_User both become HTTP_X_AUTH_USER. This means that if a header is used in a security-sensitive way (for instance, passing authentication information along from a front-end proxy), even if the proxy carefully strips any incoming value for X-Auth-User, an attacker may be able to provide an X-Auth_User header (with underscore) and bypass this protection.\n\nIn order to prevent such attacks, both Nginx and Apache 2.4+ strip all headers containing underscores from incoming requests by default. Django’s built-in development server now does the same. Django’s development server is not recommended for production use, but matching the behavior of common production servers reduces the surface area for behavior changes during deployment.\n\nDjango relies on user input in some cases (e.g. django.contrib.auth.views.login() and i18n) to redirect the user to an “on success” URL. The security checks for these redirects (namely django.utils.http.is_safe_url()) didn’t strip leading whitespace on the tested URL and as such considered URLs like \\njavascript:... safe. If a developer relied on is_safe_url() to provide safe redirect targets and put such a URL into a link, they could suffer from a XSS attack. This bug doesn’t affect Django currently, since we only put this URL into the Location response header and browsers seem to ignore JavaScript there.\n\nIn older versions of Django, the django.views.static.serve() view read the files it served one line at a time. Therefore, a big file with no newlines would result in memory usage equal to the size of that file. An attacker could exploit this and launch a denial-of-service attack by simultaneously requesting many large files. This view now reads the file in chunks to prevent large memory usage.\n\nNote, however, that this view has always carried a warning that it is not hardened for production use and should be used only as a development aid. Now may be a good time to audit your project and serve your files in production using a real front-end web server if you are not doing so.\n\nGiven a form that uses ModelMultipleChoiceField and show_hidden_initial=True (not a documented API), it was possible for a user to cause an unreasonable number of SQL queries by submitting duplicate values for the field’s data. The validation logic in ModelMultipleChoiceField now deduplicates submitted values to address this issue.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.6.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "WSGI header spoofing via underscore/dash conflation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mitigated possible XSS attack via user-supplied redirect URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service attack against django.views.static.serve¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Database denial-of-service with ModelMultipleChoiceField¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.6.10/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/ref/views/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

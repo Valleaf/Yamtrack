@@ -1,0 +1,647 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+  "title": "Built-in template tags and filters | Django documentation | Django",
+  "content": "This document describes Django’s built-in template tags and filters. It is recommended that you use the automatic documentation, if available, as this will also include documentation for any custom tags or filters installed.\n\nControls the current auto-escaping behavior. This tag takes either on or off as an argument and that determines whether auto-escaping is in effect inside the block. The block is closed with an endautoescape ending tag.\n\nWhen auto-escaping is in effect, all content derived from variables has HTML escaping applied before placing the result into the output (but after any filters are applied). This is equivalent to manually applying the escape filter to each variable.\n\nThe only exceptions are variables already marked as “safe” from escaping. Variables could be marked as “safe” by the code which populated the variable, by applying the safe or escape filters, or because it’s the result of a previous filter that marked the string as “safe”.\n\nWithin the scope of disabled auto-escaping, chaining filters, including escape, may cause unexpected (but documented) results such as the following:\n\nThe above code will output the joined elements of my_list unescaped. This is because the filter chaining sequence executes first join on my_list (without applying escaping to each item since autoescape is off), marking the result as safe. Subsequently, this safe result will be fed to escape filter, which does not apply a second round of escaping.\n\nIn order to properly escape every element in a sequence, use the escapeseq filter:\n\nDefines a block that can be overridden by child templates. See Template inheritance for more information.\n\nIgnores everything between {% comment %} and {% endcomment %}. An optional note may be inserted in the first tag. For example, this is useful when commenting out code for documenting why the code was disabled.\n\ncomment tags cannot be nested.\n\nThis tag is used for CSRF protection, as described in the documentation for Cross Site Request Forgeries.\n\nProduces one of its arguments each time this tag is encountered. The first argument is produced on the first encounter, the second argument on the second encounter, and so forth. Once all arguments are exhausted, the tag cycles to the first argument and produces it again.\n\nThis tag is particularly useful in a loop:\n\nThe first iteration produces HTML that refers to class row1, the second to row2, the third to row1 again, and so on for each iteration of the loop.\n\nYou can use variables, too. For example, if you have two template variables, rowvalue1 and rowvalue2, you can alternate between their values like this:\n\nVariables included in the cycle will be escaped. You can disable auto-escaping with:\n\nYou can mix variables and strings:\n\nIn some cases you might want to refer to the current value of a cycle without advancing to the next value. To do this, give the {% cycle %} tag a name, using “as”, like this:\n\nFrom then on, you can insert the current value of the cycle wherever you’d like in your template by referencing the cycle name as a context variable. If you want to move the cycle to the next value independently of the original cycle tag, you can use another cycle tag and specify the name of the variable. So, the following template:\n\nYou can use any number of values in a cycle tag, separated by spaces. Values enclosed in single quotes (') or double quotes (\") are treated as string literals, while values without quotes are treated as template variables.\n\nBy default, when you use the as keyword with the cycle tag, the usage of {% cycle %} that initiates the cycle will itself produce the first value in the cycle. This could be a problem if you want to use the value in a nested loop or an included template. If you only want to declare the cycle but not produce the first value, you can add a silent keyword as the last keyword in the tag. For example:\n\nThis will output a list of <tr> elements with class alternating between row1 and row2. The subtemplate will have access to rowcolors in its context and the value will match the class of the <tr> that encloses it. If the silent keyword were to be omitted, row1 and row2 would be emitted as normal text, outside the <tr> element.\n\nWhen the silent keyword is used on a cycle definition, the silence automatically applies to all subsequent uses of that specific cycle tag. The following template would output nothing, even though the second call to {% cycle %} doesn’t specify silent:\n\nYou can use the resetcycle tag to make a {% cycle %} tag restart from its first value when it’s next encountered.\n\nOutputs a whole load of debugging information, including the current context and imported modules. {% debug %} outputs nothing when the DEBUG setting is False.\n\nSignals that this template extends a parent template.\n\nThis tag can be used in two ways:\n\n{% extends \"base.html\" %} (with quotes) uses the literal value \"base.html\" as the name of the parent template to extend.\n\n{% extends variable %} uses the value of variable. If the variable evaluates to a string, Django will use that string as the name of the parent template. If the variable evaluates to a Template object, Django will use that object as the parent template.\n\nSee Template inheritance for more information.\n\nNormally the template name is relative to the template loader’s root directory. A string argument may also be a relative path starting with ./ or ../. For example, assume the following directory structure:\n\nIn template.html, the following paths would be valid:\n\nFilters the contents of the block through one or more filters. Multiple filters can be specified with pipes and filters can have arguments, just as in variable syntax.\n\nNote that the block includes all the text between the filter and endfilter tags.\n\nThe escape and safe filters are not acceptable arguments. Instead, use the autoescape tag to manage autoescaping for blocks of template code.\n\nOutputs the first argument variable that is not “false” (i.e. exists, is not empty, is not a false boolean value, and is not a zero numeric value). Outputs nothing if all the passed variables are “false”.\n\nThis is equivalent to:\n\nYou can also use a literal string as a fallback value in case all passed variables are False:\n\nThis tag auto-escapes variable values. You can disable auto-escaping with:\n\nOr if only some variables should be escaped, you can use:\n\nYou can use the syntax {% firstof var1 var2 var3 as value %} to store the output inside a variable.\n\nLoops over each item in an array, making the item available in a context variable. For example, to display a list of athletes provided in athlete_list:\n\nYou can loop over a list in reverse by using {% for obj in list reversed %}.\n\nIf you need to loop over a list of lists, you can unpack the values in each sublist into individual variables. For example, if your context contains a list of (x,y) coordinates called points, you could use the following to output the list of points:\n\nThis can also be useful if you need to access the items in a dictionary. For example, if your context contained a dictionary data, the following would display the keys and values of the dictionary:\n\nKeep in mind that for the dot operator, dictionary key lookup takes precedence over method lookup. Therefore if the data dictionary contains a key named 'items', data.items will return data['items'] instead of data.items(). Avoid adding keys that are named like dictionary methods if you want to use those methods in a template (items, values, keys, etc.). Read more about the lookup order of the dot operator in the documentation of template variables.\n\nThe for loop sets a number of variables available within the loop:\n\nThe current iteration of the loop (1-indexed)\n\nThe current iteration of the loop (0-indexed)\n\nThe number of iterations from the end of the loop (1-indexed)\n\nThe number of iterations from the end of the loop (0-indexed)\n\nTrue if this is the first time through the loop\n\nTrue if this is the last time through the loop\n\nThe length of the loop\n\nFor nested loops, this is the loop surrounding the current one\n\nThe variable forloop.length was added.\n\nThe for tag can take an optional {% empty %} clause whose text is displayed if the given array is empty or could not be found:\n\nThe above is equivalent to – but shorter, cleaner, and possibly faster than – the following:\n\nThe {% if %} tag evaluates a variable, and if that variable is “true” (i.e. exists, is not empty, and is not a false boolean value) the contents of the block are output:\n\nIn the above, if athlete_list is not empty, the number of athletes will be displayed by the {{ athlete_list|length }} variable.\n\nAs you can see, the if tag may take one or several {% elif %} clauses, as well as an {% else %} clause that will be displayed if all previous conditions fail. These clauses are optional.\n\nif tags may use and, or or not to test a number of variables or to negate a given variable:\n\nUse of both and and or clauses within the same tag is allowed, with and having higher precedence than or e.g.:\n\nwill be interpreted like:\n\nUse of actual parentheses in the if tag is invalid syntax. If you need them to indicate precedence, you should use nested if tags.\n\nif tags may also use the operators ==, !=, <, >, <=, >=, in, not in, is, and is not which work as follows:\n\nGreater than. Example:\n\nLess than or equal to. Example:\n\nGreater than or equal to. Example:\n\nContained within. This operator is supported by many Python containers to test whether the given value is in the container. The following are some examples of how x in y will be interpreted:\n\nNot contained within. This is the negation of the in operator.\n\nObject identity. Tests if two values are the same object. Example:\n\nNegated object identity. Tests if two values are not the same object. This is the negation of the is operator. Example:\n\nYou can also use filters in the if expression. For example:\n\nAll of the above can be combined to form complex expressions. For such expressions, it can be important to know how the operators are grouped when the expression is evaluated - that is, the precedence rules. The precedence of the operators, from lowest to highest, is as follows:\n\n(This follows Python exactly). So, for example, the following complex if tag:\n\n…will be interpreted as:\n\nIf you need different precedence, you will need to use nested if tags. Sometimes that is better for clarity anyway, for the sake of those who do not know the precedence rules.\n\nThe comparison operators cannot be ‘chained’ like in Python or in mathematical notation. For example, instead of using:\n\nCheck if a value has changed from the last iteration of a loop.\n\nThe {% ifchanged %} block tag is used within a loop. It has two possible uses.\n\nChecks its own rendered contents against its previous state and only displays the content if it has changed. For example, this displays a list of days, only displaying the month if it changes:\n\nIf given one or more variables, check whether any variable has changed. For example, the following shows the date every time it changes, while showing the hour if either the hour or the date has changed:\n\nThe ifchanged tag can also take an optional {% else %} clause that will be displayed if the value has not changed:\n\nLoads a template and renders it with the current context. This is a way of “including” other templates within a template.\n\nThe template name can either be a variable or a hardcoded (quoted) string, in either single or double quotes.\n\nThis example includes the contents of the template \"foo/bar.html\":\n\nNormally the template name is relative to the template loader’s root directory. A string argument may also be a relative path starting with ./ or ../ as described in the extends tag.\n\nThis example includes the contents of the template whose name is contained in the variable template_name:\n\nThe variable may also be any object with a render() method that accepts a context. This allows you to reference a compiled Template in your context.\n\nAdditionally, the variable may be an iterable of template names, in which case the first that can be loaded will be used, as per select_template().\n\nAn included template is rendered within the context of the template that includes it. This example produces the output \"Hello, John!\":\n\nContext: variable person is set to \"John\" and variable greeting is set to \"Hello\".\n\nThe name_snippet.html template:\n\nYou can pass additional context to the template using keyword arguments:\n\nIf you want to render the context only with the variables provided (or even no variables at all), use the only option. No other variables are available to the included template:\n\nThe include tag should be considered as an implementation of “render this subtemplate and include the HTML”, not as “parse this subtemplate and include its contents as if it were part of the parent”. This means that there is no shared state between included templates – each include is a completely independent rendering process.\n\nBlocks are evaluated before they are included. This means that a template that includes blocks from another will contain blocks that have already been evaluated and rendered - not blocks that can be overridden by, for example, an extending template.\n\nLoads a custom template tag set.\n\nFor example, the following template would load all the tags and filters registered in somelibrary and otherlibrary located in package package:\n\nYou can also selectively load individual filters or tags from a library, using the from argument. In this example, the template tags/filters named foo and bar will be loaded from somelibrary:\n\nSee Custom tag and filter libraries for more information.\n\nDisplays random “lorem ipsum” Latin text. This is useful for providing sample data in templates.\n\nThe {% lorem %} tag can be used with zero, one, two or three arguments. The arguments are:\n\nA number (or variable) containing the number of paragraphs or words to generate (default is 1).\n\nEither w for words, p for HTML paragraphs or b for plain-text paragraph blocks (default is b).\n\nThe word random, which if given, does not use the common paragraph (“Lorem ipsum dolor sit amet…”) when generating text.\n\n{% lorem %} will output the common “lorem ipsum” paragraph.\n\n{% lorem 3 p %} will output the common “lorem ipsum” paragraph and two random paragraphs each wrapped in HTML <p> tags.\n\n{% lorem 2 w random %} will output two random Latin words.\n\nDisplays the current date and/or time, using a format according to the given string. Such string can contain format specifiers characters as described in the date filter section.\n\nNote that you can backslash-escape a format string if you want to use the “raw” value. In this example, both “o” and “f” are backslash-escaped, because otherwise each is a format string that displays the year and the time, respectively:\n\nThis would display as “It is the 4th of September”.\n\nThe format passed can also be one of the predefined ones DATE_FORMAT, DATETIME_FORMAT, SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT. The predefined formats may vary depending on the current locale and if Format localization is enabled, e.g.:\n\nYou can also use the syntax {% now \"Y\" as current_year %} to store the output (as a string) inside a variable. This is useful if you want to use {% now %} inside a template tag like blocktranslate for example:\n\nRenders a template fragment that was defined with partialdef, inserting the matching partial at this location.\n\nThe partial_name argument is the name of the template fragment to render.\n\nIn the following example, a partial named button is defined and then rendered three times:\n\nDefines a reusable template fragment that can be rendered multiple times within the same template or accessed directly via template loading or inclusion.\n\nThe partial_name argument is required and must be a valid template identifier.\n\nIn the following example, a new fragment named card is defined:\n\nThis partial can then be rendered using the partial tag:\n\nTo render a fragment immediately in place, use the inline option. The partial is still stored and can be reused later.\n\nOutputs a URL-encoded formatted query string based on the provided parameters.\n\nThis tag accepts positional arguments, which must be mappings (such as QueryDict or dict). If no positional arguments are provided, request.GET is used as the default to construct the query string.\n\nPositional arguments are processed sequentially, while keyword arguments are treated as key-value pairs, applied last. Later arguments take precedence over earlier ones, ensuring the most recent pairs are reflected in the final result.\n\nThe result always includes a leading \"?\" since this tag is mainly used for links, and an empty result could prevent the page from reloading as expected.\n\nUsing request.GET as default\n\nTo use request.GET as the default QueryDict instance, the django.template.context_processors.request context processor should be enabled. If it’s not enabled, you must either explicitly pass the request object into the template context, or provide a QueryDict instance to this tag.\n\nA ? was prepended to the query string for empty results.\n\nOutputs the current query string verbatim. So if the query string in the request is ?color=green, the output would be ?color=green. If the current query string is empty, the output will be ?.\n\nOutputs the current query string with the addition of the size parameter. Following the previous example, the output would be ?color=green&size=M.\n\nAdds or modifies parameters in the query string. Each keyword argument will be added to the query string, replacing any existing value for that key. For instance, if the current query string is ?color=green, the output will be ?color=red&size=S.\n\nPassing None as the value removes the parameter from the query string. For example, if the current query string is ?color=green&size=M, the output will be ?size=M.\n\nIf my_list is [\"red\", \"blue\"], the output will be ?color=red&color=blue, preserving the list structure in the query string.\n\nYou can pass custom QueryDict or dict instances as positional arguments to replace request.GET. When multiple arguments are provided, key-value pairs from later arguments take precedence over earlier ones.\n\nFor example, if my_query_dict is <QueryDict: {'color': ['blue'], 'size': ['S']}> and my_dict is {'color': 'orange', 'fabric': 'silk', 'type': 'dress'}, this outputs ?color=orange&size=S&fabric=silk.\n\nIf all keys are removed by setting them to None, this outputs ?:\n\nSimilarly, if all positional arguments are empty and keyword arguments do not contribute any new params, the output will also be ?.\n\nSupport for multiple positional mapping arguments was added.\n\nA common example of using this tag is to preserve the current query string when displaying a page of results, while adding a link to the next and previous pages of results. For example, if the paginator is currently on page 3, and the current query string is ?color=blue&size=M&page=3, the following code would output ?color=blue&size=M&page=4:\n\nYou can also store the value in a variable. For example, if you need multiple links to the same page, define it as:\n\nRegroups a list of alike objects by a common attribute.\n\nThis complex tag is best illustrated by way of an example: say that cities is a list of cities represented by dictionaries containing \"name\", \"population\", and \"country\" keys:\n\n…and you’d like to display a hierarchical list that is ordered by country, like this:\n\nYou can use the {% regroup %} tag to group the list of cities by country. The following snippet of template code would accomplish this:\n\nLet’s walk through this example. {% regroup %} takes three arguments: the list you want to regroup, the attribute to group by, and the name of the resulting list. Here, we’re regrouping the cities list by the country attribute and calling the result country_list.\n\n{% regroup %} produces a list (in this case, country_list) of group objects. Group objects are instances of namedtuple() with two fields:\n\ngrouper – the item that was grouped by (e.g., the string “India” or “Japan”).\n\nlist – a list of all items in this group (e.g., a list of all cities with country=’India’).\n\nBecause {% regroup %} produces namedtuple() objects, you can also write the previous example as:\n\nNote that {% regroup %} does not order its input! Our example relies on the fact that the cities list was ordered by country in the first place. If the cities list did not order its members by country, the regrouping would naively display more than one group for a single country. For example, say the cities list was set to this (note that the countries are not grouped together):\n\nWith this input for cities, the example {% regroup %} template code above would result in the following output:\n\nThe easiest solution to this gotcha is to make sure in your view code that the data is ordered according to how you want to display it.\n\nAnother solution is to sort the data in the template using the dictsort filter, if your data is in a list of dictionaries:\n\nAny valid template lookup is a legal grouping attribute for the regroup tag, including methods, attributes, dictionary keys and list items. For example, if the “country” field is a foreign key to a class with an attribute “description,” you could use:\n\nOr, if country is a field with choices, it will have a get_FOO_display() method available as an attribute, allowing you to group on the display string rather than the choices key:\n\n{{ country.grouper }} will now display the value fields from the choices set rather than the keys.\n\nResets a previous cycle so that it restarts from its first item at its next encounter. Without arguments, {% resetcycle %} will reset the last {% cycle %} defined in the template.\n\nThis example would return this HTML:\n\nNotice how the first block ends with class=\"odd\" and the new one starts with class=\"odd\". Without the {% resetcycle %} tag, the second block would start with class=\"even\".\n\nYou can also reset named cycle tags:\n\nIn this example, we have both the alternating odd/even rows and a “major” row every fifth row. Only the five-row cycle is reset when a category changes.\n\nRemoves whitespace between HTML tags. This includes tab characters and newlines.\n\nThis example would return this HTML:\n\nOnly space between tags is removed – not space between tags and text. In this example, the space around Hello won’t be stripped:\n\nOutputs one of the syntax characters used to compose template tags.\n\nThe template system has no concept of “escaping” individual characters. However, you can use the {% templatetag %} tag to display one of the template tag character combinations.\n\nThe argument tells which template bit to output:\n\nSee also the verbatim tag for another way of including these characters.\n\nReturns an absolute path reference (a URL without the domain name) matching a given view and optional parameters. Any special characters in the resulting path will be encoded using iri_to_uri().\n\nThis is a way to output links without violating the DRY principle by having to hardcode URLs in your templates:\n\nThe first argument is a URL pattern name. It can be a quoted literal or any other context variable. Additional arguments are optional and should be space-separated values that will be used as arguments in the URL. The example above shows passing positional arguments. Alternatively you may use keyword syntax:\n\nDo not mix both positional and keyword syntax in a single call. All arguments required by the URLconf should be present.\n\nFor example, suppose you have a view, app_views.client, whose URLconf takes a client ID (here, client() is a method inside the views file app_views.py). The URLconf line might look like this:\n\nIf this app’s URLconf is included into the project’s URLconf under a path such as this:\n\n…then, in a template, you can create a link to this view like this:\n\nThe template tag will output the string /clients/client/123/.\n\nNote that if the URL you’re reversing doesn’t exist, you’ll get an NoReverseMatch exception raised, which will cause your site to display an error page.\n\nIf you’d like to retrieve a URL without displaying it, you can use a slightly different call:\n\nThe scope of the variable created by the as var syntax is the {% block %} in which the {% url %} tag appears.\n\nThis {% url ... as var %} syntax will not cause an error if the view is missing. In practice you’ll use this to link to views that are optional:\n\nIf you’d like to retrieve a namespaced URL, specify the fully qualified name:\n\nThis will follow the normal namespaced URL resolution strategy, including using any hints provided by the context as to the current application.\n\nDon’t forget to put quotes around the URL pattern name, otherwise the value will be interpreted as a context variable!\n\nStops the template engine from rendering the contents of this block tag.\n\nA common use is to allow a JavaScript template layer that collides with Django’s syntax. For example:\n\nYou can also designate a specific closing tag, allowing the use of {% endverbatim %} as part of the unrendered contents:\n\nFor creating bar charts and such, this tag calculates the ratio of a given value to a maximum value, and then applies that ratio to a constant.\n\nIf this_value is 175, max_value is 200, and max_width is 100, the image in the above example will be 88 pixels wide (because 175/200 = .875; .875 * 100 = 87.5 which is rounded up to 88).\n\nIn some cases you might want to capture the result of widthratio in a variable. It can be useful, for instance, in a blocktranslate like this:\n\nCaches a complex variable under a simpler name. This is useful when accessing an “expensive” method (e.g., one that hits the database) multiple times.\n\nThe populated variable (in the example above, total) is only available between the {% with %} and {% endwith %} tags.\n\nYou can assign more than one context variable:\n\nThe previous more verbose format is still supported: {% with business.employees.count as total %}\n\nAdds the argument to the value.\n\nIf value is 4, then the output will be 6.\n\nThis filter will first try to coerce both values to integers. If this fails, it’ll attempt to add the values together anyway. This will work on some data types (strings, list, etc.) and fail on others. If it fails, the result will be an empty string.\n\nFor example, if we have:\n\nand first is [1, 2, 3] and second is [4, 5, 6], then the output will be [1, 2, 3, 4, 5, 6].\n\nStrings that can be coerced to integers will be summed, not concatenated, as in the first example above.\n\nAdds slashes before quotes. Useful for escaping strings in CSV, for example.\n\nIf value is \"I'm using Django\", the output will be \"I\\'m using Django\".\n\nCapitalizes the first character of the value. If the first character is not a letter, this filter has no effect.\n\nIf value is \"django\", the output will be \"Django\".\n\nCenters the value in a field of a given width.\n\nIf value is \"Django\", the output will be \" Django \".\n\nRemoves all values of arg from the given string.\n\nIf value is \"String with spaces\", the output will be \"Stringwithspaces\".\n\nFormats a date according to the given format.\n\nUses a similar format to PHP’s date() function with some differences.\n\nThese format characters are not used in Django outside of templates. They were designed to be compatible with PHP to ease transitioning for designers.\n\nAvailable format strings:\n\nDay of the month, 2 digits with leading zeros.\n\nDay of the month without leading zeros.\n\nDay of the week, textual, 3 letters.\n\nDay of the week, textual, long.\n\nEnglish ordinal suffix for day of the month, 2 characters.\n\n'st', 'nd', 'rd' or 'th'\n\nDay of the week, digits without leading zeros.\n\n'0' (Sunday) to '6' (Saturday)\n\nISO-8601 week number of year, with weeks starting on Monday.\n\nMonth, 2 digits with leading zeros.\n\nMonth without leading zeros.\n\nMonth, textual, 3 letters.\n\nMonth, textual, 3 letters, lowercase.\n\nMonth, locale specific alternative representation usually used for long date representation.\n\n'listopada' (for Polish locale, as opposed to 'Listopad')\n\nMonth, textual, long.\n\nMonth abbreviation in Associated Press style. Proprietary extension.\n\n'Jan.', 'Feb.', 'March', 'May'\n\nNumber of days in the given month.\n\nYear, 2 digits with leading zeros.\n\nYear, 4 digits with leading zeros.\n\n'0001', …, '1999', …, '9999'\n\nBoolean for whether it’s a leap year.\n\nISO-8601 week-numbering year, corresponding to the ISO-8601 week number (W) which uses leap weeks. See Y for the more common year format.\n\nHour, 12-hour format without leading zeros.\n\nHour, 24-hour format without leading zeros.\n\nHour, 12-hour format.\n\nHour, 24-hour format.\n\nSeconds, 2 digits with leading zeros.\n\n'a.m.' or 'p.m.' (Note that this is slightly different than PHP’s output, because this includes periods to match Associated Press style.)\n\nTime, in 12-hour hours and minutes, with minutes left off if they’re zero. Proprietary extension.\n\nTime, in 12-hour hours, minutes and ‘a.m.’/’p.m.’, with minutes left off if they’re zero and the special-case strings ‘midnight’ and ‘noon’ if appropriate. Proprietary extension.\n\n'1 a.m.', '1:30 p.m.', 'midnight', 'noon', '12:30 p.m.'\n\nTimezone name. Could be in any format, or might return an empty string, depending on the datetime.\n\n'', 'GMT', '-500', 'US/Eastern', etc.\n\nDaylight saving time, whether it’s in effect or not.\n\nDifference to Greenwich time in hours.\n\nTime zone of this machine.\n\nTime zone offset in seconds. The offset for timezones west of UTC is always negative, and for those east of UTC is always positive.\n\nISO 8601 format. (Note: unlike other formatters, such as “Z”, “O” or “r”, the “c” formatter will not add timezone offset if value is a naive datetime (see datetime.tzinfo).\n\n2008-01-02T10:30:00.000123+02:00, or 2008-01-02T10:30:00.000123 if the datetime is naive\n\nRFC 5322 formatted date.\n\n'Thu, 21 Dec 2000 16:01:07 +0200'\n\nSeconds since the Unix Epoch (January 1 1970 00:00:00 UTC).\n\nIf value is a datetime object (e.g., the result of datetime.datetime.now()), the output will be the string 'Wed 09 Jan 2008'.\n\nThe format passed can be one of the predefined ones DATE_FORMAT, DATETIME_FORMAT, SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT, or a custom format that uses the format specifiers shown in the table above. Note that predefined formats may vary depending on the current locale.\n\nAssuming that LANGUAGE_CODE is, for example, \"es\", then for:\n\nthe output would be the string \"09/01/2008\" (the \"SHORT_DATE_FORMAT\" format specifier for the es locale as shipped with Django is \"d/m/Y\").\n\nWhen used without a format string, the DATE_FORMAT format specifier is used. Assuming the same settings as the previous example:\n\noutputs 9 de Enero de 2008 (the DATE_FORMAT format specifier for the es locale is r'j \\d\\e F \\d\\e Y'). Both “d” and “e” are backslash-escaped, because otherwise each is a format string that displays the day and the timezone name, respectively.\n\nYou can combine date with the time filter to render a full representation of a datetime value. E.g.:\n\nIf value evaluates to False, uses the given default. Otherwise, uses the value.\n\nIf value is \"\" (the empty string), the output will be nothing.\n\nIf (and only if) value is None, uses the given default. Otherwise, uses the value.\n\nNote that if an empty string is given, the default value will not be used. Use the default filter if you want to fallback for empty strings.\n\nIf value is None, the output will be nothing.\n\nTakes a list of dictionaries and returns that list sorted by the key given in the argument.\n\nthen the output would be:\n\nYou can also do more complicated things like:\n\nthen the output would be:\n\ndictsort can also order a list of lists (or any other object implementing __getitem__()) by elements at specified index. For example:\n\nthen the output would be:\n\nYou must pass the index as an integer rather than a string. The following produce empty output:\n\nOrdering by elements at specified index is not supported on dictionaries.\n\nTakes a list of dictionaries and returns that list sorted in reverse order by the key given in the argument. This works exactly the same as the above filter, but the returned value will be in reverse order.\n\nReturns True if the value is divisible by the argument.\n\nIf value is 21, the output would be True.\n\nEscapes a string’s HTML. Specifically, it makes these replacements:\n\n< is converted to &lt;\n\n> is converted to &gt;\n\n' (single quote) is converted to &#x27;\n\n\" (double quote) is converted to &quot;\n\n& is converted to &amp;\n\nApplying escape to a variable that would normally have auto-escaping applied to the result will only result in one round of escaping being done. So it is safe to use this function even in auto-escaping environments. If you want multiple escaping passes to be applied, use the force_escape filter.\n\nFor example, you can apply escape to fields when autoescape is off:\n\nChaining escape with other filters\n\nAs mentioned in the autoescape section, when filters including escape are chained together, it can result in unexpected outcomes if preceding filters mark a potentially unsafe string as safe due to the lack of escaping caused by autoescape being off.\n\nIn such cases, chaining escape would not reescape strings that have already been marked as safe.\n\nThis is especially important when using filters that operate on sequences, for example join. If you need to escape each element in a sequence, use the dedicated escapeseq filter.\n\nEscapes characters for use as a whole JavaScript string literal, within single or double quotes, as below. This filter does not make the string safe for use in “JavaScript template literals” (the JavaScript backtick syntax). Any other uses not listed above are not supported. It is generally recommended that data should be passed using HTML data- attributes, or the json_script filter, rather than in embedded JavaScript.\n\nApplies the escape filter to each element of a sequence. Useful in conjunction with other filters that operate on sequences, such as join. For example:\n\nFormats the value like a ‘human-readable’ file size (i.e. '13 KB', '4.1 MB', '102 bytes', etc.).\n\nIf value is 123456789, the output would be 117.7 MB.\n\nFile sizes and SI units\n\nStrictly speaking, filesizeformat does not conform to the International System of Units which recommends using KiB, MiB, GiB, etc. when byte sizes are calculated in powers of 1024 (which is the case here). Instead, Django uses traditional unit names (KB, MB, GB, etc.) corresponding to names that are more commonly used.\n\nReturns the first item in a list.\n\nIf value is the list ['a', 'b', 'c'], the output will be 'a'.\n\nWhen used without an argument, rounds a floating-point number to one decimal place – but only if there’s a decimal part to be displayed. For example:\n\n{{ value|floatformat }}\n\n{{ value|floatformat }}\n\n{{ value|floatformat }}\n\nIf used with a numeric integer argument, floatformat rounds a number to that many decimal places. For example:\n\n{{ value|floatformat:3 }}\n\n{{ value|floatformat:3 }}\n\n{{ value|floatformat:3 }}\n\nParticularly useful is passing 0 (zero) as the argument which will round the float to the nearest integer.\n\n{{ value|floatformat:\"0\" }}\n\n{{ value|floatformat:\"0\" }}\n\n{{ value|floatformat:\"0\" }}\n\nIf the argument passed to floatformat is negative, it will round a number to that many decimal places – but only if there’s a decimal part to be displayed. For example:\n\n{{ value|floatformat:\"-3\" }}\n\n{{ value|floatformat:\"-3\" }}\n\n{{ value|floatformat:\"-3\" }}\n\nIf the argument passed to floatformat has the g suffix, it will force grouping by the THOUSAND_SEPARATOR for the active locale. For example, when the active locale is en (English):\n\n{{ value|floatformat:\"2g\" }}\n\n{{ value|floatformat:\"g\" }}\n\n{{ value|floatformat:\"-3g\" }}\n\nOutput is always localized (independently of the {% localize off %} tag) unless the argument passed to floatformat has the u suffix, which will force disabling localization. For example, when the active locale is pl (Polish):\n\n{{ value|floatformat:\"3\" }}\n\n{{ value|floatformat:\"3u\" }}\n\nUsing floatformat with no argument is equivalent to using floatformat with an argument of -1.\n\nApplies HTML escaping to a string (see the escape filter for details). This filter is applied immediately and returns a new, escaped string. This is useful in the rare cases where you need multiple escaping or want to apply other filters to the escaped results. Normally, you want to use the escape filter.\n\nFor example, if you want to catch the <p> HTML elements created by the linebreaks filter:\n\nGiven a whole number, returns the requested digit, where 1 is the right-most digit, 2 is the second-right-most digit, etc. Returns the original value for invalid input (if input or argument is not an integer, or if argument is less than 1). Otherwise, output is always an integer.\n\nIf value is 123456789, the output will be 8.\n\nConverts an IRI (Internationalized Resource Identifier) to a string that is suitable for including in a URL. This is necessary if you’re trying to use strings containing non-ASCII characters in a URL.\n\nIt’s safe to use this filter on a string that has already gone through the urlencode filter.\n\nIf value is \"?test=I ♥ Django\", the output will be \"?test=I%20%E2%99%A5%20Django\".\n\nJoins a list with a string, like Python’s str.join(list)\n\nIf value is the list ['a', 'b', 'c'], the output will be the string \"a // b // c\".\n\nSafely outputs a Python object as JSON, wrapped in a <script> tag, ready for use with JavaScript.\n\nArgument: The optional HTML “id” of the <script> tag.\n\nIf value is the dictionary {'hello': 'world'}, the output will be:\n\nThe resulting data can be accessed in JavaScript like this:\n\nXSS attacks are mitigated by escaping the characters “<”, “>” and “&”. For example if value is {'hello': 'world</script>&amp;'}, the output is:\n\nThis is compatible with a strict Content Security Policy that prohibits in-page script execution. It also maintains a clean separation between passive data and executable code.\n\nReturns the last item in a list.\n\nIf value is the list ['a', 'b', 'c', 'd'], the output will be the string \"d\".\n\nReturns the length of the value. This works for both strings and lists.\n\nIf value is ['a', 'b', 'c', 'd'] or \"abcd\", the output will be 4.\n\nThe filter returns 0 for an undefined variable.\n\nReplaces line breaks in plain text with appropriate HTML; a single newline becomes an HTML line break (<br>) and a new line followed by a blank line becomes a paragraph break (</p>).\n\nIf value is Joel\\nis a slug, the output will be <p>Joel<br>is a slug</p>.\n\nConverts all newlines in a piece of plain text to HTML line breaks (<br>).\n\nIf value is Joel\\nis a slug, the output will be Joel<br>is a slug.\n\nDisplays text with line numbers.\n\nLeft-aligns the value in a field of a given width.\n\nIf value is Django, the output will be \"Django \".\n\nConverts a string into all lowercase.\n\nIf value is Totally LOVING this Album!, the output will be totally loving this album!.\n\nReturns the value turned into a list. For a string, it’s a list of characters. For an integer, the argument is cast to a string before creating a list.\n\nIf value is the string \"Joel\", the output would be the list ['J', 'o', 'e', 'l']. If value is 123, the output will be the list ['1', '2', '3'].\n\nConverts a phone number (possibly containing letters) to its numerical equivalent.\n\nThe input doesn’t have to be a valid phone number. This will happily convert any string.\n\nIf value is 800-COLLECT, the output will be 800-2655328.\n\nReturns a plural suffix if the value is not 1, '1', or an object of length 1. By default, this suffix is 's'.\n\nIf num_messages is 1, the output will be You have 1 message. If num_messages is 2 the output will be You have 2 messages.\n\nFor words that require a suffix other than 's', you can provide an alternate suffix as a parameter to the filter.\n\nFor words that don’t pluralize by simple suffix, you can specify both a singular and plural suffix, separated by a comma.\n\nUse blocktranslate to pluralize translated strings.\n\nA wrapper around pprint.pprint() – for debugging, really.\n\nReturns a random item from the given list.\n\nIf value is the list ['a', 'b', 'c', 'd'], the output could be \"b\".\n\nRight-aligns the value in a field of a given width.\n\nIf value is Django, the output will be \" Django\".\n\nMarks a string as not requiring further HTML escaping prior to output. When autoescaping is off, this filter has no effect.\n\nIf you are chaining filters, a filter applied after safe can make the contents unsafe again. For example, the following code prints the variable as is, unescaped:\n\nApplies the safe filter to each element of a sequence. Useful in conjunction with other filters that operate on sequences, such as join. For example:\n\nYou couldn’t use the safe filter directly in this case, as it would first convert the variable into a string, rather than working with the individual elements of the sequence.\n\nReturns a slice of the list.\n\nUses the same syntax as Python’s list slicing. See the Python documentation for an introduction.\n\nIf some_list is ['a', 'b', 'c'], the output will be ['a', 'b'].\n\nConverts to ASCII. Converts spaces to hyphens. Removes characters that aren’t alphanumerics, underscores, or hyphens. Converts to lowercase. Also strips leading and trailing whitespace.\n\nIf value is \"Joel is a slug\", the output will be \"joel-is-a-slug\".\n\nFormats the variable according to the argument, a string formatting specifier. This specifier uses the printf-style String Formatting syntax, with the exception that the leading “%” is dropped.\n\nIf value is 10, the output will be 1.000000E+01.\n\nMakes all possible efforts to strip all [X]HTML tags.\n\nIf value is \"<b>Joel</b> <button>is</button> a <span>slug</span>\", the output will be \"Joel is a slug\".\n\nNote that striptags doesn’t give any guarantee about its output being HTML safe, particularly with non valid HTML input. So NEVER apply the safe filter to a striptags output. If you are looking for something more robust, consider using a third-party HTML sanitizing tool.\n\nFormats a time according to the given format.\n\nGiven format can be the predefined one TIME_FORMAT, or a custom format, same as the date filter. Note that the predefined format is locale-dependent.\n\nIf value is equivalent to datetime.datetime.now(), the output will be the string \"01:23\".\n\nNote that you can backslash-escape a format string if you want to use the “raw” value. In this example, both “h” and “m” are backslash-escaped, because otherwise each is a format string that displays the hour and the month, respectively:\n\nThis would display as “01h 23m”.\n\nAssuming that LANGUAGE_CODE is, for example, \"de\", then for:\n\nthe output will be the string \"01:23\" (The \"TIME_FORMAT\" format specifier for the de locale as shipped with Django is \"H:i\").\n\nThe time filter will only accept parameters in the format string that relate to the time of day, not the date. If you need to format a date value, use the date filter instead (or along with time if you need to render a full datetime value).\n\nThere is one exception the above rule: When passed a datetime value with attached timezone information (a time-zone-aware datetime instance) the time filter will accept the timezone-related format specifiers 'e', 'O' , 'T' and 'Z'.\n\nWhen used without a format string, the TIME_FORMAT format specifier is used:\n\nFormats a date as the time since that date (e.g., “4 days, 6 hours”).\n\nTakes an optional argument that is a variable containing the date to use as the comparison point (without the argument, the comparison point is now). For example, if blog_date is a date instance representing midnight on 1 June 2006, and comment_date is a date instance for 08:00 on 1 June 2006, then the following would return “8 hours”:\n\nComparing offset-naive and offset-aware datetimes will return an empty string.\n\nMinutes is the smallest unit used, and “0 minutes” will be returned for any date that is in the future relative to the comparison point.\n\nSimilar to timesince, except that it measures the time from now until the given date or datetime. For example, if today is 1 June 2006 and conference_date is a date instance holding 29 June 2006, then {{ conference_date|timeuntil }} will return “4 weeks”.\n\nTakes an optional argument that is a variable containing the date to use as the comparison point (instead of now). If from_date contains 22 June 2006, then the following will return “1 week”:\n\nComparing offset-naive and offset-aware datetimes will return an empty string.\n\nMinutes is the smallest unit used, and “0 minutes” will be returned for any date that is in the past relative to the comparison point.\n\nConverts a string into titlecase by making words start with an uppercase character and the remaining characters lowercase. This tag makes no effort to keep “trivial words” in lowercase.\n\nIf value is \"my FIRST post\", the output will be \"My First Post\".\n\nTruncates a string if it is longer than the specified number of characters. Truncated strings will end with a translatable ellipsis character (”…”).\n\nArgument: Number of characters to truncate to\n\nIf value is \"Joel is a slug\", the output will be \"Joel i…\".\n\nSimilar to truncatechars, except that it is aware of HTML tags. Any tags that are opened in the string and not closed before the truncation point are closed immediately after the truncation.\n\nIf value is \"<p>Joel is a slug</p>\", the output will be \"<p>Joel i…</p>\".\n\nNewlines in the HTML content will be preserved.\n\nProcessing large, potentially malformed HTML strings can be resource-intensive and impact service performance.\n\nTruncates a string after a certain number of words.\n\nArgument: Number of words to truncate after\n\nIf value is \"Joel is a slug\", the output will be \"Joel is …\".\n\nNewlines within the string will be removed.\n\nSimilar to truncatewords, except that it is aware of HTML tags. Any tags that are opened in the string and not closed before the truncation point, are closed immediately after the truncation.\n\nThis is less efficient than truncatewords, so should only be used when it is being passed HTML text.\n\nIf value is \"<p>Joel is a slug</p>\", the output will be \"<p>Joel is …</p>\".\n\nNewlines in the HTML content will be preserved.\n\nProcessing large, potentially malformed HTML strings can be resource-intensive and impact service performance.\n\nRecursively takes a self-nested list and returns an HTML unordered list – WITHOUT opening and closing <ul> tags.\n\nThe list is assumed to be in the proper format. For example, if var contains ['States', ['Kansas', ['Lawrence', 'Topeka'], 'Illinois']], then {{ var|unordered_list }} would return:\n\nConverts a string into all uppercase.\n\nIf value is \"Joel is a slug\", the output will be \"JOEL IS A SLUG\".\n\nEscapes a value for use in a URL.\n\nIf value is \"https://www.example.org/foo?a=b&c=d\", the output will be \"https%3A//www.example.org/foo%3Fa%3Db%26c%3Dd\".\n\nAn optional argument containing the characters which should not be escaped can be provided.\n\nIf not provided, the ‘/’ character is assumed safe. An empty string can be provided when all characters should be escaped. For example:\n\nIf value is \"https://www.example.org/\", the output will be \"https%3A%2F%2Fwww.example.org%2F\".\n\nConverts URLs and email addresses in text into clickable links.\n\nThis template tag works on links prefixed with http://, https://, or www.. For example, https://djangocon.eu will get converted but djangocon.eu won’t.\n\nIt also supports domain-only links ending in one of the original top level domains (.com, .edu, .gov, .int, .mil, .net, and .org). For example, djangoproject.com gets converted.\n\nLinks can have trailing punctuation (periods, commas, close-parens) and leading punctuation (opening parens), and urlize will still do the right thing.\n\nLinks generated by urlize have a rel=\"nofollow\" attribute added to them.\n\nIf value is \"Check out www.djangoproject.com\", the output will be:\n\nDeprecated since version 6.0: The default protocol when none is provided will change from HTTP to HTTPS in Django 7.0. Hence, the output will become:\n\nSet the transitional setting URLIZE_ASSUME_HTTPS to True to opt into using HTTPS during the Django 6.x release cycle.\n\nIn addition to web links, urlize also converts email addresses into mailto: links. If value is \"Send questions to foo@example.com\", the output will be \"Send questions to <a href=\"mailto:foo@example.com\">foo@example.com</a>\".\n\nThe urlize filter also takes an optional parameter autoescape. If autoescape is True, the link text and URLs will be escaped using Django’s built-in escape filter. The default value for autoescape is True.\n\nIf urlize is applied to text that already contains HTML markup, or to email addresses that contain single quotes ('), things won’t work as expected. Apply this filter only to plain text.\n\nConverts URLs and email addresses into clickable links just like urlize, but truncates URLs longer than the given character limit.\n\nArgument: Number of characters that link text should be truncated to, including the ellipsis that’s added if truncation is necessary.\n\nIf value is \"Check out www.djangoproject.com\", the output would be:\n\nDeprecated since version 6.0: The default protocol when none is provided will change from HTTP to HTTPS in Django 7.0. Hence, the output will become:\n\nSet the transitional setting URLIZE_ASSUME_HTTPS to True to opt into using HTTPS during the Django 6.x release cycle.\n\nAs with urlize, this filter should only be applied to plain text.\n\nReturns the number of words.\n\nIf value is \"Joel is a slug\", the output will be 4.\n\nWraps words at specified line length.\n\nArgument: number of characters at which to wrap the text\n\nIf value is Joel is a slug, the output would be:\n\nMaps values for True, False, and (optionally) None, to the strings “yes”, “no”, “maybe”, or a custom mapping passed as a comma-separated list, and returns one of those strings according to the value:\n\nno (converts None to False if no mapping for None is given)\n\nDjango provides template tags and filters to control each aspect of internationalization in templates. They allow for granular control of translations, formatting, and time zone conversions.\n\nThis library allows specifying translatable text in templates. To enable it, set USE_I18N to True, then load it with {% load i18n %}.\n\nSee Internationalization: in template code.\n\nThis library provides control over the localization of values in templates. You only need to load the library using {% load l10n %}.\n\nSee Controlling localization in templates.\n\nThis library provides control over time zone conversions in templates. Like l10n, you only need to load the library using {% load tz %}, but you’ll usually also set USE_TZ to True so that conversion to local time happens by default.\n\nSee Time zone aware output in templates.\n\nDjango comes with a couple of other template-tag libraries that you have to enable explicitly in your INSTALLED_APPS setting and enable in your template with the {% load %} tag.\n\nA set of Django template filters useful for adding a “human touch” to data. See django.contrib.humanize.\n\nTo link to static files that are saved in STATIC_ROOT Django ships with a static template tag. If the django.contrib.staticfiles app is installed, the tag will serve files using url() method of the storage specified by staticfiles in STORAGES. For example:\n\nIt is also able to consume standard context variables, e.g. assuming a user_stylesheet variable is passed to the template:\n\nIf you’d like to retrieve a static URL without displaying it, you can use a slightly different call:\n\nUsing Jinja2 templates?\n\nSee Jinja2 for information on using the static tag with Jinja2.\n\nYou should prefer the static template tag, but if you need more control over exactly where and how STATIC_URL is injected into the template, you can use the get_static_prefix template tag:\n\nThere’s also a second form you can use to avoid extra processing if you need the value multiple times:\n\nSimilar to the get_static_prefix, get_media_prefix populates a template variable with the media prefix MEDIA_URL, e.g.:\n\nBy storing the value in a data attribute, we ensure it’s escaped appropriately if we want to use it in a JavaScript context.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Built-in template tags and filters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Built-in tag reference¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "autoescape¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "block¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "comment¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "csrf_token¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "cycle¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "debug¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "extends¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "filter¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "firstof¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "for¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "for … empty¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "if¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Boolean operators¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "== operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "!= operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "< operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "> operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "<= operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": ">= operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "in operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "not in operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "is operator¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "is not operator¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Filters¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Complex expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ifchanged¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "include¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "load¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "lorem¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "now¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "partial¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "partialdef¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "querystring¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Basic usage¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Setting items¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Removing items¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Handling lists¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Customizing the base QueryDict¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Dynamic usage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "regroup¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Grouping on other properties¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "resetcycle¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "spaceless¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "templatetag¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "url¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "verbatim¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "widthratio¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "with¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Built-in filter reference¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "add¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "addslashes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "capfirst¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "center¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "cut¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "date¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "default¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "default_if_none¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "dictsort¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "dictsortreversed¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "divisibleby¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "escape¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "escapejs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "escapeseq¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "filesizeformat¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "first¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "floatformat¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "force_escape¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "get_digit¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "iriencode¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "join¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "json_script¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "last¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "length¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "linebreaks¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "linebreaksbr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "linenumbers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ljust¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "lower¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "make_list¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "phone2numeric¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pluralize¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pprint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "random¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "rjust¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "safe¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "safeseq¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "slice¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "slugify¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "stringformat¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "striptags¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "time¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "timesince¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "timeuntil¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "title¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "truncatechars¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "truncatechars_html¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "truncatewords¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "truncatewords_html¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "unordered_list¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "upper¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "urlencode¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "urlize¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "urlizetrunc¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "wordcount¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "wordwrap¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "yesno¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Internationalization tags and filters¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "i18n¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "l10n¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "tz¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Other tags and filters libraries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.humanize¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "static¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "static¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "get_static_prefix¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "get_media_prefix¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Sample usage:",
+      "code": "{% autoescape on %}\n    {{ body }}\n{% endautoescape %}"
+    },
+    {
+      "description": "Sample usage:",
+      "code": "<p>Rendered text with {{ pub_date|date:\"c\" }}</p>\n{% comment \"Optional note\" %}\n    <p>Commented out text with {{ create_date|date:\"c\" }}</p>\n{% endcomment %}"
+    },
+    {
+      "description": "By default, when you use the as keyword with the cycle tag, the usage of {% cycle %} that initiates the cycle will itself produce the first value in the cycle. This could be a problem if you want to use the value in a nested loop or an included template. If you only want to declare the cycle but not produce the first value, you can add a silent keyword as the last keyword in the tag. For example:",
+      "code": "{% for obj in some_list %}\n    {% cycle 'row1' 'row2' as rowcolors silent %}\n    <tr class=\"{{ rowcolors }}\">{% include \"subtemplate.html\" %}</tr>\n{% endfor %}"
+    },
+    {
+      "description": "Sample usage:",
+      "code": "{% filter force_escape|lower %}\n    This text will be HTML-escaped, and will appear in all lowercase.\n{% endfilter %}"
+    },
+    {
+      "description": "Sample usage:",
+      "code": "{% firstof var1 var2 var3 %}"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/ref/csrf/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-template-tags/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/formatting/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/timezones/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

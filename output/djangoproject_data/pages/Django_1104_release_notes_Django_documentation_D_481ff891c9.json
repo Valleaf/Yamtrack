@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.10.4/",
+  "title": "Django 1.10.4 release notes | Django documentation | Django",
+  "content": "Django 1.10.4 fixes several bugs in 1.10.3.\n\nQuoted the Oracle test user’s password in queries to fix the “ORA-00922: missing or invalid option” error when the password starts with a number or special character (#27420).\n\nFixed incorrect app_label / model_name arguments for allow_migrate() in makemigrations migration consistency checks (#27461).\n\nMade Model.delete(keep_parents=True) preserve parent reverse relationships in multi-table inheritance (#27407).\n\nFixed a QuerySet.update() crash on SQLite when updating a DateTimeField with an F() expression and a timedelta (#27544).\n\nPrevented LocaleMiddleware from redirecting on URLs that should return 404 when using prefix_default_language=False (#27402).\n\nPrevented an unnecessary index from being created on an InnoDB ForeignKey when the field was added after the model was created (#27558).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.10.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.10.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

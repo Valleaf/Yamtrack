@@ -1,0 +1,91 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/tasks/",
+  "title": "Tasks | Django documentation | Django",
+  "content": "The Task framework provides the contract and plumbing for background work, not the engine that runs it. The Tasks API defines how work is described, queued, and tracked, but leaves actual execution to external infrastructure.\n\nThe @task decorator defines a Task instance. This has the following optional arguments:\n\npriority: Sets the priority of the Task. Defaults to 0.\n\nqueue_name: Sets the queue_name of the Task. Defaults to \"default\".\n\nbackend: Sets the backend of the Task. Defaults to \"default\".\n\ntakes_context: Controls whether the Task function accepts a TaskContext. Defaults to False. See Task context for details.\n\nIf the defined Task is not valid according to the backend, InvalidTask is raised.\n\nSee defining tasks for usage examples.\n\nRepresents a Task to be run in the background. Tasks should be defined using the task() decorator.\n\nAttributes of Task cannot be modified. See modifying Tasks for details.\n\nThe priority of the Task. Priorities must be between -100 and 100, where larger numbers are higher priority, and will be run sooner.\n\nThe backend must have supports_priority set to True to use this feature.\n\nThe alias of the backend the Task should be enqueued to. This must match a backend defined in BACKEND.\n\nThe name of the queue the Task will be enqueued on to. Defaults to \"default\". This must match a queue defined in QUEUES, unless QUEUES is set to [].\n\nThe earliest time the Task will be executed. This can be a timedelta, which is used relative to the current time, a timezone-aware datetime, or None if not constrained. Defaults to None.\n\nThe backend must have supports_defer set to True to use this feature. Otherwise, InvalidTask is raised.\n\nThe name of the function decorated with task(). This name is not necessarily unique.\n\nCreates a new Task with modified defaults. The existing Task is left unchanged.\n\nusing allows modifying the following attributes:\n\nSee modifying Tasks for usage examples.\n\nEnqueues the Task to the Task backend for later execution.\n\nArguments are passed to the Task’s function after a round-trip through a json.dumps()/json.loads() cycle. Hence, all arguments must be JSON-serializable and preserve their type after the round-trip.\n\nIf the Task is not valid according to the backend, InvalidTask is raised.\n\nSee enqueueing Tasks for usage examples.\n\nThe async variant of enqueue.\n\nRetrieves a result by its id.\n\nIf the result does not exist, TaskResultDoesNotExist is raised. If the result is not the same type as the current Task, TaskResultMismatch is raised. If the backend does not support get_result(), NotImplementedError is raised.\n\nThe async variant of get_result.\n\nContains context for the running Task. Context only passed to a Task if it was defined with takes_context=True.\n\nAttributes of TaskContext cannot be modified.\n\nThe TaskResult currently being run.\n\nThe number of the current execution attempts for this Task, starting at 1.\n\nAn Enum representing the status of a TaskResult.\n\nThe Task has just been enqueued, or is ready to be executed again.\n\nThe Task is currently being executed.\n\nThe Task raised an exception during execution, or was unable to start.\n\nThe Task has finished executing successfully.\n\nThe TaskResult stores the information about a specific execution of a Task.\n\nAttributes of TaskResult cannot be modified.\n\nThe Task the result was enqueued for.\n\nA unique identifier for the result, which can be passed to Task.get_result().\n\nThe format of the id will depend on the backend being used. Task result ids are always strings less than 64 characters.\n\nSee Task results for more details.\n\nThe status of the result.\n\nThe time when the Task was enqueued.\n\nThe time when the Task began execution, on its first attempt.\n\nThe time when the most recent Task run began execution.\n\nThe time when the Task finished execution, whether it failed or succeeded.\n\nThe backend the result is from.\n\nA list of TaskError instances for the errors raised as part of each execution of the Task.\n\nThe return value from the Task function.\n\nIf the Task did not finish successfully, ValueError is raised.\n\nSee return values for usage examples.\n\nRefresh the result’s attributes from the queue store.\n\nThe async variant of TaskResult.refresh().\n\nWhether the Task has finished (successfully or not).\n\nThe number of times the Task has been run.\n\nIf the task is currently running, it does not count as an attempt.\n\nThe ids of the workers which have executed the Task.\n\nContains information about the error raised during the execution of a Task.\n\nThe traceback (as a string) from the raised exception when the Task failed.\n\nThe exception class raised when executing the Task.\n\nBackends handle how Tasks are stored and executed. All backends share a common interface defined by BaseTaskBackend, which specifies the core methods for enqueueing Tasks and retrieving results.\n\nBaseTaskBackend is the parent class for all Task backends.\n\nA dictionary of extra parameters for the Task backend. These are provided using the OPTIONS setting.\n\nTask backends which subclass BaseTaskBackend should implement this method as a minimum.\n\nWhen implemented, enqueue() enqueues the task, a Task instance, for later execution. args are the positional arguments and kwargs are the keyword arguments to be passed to the task. Returns a TaskResult.\n\nThe async variant of BaseTaskBackend.enqueue().\n\nRetrieve a result by its id. If the result does not exist, TaskResultDoesNotExist is raised.\n\nIf the backend does not support get_result(), NotImplementedError is raised.\n\nThe async variant of BaseTaskBackend.get_result().\n\nValidates whether the provided Task is able to be enqueued using the backend. If the Task is not valid, InvalidTask is raised.\n\nSome backends may not support all features Django provides. It’s possible to identify the supported functionality of a backend, and potentially change behavior accordingly.\n\nWhether the backend supports enqueueing Tasks to be executed after a specific time using the run_after attribute.\n\nWhether the backend supports enqueueing async functions (coroutines).\n\nWhether the backend supports retrieving Task results from another thread after they have been enqueued.\n\nWhether the backend supports executing Tasks as ordered by their priority.\n\nThe below table notes which of the built-in backends support which features:\n\nDjango includes only development and testing backends. These support local execution and inspection, for production ready backends refer to Configuring a Task backend.\n\nThe immediate backend executes Tasks immediately, rather than in the background.\n\nThe dummy backend does not execute enqueued Tasks. Instead, it stores task results for later inspection.\n\nA list of results for the enqueued Tasks, in the order they were enqueued.\n\nClears the list of stored results.\n\nRaised when the Task attempting to be enqueued is invalid.\n\nRaised when the requested BaseTaskBackend is invalid.\n\nRaised by get_result() when the provided result_id does not exist.\n\nRaised by get_result() when the provided result_id is for a different Task than the current Task.\n\nThe ImmediateBackend doesn’t officially support get_result(), despite implementing the API, since the result cannot be retrieved from a different thread.\n\nThe DummyBackend has supports_priority=True so that it can be used as a drop-in replacement in tests. Since this backend never executes Tasks, the priority value has no effect.\n\nThe ImmediateBackend has supports_priority=True so that it can be used as a drop-in replacement in tests. Because Tasks run as soon as they are scheduled, the priority value has no effect.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Tasks¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Task definition¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The task decorator¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Task¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Task context¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Task results¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Task errors¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backends¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Base backend¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Feature flags¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Available backends¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Immediate backend¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Dummy backend¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Exceptions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/tasks/",
+    "https://docs.djangoproject.com/en/stable/topics/tasks/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

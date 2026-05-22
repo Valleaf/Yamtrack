@@ -1,0 +1,74 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/http/file-uploads/",
+  "title": "File Uploads | Django documentation | Django",
+  "content": "When Django handles a file upload, the file data ends up placed in request.FILES (for more on the request object see the documentation for request and response objects). This document explains how files are stored on disk and in memory, and how to customize the default behavior.\n\nThere are security risks if you are accepting uploaded content from untrusted users! See the security guide’s topic on User-uploaded content for mitigation details.\n\nConsider a form containing a FileField:\n\nA view handling this form will receive the file data in request.FILES, which is a dictionary containing a key for each FileField (or ImageField, or other FileField subclass) in the form. So the data from the above form would be accessible as request.FILES['file'].\n\nNote that request.FILES will only contain data if the request method was POST, at least one file field was actually posted, and the <form> that posted the request has the attribute enctype=\"multipart/form-data\". Otherwise, request.FILES will be empty.\n\nMost of the time, you’ll pass the file data from request into the form as described in Binding uploaded files to a form. This would look something like:\n\nNotice that we have to pass request.FILES into the form’s constructor; this is how file data gets bound into a form.\n\nHere’s a common way you might handle an uploaded file:\n\nLooping over UploadedFile.chunks() instead of using read() ensures that large files don’t overwhelm your system’s memory.\n\nThere are a few other methods and attributes available on UploadedFile objects; see UploadedFile for a complete reference.\n\nIf you’re saving a file on a Model with a FileField, using a ModelForm makes this process much easier. The file object will be saved to the location specified by the upload_to argument of the corresponding FileField when calling form.save():\n\nIf you are constructing an object manually, you can assign the file object from request.FILES to the file field in the model:\n\nIf you are constructing an object manually outside of a request, you can assign a File like object to the FileField:\n\nIf you want to upload multiple files using one form field, create a subclass of the field’s widget and set its allow_multiple_selected class attribute to True.\n\nIn order for such files to be all validated by your form (and have the value of the field include them all), you will also have to subclass FileField. See below for an example.\n\nDjango is likely to have a proper multiple file field support at some point in the future.\n\nThen override the form_valid() method of your FormView subclass to handle multiple file uploads:\n\nThis will allow you to handle multiple files at the form level only. Be aware that you cannot use it to put multiple files on a single model instance (in a single field), for example, even if the custom widget is used with a form field related to a model FileField.\n\nWhen a user uploads a file, Django passes off the file data to an upload handler – a small class that handles file data as it gets uploaded. Upload handlers are initially defined in the FILE_UPLOAD_HANDLERS setting, which defaults to:\n\nTogether MemoryFileUploadHandler and TemporaryFileUploadHandler provide Django’s default file upload behavior of reading small files into memory and large ones onto disk.\n\nYou can write custom handlers that customize how Django handles files. You could, for example, use custom handlers to enforce user-level quotas, compress data on the fly, render progress bars, and even send data to another storage location directly without storing it locally. See Writing custom upload handlers for details on how you can customize or completely replace upload behavior.\n\nBefore you save uploaded files, the data needs to be stored somewhere.\n\nBy default, if an uploaded file is smaller than 2.5 megabytes, Django will hold the entire contents of the upload in memory. This means that saving the file involves only a read from memory and a write to disk and thus is very fast.\n\nHowever, if an uploaded file is too large, Django will write the uploaded file to a temporary file stored in your system’s temporary directory. On a Unix-like platform this means you can expect Django to generate a file called something like /tmp/tmpzfp6I6.upload. If an upload is large enough, you can watch this file grow in size as Django streams the data onto disk.\n\nThese specifics – 2.5 megabytes; /tmp; etc. – are “reasonable defaults” which can be customized as described in the next section.\n\nThere are a few settings which control Django’s file upload behavior. See File Upload Settings for details.\n\nSometimes particular views require different upload behavior. In these cases, you can override upload handlers on a per-request basis by modifying request.upload_handlers. By default, this list will contain the upload handlers given by FILE_UPLOAD_HANDLERS, but you can modify the list as you would any other list.\n\nFor instance, suppose you’ve written a ProgressBarUploadHandler that provides feedback on upload progress to some sort of AJAX widget. You’d add this handler to your upload handlers like this:\n\nUsing list.insert(), as shown above, ensures that the progress bar handler is placed at the beginning of the list. Since upload handlers are executed in order, this placement guarantees that the progress bar handler runs before the default handlers, allowing it to track progress across the entire upload.\n\nIf you want to replace the upload handlers completely, you can assign a new list:\n\nYou can only modify upload handlers before accessing request.POST or request.FILES – it doesn’t make sense to change upload handlers after upload handling has already started. If you try to modify request.upload_handlers after reading from request.POST or request.FILES Django will throw an error.\n\nThus, you should always modify uploading handlers as early in your view as possible.\n\nAlso, request.POST is accessed by CsrfViewMiddleware which is enabled by default. This means you will need to use csrf_exempt() on your view to allow you to change the upload handlers. You will then need to use csrf_protect() on the function that actually processes the request. Note that this means that the handlers may start receiving the file upload before the CSRF checks have been done. Example code:\n\nIf you are using a class-based view, you will need to use csrf_exempt() on its dispatch() method and csrf_protect() on the method that actually processes the request. Example code:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "File Uploads¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Basic file uploads¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Handling uploaded files with a model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Uploading multiple files¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Upload Handlers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Where uploaded data is stored¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changing upload handler behavior¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Modifying upload handlers on the fly¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/http/file-uploads/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/files/uploads/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/ref/files/file/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/csrf/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/http/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

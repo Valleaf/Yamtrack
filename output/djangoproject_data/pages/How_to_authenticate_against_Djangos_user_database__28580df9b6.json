@@ -1,0 +1,38 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/apache-auth/",
+  "title": "How to authenticate against Django’s user database from Apache | Django documentation | Django",
+  "content": "Since keeping multiple authentication databases in sync is a common problem when dealing with Apache, you can configure Apache to authenticate against Django’s authentication system directly. This requires Apache version >= 2.2 and mod_wsgi >= 2.0. For example, you could:\n\nServe static/media files directly from Apache only to authenticated users.\n\nAuthenticate access to a Subversion repository against Django users with a certain permission.\n\nAllow certain users to connect to a WebDAV share created with mod_dav.\n\nIf you have installed a custom user model and want to use this default auth handler, it must support an is_active attribute. If you want to use group based authorization, your custom user must have a relation named ‘groups’, referring to a related object that has a ‘name’ field. You can also specify your own custom mod_wsgi auth handler if your custom cannot conform to these requirements.\n\nThe use of WSGIApplicationGroup %{GLOBAL} in the configurations below presumes that your Apache instance is running only one Django application. If you are running more than one Django application, please refer to the Defining Application Groups section of the mod_wsgi docs for more information about this setting.\n\nMake sure that mod_wsgi is installed and activated and that you have followed the steps to set up Apache with mod_wsgi.\n\nNext, edit your Apache configuration to add a location that you want only authenticated users to be able to view:\n\nThe WSGIAuthUserScript directive tells mod_wsgi to execute the check_password function in specified wsgi script, passing the user name and password that it receives from the prompt. In this example, the WSGIAuthUserScript is the same as the WSGIScriptAlias that defines your application that is created by django-admin startproject.\n\nUsing Apache 2.2+ with authentication\n\nMake sure that mod_auth_basic and mod_authz_user are loaded.\n\nThese might be compiled statically into Apache, or you might need to use LoadModule to load them dynamically in your httpd.conf:\n\nFinally, edit your WSGI script mysite.wsgi to tie Apache’s authentication to your site’s authentication mechanisms by importing the check_password function:\n\nRequests beginning with /secret/ will now require a user to authenticate.\n\nThe mod_wsgi access control mechanisms documentation provides additional details and information about alternative methods of authentication.\n\nmod_wsgi also provides functionality to restrict a particular location to members of a group.\n\nIn this case, the Apache configuration should look like this:\n\nTo support the WSGIAuthGroupScript directive, the same WSGI script mysite.wsgi must also import the groups_for_user function which returns a list groups the given user belongs to.\n\nRequests for /secret/ will now also require user to be a member of the “secret-agents” group.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to authenticate against Django’s user database from Apache¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Authentication with mod_wsgi¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Authorization with mod_wsgi and Django groups¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/apache-auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

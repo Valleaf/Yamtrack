@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.3/",
+  "title": "Django 1.11.3 release notes | Django documentation | Django",
+  "content": "Django 1.11.3 fixes several bugs in 1.11.2.\n\nRemoved an incorrect deprecation warning about a missing renderer argument if a Widget.render() method accepts **kwargs (#28265).\n\nFixed a regression causing Model.__init__() to crash if a field has an instance only descriptor (#28269).\n\nFixed an incorrect DisallowedModelAdminLookup exception when using a nested reverse relation in list_filter (#28262).\n\nFixed admin’s FieldListFilter.get_queryset() crash on invalid input (#28202).\n\nFixed invalid HTML for a required AdminFileWidget (#28278).\n\nFixed model initialization to set the name of class-based model indexes for models that only inherit models.Model (#28282).\n\nFixed crash in admin’s inlines when a model has an inherited non-editable primary key (#27967).\n\nFixed QuerySet.union(), intersection(), and difference() when combining with an EmptyQuerySet (#28293).\n\nPrevented Paginator’s unordered object list warning from evaluating a QuerySet (#28284).\n\nFixed the value of redirect_field_name in LoginView’s template context. It’s now an empty string (as it is for the original function-based login() view) if the corresponding parameter isn’t sent in a request (in particular, when the login page is accessed directly) (#28229).\n\nPrevented attribute values in the django/forms/widgets/attrs.html template from being localized so that numeric attributes (e.g. max and min) of NumberInput work correctly (#28303).\n\nRemoved casting of the option value to a string in the template context of the CheckboxSelectMultiple, NullBooleanSelect, RadioSelect, SelectMultiple, and Select widgets (#28176). In Django 1.11.1, casting was added in Python to avoid localization of numeric values in Django templates, but this made some use cases more difficult. Casting is now done in the template using the |stringformat:'s' filter.\n\nPrevented a primary key alteration from adding a foreign key constraint if db_constraint=False (#28298).\n\nFixed UnboundLocalError crash in RenameField with nonexistent field (#28350).\n\nFixed a regression preventing a model field’s limit_choices_to from being evaluated when a ModelForm is instantiated (#28345).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.3/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

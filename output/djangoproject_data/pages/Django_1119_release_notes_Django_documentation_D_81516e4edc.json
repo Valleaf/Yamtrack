@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.9/",
+  "title": "Django 1.11.9 release notes | Django documentation | Django",
+  "content": "Django 1.11.9 fixes several bugs in 1.11.8.\n\nFixed a regression in Django 1.11 that added newlines between MultiWidget’s subwidgets (#28890).\n\nFixed incorrect class-based model index name generation for models with quoted db_table (#28876).\n\nFixed incorrect foreign key constraint name for models with quoted db_table (#28876).\n\nFixed a regression in caching of a GenericForeignKey when the referenced model instance uses more than one level of multi-table inheritance (#28856).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.9/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

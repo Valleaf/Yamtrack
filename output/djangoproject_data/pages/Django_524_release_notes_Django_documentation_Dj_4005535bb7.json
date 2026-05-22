@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.4/",
+  "title": "Django 5.2.4 release notes | Django documentation | Django",
+  "content": "Django 5.2.4 fixes several bugs in 5.2.3.\n\nFixed a regression in Django 5.2.2 where HttpRequest.get_preferred_type() incorrectly preferred more specific media types with a lower quality (#36447).\n\nFixed a regression in Django 5.2.3 where Value(None, JSONField()) used in a When condition was incorrectly serialized as SQL NULL instead of JSON null (#36453).\n\nFixed a crash in Django 5.2 when performing an __in lookup involving a composite primary key and a subquery on backends that lack native support for tuple lookups (#36464).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.4/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/models/conditional-expressions/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.5/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.7.5/",
+  "title": "Django 1.7.5 release notes | Django documentation | Django",
+  "content": "Django 1.7.5 fixes several bugs in 1.7.4.\n\nReverted a fix that prevented a migration crash when unapplying contrib.contenttypes’s or contrib.auth’s first migration (#24075) due to severe impact on the test performance (#24251) and problems in multi-database setups (#24298).\n\nFixed a regression that prevented custom fields inheriting from ManyToManyField from being recognized in migrations (#24236).\n\nFixed crash in contrib.sites migrations when a default database isn’t used (#24332).\n\nAdded the ability to set the isolation level on PostgreSQL with psycopg2 ≥ 2.4.2 (#24318). It was advertised as a new feature in Django 1.6 but it didn’t work in practice.\n\nFormats for the Azerbaijani locale (az) have been added.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.7.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.7.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

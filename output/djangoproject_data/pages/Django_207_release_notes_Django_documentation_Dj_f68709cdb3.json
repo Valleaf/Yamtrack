@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.7/",
+  "title": "Django 2.0.7 release notes | Django documentation | Django",
+  "content": "Django 2.0.7 fixes several bugs in 2.0.6.\n\nFixed admin changelist crash when using a query expression without asc() or desc() in the page’s ordering (#29428).\n\nFixed admin check crash when using a query expression in ModelAdmin.ordering (#29428).\n\nFixed __regex and __iregex lookups with MySQL 8 (#29451).\n\nFixed migrations crash with namespace packages on Python 3.7 (#28814).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.8/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

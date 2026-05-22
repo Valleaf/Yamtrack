@@ -1,0 +1,116 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+  "title": "GeoDjango Database API | Django documentation | Django",
+  "content": "GeoDjango currently provides the following spatial database backends:\n\ndjango.contrib.gis.db.backends.postgis\n\ndjango.contrib.gis.db.backends.mysql\n\ndjango.contrib.gis.db.backends.oracle\n\ndjango.contrib.gis.db.backends.spatialite\n\nDjango supports spatial functions operating on real geometries available in modern MySQL versions. However, the spatial functions are not as rich as other backends like PostGIS.\n\nRasterField is currently only implemented for the PostGIS backend. Spatial lookups are available for raster fields, but spatial database functions and aggregates aren’t implemented for raster fields.\n\nHere is an example of how to create a geometry object (assuming the Zipcode model):\n\nGEOSGeometry objects may also be used to save geometric models:\n\nMoreover, if the GEOSGeometry is in a different coordinate system (has a different SRID value) than that of the field, then it will be implicitly transformed into the SRID of the model’s field, using the spatial database’s transform procedure:\n\nThus, geometry parameters may be passed in using the GEOSGeometry object, WKT (Well Known Text [1]), HEXEWKB (PostGIS specific – a WKB geometry in hexadecimal [2]), and GeoJSON (see RFC 7946). Essentially, if the input is not a GEOSGeometry object, the geometry field will attempt to create a GEOSGeometry instance from the input.\n\nFor more information creating GEOSGeometry objects, refer to the GEOS tutorial.\n\nWhen creating raster models, the raster field will implicitly convert the input into a GDALRaster using lazy-evaluation. The raster field will therefore accept any input that is accepted by the GDALRaster constructor.\n\nHere is an example of how to create a raster object from a raster file volcano.tif (assuming the Elevation model):\n\nGDALRaster objects may also be used to save raster models:\n\nNote that this equivalent to:\n\nGeoDjango’s lookup types may be used with any manager method like filter(), exclude(), etc. However, the lookup types unique to GeoDjango are only available on spatial fields.\n\nFilters on ‘normal’ fields (e.g. CharField) may be chained with those on geographic fields. Geographic lookups accept geometry and raster input on both sides and input types can be mixed freely.\n\nThe general structure of geographic lookups is described below. A complete reference can be found in the spatial lookup reference.\n\nGeographic queries with geometries take the following general form (assuming the Zipcode model used in the GeoDjango Model API):\n\nIn this case, poly is the geographic field, contains is the spatial lookup type, pnt is the parameter (which may be a GEOSGeometry object or a string of GeoJSON , WKT, or HEXEWKB), and rst is a GDALRaster object.\n\nThe raster lookup syntax is similar to the syntax for geometries. The only difference is that a band index can be specified as additional input. If no band index is specified, the first band is used by default (index 0). In that case the syntax is identical to the syntax for geometry lookups.\n\nTo specify the band index, an additional parameter can be specified on both sides of the lookup. On the left hand side, the double underscore syntax is used to pass a band index. On the right hand side, a tuple of the raster and band index can be specified.\n\nThis results in the following general form for lookups involving rasters (assuming the Elevation model used in the GeoDjango Model API):\n\nOn the left hand side of the example, rast is the geographic raster field and contains is the spatial lookup type. On the right hand side, geom is a geometry input and rst is a GDALRaster object. The band index defaults to 0 in the first two queries and is set to 1 on the others.\n\nWhile all spatial lookups can be used with raster objects on both sides, not all underlying operators natively accept raster input. For cases where the operator expects geometry input, the raster is automatically converted to a geometry. It’s important to keep this in mind when interpreting the lookup results.\n\nThe type of raster support is listed for all lookups in the compatibility table. Lookups involving rasters are currently only available for the PostGIS backend.\n\nDistance calculations with spatial data is tricky because, unfortunately, the Earth is not flat. Some distance queries with fields in a geographic coordinate system may have to be expressed differently because of limitations in PostGIS. Please see the Selecting an SRID section for more details.\n\nAvailability: PostGIS, MariaDB, MySQL, Oracle, SpatiaLite, PGRaster (Native)\n\nThe following distance lookups are available:\n\ndwithin (except MariaDB and MySQL)\n\nFor measuring, rather than querying on distances, use the Distance function.\n\nDistance lookups take a tuple parameter comprising:\n\nA geometry or raster to base calculations from; and\n\nA number or Distance object containing the distance.\n\nIf a Distance object is used, it may be expressed in any units (the SQL generated will use units converted to those of the field); otherwise, numeric parameters are assumed to be in the units of the field.\n\nIn PostGIS, ST_Distance_Sphere does not limit the geometry types geographic distance queries are performed with. [3] However, these queries may take a long time, as great-circle distances must be calculated on the fly for every row in the query. This is because the spatial index on traditional geometry fields cannot be used.\n\nFor much better performance on WGS84 distance queries, consider using geography columns in your database instead because they are able to use their spatial index in distance queries. You can tell GeoDjango to use a geography column by setting geography=True in your field definition.\n\nFor example, let’s say we have a SouthTexasCity model (from the GeoDjango distance tests ) on a projected coordinate system valid for cities in southern Texas:\n\nThen distance queries may be performed as follows:\n\nRaster queries work the same way by replacing the geometry field point with a raster field, or the pnt object with a raster object, or both. To specify the band index of a raster input on the right hand side, a 3-tuple can be passed to the lookup as follows:\n\nWhere the band with index 2 (the third band) of the raster rst would be used for the lookup.\n\nThe following table provides a summary of what spatial lookups are available for each spatial database backend. The PostGIS Raster (PGRaster) lookups are divided into the three categories described in the raster lookup details: native support N, bilateral native support B, and geometry conversion support C.\n\nThe following table provides a summary of what geography-specific database functions are available on each spatial backend.\n\nThe following table provides a summary of what GIS-specific aggregate functions are available on each spatial backend.\n\nSee Open Geospatial Consortium, Inc., OpenGIS Simple Feature Specification For SQL, Document 99-049 (May 5, 1999), at Ch. 3.2.5, p. 3-11 (SQL Textual Representation of Geometry).\n\nSee PostGIS EWKB, EWKT and Canonical Forms, PostGIS documentation at Ch. 4.1.2.\n\nSee PostGIS documentation on ST_DistanceSphere.\n\nRefer MySQL Spatial Limitations section for more details.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoDjango Database API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Spatial Backends¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MySQL Spatial Limitations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Raster Support¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating and Saving Models with Geometry Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating and Saving Models with Raster Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Spatial Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Geometry Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Raster Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Distance Queries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Introduction¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Distance Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Compatibility Tables¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Spatial Lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Aggregate Functions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": ">>> qs = Zipcode.objects.filter(poly__contains=pnt)\n>>> qs = Elevation.objects.filter(poly__contains=rst)"
+    },
+    {
+      "description": "For example:",
+      "code": ">>> qs = Elevation.objects.filter(rast__contains=geom)\n>>> qs = Elevation.objects.filter(rast__contains=rst)\n>>> qs = Elevation.objects.filter(rast__1__contains=geom)\n>>> qs = Elevation.objects.filter(rast__contains=(rst, 1))\n>>> qs = Elevation.objects.filter(rast__1__contains=(rst, 1))"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

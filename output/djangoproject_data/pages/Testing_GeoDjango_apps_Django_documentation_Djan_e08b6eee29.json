@@ -1,0 +1,79 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/",
+  "title": "Testing GeoDjango apps | Django documentation | Django",
+  "content": "Included in this documentation are some additional notes and settings for PostGIS users.\n\nThe settings below have sensible defaults, and shouldn’t require manual setting.\n\nWhen GeoDjango’s spatial backend initializes on PostGIS, it has to perform an SQL query to determine the version in order to figure out what features are available. Advanced users wishing to prevent this additional query may set the version manually using a 3-tuple of integers specifying the major, minor, and micro version numbers for PostGIS. For example, to configure for PostGIS X.Y.Z you would use:\n\nDepending on your configuration, this section describes several methods to configure a database user with sufficient privileges to run tests for GeoDjango applications on PostgreSQL. If your spatial database template was created like in the instructions, then your testing database user only needs to have the ability to create databases. In other configurations, you may be required to use a database superuser.\n\nTo make a database user with the ability to create databases, use the following command:\n\nThe -R -S flags indicate that we do not want the user to have the ability to create additional users (roles) or to be a superuser, respectively.\n\nAlternatively, you may alter an existing user’s role from the SQL shell (assuming this is done from an existing superuser account):\n\nThis may be done at the time the user is created, for example:\n\nOr you may alter the user’s role from the SQL shell (assuming this is done from an existing superuser account):\n\nOn Windows platforms you can use the pgAdmin III utility to add superuser privileges to your database user.\n\nBy default, the PostGIS installer on Windows includes a template spatial database entitled template_postgis.\n\nTo have the GeoDjango tests executed when running the Django test suite with runtests.py all of the databases in the settings file must be using one of the spatial database backends.\n\nThe following is an example bare-bones settings file with spatial backends that can be used to run the entire Django test suite, including those in django.contrib.gis:\n\nAssuming the settings above were in a postgis.py file in the same directory as runtests.py, then all Django and GeoDjango tests would be performed when executing the command:\n\nTo run only the GeoDjango test suite, specify gis_tests:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Testing GeoDjango apps¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "PostGIS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Settings¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "POSTGIS_VERSION¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Obtaining sufficient privileges¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Create database user¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Create database superuser¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Windows¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GeoDjango tests¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Example¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "This may be done at the time the user is created, for example:",
+      "code": "$ createuser --superuser <user_name>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

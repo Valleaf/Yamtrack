@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/intro/",
+  "title": "Getting started | Django documentation | Django",
+  "content": "New to Django? Or to web development in general? Well, you came to the right place: read this material to quickly get up and running.\n\nIf you’re new to Python, you might want to start by getting an idea of what the language is like. Django is 100% Python, so if you’ve got minimal comfort with Python you’ll probably get a lot more out of Django.\n\nIf you’re new to programming entirely, you might want to start with this list of Python resources for non-programmers\n\nIf you already know a few other languages and want to get up to speed with Python quickly, we recommend referring the official Python documentation, which provides comprehensive and authoritative information about the language, as well as links to other resources such as a list of books about Python.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Getting started¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/intro/",
+    "https://docs.djangoproject.com/en/stable/intro/overview/",
+    "https://docs.djangoproject.com/en/stable/intro/install/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial01/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial03/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial04/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial05/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial06/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial07/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial08/",
+    "https://docs.djangoproject.com/en/stable/intro/reusable-apps/",
+    "https://docs.djangoproject.com/en/stable/intro/whatsnext/",
+    "https://docs.djangoproject.com/en/stable/intro/contributing/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.1.2/",
+  "title": "Django 2.1.2 release notes | Django documentation | Django",
+  "content": "Django 2.1.2 fixes a security issue and several bugs in 2.1.1. Also, the latest string translations from Transifex are incorporated.\n\nIf an admin user has the change permission to the user model, only part of the password hash is displayed in the change form. Admin users with the view (but not change) permission to the user model were displayed the entire hash. While it’s typically infeasible to reverse a strong password hash, if your site uses weaker password hashing algorithms such as MD5 or SHA1, it could be a problem.\n\nFixed a regression where nonexistent joins in F() no longer raised FieldError (#29727).\n\nFixed a regression where files starting with a tilde or underscore weren’t ignored by the migrations loader (#29749).\n\nMade migrations detect changes to Meta.default_related_name (#29755).\n\nAdded compatibility for cx_Oracle 7 (#29759).\n\nFixed a regression in Django 2.0 where unique index names weren’t quoted (#29778).\n\nFixed a regression where sliced queries with multiple columns with the same name crashed on Oracle 12.1 (#29630).\n\nFixed a crash when a user with the view (but not change) permission made a POST request to an admin user change form (#29809).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.1.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-16984: Password hash disclosure to “view only” admin users¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.3/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/spatialite/",
+  "title": "Installing SpatiaLite | Django documentation | Django",
+  "content": "SpatiaLite adds spatial support to SQLite, turning it into a full-featured spatial database.\n\nFirst, check if you can install SpatiaLite from system packages or binaries.\n\nFor example, on Debian-based distributions that package SpatiaLite 4.3+, try to install the libsqlite3-mod-spatialite package. For older releases install spatialite-bin.\n\nFor macOS, follow the instructions below.\n\nFor Windows, you may find binaries on the Gaia-SINS home page.\n\nIn any case, you should always be able to install from source.\n\nGEOS and PROJ should be installed prior to building SpatiaLite.\n\nCheck first if SQLite is compiled with the R*Tree module. Run the sqlite3 command line interface and enter the following query:\n\nIf you obtain an error, you will have to recompile SQLite from source. Otherwise, skip this section.\n\nTo install from sources, download the latest amalgamation source archive from the SQLite download page, and extract:\n\nNext, run the configure script – however the CFLAGS environment variable needs to be customized so that SQLite knows to build the R*Tree module:\n\nGet the latest SpatiaLite library source bundle from the download page:\n\nFor macOS users building from source, the SpatiaLite library and tools need to have their target configured:\n\nTo install the SpatiaLite library and tools, macOS users can use Homebrew.\n\nHomebrew handles all the SpatiaLite related packages on your behalf, including SQLite, SpatiaLite, PROJ, and GEOS. Install them like this:\n\nFinally, for GeoDjango to be able to find the SpatiaLite library, set the SPATIALITE_LIBRARY_PATH setting to its path. This will be within your brew install path, which you can check with:\n\nUsing this brew install path, the full path can be constructed like this:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Installing SpatiaLite¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing from source¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SQLite¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SpatiaLite library (libspatialite)¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "macOS-specific instructions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Homebrew¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/spatialite/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/geolibs/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

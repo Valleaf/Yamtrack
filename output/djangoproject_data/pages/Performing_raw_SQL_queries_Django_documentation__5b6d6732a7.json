@@ -1,0 +1,96 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+  "title": "Performing raw SQL queries | Django documentation | Django",
+  "content": "Django gives you three ways of performing raw SQL queries: you can embed raw SQL fragments into ORM queries using RawSQL (see Raw SQL fragments), use Manager.raw() to perform raw queries and return model instances, or avoid the model layer entirely and execute custom SQL directly.\n\nExplore the ORM before using raw SQL!\n\nThe Django ORM provides many tools to express queries without writing raw SQL. For example:\n\nThe QuerySet API is extensive.\n\nYou can annotate and aggregate using many built-in database functions. Beyond those, you can create custom query expressions.\n\nBefore using raw SQL, explore the ORM. Ask on one of the support channels to see if the ORM supports your use case.\n\nYou should be very careful whenever you write raw SQL. Every time you use it, you should properly escape any parameters that the user can control by using params in order to protect against SQL injection attacks. Please read more about SQL injection protection.\n\nIn some cases, you may need to embed raw SQL fragments directly into ORM queries — for example, in annotate() or filter() calls. Use Func() expressions for calling database functions across backends, or RawSQL for arbitrary parameterized SQL fragments.\n\nThe raw() manager method can be used to perform raw SQL queries that return model instances:\n\nThis method takes a raw SQL query, executes it, and returns a django.db.models.query.RawQuerySet instance. This RawQuerySet instance can be iterated over like a normal QuerySet to provide object instances.\n\nThis is best illustrated with an example. Suppose you have the following model:\n\nYou could then execute custom SQL like so:\n\nThis example isn’t very exciting – it’s exactly the same as running Person.objects.all(). However, raw() has a bunch of other options that make it very powerful.\n\nWhere did the name of the Person table come from in that example?\n\nBy default, Django figures out a database table name by joining the model’s “app label” – the name you used in manage.py startapp – to the model’s class name, with an underscore between them. In the example we’ve assumed that the Person model lives in an app named myapp, so its table would be myapp_person.\n\nFor more details check out the documentation for the db_table option, which also lets you manually set the database table name.\n\nNo checking is done on the SQL statement that is passed in to .raw(). Django expects that the statement will return a set of rows from the database, but does nothing to enforce that. If the query does not return rows, a (possibly cryptic) error will result.\n\nIf you are performing queries on MySQL, note that MySQL’s silent type coercion may cause unexpected results when mixing types. If you query on a string type column, but with an integer value, MySQL will coerce the types of all values in the table to an integer before performing the comparison. For example, if your table contains the values 'abc', 'def' and you query for WHERE mycolumn=0, both rows will match. To prevent this, perform the correct typecasting before using the value in a query.\n\nraw() automatically maps fields in the query to fields on the model.\n\nThe order of fields in your query doesn’t matter. In other words, both of the following queries work identically:\n\nMatching is done by name. This means that you can use SQL’s AS clauses to map fields in the query to model fields. So if you had some other table that had Person data in it, you could easily map it into Person instances:\n\nAs long as the names match, the model instances will be created correctly.\n\nAlternatively, you can map fields in the query to model fields using the translations argument to raw(). This is a dictionary mapping names of fields in the query to names of fields on the model. For example, the above query could also be written:\n\nraw() supports indexing, so if you need only the first result you can write:\n\nHowever, the indexing and slicing are not performed at the database level. If you have a large number of Person objects in your database, it is more efficient to limit the query at the SQL level:\n\nFields may also be left out:\n\nThe Person objects returned by this query will be deferred model instances (see defer()). This means that the fields that are omitted from the query will be loaded on demand. For example:\n\nFrom outward appearances, this looks like the query has retrieved both the first name and last name. However, this example actually issued 3 queries. Only the first names were retrieved by the raw() query – the last names were both retrieved on demand when they were printed.\n\nThere is only one field that you can’t leave out - the primary key field. Django uses the primary key to identify model instances, so it must always be included in a raw query. A FieldDoesNotExist exception will be raised if you forget to include the primary key.\n\nIf you need to perform parameterized queries, you can use the params argument to raw():\n\nparams is a list or dictionary of parameters. You’ll use %s placeholders in the query string for a list, or %(key)s placeholders for a dictionary (where key is replaced by a dictionary key), regardless of your database engine. Such placeholders will be replaced with parameters from the params argument.\n\nDictionary params are not supported with the SQLite backend; with this backend, you must pass parameters as a list.\n\nDo not use string formatting on raw queries or quote placeholders in your SQL strings!\n\nIt’s tempting to write the above query as:\n\nYou might also think you should write your query like this (with quotes around %s):\n\nDon’t make either of these mistakes.\n\nAs discussed in SQL injection protection, using the params argument and leaving the placeholders unquoted protects you from SQL injection attacks, a common exploit where attackers inject arbitrary SQL into your database. If you use string interpolation or quote the placeholder, you’re at risk for SQL injection.\n\nSometimes even Manager.raw() isn’t quite enough: you might need to perform queries that don’t map cleanly to models, or directly execute UPDATE, INSERT, or DELETE queries.\n\nIn these cases, you can always access the database directly, routing around the model layer entirely.\n\nThe object django.db.connection represents the default database connection. To use the database connection, call connection.cursor() to get a cursor object. Then, call cursor.execute(sql, [params]) to execute the SQL and cursor.fetchone() or cursor.fetchall() to return the resulting rows.\n\nTo protect against SQL injection, you must not include quotes around the %s placeholders in the SQL string.\n\nNote that if you want to include literal percent signs in the query, you have to double them in the case you are passing parameters:\n\nIf you are using more than one database, you can use django.db.connections to obtain the connection (and cursor) for a specific database. django.db.connections is a dictionary-like object that allows you to retrieve a specific connection using its alias:\n\nBy default, the Python DB API will return results without their field names, which means you end up with a list of values, rather than a dict. At a small performance and memory cost, you can return results as a dict by using something like this:\n\nAnother option is to use collections.namedtuple() from the Python standard library. A namedtuple is a tuple-like object that has fields accessible by attribute lookup; it’s also indexable and iterable. Results are immutable and accessible by field names or indices, which might be useful:\n\nThe dictfetchall() and namedtuplefetchall() examples assume unique column names, since a cursor cannot distinguish columns from different tables.\n\nHere is an example of the difference between the three:\n\nconnection and cursor mostly implement the standard Python DB-API described in PEP 249 — except when it comes to transaction handling.\n\nIf you’re not familiar with the Python DB-API, note that the SQL statement in cursor.execute() uses placeholders, \"%s\", rather than adding parameters directly within the SQL. If you use this technique, the underlying database library will automatically escape your parameters as necessary.\n\nAlso note that Django expects the \"%s\" placeholder, not the \"?\" placeholder, which is used by the SQLite Python bindings. This is for the sake of consistency and sanity.\n\nUsing a cursor as a context manager:\n\nCalls a database stored procedure with the given name. A sequence (params) or dictionary (kparams) of input parameters may be provided. Most databases don’t support kparams. Of Django’s built-in backends, only Oracle supports it.\n\nFor example, given this stored procedure in an Oracle database:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Performing raw SQL queries¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Raw SQL fragments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Performing raw queries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Mapping query fields to model fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Index lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Deferring model fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Passing parameters into raw()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Executing custom SQL directly¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Connections and cursors¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Calling stored procedures¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Explore the ORM before using raw SQL! The Django ORM provides many tools to express queries without writing raw SQL. For example: The QuerySet API is extensive. You can annotate and aggregate using many built-in database functions. Beyond those, you can create custom query expressions. Before using raw SQL, explore the ORM. Ask on one of the support channels to see if the ORM supports your use case.",
+      "code": "class Person(models.Model):\n    first_name = models.CharField(...)\n    last_name = models.CharField(...)\n    birth_date = models.DateField(...)"
+    },
+    {
+      "description": "The Django ORM provides many tools to express queries without writing raw SQL. For example:",
+      "code": "class Person(models.Model):\n    first_name = models.CharField(...)\n    last_name = models.CharField(...)\n    birth_date = models.DateField(...)"
+    },
+    {
+      "description": "The Person objects returned by this query will be deferred model instances (see defer()). This means that the fields that are omitted from the query will be loaded on demand. For example:",
+      "code": ">>> for p in Person.objects.raw(\"SELECT id, first_name FROM myapp_person\"):\n...     print(\n...         p.first_name,  # This will be retrieved by the original query\n...         p.last_name,  # This will be retrieved on demand\n...     )\n...\nJohn Smith\nJane Jones"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.db import connection\n\n\ndef my_custom_sql(self):\n    with connection.cursor() as cursor:\n        cursor.execute(\"UPDATE bar SET foo = 1 WHERE baz = %s\", [self.baz])\n        cursor.execute(\"SELECT foo FROM bar WHERE baz = %s\", [self.baz])\n        row = cursor.fetchone()\n\n    return row"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/aggregation/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/faq/help/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/multi-db/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

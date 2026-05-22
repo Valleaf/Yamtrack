@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.9/",
+  "title": "Django 3.1.9 release notes | Django documentation | Django",
+  "content": "Django 3.1.9 fixes a security issue in 3.1.8.\n\nMultiPartParser, UploadedFile, and FieldFile allowed directory-traversal via uploaded files with suitably crafted file names.\n\nIn order to mitigate this risk, stricter basename and path sanitation is now applied.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-31542: Potential directory-traversal via uploaded files¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

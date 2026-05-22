@@ -1,0 +1,52 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/faq/usage/",
+  "title": "FAQ: Using Django | Django documentation | Django",
+  "content": "The environment variable DJANGO_SETTINGS_MODULE is set to a fully-qualified Python module (i.e. mysite.settings).\n\nSaid module is on sys.path (import mysite.settings should work).\n\nThe module doesn’t contain syntax errors.\n\nWe happen to think our template engine is the best thing since chunky bacon, but we recognize that choosing a template language runs close to religion. There’s nothing about Django that requires using the template language, so if you’re attached to Jinja2, Mako, or whatever, feel free to use those.\n\nNope. Just like the template system, the model/database layer is decoupled from the rest of the framework.\n\nThe one exception is: If you use a different database library, you won’t get to use Django’s automatically-generated admin site. That app is coupled to the Django database layer.\n\nUsing a FileField or an ImageField in a model takes a few steps:\n\nIn your settings file, you’ll need to define MEDIA_ROOT as the full path to a directory where you’d like Django to store uploaded files. (For performance, these files are not stored in the database.) Define MEDIA_URL as the base public URL of that directory. Make sure that this directory is writable by the web server’s user account.\n\nAdd the FileField or ImageField to your model, defining the upload_to option to specify a subdirectory of MEDIA_ROOT to use for uploaded files.\n\nAll that will be stored in your database is a path to the file (relative to MEDIA_ROOT). You’ll most likely want to use the convenience url attribute provided by Django. For example, if your ImageField is called mug_shot, you can get the absolute path to your image in a template with {{ object.mug_shot.url }}.\n\nSometimes your templates all need the same thing. A common example would be dynamically generated menus. At first glance, it seems logical to add a common dictionary to the template context.\n\nThe best way to do this in Django is to use a RequestContext. Details on how to do this are here: Using RequestContext.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "FAQ: Using Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Why do I get an error about importing DJANGO_SETTINGS_MODULE?¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "I can’t stand your template language. Do I have to use it?¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Do I have to use your model/database layer?¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How do I use image and file fields?¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How do I make a variable available to all my templates?¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/faq/usage/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/faq/install/",
+    "https://docs.djangoproject.com/en/stable/faq/help/",
+    "https://docs.djangoproject.com/en/stable/faq/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/"
+  ]
+}

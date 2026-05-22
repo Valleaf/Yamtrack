@@ -1,0 +1,25 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/misc/",
+  "title": "Meta-documentation and miscellany | Django documentation | Django",
+  "content": "Documentation that we can’t find a more organized place for. Like that drawer in your kitchen with the scissors, batteries, duct tape, and other junk.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Meta-documentation and miscellany¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/misc/",
+    "https://docs.djangoproject.com/en/stable/misc/api-stability/",
+    "https://docs.djangoproject.com/en/stable/misc/design-philosophies/",
+    "https://docs.djangoproject.com/en/stable/misc/distributions/",
+    "https://docs.djangoproject.com/en/stable/ref/views/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/",
+  "title": "Installing PostGIS | Django documentation | Django",
+  "content": "PostGIS adds geographic object support to PostgreSQL, turning it into a spatial database. GEOS, PROJ and GDAL should be installed prior to building PostGIS. You might also need additional libraries, see PostGIS requirements.\n\nThe psycopg or psycopg2 module is required for use as the database adapter when using GeoDjango with PostGIS.\n\nOn Debian/Ubuntu, you are advised to install the following packages: postgresql-x, postgresql-x-postgis-3, postgresql-server-dev-x, and python3-psycopg3 (x matching the PostgreSQL version you want to install). Alternately, you can build from source. Consult the platform-specific instructions if you are on macOS or Windows.\n\nPostGIS includes an extension for PostgreSQL that’s used to enable spatial functionality:\n\nThe database user must be a superuser in order to run CREATE EXTENSION postgis;. The command is run during the migrate process. An alternative is to use a migration operation in your project:\n\nIf you plan to use PostGIS raster functionality, you should also activate the postgis_raster extension. You can install the extension using the CreateExtension migration operation, or directly by running CREATE EXTENSION postgis_raster;.\n\nGeoDjango does not currently leverage any PostGIS topology functionality. If you plan to use those features at some point, you can also install the postgis_topology extension by issuing CREATE EXTENSION postgis_topology;.\n\nTo administer the database, you can either use the pgAdmin III program (Start ‣ PostgreSQL X ‣ pgAdmin III) or the SQL Shell (Start ‣ PostgreSQL X ‣ SQL Shell). For example, to create a geodjango spatial database and user, the following may be executed from the SQL Shell as the postgres user:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Installing PostGIS¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Post-installation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Creating a spatial database¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Managing the database¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/geolibs/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/spatialite/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

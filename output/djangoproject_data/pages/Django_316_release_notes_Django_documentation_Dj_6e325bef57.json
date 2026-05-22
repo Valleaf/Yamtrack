@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.6/",
+  "title": "Django 3.1.6 release notes | Django documentation | Django",
+  "content": "Django 3.1.6 fixes a security issue with severity “low” and a bug in 3.1.5.\n\nThe django.utils.archive.extract() function, used by startapp --template and startproject --template, allowed directory-traversal via an archive with absolute paths or relative paths with dot segments.\n\nFixed an admin layout issue in Django 3.1 where changelist filter controls would become squashed (#32391).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-3281: Potential directory-traversal via archive.extract()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.6/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.5.5/",
+  "title": "Django 1.5.5 release notes | Django documentation | Django",
+  "content": "Django 1.5.5 fixes a couple security-related bugs and several other bugs in the 1.5 series.\n\nDjango 1.5.4 imposes a 4096-byte limit on passwords in order to mitigate a denial-of-service attack through submission of bogus but extremely large passwords. In Django 1.5.5, we’ve reverted this change and instead improved the speed of our PBKDF2 algorithm by not rehashing the key on every iteration.\n\nThis behavior introduced as a security hardening measure in Django 1.5.2 did not work properly and is now fixed.\n\nFixed a data corruption bug with datetime_safe.datetime.combine (#21256).\n\nFixed a Python 3 incompatibility in django.utils.text.unescape_entities() (#21185).\n\nFixed a couple data corruption issues with QuerySet edge cases under Oracle and MySQL (#21203, #21126).\n\nFixed crashes when using combinations of annotate(), select_related(), and only() (#16436).\n\nThe undocumented django.core.servers.basehttp.WSGIServerException has been removed. Use socket.error provided by the standard library instead.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.5.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Readdressed denial-of-service via password hashers¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Properly rotate CSRF token on login¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.5.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

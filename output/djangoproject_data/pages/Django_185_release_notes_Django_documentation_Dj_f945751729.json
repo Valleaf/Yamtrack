@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.5/",
+  "title": "Django 1.8.5 release notes | Django documentation | Django",
+  "content": "Django 1.8.5 fixes several bugs in 1.8.4.\n\nMade the development server’s autoreload more robust (#24704).\n\nFixed AssertionError in some delete queries with a model containing a field that is both a foreign and primary key (#24951).\n\nFixed AssertionError in some complex queries (#24525).\n\nFixed a migrations crash with GenericForeignKey (#25040).\n\nMade translation.override() clear the overridden language when a translation isn’t initially active (#25295).\n\nFixed crash when using a value in ModelAdmin.list_display that clashed with a reverse field on the model (#25299).\n\nFixed autocompletion for options of non-argparse management commands (#25372).\n\nAlphabetized ordering of imports in from django.db import migrations, models statement in newly created migrations (#25384).\n\nFixed migrations crash on MySQL when adding a text or a blob field with an unhashable default (#25393).\n\nChanged Count queries to execute COUNT(*) instead of COUNT('*') as versions of Django before 1.8 did (#25377). This may fix a performance regression on some databases.\n\nFixed custom queryset chaining with values() and values_list() (#20625).\n\nMoved the unsaved model instance assignment data loss check on reverse relations to Model.save() (#25160).\n\nReadded inline foreign keys to form instances when validating model formsets (#25431).\n\nAllowed using ORM write methods after disabling autocommit with set_autocommit(False) (#24921).\n\nFixed the manage.py test --keepdb option on Oracle (#25421).\n\nFixed incorrect queries with multiple many-to-many fields on a model with the same ‘to’ model and with related_name set to ‘+’ (#24505, #25486).\n\nFixed pickling a SimpleLazyObject wrapping a model (#25389).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,280 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1/",
+  "title": "Django 4.1 release notes | Django documentation | Django",
+  "content": "Welcome to Django 4.1!\n\nThese release notes cover the new features, as well as some backwards incompatible changes you’ll want to be aware of when upgrading from Django 4.0 or earlier. We’ve begun the deprecation process for some features.\n\nSee the How to upgrade Django to a newer version guide if you’re updating an existing project.\n\nDjango 4.1 supports Python 3.8, 3.9, 3.10, and 3.11 (as of 4.1.3). We highly recommend and only officially support the latest release of each series.\n\nView subclasses may now define async HTTP method handlers:\n\nSee Asynchronous class-based views for more details.\n\nQuerySet now provides an asynchronous interface for all data access operations. These are named as-per the existing synchronous operations but with an a prefix, for example acreate(), aget(), and so on.\n\nThe new interface allows you to write asynchronous code without needing to wrap ORM operations in sync_to_async():\n\nNote that, at this stage, the underlying database operations remain synchronous, with contributions ongoing to push asynchronous support down into the SQL compiler, and integrate asynchronous database drivers. The new asynchronous queryset interface currently encapsulates the necessary sync_to_async() operations for you, and will allow your code to take advantage of developments in the ORM’s asynchronous support as it evolves.\n\nSee Asynchronous queries for details and limitations.\n\nCheck, unique, and exclusion constraints defined in the Meta.constraints option are now checked during model validation.\n\nIn order to aid users with screen readers, and other assistive technology, new <div> based form templates are available from this release. These provide more accessible navigation than the older templates, and are able to correctly group related controls, such as radio-lists, into fieldsets.\n\nThe new templates are recommended, and will become the default form rendering style when outputting a form, like {{ form }} in a template, from Django 5.0.\n\nIn order to ease adopting the new output style, the default form and formset templates are now configurable at the project level via the FORM_RENDERER setting.\n\nSee the Forms section (below) for full details.\n\nThe new CSRF_COOKIE_MASKED transitional setting allows specifying whether to mask the CSRF cookie.\n\nCsrfViewMiddleware no longer masks the CSRF cookie like it does the CSRF token in the DOM. If you are upgrading multiple instances of the same project to Django 4.1, you should set CSRF_COOKIE_MASKED to True during the transition, in order to allow compatibility with the older versions of Django. Once the transition to 4.1 is complete you can stop overriding CSRF_COOKIE_MASKED.\n\nThis setting is deprecated as of this release and will be removed in Django 5.0.\n\nThe admin dark mode CSS variables are now applied in a separate stylesheet and template block.\n\nModelAdmin List Filters providing custom FieldListFilter subclasses can now control the query string value separator when filtering for multiple values using the __in lookup.\n\nThe admin history view is now paginated.\n\nRelated widget wrappers now have a link to object’s change form.\n\nThe AdminSite.get_app_list() method now allows changing the order of apps and models on the admin index page.\n\nThe default iteration count for the PBKDF2 password hasher is increased from 320,000 to 390,000.\n\nThe RemoteUserBackend.configure_user() method now allows synchronizing user attributes with attributes in a remote system such as an LDAP directory.\n\nThe new GEOSGeometry.make_valid() method allows converting invalid geometries to valid ones.\n\nThe new clone argument for GEOSGeometry.normalize() allows creating a normalized clone of the geometry.\n\nThe new BitXor() aggregate function returns an int of the bitwise XOR of all non-null input values.\n\nSpGistIndex now supports covering indexes on PostgreSQL 14+.\n\nExclusionConstraint now supports covering exclusion constraints using SP-GiST indexes on PostgreSQL 14+.\n\nThe new default_bounds attribute of DateTimeRangeField and DecimalRangeField allows specifying bounds for list and tuple inputs.\n\nExclusionConstraint now allows specifying operator classes with the OpClass() expression.\n\nThe default sitemap index template <sitemapindex> now includes the <lastmod> timestamp where available, through the new get_latest_lastmod() method. Custom sitemap index templates should be updated for the adjusted context variables.\n\nManifestStaticFilesStorage now replaces paths to CSS source map references with their hashed counterparts.\n\nThird-party database backends can now specify the minimum required version of the database using the DatabaseFeatures.minimum_database_version attribute which is a tuple (e.g. (10, 0) means “10.0”). If a minimum version is specified, backends must also implement DatabaseWrapper.get_database_version(), which returns a tuple of the current database version. The backend’s DatabaseWrapper.init_connection_state() method must call super() in order for the check to run.\n\nThe default template used to render forms when cast to a string, e.g. in templates as {{ form }}, is now configurable at the project-level by setting form_template_name on the class provided for FORM_RENDERER.\n\nForm.template_name is now a property deferring to the renderer, but may be overridden with a string value to specify the template name per-form class.\n\nSimilarly, the default template used to render formsets can be specified via the matching formset_template_name renderer attribute.\n\nThe new div.html form template, referencing Form.template_name_div attribute, and matching Form.as_div() method, render forms using HTML <div> elements.\n\nThis new output style is recommended over the existing as_table(), as_p() and as_ul() styles, as the template implements <fieldset> and <legend> to group related inputs and is easier for screen reader users to navigate.\n\nThe div-based output will become the default rendering style from Django 5.0.\n\nIn order to smooth adoption of the new <div> output style, two transitional form renderer classes are available: django.forms.renderers.DjangoDivFormRenderer and django.forms.renderers.Jinja2DivFormRenderer, for the Django and Jinja2 template backends respectively.\n\nYou can apply one of these via the FORM_RENDERER setting. For example:\n\nOnce the <div> output style is the default, from Django 5.0, these transitional renderers will be deprecated, for removal in Django 6.0. The FORM_RENDERER declaration can be removed at that time.\n\nIf the new <div> output style is not appropriate for your project, you should define a renderer subclass specifying form_template_name and formset_template_name for your required style, and set FORM_RENDERER accordingly.\n\nFor example, for the <p> output style used by as_p(), you would define a form renderer setting form_template_name to \"django/forms/p.html\" and formset_template_name to \"django/forms/formsets/p.html\".\n\nThe new legend_tag() allows rendering field labels in <legend> tags via the new tag argument of label_tag().\n\nThe new edit_only argument for modelformset_factory() and inlineformset_factory() allows preventing new objects creation.\n\nThe js and css class attributes of Media now allow using hashable objects, not only path strings, as long as those objects implement the __html__() method (typically when decorated with the html_safe() decorator).\n\nThe new BoundField.use_fieldset and Widget.use_fieldset attributes help to identify widgets where its inputs should be grouped in a <fieldset> with a <legend>.\n\nThe error_messages argument for BaseFormSet now allows customizing error messages for invalid number of forms by passing 'too_few_forms' and 'too_many_forms' keys.\n\nIntegerField, FloatField, and DecimalField now optionally accept a step_size argument. This is used to set the step HTML attribute, and is validated on form submission.\n\nThe i18n_patterns() function now supports languages with both scripts and regions.\n\nmakemigrations --no-input now logs default answers and reasons why migrations cannot be created.\n\nThe new makemigrations --scriptable option diverts log output and input prompts to stderr, writing only paths of generated migration files to stdout.\n\nThe new migrate --prune option allows deleting nonexistent migrations from the django_migrations table.\n\nPython files created by startproject, startapp, optimizemigration, makemigrations, and squashmigrations are now formatted using the black command if it is present on your PATH.\n\nThe new optimizemigration command allows optimizing operations for a migration.\n\nThe new RenameIndex operation allows renaming indexes defined in the Meta.indexes or index_together options.\n\nThe migrations autodetector now generates RenameIndex operations instead of RemoveIndex and AddIndex, when renaming indexes defined in the Meta.indexes.\n\nThe migrations autodetector now generates RenameIndex operations instead of AlterIndexTogether and AddIndex, when moving indexes defined in the Meta.index_together to the Meta.indexes.\n\nThe order_by argument of the Window expression now accepts string references to fields and transforms.\n\nThe new CONN_HEALTH_CHECKS setting allows enabling health checks for persistent database connections in order to reduce the number of failed requests, e.g. after database server restart.\n\nQuerySet.bulk_create() now supports updating fields when a row insertion fails uniqueness constraints. This is supported on MariaDB, MySQL, PostgreSQL, and SQLite 3.24+.\n\nQuerySet.iterator() now supports prefetching related objects as long as the chunk_size argument is provided. In older versions, no prefetching was done.\n\nQ objects and querysets can now be combined using ^ as the exclusive or (XOR) operator. XOR is natively supported on MariaDB and MySQL. For databases that do not support XOR, the query will be converted to an equivalent using AND, OR, and NOT.\n\nThe new Field.non_db_attrs attribute allows customizing attributes of fields that don’t affect a column definition.\n\nOn PostgreSQL, AutoField, BigAutoField, and SmallAutoField are now created as identity columns rather than serial columns with sequences.\n\nHttpResponse.set_cookie() now supports timedelta objects for the max_age argument.\n\nThe new SECRET_KEY_FALLBACKS setting allows providing a list of values for secret key rotation.\n\nThe SECURE_PROXY_SSL_HEADER setting now supports a comma-separated list of protocols in the header value.\n\nThe pre_delete and post_delete signals now dispatch the origin of the deletion.\n\nThe HTML <script> element id attribute is no longer required when wrapping the json_script template filter.\n\nThe cached template loader is now enabled in development, when DEBUG is True, and OPTIONS['loaders'] isn’t specified. You may specify OPTIONS['loaders'] to override this, if necessary.\n\nThe DiscoverRunner now supports running tests in parallel on macOS, Windows, and any other systems where the default multiprocessing start method is spawn.\n\nA nested atomic block marked as durable in django.test.TestCase now raises a RuntimeError, the same as outside of tests.\n\nSimpleTestCase.assertFormError() and assertFormsetError() now support passing a form/formset object directly.\n\nThe new ResolverMatch.captured_kwargs attribute stores the captured keyword arguments, as parsed from the URL.\n\nThe new ResolverMatch.extra_kwargs attribute stores the additional keyword arguments passed to the view function.\n\nSimpleLazyObject now supports addition operations.\n\nmark_safe() now preserves lazy objects.\n\nThe new StepValueValidator checks if a value is an integral multiple of a given step size. This new validator is used for the new step_size argument added to form fields representing numeric values.\n\nThis section describes changes that may be needed in third-party database backends.\n\nBaseDatabaseFeatures.has_case_insensitive_like is changed from True to False to reflect the behavior of most databases.\n\nDatabaseIntrospection.get_key_columns() is removed. Use DatabaseIntrospection.get_relations() instead.\n\nDatabaseOperations.ignore_conflicts_suffix_sql() method is replaced by DatabaseOperations.on_conflict_suffix_sql() that accepts the fields, on_conflict, update_fields, and unique_fields arguments.\n\nThe ignore_conflicts argument of the DatabaseOperations.insert_statement() method is replaced by on_conflict that accepts django.db.models.constants.OnConflict.\n\nDatabaseOperations._convert_field_to_tz() is replaced by DatabaseOperations._convert_sql_to_tz() that accepts the sql, params, and tzname arguments.\n\nSeveral date and time methods on DatabaseOperations now take sql and params arguments instead of field_name and return 2-tuple containing some SQL and the parameters to be interpolated into that SQL. The changed methods have these new signatures:\n\nDatabaseOperations.date_extract_sql(lookup_type, sql, params)\n\nDatabaseOperations.datetime_extract_sql(lookup_type, sql, params, tzname)\n\nDatabaseOperations.time_extract_sql(lookup_type, sql, params)\n\nDatabaseOperations.date_trunc_sql(lookup_type, sql, params, tzname=None)\n\nDatabaseOperations.datetime_trunc_sql(self, lookup_type, sql, params, tzname)\n\nDatabaseOperations.time_trunc_sql(lookup_type, sql, params, tzname=None)\n\nDatabaseOperations.datetime_cast_date_sql(sql, params, tzname)\n\nDatabaseOperations.datetime_cast_time_sql(sql, params, tzname)\n\nSupport for GDAL 2.1 is removed.\n\nSupport for PostGIS 2.4 is removed.\n\nUpstream support for PostgreSQL 10 ends in November 2022. Django 4.1 supports PostgreSQL 11 and higher.\n\nUpstream support for MariaDB 10.2 ends in May 2022. Django 4.1 supports MariaDB 10.3 and higher.\n\nAdmin changelist searches using multiple search terms are now applied in a single call to filter(), rather than in sequential filter() calls.\n\nFor multi-valued relationships, this means that rows from the related model must match all terms rather than any term. For example, if search_fields is set to ['child__name', 'child__age'], and a user searches for 'Jamal 17', parent rows will be returned only if there is a relationship to some 17-year-old child named Jamal, rather than also returning parents who merely have a younger or older child named Jamal in addition to some other 17-year-old.\n\nSee the Spanning multi-valued relationships topic for more discussion of this difference. In Django 4.0 and earlier, get_search_results() followed the second example query, but this undocumented behavior led to queries with excessive joins.\n\nIn order to unify the behavior with many-to-many relations for unsaved model instances, a reverse foreign key now raises ValueError when calling related managers for unsaved objects.\n\nRelated managers for ForeignKey, ManyToManyField, and GenericRelation are now cached on the Model instance to which they belong. This change was reverted in Django 4.1.2.\n\nDiscoverRunner now returns a non-zero error code for unexpected successes from tests marked with unittest.expectedFailure().\n\nCsrfViewMiddleware no longer masks the CSRF cookie like it does the CSRF token in the DOM.\n\nCsrfViewMiddleware now uses request.META['CSRF_COOKIE'] for storing the unmasked CSRF secret rather than a masked version. This is an undocumented, private API.\n\nThe ModelAdmin.actions and inlines attributes now default to an empty tuple rather than an empty list to discourage unintended mutation.\n\nThe type=\"text/css\" attribute is no longer included in <link> tags for CSS form media.\n\nformset:added and formset:removed JavaScript events are now pure JavaScript events and don’t depend on jQuery. See Inline form events for more details on the change.\n\nThe exc_info argument of the undocumented django.utils.log.log_response() function is replaced by exception.\n\nThe size argument of the undocumented django.views.static.was_modified_since() function is removed.\n\nThe admin log out UI now uses POST requests.\n\nThe undocumented InlineAdminFormSet.non_form_errors property is replaced by the non_form_errors() method. This is consistent with BaseFormSet.\n\nAs per above, the cached template loader is now enabled in development. You may specify OPTIONS['loaders'] to override this, if necessary.\n\nThe undocumented django.contrib.auth.views.SuccessURLAllowedHostsMixin mixin is replaced by RedirectURLMixin.\n\nBaseConstraint subclasses must implement validate() method to allow those constraints to be used for validation.\n\nThe undocumented URLResolver._is_callback(), URLResolver._callback_strs, and URLPattern.lookup_str() are moved to django.contrib.admindocs.utils.\n\nThe Model.full_clean() method now converts an exclude value to a set. It’s also preferable to pass an exclude value as a set to the Model.clean_fields(), Model.full_clean(), Model.validate_unique(), and Model.validate_constraints() methods.\n\nThe minimum supported version of asgiref is increased from 3.4.1 to 3.5.2.\n\nCombined expressions no longer use the error-prone behavior of guessing output_field when argument types match. As a consequence, resolving an output_field for database functions and combined expressions may now crash with mixed types. You will need to explicitly set the output_field in such cases.\n\nThe makemessages command no longer changes .po files when up to date. In older versions, POT-Creation-Date was always updated.\n\nLogging out via GET requests to the built-in logout view is deprecated. Use POST requests instead.\n\nIf you want to retain the user experience of an HTML link, you can use a form that is styled to appear as a link:\n\nThe context for sitemap index templates of a flat list of URLs is deprecated. Custom sitemap index templates should be updated for the adjusted context variables, expecting a list of objects with location and optional lastmod attributes.\n\nCSRF_COOKIE_MASKED transitional setting is deprecated.\n\nThe name argument of django.utils.functional.cached_property() is deprecated as it’s unnecessary as of Python 3.6.\n\nThe opclasses argument of django.contrib.postgres.constraints.ExclusionConstraint is deprecated in favor of using OpClass() in ExclusionConstraint.expressions. To use it, you need to add 'django.contrib.postgres' in your INSTALLED_APPS.\n\nAfter making this change, makemigrations will generate a new migration with two operations: RemoveConstraint and AddConstraint. Since this change has no effect on the database schema, the SeparateDatabaseAndState operation can be used to only update the migration state without running any SQL. Move the generated operations into the state_operations argument of SeparateDatabaseAndState. For example:\n\nThe undocumented ability to pass errors=None to SimpleTestCase.assertFormError() and assertFormsetError() is deprecated. Use errors=[] instead.\n\ndjango.contrib.sessions.serializers.PickleSerializer is deprecated due to the risk of remote code execution.\n\nThe usage of QuerySet.iterator() on a queryset that prefetches related objects without providing the chunk_size argument is deprecated. In older versions, no prefetching was done. Providing a value for chunk_size signifies that the additional query per chunk needed to prefetch is desired.\n\nPassing unsaved model instances to related filters is deprecated. In Django 5.0, the exception will be raised.\n\ncreated=True is added to the signature of RemoteUserBackend.configure_user(). Support for RemoteUserBackend subclasses that do not accept this argument is deprecated.\n\nThe django.utils.timezone.utc alias to datetime.timezone.utc is deprecated. Use datetime.timezone.utc directly.\n\nPassing a response object and a form/formset name to SimpleTestCase.assertFormError() and assertFormsetError() is deprecated. Use:\n\nor pass the form/formset object directly instead.\n\nThe undocumented django.contrib.gis.admin.OpenLayersWidget is deprecated.\n\ndjango.contrib.auth.hashers.CryptPasswordHasher is deprecated.\n\nThe ability to pass nulls_first=False or nulls_last=False to Expression.asc() and Expression.desc() methods, and the OrderBy expression is deprecated. Use None instead.\n\nThe \"django/forms/default.html\" and \"django/forms/formsets/default.html\" templates which are a proxy to the table-based templates are deprecated. Use the specific template instead.\n\nThe undocumented LogoutView.get_next_page() method is renamed to get_success_url().\n\nThese features have reached the end of their deprecation cycle and are removed in Django 4.1.\n\nSee Features deprecated in 3.2 for details on these changes, including how to remove usage of these features.\n\nSupport for assigning objects which don’t support creating deep copies with copy.deepcopy() to class attributes in TestCase.setUpTestData() is removed.\n\nSupport for using a boolean value in BaseCommand.requires_system_checks is removed.\n\nThe whitelist argument and domain_whitelist attribute of django.core.validators.EmailValidator are removed.\n\nThe default_app_config application configuration variable is removed.\n\nTransactionTestCase.assertQuerysetEqual() no longer calls repr() on a queryset when compared to string values.\n\nThe django.core.cache.backends.memcached.MemcachedCache backend is removed.\n\nSupport for the pre-Django 3.2 format of messages used by django.contrib.messages.storage.cookie.CookieStorage is removed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 4.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Asynchronous handlers for class-based views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Asynchronous ORM interface¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Validation of Constraints¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Form rendering accessibility¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CSRF_COOKIE_MASKED setting¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Minor features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.staticfiles¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Database backends¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Forms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Internationalization¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Management Commands¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Requests and Responses¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Security¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Signals¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Templates¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Utilities¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Validators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes in 4.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database backend API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for PostgreSQL 10¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for MariaDB 10.2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Admin changelist searches spanning multi-valued relationships changes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reverse foreign key changes for unsaved model instances¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 4.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Log out via GET¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features removed in 4.1¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "After making this change, makemigrations will generate a new migration with two operations: RemoveConstraint and AddConstraint. Since this change has no effect on the database schema, the SeparateDatabaseAndState operation can be used to only update the migration state without running any SQL. Move the generated operations into the state_operations argument of SeparateDatabaseAndState. For example:",
+      "code": "class Migration(migrations.Migration):\n    ...\n\n    operations = [\n        migrations.SeparateDatabaseAndState(\n            database_operations=[],\n            state_operations=[\n                migrations.RemoveConstraint(...),\n                migrations.AddConstraint(...),\n            ],\n        ),\n    ]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/filters/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/renderers/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/models/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/javascript/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-management-commands/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

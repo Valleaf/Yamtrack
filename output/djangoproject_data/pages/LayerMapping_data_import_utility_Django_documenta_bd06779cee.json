@@ -1,0 +1,60 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/layermapping/",
+  "title": "LayerMapping data import utility | Django documentation | Django",
+  "content": "The LayerMapping class provides a way to map the contents of vector spatial data files (e.g. shapefiles) into GeoDjango models.\n\nThis utility grew out of the author’s personal needs to eliminate the code repetition that went into pulling geometries and fields out of a vector layer, converting to another coordinate system (e.g. WGS84), and then inserting into a GeoDjango model.\n\nUse of LayerMapping requires GDAL.\n\nGIS data sources, like shapefiles, may be very large. If you find that LayerMapping is using too much memory, set DEBUG to False in your settings. When DEBUG is set to True, Django automatically logs every SQL query – and when SQL statements contain geometries, this may consume more memory than is typical.\n\nYou need a GDAL-supported data source, like a shapefile (here we’re using a simple polygon shapefile, test_poly.shp, with three features):\n\nNow we define our corresponding Django model (make sure to use migrate):\n\nUse LayerMapping to extract all the features and place them in the database:\n\nHere, LayerMapping transformed the three geometries from the shapefile in their original spatial reference system (WGS84) to the spatial reference system of the GeoDjango model (NAD83). If no spatial reference system is defined for the layer, use the source_srs keyword with a SpatialReference object to specify one.\n\nThe following are the arguments and keywords that may be used during instantiation of LayerMapping objects.\n\nThe geographic model, not an instance.\n\nThe path to the OGR-supported data source file (e.g., a shapefile). Also accepts django.contrib.gis.gdal.DataSource instances.\n\nA dictionary: keys are strings corresponding to the model field, and values correspond to string field names for the OGR feature, or if the model field is a geographic then it should correspond to the OGR geometry type, e.g., 'POINT', 'LINESTRING', 'POLYGON'.\n\nThe index of the layer to use from the Data Source (defaults to 0)\n\nUse this to specify the source SRS manually (for example, some shapefiles don’t come with a '.prj' file). An integer SRID, WKT or PROJ strings, and django.contrib.gis.gdal.SpatialReference objects are accepted.\n\nSpecifies the character set encoding of the strings in the OGR data source. For example, 'latin-1', 'utf-8', and 'cp437' are all valid encoding parameters.\n\nMay be 'commit_on_success' (default) or 'autocommit'.\n\nSetting this to False will disable coordinate transformations. In other words, geometries will be inserted into the database unmodified from their original state in the data source.\n\nSetting this to the name, or a tuple of names, from the given model will create models unique only to the given name(s). Geometries from each feature will be added into the collection associated with the unique model. Forces the transaction mode to be 'autocommit'.\n\nSets the database to use when importing spatial data. Default is 'default'.\n\nThe save() method also accepts keywords. These keywords are used for controlling output logging, error handling, and for importing specific feature ranges.\n\nSave Keyword Arguments\n\nMay be set with a slice or tuple of (begin, end) feature ID’s to map from the data source. In other words, this keyword enables the user to selectively import a subset range of features in the geographic data source.\n\nWhen this keyword is set, status information will be printed giving the number of features processed and successfully saved. By default, progress information will be printed every 1000 features processed, however, this default may be overridden by setting this keyword with an integer for the desired interval.\n\nBy default, non-fatal error notifications are printed to sys.stdout, but this keyword may be set to disable these notifications.\n\nIf set with an integer, transactions will occur at every step interval. For example, if step=1000, a commit would occur after the 1,000th feature, the 2,000th feature etc.\n\nStatus information will be written to this file handle. Defaults to using sys.stdout, but any object with a write method is supported.\n\nExecution of the model mapping will cease upon the first error encountered. The default value (False) behavior is to attempt to continue.\n\nIf set, information will be printed subsequent to each model save executed on the database.\n\nAs noted in the warning at the top of this section, Django stores all SQL queries when DEBUG=True. Set DEBUG=False in your settings, and this should stop excessive memory use when running LayerMapping scripts.\n\nIf you encounter the following error when using LayerMapping and MySQL:\n\nThen the solution is to increase the value of the max_allowed_packet setting in your MySQL configuration. For example, the default value may be something low like one megabyte – the setting may be modified in MySQL’s configuration file (my.cnf) in the [mysqld] section:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "LayerMapping data import utility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "LayerMapping API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "save() Keyword Arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Troubleshooting¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Running out of memory¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MySQL: max_allowed_packet error¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/layermapping/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/faq/models/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/ogrinspect/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

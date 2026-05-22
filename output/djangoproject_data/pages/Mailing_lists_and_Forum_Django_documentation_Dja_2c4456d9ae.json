@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/mailing-lists/",
+  "title": "Mailing lists and Forum | Django documentation | Django",
+  "content": "Please report security issues only to security@djangoproject.com. This is a private list only open to long-time, highly trusted Django developers, and its archives are not public. For further details, please see our security policies.\n\nDjango has an official Forum where you can input and ask questions.\n\nThere are several categories of discussion including:\n\nUsing Django: to ask any question regarding the installation, usage, or debugging of Django.\n\nInternals: for discussion of the development of Django itself.\n\nBefore asking a question about how to contribute, read Contributing to Django. Many frequently asked questions are answered there.\n\nIn addition, Django has several official mailing lists on Google Groups that are open to anyone.\n\nA (very) low-traffic list for announcing upcoming security releases, new releases of Django, and security advisories.\n\ndjango-announce mailing archive\n\ndjango-announce subscription email address\n\ndjango-announce posting email\n\nAll the ticket updates are mailed automatically to this list, which is tracked by developers and interested community members.\n\ndjango-updates mailing archive\n\ndjango-updates subscription email address\n\ndjango-updates posting email\n\nThe following mailing lists are archived and no longer active. These are still available as a historical resource.\n\nThe Using Django category of the official Forum is now the preferred venue for asking usage questions.\n\nThis was used for questions regarding the installation, usage, or debugging of Django projects.\n\ndjango-users mailing archive\n\nThe Internals category of the official Forum is now the preferred venue for discussing the development of Django.\n\nThis was used for discussions about the development of Django itself.\n\ndjango-developers mailing archive",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Mailing lists and Forum¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Django Forum¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "django-announce¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "django-updates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Archived mailing lists¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django-users¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django-developers¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/mailing-lists/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/triaging-tickets/",
+    "https://docs.djangoproject.com/en/stable/internals/organization/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

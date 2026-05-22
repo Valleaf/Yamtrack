@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+  "title": "Contributing code | Django documentation | Django",
+  "content": "So you’d like to write some code, documentation or tests to improve Django? There are several ways you can help Django’s development.\n\nThe Django tutorial contains a whole section that walks you step-by-step through the contributing code process.\n\nIf you already have some familiarity with the processes and principles, our documentation also contains useful guidance on specific topics:\n\nIt’s important to understand how we work and the conventions we adopt.\n\nWe maintain a curated list of small issues suited to first-time or less experienced contributors, using the “easy pickings” filter. These are strongly recommended for those contributors looking to make a contribution.\n\nBrowse easy pickings tickets.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Contributing code¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Tutorials¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How-to guides¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Related topics¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/intro/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/submitting-patches/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/overview/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/working-with-git/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/coding-style/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/accessibility/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/committing-code/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/new-contributors/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

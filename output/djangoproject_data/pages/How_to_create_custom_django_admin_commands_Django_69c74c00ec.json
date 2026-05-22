@@ -1,0 +1,85 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/custom-management-commands/",
+  "title": "How to create custom django-admin commands | Django documentation | Django",
+  "content": "Applications can register their own actions with manage.py. For example, you might want to add a manage.py action for a Django app that you’re distributing. In this document, we will be building a custom closepoll command for the polls application from the tutorial.\n\nTo do this, add a management/commands directory to the application. Django will register a manage.py command for each Python module in that directory whose name doesn’t begin with an underscore. For example:\n\nIn this example, the closepoll command will be made available to any project that includes the polls application in INSTALLED_APPS.\n\nThe _private.py module will not be available as a management command.\n\nThe closepoll.py module has only one requirement – it must define a class Command that extends BaseCommand or one of its subclasses.\n\nCustom management commands are especially useful for running standalone scripts or for scripts that are periodically executed from the UNIX crontab or from Windows scheduled tasks control panel.\n\nTo implement the command, edit polls/management/commands/closepoll.py to look like this:\n\nWhen you are using management commands and wish to provide console output, you should write to self.stdout and self.stderr, instead of printing to stdout and stderr directly. By using these proxies, it becomes much easier to test your custom command. Note also that you don’t need to end messages with a newline character, it will be added automatically, unless you specify the ending parameter:\n\nThe new custom command can be called using python manage.py closepoll <poll_ids>.\n\nThe handle() method takes one or more poll_ids and sets poll.opened to False for each one. If the user referenced any nonexistent polls, a CommandError is raised. The poll.opened attribute does not exist in the tutorial and was added to polls.models.Question for this example.\n\nThe same closepoll could be easily modified to delete a given poll instead of closing it by accepting additional command line options. These custom options can be added in the add_arguments() method like this:\n\nThe option (delete in our example) is available in the options dict parameter of the handle method. See the argparse Python documentation for more about add_argument usage.\n\nIn addition to being able to add custom command line options, all management commands can accept some default options such as --verbosity and --traceback.\n\nBy default, management commands are executed with the current active locale.\n\nIf, for some reason, your custom management command must run without an active locale (for example, to prevent translated content from being inserted into the database), deactivate translations using the @no_translations decorator on your handle() method:\n\nSince translation deactivation requires access to configured settings, the decorator can’t be used for commands that work without configured settings.\n\nInformation on how to test custom management commands can be found in the testing docs.\n\nDjango registers the built-in commands and then searches for commands in INSTALLED_APPS in reverse. During the search, if a command name duplicates an already registered command, the newly discovered command overrides the first.\n\nIn other words, to override a command, the new command must have the same name and its app must be before the overridden command’s app in INSTALLED_APPS.\n\nManagement commands from third-party apps that have been unintentionally overridden can be made available under a new name by creating a new command in one of your project’s apps (ordered before the third-party app in INSTALLED_APPS) which imports the Command of the overridden command.\n\nThe base class from which all management commands ultimately derive.\n\nUse this class if you want access to all of the mechanisms which parse the command-line arguments and work out what code to call in response; if you don’t need to change any of that behavior, consider using one of its subclasses.\n\nSubclassing the BaseCommand class requires that you implement the handle() method.\n\nAll attributes can be set in your derived class and can be used in BaseCommand’s subclasses.\n\nA short description of the command, which will be printed in the help message when the user runs the command python manage.py help <command>.\n\nIf your command defines mandatory positional arguments, you can customize the message error returned in the case of missing arguments. The default is output by argparse (“too few arguments”).\n\nA boolean indicating whether the command outputs SQL statements; if True, the output will automatically be wrapped with BEGIN; and COMMIT;. Default value is False.\n\nA boolean; if True, the command prints a warning if the set of migrations on disk don’t match the migrations in the database. A warning doesn’t prevent the command from executing. Default value is False.\n\nA list or tuple of tags, e.g. [Tags.staticfiles, Tags.models]. System checks registered in the chosen tags will be checked for errors prior to executing the command. The value '__all__' can be used to specify that all system checks should be performed. Default value is '__all__'.\n\nAn instance attribute that helps create colored output when writing to stdout or stderr. For example:\n\nSee Syntax coloring to learn how to modify the color palette and to see the available styles (use uppercased versions of the “roles” described in that section).\n\nIf you pass the --no-color option when running your command, all self.style() calls will return the original string uncolored.\n\nThe default command options to suppress in the help output. This should be a set of option names (e.g. '--verbosity'). The default values for the suppressed options are still passed.\n\nBaseCommand has a few methods that can be overridden but only the handle() method must be implemented.\n\nImplementing a constructor in a subclass\n\nIf you implement __init__ in your subclass of BaseCommand, you must call BaseCommand’s __init__:\n\nReturns a CommandParser instance, which is an ArgumentParser subclass with a few customizations for Django.\n\nYou can customize the instance by overriding this method and calling super() with kwargs of ArgumentParser parameters.\n\nEntry point to add parser arguments to handle command line arguments passed to the command. Custom commands should override this method to add both positional and optional arguments accepted by the command. Calling super() is not needed when directly subclassing BaseCommand.\n\nReturns the Django version, which should be correct for all built-in Django commands. User-supplied commands can override this method to return their own version.\n\nTries to execute this command, performing system checks if needed (as controlled by the requires_system_checks attribute). If the command raises a CommandError, it’s intercepted and printed to stderr.\n\nCalling a management command in your code\n\nexecute() should not be called directly from your code to execute a command. Use call_command() instead.\n\nThe actual logic of the command. Subclasses must implement this method.\n\nIt may return a string which will be printed to stdout (wrapped by BEGIN; and COMMIT; if output_transaction is True).\n\nUses the system check framework to inspect the entire Django project for potential problems. Serious problems are raised as a CommandError; warnings are output to stderr; minor notifications are output to stdout.\n\nIf app_configs and tags are both None, all system checks are performed except deployment and database related checks. tags can be a list of check tags, like compatibility or models.\n\nYou can pass include_deployment_checks=True to also perform deployment checks, and list of database aliases in the databases to run database related checks against them.\n\nSupplies kwargs for the call to check(), including transforming the value of requires_system_checks to the tag kwarg.\n\nOverride this method to change the values supplied to check(). For example, to opt into database related checks you can override get_check_kwargs() as follows:\n\nA management command which takes one or more installed application labels as arguments, and does something with each of them.\n\nRather than implementing handle(), subclasses must implement handle_app_config(), which will be called once for each application.\n\nPerform the command’s actions for app_config, which will be an AppConfig instance corresponding to an application label given on the command line.\n\nA management command which takes one or more arbitrary arguments (labels) on the command line, and does something with each of them.\n\nRather than implementing handle(), subclasses must implement handle_label(), which will be called once for each label.\n\nA string describing the arbitrary arguments passed to the command. The string is used in the usage text and error messages of the command. Defaults to 'label'.\n\nPerform the command’s actions for label, which will be the string as given on the command line.\n\nException class indicating a problem while executing a management command.\n\nIf this exception is raised during the execution of a management command from a command line console, it will be caught and turned into a nicely-printed error message to the appropriate output stream (i.e., stderr); as a result, raising this exception (with a sensible description of the error) is the preferred way to indicate that something has gone wrong in the execution of a command. It accepts the optional returncode argument to customize the exit status for the management command to exit with, using sys.exit().\n\nIf a management command is called from code through call_command(), it’s up to you to catch the exception when needed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to create custom django-admin commands¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Accepting optional arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Management commands and locales¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Testing¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overriding commands¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Command objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BaseCommand subclasses¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Command exceptions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "To do this, add a management/commands directory to the application. Django will register a manage.py command for each Python module in that directory whose name doesn’t begin with an underscore. For example:",
+      "code": "polls/\n    __init__.py\n    models.py\n    management/\n        __init__.py\n        commands/\n            __init__.py\n            _private.py\n            closepoll.py\n    tests.py\n    views.py"
+    },
+    {
+      "description": "An instance attribute that helps create colored output when writing to stdout or stderr. For example:",
+      "code": "self.stdout.write(self.style.SUCCESS(\"...\"))"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/custom-management-commands/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial01/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/checks/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-file-storage/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-shell/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

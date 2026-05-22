@@ -1,0 +1,42 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.7.9/",
+  "title": "Django 1.7.9 release notes | Django documentation | Django",
+  "content": "Django 1.7.9 fixes several security issues and bugs in 1.7.8.\n\nIn previous versions of Django, the session backends created a new empty record in the session storage anytime request.session was accessed and there was a session key provided in the request cookies that didn’t already have a session record. This could allow an attacker to easily create many new session records simply by sending repeated requests with unknown session keys, potentially filling up the session store or causing other users’ session records to be evicted.\n\nThe built-in session backends now create a session record only if the session is actually modified; empty session records are not created. Thus this potential DoS is now only possible if the site chooses to expose a session-modifying view to anonymous users.\n\nAs each built-in session backend was fixed separately (rather than a fix in the core sessions framework), maintainers of third-party session backends should check whether the same vulnerability is present in their backend and correct it if so.\n\nSome of Django’s built-in validators (EmailValidator, most seriously) didn’t prohibit newline characters (due to the usage of $ instead of \\Z in the regular expressions). If you use values with newlines in HTTP response or email headers, you can suffer from header injection attacks. Django itself isn’t vulnerable because HttpResponse and the mail sending utilities in django.core.mail prohibit newlines in HTTP and SMTP headers, respectively. While the validators have been fixed in Django, if you’re creating HTTP responses or email messages in other ways, it’s a good idea to ensure that those methods prohibit newlines as well. You might also want to validate that any existing data in your application doesn’t contain unexpected newlines.\n\nvalidate_ipv4_address(), validate_slug(), and URLValidator are also affected, however, as of Django 1.6 the GenericIPAddresseField, IPAddressField, SlugField, and URLField form fields which use these validators all strip the input, so the possibility of newlines entering your data only exists if you are using these validators outside of the form fields.\n\nThe undocumented, internally unused validate_integer() function is now stricter as it validates using a regular expression instead of simply casting the value using int() and checking if an exception was raised.\n\nPrevented the loss of null/not null column properties during field renaming of MySQL databases (#24817).\n\nFixed SimpleTestCase.assertRaisesMessage() on Python 2.7.10 (#24903).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.7.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service possibility by filling session store¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Header injection possibility since validators accept newlines in input¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.7.9/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

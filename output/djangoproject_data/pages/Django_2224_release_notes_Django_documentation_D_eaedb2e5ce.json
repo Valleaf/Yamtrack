@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.24/",
+  "title": "Django 2.2.24 release notes | Django documentation | Django",
+  "content": "Django 2.2.24 fixes two security issues in 2.2.23.\n\nStaff members could use the admindocs TemplateDetailView view to check the existence of arbitrary files. Additionally, if (and only if) the default admindocs templates have been customized by the developers to also expose the file contents, then not only the existence but also the file contents would have been exposed.\n\nAs a mitigation, path sanitation is now applied and only files within the template root directories can be loaded.\n\nURLValidator, validate_ipv4_address(), and validate_ipv46_address() didn’t prohibit leading zeros in octal literals. If you used such values you could suffer from indeterminate SSRF, RFI, and LFI attacks.\n\nvalidate_ipv4_address() and validate_ipv46_address() validators were not affected on Python 3.9.5+.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.24 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-33203: Potential directory traversal via admindocs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-33571: Possible indeterminate SSRF, RFI, and LFI attacks since validators accepted leading zeros in IPv4 addresses¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.24/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.25/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.23/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

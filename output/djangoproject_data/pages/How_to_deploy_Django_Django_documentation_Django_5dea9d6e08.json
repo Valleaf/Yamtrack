@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/",
+  "title": "How to deploy Django | Django documentation | Django",
+  "content": "Django is full of shortcuts to make web developers’ lives easier, but all those tools are of no use if you can’t easily deploy your sites. Since Django’s inception, ease of deployment has been a major goal.\n\nThere are many options for deploying your Django application, based on your architecture or your particular business needs, but that discussion is outside the scope of what Django can give you as guidance.\n\nDjango, being a web framework, needs a web server in order to operate. And since most web servers don’t natively speak Python, we need an interface to make that communication happen. The runserver command starts a lightweight development server, which is not suitable for production.\n\nDjango currently supports two interfaces: WSGI and ASGI.\n\nWSGI is the main Python standard for communicating between web servers and applications, but it only supports synchronous code.\n\nASGI is the new, asynchronous-friendly standard that will allow your Django site to use asynchronous Python features, and asynchronous Django features as they are developed.\n\nYou should also consider how you will handle static files for your application, and how to handle error reporting.\n\nFinally, before you deploy your application to production, you should run through our deployment checklist to ensure that your configurations are suitable.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to deploy Django¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/error-reporting/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/checklist/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/apache-auth/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/daphne/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/hypercorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/windows/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

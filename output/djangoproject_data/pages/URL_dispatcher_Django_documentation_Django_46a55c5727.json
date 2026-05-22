@@ -1,0 +1,175 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+  "title": "URL dispatcher | Django documentation | Django",
+  "content": "A clean, elegant URL scheme is an important detail in a high-quality web application. Django lets you design URLs however you want, with no framework limitations.\n\nSee Cool URIs don’t change, by World Wide Web creator Tim Berners-Lee, for excellent arguments on why URLs should be clean and usable.\n\nTo design URLs for an app, you create a Python module informally called a URLconf (URL configuration). This module is pure Python code and is a mapping between URL path expressions to Python functions (your views).\n\nThis mapping can be as short or as long as needed. It can reference other mappings. And, because it’s pure Python code, it can be constructed dynamically.\n\nDjango also provides a way to translate URLs according to the active language. See the internationalization documentation for more information.\n\nWhen a user requests a page from your Django-powered site, this is the algorithm the system follows to determine which Python code to execute:\n\nDjango determines the root URLconf module to use. Ordinarily, this is the value of the ROOT_URLCONF setting, but if the incoming HttpRequest object has a urlconf attribute (set by middleware), its value will be used in place of the ROOT_URLCONF setting.\n\nDjango loads that Python module and looks for the variable urlpatterns. This should be a sequence of django.urls.path() and/or django.urls.re_path() instances.\n\nDjango runs through each URL pattern, in order, and stops at the first one that matches the requested URL, matching against path_info.\n\nOnce one of the URL patterns matches, Django imports and calls the given view, which is a Python function (or a class-based view). The view gets passed the following arguments:\n\nAn instance of HttpRequest.\n\nIf the matched URL pattern contained no named groups, then the matches from the regular expression are provided as positional arguments.\n\nThe keyword arguments are made up of any named parts matched by the path expression that are provided, overridden by any arguments specified in the optional kwargs argument to django.urls.path() or django.urls.re_path().\n\nIf no URL pattern matches, or if an exception is raised during any point in this process, Django invokes an appropriate error-handling view. See Error handling below.\n\nHere’s a sample URLconf:\n\nTo capture a value from the URL, use angle brackets.\n\nCaptured values can optionally include a converter type. For example, use <int:name> to capture an integer parameter. If a converter isn’t included, any string, excluding a / character, is matched.\n\nThere’s no need to add a leading slash, because every URL has that. For example, it’s articles, not /articles.\n\nA request to /articles/2005/03/ would match the third entry in the list. Django would call the function views.month_archive(request, year=2005, month=3).\n\n/articles/2003/ would match the first pattern in the list, not the second one, because the patterns are tested in order, and the first one is the first test to pass. Feel free to exploit the ordering to insert special cases like this. Here, Django would call the function views.special_case_2003(request)\n\n/articles/2003 would not match any of these patterns, because each pattern requires that the URL end with a slash.\n\n/articles/2003/03/building-a-django-site/ would match the final pattern. Django would call the function views.article_detail(request, year=2003, month=3, slug=\"building-a-django-site\").\n\nThe following path converters are available by default:\n\nstr - Matches any non-empty string, excluding the path separator, '/'. This is the default if a converter isn’t included in the expression.\n\nint - Matches zero or any positive integer. Returns an int.\n\nslug - Matches any slug string consisting of ASCII letters or numbers, plus the hyphen and underscore characters. For example, building-your-1st-django-site.\n\nuuid - Matches a formatted UUID. To prevent multiple URLs from mapping to the same page, dashes must be included and letters must be lowercase. For example, 075194d3-6885-417e-a8a8-6c931e272f00. Returns a UUID instance.\n\npath - Matches any non-empty string, including the path separator, '/'. This allows you to match against a complete URL path rather than a segment of a URL path as with str.\n\nFor more complex matching requirements, you can define your own path converters.\n\nA converter is a class that includes the following:\n\nA regex class attribute, as a string.\n\nA to_python(self, value) method, which handles converting the matched string into the type that should be passed to the view function. It should raise ValueError if it can’t convert the given value. A ValueError is interpreted as no match and as a consequence a 404 response is sent to the user unless another URL pattern matches.\n\nA to_url(self, value) method, which handles converting the Python type into a string to be used in the URL. It should raise ValueError if it can’t convert the given value. A ValueError is interpreted as no match and as a consequence reverse() will raise NoReverseMatch unless another URL pattern matches.\n\nRegister custom converter classes in your URLconf using register_converter():\n\nIf the paths and converters syntax isn’t sufficient for defining your URL patterns, you can also use regular expressions. To do so, use re_path() instead of path().\n\nIn Python regular expressions, the syntax for named regular expression groups is (?P<name>pattern), where name is the name of the group and pattern is some pattern to match.\n\nHere’s the example URLconf from earlier, rewritten using regular expressions:\n\nThis accomplishes roughly the same thing as the previous example, except:\n\nThe exact URLs that will match are slightly more constrained. For example, the year 10000 will no longer match since the year integers are constrained to be exactly four digits long.\n\nEach captured argument is sent to the view as a string, regardless of what sort of match the regular expression makes.\n\nWhen switching from using path() to re_path() or vice versa, it’s particularly important to be aware that the type of the view arguments may change, and so you may need to adapt your views.\n\nAs well as the named group syntax, e.g. (?P<year>[0-9]{4}), you can also use the shorter unnamed group, e.g. ([0-9]{4}).\n\nThis usage isn’t particularly recommended as it makes it easier to accidentally introduce errors between the intended meaning of a match and the arguments of the view.\n\nIn either case, using only one style within a given regex is recommended. When both styles are mixed, any unnamed groups are ignored and only named groups are passed to the view function.\n\nRegular expressions allow nested arguments, and Django will resolve them and pass them to the view. When reversing, Django will try to fill in all outer captured arguments, ignoring any nested captured arguments. Consider the following URL patterns which optionally take a page argument:\n\nBoth patterns use nested arguments and will resolve: for example, blog/page-2/ will result in a match to blog_articles with two positional arguments: page-2/ and 2. The second pattern for comments will match comments/page-2/ with keyword argument page_number set to 2. The outer argument in this case is a non-capturing argument (?:...).\n\nThe blog_articles view needs the outermost captured argument to be reversed, page-2/ or no arguments in this case, while comments can be reversed with either no arguments or a value for page_number.\n\nNested captured arguments create a strong coupling between the view arguments and the URL as illustrated by blog_articles: the view receives part of the URL (page-2/) instead of only the value the view is interested in. This coupling is even more pronounced when reversing, since to reverse the view we need to pass the piece of URL instead of the page number.\n\nAs a rule of thumb, only capture the values the view needs to work with and use non-capturing arguments when the regular expression needs an argument but the view ignores it.\n\nThe URLconf searches against the requested URL, as a normal Python string. This does not include GET or POST parameters, or the domain name.\n\nFor example, in a request to https://www.example.com/myapp/, the URLconf will look for myapp/.\n\nIn a request to https://www.example.com/myapp/?page=3, the URLconf will look for myapp/.\n\nThe URLconf doesn’t look at the request method. In other words, all request methods – POST, GET, HEAD, etc. – will be routed to the same function for the same URL.\n\nA convenient trick is to specify default parameters for your views’ arguments. Here’s an example URLconf and view:\n\nIn the above example, both URL patterns point to the same view – views.page – but the first pattern doesn’t capture anything from the URL. If the first pattern matches, the page() function will use its default argument for num, 1. If the second pattern matches, page() will use whatever num value was captured.\n\nDjango processes regular expressions in the urlpatterns list which is compiled the first time it’s accessed. Subsequent requests use the cached configuration via the URL resolver.\n\nurlpatterns should be a sequence of path() and/or re_path() instances.\n\nWhen Django can’t find a match for the requested URL, or when an exception is raised, Django invokes an error-handling view.\n\nThe views to use for these cases are specified by four variables. Their default values should suffice for most projects, but further customization is possible by overriding their default values.\n\nSee the documentation on customizing error views for the full details.\n\nSuch values can be set in your root URLconf. Setting these variables in any other URLconf will have no effect.\n\nValues must be callables, or strings representing the full Python import path to the view that should be called to handle the error condition at hand.\n\nhandler400 – See django.conf.urls.handler400.\n\nhandler403 – See django.conf.urls.handler403.\n\nhandler404 – See django.conf.urls.handler404.\n\nhandler500 – See django.conf.urls.handler500.\n\nAt any point, your urlpatterns can “include” other URLconf modules. This essentially “roots” a set of URLs below other ones.\n\nFor example, here’s an excerpt of the URLconf for the Django website itself. It includes a number of other URLconfs:\n\nWhenever Django encounters include(), it chops off whatever part of the URL matched up to that point and sends the remaining string to the included URLconf for further processing.\n\nAnother possibility is to include additional URL patterns by using a list of path() instances. For example, consider this URLconf:\n\nIn this example, the /credit/reports/ URL will be handled by the credit_views.report() Django view.\n\nThis can be used to remove redundancy from URLconfs where a single pattern prefix is used repeatedly. For example, consider this URLconf:\n\nWe can improve this by stating the common path prefix only once and grouping the suffixes that differ:\n\nAn included URLconf receives any captured parameters from parent URLconfs, so the following example is valid:\n\nIn the above example, the captured \"username\" variable is passed to the included URLconf, as expected.\n\nURLconfs have a hook that lets you pass extra arguments to your view functions, as a Python dictionary.\n\nThe path() function can take an optional third argument which should be a dictionary of extra keyword arguments to pass to the view function.\n\nIn this example, for a request to /blog/2005/, Django will call views.year_archive(request, year=2005, foo='bar').\n\nThis technique is used in the syndication framework to pass metadata and options to views.\n\nDealing with conflicts\n\nIt’s possible to have a URL pattern which captures named keyword arguments, and also passes arguments with the same names in its dictionary of extra arguments. When this happens, the arguments in the dictionary will be used instead of the arguments captured in the URL.\n\nSimilarly, you can pass extra options to include() and each line in the included URLconf will be passed the extra options.\n\nFor example, these two URLconf sets are functionally identical:\n\nNote that extra options will always be passed to every line in the included URLconf, regardless of whether the line’s view actually accepts those options as valid. For this reason, this technique is only useful if you’re certain that every view in the included URLconf accepts the extra options you’re passing.\n\nA common need when working on a Django project is the possibility to obtain URLs in their final forms either for embedding in generated content (views and assets URLs, URLs shown to the user, etc.) or for handling of the navigation flow on the server side (redirections, etc.)\n\nIt is strongly desirable to avoid hardcoding these URLs (a laborious, non-scalable and error-prone strategy). Equally dangerous is devising ad-hoc mechanisms to generate URLs that are parallel to the design described by the URLconf, which can result in the production of URLs that become stale over time.\n\nIn other words, what’s needed is a DRY mechanism. Among other advantages it would allow evolution of the URL design without having to go over all the project source code to search and replace outdated URLs.\n\nThe primary piece of information we have available to get a URL is an identification (e.g. the name) of the view in charge of handling it. Other pieces of information that necessarily must participate in the lookup of the right URL are the types (positional, keyword) and values of the view arguments.\n\nDjango provides a solution such that the URL mapper is the only repository of the URL design. You feed it with your URLconf and then it can be used in both directions:\n\nStarting with a URL requested by the user/browser, it calls the right Django view providing any arguments it might need with their values as extracted from the URL.\n\nStarting with the identification of the corresponding Django view plus the values of arguments that would be passed to it, obtain the associated URL.\n\nThe first one is the usage we’ve been discussing in the previous sections. The second one is what is known as reverse resolution of URLs, reverse URL matching, reverse URL lookup, or simply URL reversing.\n\nDjango provides tools for performing URL reversing that match the different layers where URLs are needed:\n\nIn templates: Using the url template tag.\n\nIn Python code: Using the reverse() function.\n\nIn higher level code related to handling of URLs of Django model instances: The get_absolute_url() method.\n\nConsider again this URLconf entry:\n\nAccording to this design, the URL for the archive corresponding to year nnnn is /articles/<nnnn>/.\n\nYou can obtain these in template code by using:\n\nIf, for some reason, it was decided that the URLs where content for yearly article archives are published at should be changed then you would only need to change the entry in the URLconf.\n\nIn some scenarios where views are of a generic nature, a many-to-one relationship might exist between URLs and views. For these cases the view name isn’t a good enough identifier for it when comes the time of reversing URLs. Read the next section to know about the solution Django provides for this.\n\nIn order to perform URL reversing, you’ll need to use named URL patterns as done in the examples above. The string used for the URL name can contain any characters you like. You are not restricted to valid Python names.\n\nWhen naming URL patterns, choose names that are unlikely to clash with other applications’ choice of names. If you call your URL pattern comment and another application does the same thing, the URL that reverse() finds depends on whichever pattern is last in your project’s urlpatterns list.\n\nPutting a prefix on your URL names, perhaps derived from the application name (such as myapp-comment instead of comment), decreases the chance of collision.\n\nYou can deliberately choose the same URL name as another application if you want to override a view. For example, a common use case is to override the LoginView. Parts of Django and most third-party apps assume that this view has a URL pattern with the name login. If you have a custom login view and give its URL the name login, reverse() will find your custom view as long as it’s in urlpatterns after django.contrib.auth.urls is included (if that’s included at all).\n\nYou may also use the same name for multiple URL patterns if they differ in their arguments. In addition to the URL name, reverse() matches the number of arguments and the names of the keyword arguments. Path converters can also raise ValueError to indicate no match, see Registering custom path converters for details.\n\nURL namespaces allow you to uniquely reverse named URL patterns even if different applications use the same URL names. It’s a good practice for third-party apps to always use namespaced URLs (as we did in the tutorial). Similarly, it also allows you to reverse URLs if multiple instances of an application are deployed. In other words, since multiple instances of a single application will share named URLs, namespaces provide a way to tell these named URLs apart.\n\nDjango applications that make proper use of URL namespacing can be deployed more than once for a particular site. For example django.contrib.admin has an AdminSite class which allows you to deploy more than one instance of the admin. In a later example, we’ll discuss the idea of deploying the polls application from the tutorial in two different locations so we can serve the same functionality to two different audiences (authors and publishers).\n\nA URL namespace comes in two parts, both of which are strings:\n\nThis describes the name of the application that is being deployed. Every instance of a single application will have the same application namespace. For example, Django’s admin application has the somewhat predictable application namespace of 'admin'.\n\nThis identifies a specific instance of an application. Instance namespaces should be unique across your entire project. However, an instance namespace can be the same as the application namespace. This is used to specify a default instance of an application. For example, the default Django admin instance has an instance namespace of 'admin'.\n\nNamespaced URLs are specified using the ':' operator. For example, the main index page of the admin application is referenced using 'admin:index'. This indicates a namespace of 'admin', and a named URL of 'index'.\n\nNamespaces can also be nested. The named URL 'sports:polls:index' would look for a pattern named 'index' in the namespace 'polls' that is itself defined within the top-level namespace 'sports'.\n\nWhen given a namespaced URL (e.g. 'polls:index') to resolve, Django splits the fully qualified name into parts and then tries the following lookup:\n\nFirst, Django looks for a matching application namespace (in this example, 'polls'). This will yield a list of instances of that application.\n\nIf there is a current application defined, Django finds and returns the URL resolver for that instance. The current application can be specified with the current_app argument to the reverse() function.\n\nThe url template tag uses the namespace of the currently resolved view as the current application in a RequestContext. You can override this default by setting the current application on the request.current_app attribute.\n\nIf there is no current application, Django looks for a default application instance. The default application instance is the instance that has an instance namespace matching the application namespace (in this example, an instance of polls called 'polls').\n\nIf there is no default application instance, Django will pick the last deployed instance of the application, whatever its instance name may be.\n\nIf the provided namespace doesn’t match an application namespace in step 1, Django will attempt a direct lookup of the namespace as an instance namespace.\n\nIf there are nested namespaces, these steps are repeated for each part of the namespace until only the view name is unresolved. The view name will then be resolved into a URL in the namespace that has been found.\n\nTo show this resolution strategy in action, consider an example of two instances of the polls application from the tutorial: one called 'author-polls' and one called 'publisher-polls'. Assume we have enhanced that application so that it takes the instance namespace into consideration when creating and displaying polls.\n\nUsing this setup, the following lookups are possible:\n\nIf one of the instances is current - say, if we were rendering the detail page in the instance 'author-polls' - 'polls:index' will resolve to the index page of the 'author-polls' instance; i.e. both of the following will result in \"/author-polls/\".\n\nIn the method of a class-based view:\n\nIf there is no current instance - say, if we were rendering a page somewhere else on the site - 'polls:index' will resolve to the last registered instance of polls. Since there is no default instance (instance namespace of 'polls'), the last instance of polls that is registered will be used. This would be 'publisher-polls' since it’s declared last in the urlpatterns.\n\n'author-polls:index' will always resolve to the index page of the instance 'author-polls' (and likewise for 'publisher-polls').\n\nIf there were also a default instance - i.e., an instance named 'polls' - the only change from above would be in the case where there is no current instance (the second item in the list above). In this case 'polls:index' would resolve to the index page of the default instance instead of the instance declared last in urlpatterns.\n\nApplication namespaces of included URLconfs can be specified in two ways.\n\nFirstly, you can set an app_name attribute in the included URLconf module, at the same level as the urlpatterns attribute. You have to pass the actual module, or a string reference to the module, to include(), not the list of urlpatterns itself.\n\nThe URLs defined in polls.urls will have an application namespace polls.\n\nSecondly, you can include an object that contains embedded namespace data. If you include() a list of path() or re_path() instances, the URLs contained in that object will be added to the global namespace. However, you can also include() a 2-tuple containing:\n\nThis will include the nominated URL patterns into the given application namespace.\n\nThe instance namespace can be specified using the namespace argument to include(). If the instance namespace is not specified, it will default to the included URLconf’s application namespace. This means it will also be the default instance for that namespace.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "URL dispatcher¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overview¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How Django processes a request¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Path converters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Registering custom path converters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using regular expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using unnamed regular expression groups¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Nested arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What the URLconf searches against¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Specifying defaults for view arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Performance¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Syntax of the urlpatterns variable¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Error handling¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Including other URLconfs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Captured parameters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Passing extra options to view functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Passing extra options to include()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Reverse resolution of URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Examples¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Naming URL patterns¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "URL namespaces¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Introduction¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reversing namespaced URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "URL namespaces and included URLconfs¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "class FourDigitYearConverter:\n    regex = \"[0-9]{4}\"\n\n    def to_python(self, value):\n        return int(value)\n\n    def to_url(self, value):\n        return \"%04d\" % value"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.urls import path\nfrom . import views\n\nurlpatterns = [\n    path(\"blog/<int:year>/\", views.year_archive, {\"foo\": \"bar\"}),\n]"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.urls import include, path\n\nfrom . import views\n\npolls_patterns = (\n    [\n        path(\"\", views.IndexView.as_view(), name=\"index\"),\n        path(\"<int:pk>/\", views.DetailView.as_view(), name=\"detail\"),\n    ],\n    \"polls\",\n)\n\nurlpatterns = [\n    path(\"polls/\", include(polls_patterns)),\n]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/urls/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/syndication/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/topics/http/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

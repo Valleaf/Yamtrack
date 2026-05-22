@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.9/",
+  "title": "Django 2.0.9 release notes | Django documentation | Django",
+  "content": "Django 2.0.9 fixes a data loss bug in 2.0.8.\n\nFixed a race condition in QuerySet.update_or_create() that could result in data loss (#29499).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.9/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.10/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

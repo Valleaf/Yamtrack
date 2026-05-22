@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+  "title": "django.contrib.postgres | Django documentation | Django",
+  "content": "PostgreSQL has a number of features which are not shared by the other databases Django supports. This optional module contains model fields and form fields for a number of PostgreSQL specific data types.\n\nDjango is, and will continue to be, a database-agnostic web framework. We would encourage those writing reusable applications for the Django community to write database-agnostic code where practical. However, we recognize that real world projects written using Django need not be database-agnostic. In fact, once a project reaches a given size changing the underlying data store is already a significant challenge and is likely to require changing the code base in some ways to handle differences between the data stores.\n\nDjango provides support for a number of data types which will only work with PostgreSQL. There is no fundamental reason why (for example) a contrib.mysql module does not exist, except that PostgreSQL has the richest feature set of the supported databases so its users have the most to gain.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

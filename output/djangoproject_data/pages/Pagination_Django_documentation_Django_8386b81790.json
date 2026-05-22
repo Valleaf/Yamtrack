@@ -1,0 +1,52 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/pagination/",
+  "title": "Pagination | Django documentation | Django",
+  "content": "Django provides high-level and low-level ways to help you manage paginated data – that is, data that’s split across several pages, with “Previous/Next” links.\n\nUnder the hood, all methods of pagination use the Paginator class. It does all the heavy lifting of actually splitting a QuerySet into Page objects.\n\nGive Paginator a list of objects, plus the number of items you’d like to have on each page, and it gives you methods for accessing the items for each page:\n\nNote that you can give Paginator a list/tuple, a Django QuerySet, or any other object with a count() or __len__() method. When determining the number of objects contained in the passed object, Paginator will first try calling count(), then fallback to using len() if the passed object has no count() method. This allows objects such as Django’s QuerySet to use a more efficient count() method when available.\n\ndjango.views.generic.list.ListView provides a builtin way to paginate the displayed list. You can do this by adding a paginate_by attribute to your view class, for example:\n\nThis limits the number of objects per page and adds a paginator and page_obj to the context. To allow your users to navigate between pages, add links to the next and previous page, in your template like this:\n\nHere’s an example using Paginator in a view function to paginate a queryset:\n\nIn the template list.html, you can include navigation between pages in the same way as in the template for the ListView above.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Pagination¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The Paginator class¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Paginating a ListView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using Paginator in a view function¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "django.views.generic.list.ListView provides a builtin way to paginate the displayed list. You can do this by adding a paginate_by attribute to your view class, for example:",
+      "code": "from django.views.generic import ListView\n\nfrom myapp.models import Contact\n\n\nclass ContactListView(ListView):\n    paginate_by = 2\n    model = Contact"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/pagination/",
+    "https://docs.djangoproject.com/en/stable/ref/paginator/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/topics/logging/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

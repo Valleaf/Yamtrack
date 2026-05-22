@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.7/",
+  "title": "Django 1.4.7 release notes | Django documentation | Django",
+  "content": "Django 1.4.7 fixes one security issue present in previous Django releases in the 1.4 series.\n\nIn previous versions of Django it was possible to bypass the ALLOWED_INCLUDE_ROOTS setting used for security with the ssi template tag by specifying a relative path that starts with one of the allowed roots. For example, if ALLOWED_INCLUDE_ROOTS = (\"/var/www\",) the following would be possible:\n\nIn practice this is not a very common problem, as it would require the template author to put the ssi file in a user-controlled variable, but it’s possible in principle.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Directory traversal vulnerability in ssi template tag¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/signals/",
+  "title": "Signals | Django documentation | Django",
+  "content": "A list of all the signals that Django sends. All built-in signals are sent using the send() method.\n\nSee the documentation on the signal dispatcher for information regarding how to register for and receive signals.\n\nThe authentication framework sends signals when a user is logged in / out.\n\nThe django.db.models.signals module defines a set of signals sent by the model system.\n\nSignals can make your code harder to maintain. Consider implementing a helper method on a custom manager, to both update your models and perform additional logic, or else overriding model methods before using model signals.\n\nMany of these signals are sent by various model methods like __init__() or save() that you can override in your own code.\n\nIf you override these methods on your model, you must call the parent class’ methods for these signals to be sent.\n\nNote also that Django stores signal handlers as weak references by default, so if your handler is a local function, it may be garbage collected. To prevent this, pass weak=False when you call the signal’s connect().\n\nModel signals sender model can be lazily referenced when connecting a receiver by specifying its full application label. For example, an Question model defined in the polls application could be referenced as 'polls.Question'. This sort of reference can be quite handy when dealing with circular import dependencies and swappable models.\n\nWhenever you instantiate a Django model, this signal is sent at the beginning of the model’s __init__() method.\n\nArguments sent with this signal:\n\nThe model class that just had an instance created.\n\nA list of positional arguments passed to __init__().\n\nA dictionary of keyword arguments passed to __init__().\n\nFor example, the tutorial has this line:\n\nThe arguments sent to a pre_init handler would be:\n\nQuestion (the class itself)\n\n[] (an empty list because there were no positional arguments passed to __init__())\n\n{'question_text': \"What's new?\", 'pub_date': datetime.datetime(2012, 2, 26, 13, 0, 0, 775217, tzinfo=datetime.UTC)}\n\nLike pre_init, but this one is sent when the __init__() method finishes.\n\nArguments sent with this signal:\n\nAs above: the model class that just had an instance created.\n\nThe actual instance of the model that’s just been created.\n\ninstance._state isn’t set before sending the post_init signal, so _state attributes always have their default values. For example, _state.db is None.\n\nFor performance reasons, you shouldn’t perform queries in receivers of pre_init or post_init signals because they would be executed for each instance returned during queryset iteration.\n\nThis is sent at the beginning of a model’s save() method.\n\nArguments sent with this signal:\n\nThe actual instance being saved.\n\nA boolean; True if the model is saved exactly as presented (i.e. when loading a fixture). One should not query/modify other records in the database as the database might not be in a consistent state yet.\n\nThe database alias being used.\n\nThe set of fields to update as passed to Model.save(), or None if update_fields wasn’t passed to save().\n\nLike pre_save, but sent at the end of the save() method.\n\nArguments sent with this signal:\n\nThe actual instance being saved.\n\nA boolean; True if a new record was created.\n\nA boolean; True if the model is saved exactly as presented (i.e. when loading a fixture). One should not query/modify other records in the database as the database might not be in a consistent state yet.\n\nThe database alias being used.\n\nThe set of fields to update as passed to Model.save(), or None if update_fields wasn’t passed to save().\n\nSent at the beginning of a model’s delete() method and a queryset’s delete() method.\n\nArguments sent with this signal:\n\nThe actual instance being deleted.\n\nThe database alias being used.\n\nThe Model or QuerySet instance from which the deletion originated, that is, the instance whose delete() method was invoked.\n\nLike pre_delete, but sent at the end of a model’s delete() method and a queryset’s delete() method.\n\nArguments sent with this signal:\n\nThe actual instance being deleted.\n\nNote that the object will no longer be in the database, so be very careful what you do with this instance.\n\nThe database alias being used.\n\nThe Model or QuerySet instance from which the deletion originated, that is, the instance whose delete() method was invoked.\n\nSent when a ManyToManyField is changed on a model instance. Strictly speaking, this is not a model signal since it is sent by the ManyToManyField, but since it complements the pre_save/post_save and pre_delete/post_delete when it comes to tracking changes to models, it is included here.\n\nArguments sent with this signal:\n\nThe intermediate model class describing the ManyToManyField. This class is automatically created when a many-to-many field is defined; you can access it using the through attribute on the many-to-many field.\n\nThe instance whose many-to-many relation is updated. This can be an instance of the sender, or of the class the ManyToManyField is related to.\n\nA string indicating the type of update that is done on the relation. This can be one of the following:\n\nSent before one or more objects are added to the relation.\n\nSent after one or more objects are added to the relation.\n\nSent before one or more objects are removed from the relation.\n\nSent after one or more objects are removed from the relation.\n\nSent before the relation is cleared.\n\nSent after the relation is cleared.\n\nIndicates which side of the relation is updated (i.e., if it is the forward or reverse relation that is being modified).\n\nThe class of the objects that are added to, removed from or cleared from the relation.\n\nFor the pre_add and post_add actions, this is a set of primary key values that will be, or have been, added to the relation. This may be a subset of the values submitted to be added, since inserts must filter existing values in order to avoid a database IntegrityError.\n\nFor the pre_remove and post_remove actions, this is a set of primary key values that was submitted to be removed from the relation. This is not dependent on whether the values actually will be, or have been, removed. In particular, non-existent values may be submitted, and will appear in pk_set, even though they have no effect on the database.\n\nFor the pre_clear and post_clear actions, this is None.\n\nThe database alias being used.\n\nFor example, if a Pizza can have multiple Topping objects, modeled like this:\n\nIf we connected a handler like this:\n\nand then did something like this:\n\nthe arguments sent to a m2m_changed handler (toppings_changed in the example above) would be:\n\nPizza.toppings.through (the intermediate m2m class)\n\np (the Pizza instance being modified)\n\n\"pre_add\" (followed by a separate signal with \"post_add\")\n\nFalse (Pizza contains the ManyToManyField, so this call modifies the forward relation)\n\nTopping (the class of the objects added to the Pizza)\n\n{t.id} (since only Topping t was added to the relation)\n\n\"default\" (since the default router sends writes here)\n\nAnd if we would then do something like this:\n\nthe arguments sent to a m2m_changed handler would be:\n\nPizza.toppings.through (the intermediate m2m class)\n\nt (the Topping instance being modified)\n\n\"pre_remove\" (followed by a separate signal with \"post_remove\")\n\nTrue (Pizza contains the ManyToManyField, so this call modifies the reverse relation)\n\nPizza (the class of the objects removed from the Topping)\n\n{p.id} (since only Pizza p was removed from the relation)\n\n\"default\" (since the default router sends writes here)\n\nSent whenever a model class has been “prepared” – that is, once a model has been defined and registered with Django’s model system. Django uses this signal internally; it’s not generally used in third-party applications.\n\nSince this signal is sent during the app registry population process, and AppConfig.ready() runs after the app registry is fully populated, receivers cannot be connected in that method. One possibility is to connect them AppConfig.__init__() instead, taking care not to import models or trigger calls to the app registry.\n\nArguments that are sent with this signal:\n\nThe model class which was just prepared.\n\nSignals sent by django-admin.\n\nSent by the migrate command before it starts to install an application. It’s not emitted for applications that lack a models module.\n\nArguments sent with this signal:\n\nAn AppConfig instance for the application about to be migrated/synced.\n\nIndicates how much information manage.py is printing on screen. See the --verbosity flag for details.\n\nFunctions which listen for pre_migrate should adjust what they output to the screen based on the value of this argument.\n\nIf interactive is True, it’s safe to prompt the user to input things on the command line. If interactive is False, functions which listen for this signal should not try to prompt for anything.\n\nFor example, the django.contrib.auth app only prompts to create a superuser when interactive is True.\n\nA stream-like object where verbose output should be redirected.\n\nThe alias of database on which a command will operate.\n\nThe migration plan that is going to be used for the migration run. While the plan is not public API, this allows for the rare cases when it is necessary to know the plan. A plan is a list of 2-tuples with the first item being the instance of a migration class and the second item showing if the migration was rolled back (True) or applied (False).\n\nAn instance of Apps containing the state of the project before the migration run. It should be used instead of the global apps registry to retrieve the models you want to perform operations on.\n\nSent at the end of the migrate (even if no migrations are run) and flush commands. It’s not emitted for applications that lack a models module.\n\nHandlers of this signal must not perform database schema alterations as doing so may cause the flush command to fail if it runs during the migrate command.\n\nArguments sent with this signal:\n\nAn AppConfig instance for the application that was just installed.\n\nIndicates how much information manage.py is printing on screen. See the --verbosity flag for details.\n\nFunctions which listen for post_migrate should adjust what they output to the screen based on the value of this argument.\n\nIf interactive is True, it’s safe to prompt the user to input things on the command line. If interactive is False, functions which listen for this signal should not try to prompt for anything.\n\nFor example, the django.contrib.auth app only prompts to create a superuser when interactive is True.\n\nA stream-like object where verbose output should be redirected.\n\nThe database alias used for synchronization. Defaults to the default database.\n\nThe migration plan that was used for the migration run. While the plan is not public API, this allows for the rare cases when it is necessary to know the plan. A plan is a list of 2-tuples with the first item being the instance of a migration class and the second item showing if the migration was rolled back (True) or applied (False).\n\nAn instance of Apps containing the state of the project after the migration run. It should be used instead of the global apps registry to retrieve the models you want to perform operations on.\n\nFor example, you could register a callback in an AppConfig like this:\n\nIf you provide an AppConfig instance as the sender argument, please ensure that the signal is registered in ready(). AppConfigs are recreated for tests that run with a modified set of INSTALLED_APPS (such as when settings are overridden) and such signals should be connected for each new AppConfig instance.\n\nSignals sent by the core framework when processing a request.\n\nSignals can make your code harder to maintain. Consider using a middleware before using request/response signals.\n\nSent when Django begins processing an HTTP request.\n\nArguments sent with this signal:\n\nThe handler class – e.g. django.core.handlers.wsgi.WsgiHandler – that handled the request.\n\nThe environ dictionary provided to the request.\n\nSent when Django finishes delivering an HTTP response to the client.\n\nArguments sent with this signal:\n\nThe handler class, as above.\n\nThis signal is sent whenever Django encounters an exception while processing an incoming HTTP request.\n\nArguments sent with this signal:\n\nUnused (always None).\n\nThe HttpRequest object.\n\nSignals only sent when running tests.\n\nThis signal is sent when the value of a setting is changed through the django.test.TestCase.settings() context manager or the django.test.override_settings() decorator/context manager.\n\nIt’s actually sent twice: when the new value is applied (“setup”) and when the original value is restored (“teardown”). Use the enter argument to distinguish between the two.\n\nYou can also import this signal from django.core.signals to avoid importing from django.test in non-test situations.\n\nArguments sent with this signal:\n\nThe settings handler.\n\nThe name of the setting.\n\nThe value of the setting after the change. For settings that initially don’t exist, in the “teardown” phase, value is None.\n\nA boolean; True if the setting is applied, False if restored.\n\nSent when the test system renders a template. This signal is not emitted during normal operation of a Django server – it is only available during testing.\n\nArguments sent with this signal:\n\nThe Template object which was rendered.\n\nThe Context with which the template was rendered.\n\nSignals sent by the database wrapper when a database connection is initiated.\n\nSent when the database wrapper makes the initial connection to the database. This is particularly useful if you’d like to send any post connection commands to the SQL backend.\n\nArguments sent with this signal:\n\nThe database wrapper class – i.e. django.db.backends.postgresql.DatabaseWrapper or django.db.backends.mysql.DatabaseWrapper, etc.\n\nThe database connection that was opened. This can be used in a multiple-database configuration to differentiate connection signals from different databases.\n\nSignals sent by the tasks framework.\n\nSent once a Task has been enqueued.\n\nArguments sent with this signal:\n\nThe backend class which the Task was enqueued on to.\n\nThe enqueued TaskResult.\n\nSent when a Task has started executing.\n\nArguments sent with this signal:\n\nThe backend class which the Task was enqueued on to.\n\nThe started TaskResult.\n\nSent once a Task has finished executing, successfully or otherwise.\n\nArguments sent with this signal:\n\nThe backend class which the Task was enqueued on to.\n\nThe finished TaskResult.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Signals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pre_init¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "post_init¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pre_save¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "post_save¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pre_delete¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "post_delete¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "m2m_changed¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "class_prepared¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Management signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "pre_migrate¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "post_migrate¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Request/response signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "request_started¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "request_finished¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "got_request_exception¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Test signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "setting_changed¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "template_rendered¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Database Wrappers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "connection_created¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Tasks signals¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "task_enqueued¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "task_started¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "task_finished¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/topics/db/fixtures/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/http/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/overview/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/tasks/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

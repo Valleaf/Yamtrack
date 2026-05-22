@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.1.8/",
+  "title": "Django 5.1.8 release notes | Django documentation | Django",
+  "content": "Django 5.1.8 fixes a security issue with severity “moderate” and several bugs in 5.1.7.\n\nPython’s NFKC normalization is slow on Windows. As a consequence, LoginView, LogoutView, and set_language() were subject to a potential denial-of-service attack via certain inputs with a very large number of Unicode characters.\n\nFixed a regression in Django 5.1.7 where the removal of the single_object parameter unintentionally altered the signature and return type of LogEntryManager.log_actions() (#36234).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.1.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-27556: Potential denial-of-service vulnerability in LoginView, LogoutView, and set_language() on Windows¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.1.8/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

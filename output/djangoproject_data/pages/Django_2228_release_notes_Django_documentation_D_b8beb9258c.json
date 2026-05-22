@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.28/",
+  "title": "Django 2.2.28 release notes | Django documentation | Django",
+  "content": "Django 2.2.28 fixes two security issues with severity “high” in 2.2.27.\n\nQuerySet.annotate(), aggregate(), and extra() methods were subject to SQL injection in column aliases, using a suitably crafted dictionary, with dictionary expansion, as the **kwargs passed to these methods.\n\nQuerySet.explain() method was subject to SQL injection in option names, using a suitably crafted dictionary, with dictionary expansion, as the **options argument.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.28 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-28346: Potential SQL injection in QuerySet.annotate(), aggregate(), and extra()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-28347: Potential SQL injection via QuerySet.explain(**options) on PostgreSQL¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.28/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.27/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+  "title": "View decorators | Django documentation | Django",
+  "content": "Django provides several decorators that can be applied to views to support various HTTP features.\n\nSee Decorating the class for how to use these decorators with class-based views.\n\nThe decorators in django.views.decorators.http can be used to restrict access to views based on the request method. These decorators will return a django.http.HttpResponseNotAllowed if the conditions are not met.\n\nDecorator to require that a view only accepts particular request methods. Usage:\n\nNote that request methods should be in uppercase.\n\nDecorator to require that a view only accepts the GET method.\n\nDecorator to require that a view only accepts the POST method.\n\nDecorator to require that a view only accepts the GET and HEAD methods. These methods are commonly considered “safe” because they should not have the significance of taking an action other than retrieving the requested resource.\n\nWeb servers should automatically strip the content of responses to HEAD requests while leaving the headers unchanged, so you may handle HEAD requests exactly like GET requests in your views. Since some software, such as link checkers, rely on HEAD requests, you might prefer using require_safe instead of require_GET.\n\nThe following decorators in django.views.decorators.http can be used to control caching behavior on particular views.\n\nThis decorator provides the conditional GET operation handling of ConditionalGetMiddleware to a view.\n\nThese decorators can be used to generate ETag and Last-Modified headers; see conditional view processing.\n\nThe decorators in django.views.decorators.gzip control content compression on a per-view basis.\n\nThis decorator compresses content if the browser allows gzip compression. It sets the Vary header accordingly, so that caches will base their storage on the Accept-Encoding header.\n\nThe decorators in django.views.decorators.vary can be used to control caching based on specific request headers.\n\nThe Vary header defines which request headers a cache mechanism should take into account when building its cache key.\n\nSee using vary headers.\n\nThe decorators in django.views.decorators.cache control server and client-side caching.\n\nThis decorator patches the response’s Cache-Control header by adding all of the keyword arguments to it. See patch_cache_control() for the details of the transformation.\n\nThis decorator adds an Expires header to the current date/time.\n\nThis decorator adds a Cache-Control: max-age=0, no-cache, no-store, must-revalidate, private header to a response to indicate that a page should never be cached.\n\nEach header is only added if it isn’t already set.\n\nThe decorators in django.views.decorators.common allow per-view customization of CommonMiddleware behavior.\n\nThis decorator allows individual views to be excluded from APPEND_SLASH URL normalization.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "View decorators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Allowed HTTP methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Conditional view processing¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GZip compression¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Vary headers¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Caching¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Common¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Decorator to require that a view only accepts particular request methods. Usage:",
+      "code": "from django.views.decorators.http import require_http_methods\n\n\n@require_http_methods([\"GET\", \"POST\"])\ndef my_view(request):\n    # I can assume now that only GET or POST requests make it this far\n    # ...\n    pass"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/intro/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/conditional-view-processing/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/topics/http/file-uploads/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/http/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

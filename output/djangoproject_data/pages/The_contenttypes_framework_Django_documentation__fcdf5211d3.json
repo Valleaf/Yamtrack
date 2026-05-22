@@ -1,0 +1,105 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+  "title": "The contenttypes framework | Django documentation | Django",
+  "content": "Django includes a contenttypes application that can track all of the models installed in your Django-powered project, providing a high-level, generic interface for working with your models.\n\nAt the heart of the contenttypes application is the ContentType model, which lives at django.contrib.contenttypes.models.ContentType. Instances of ContentType represent and store information about the models installed in your project, and new instances of ContentType are automatically created whenever new models are installed.\n\nInstances of ContentType have methods for returning the model classes they represent and for querying objects from those models. ContentType also has a custom manager that adds methods for working with ContentType and for obtaining instances of ContentType for a particular model.\n\nRelations between your models and ContentType can also be used to enable “generic” relationships between an instance of one of your models and instances of any model you have installed.\n\nThe contenttypes framework is included in the default INSTALLED_APPS list created by django-admin startproject, but if you’ve removed it or if you manually set up your INSTALLED_APPS list, you can enable it by adding 'django.contrib.contenttypes' to your INSTALLED_APPS setting.\n\nIt’s generally a good idea to have the contenttypes framework installed; several of Django’s other bundled applications require it:\n\nThe admin application uses it to log the history of each object added or changed through the admin interface.\n\nDjango’s authentication framework uses it to tie user permissions to specific models.\n\nEach instance of ContentType has two fields which, taken together, uniquely describe an installed model:\n\nThe name of the application the model is part of. This is taken from the app_label attribute of the model, and includes only the last part of the application’s Python import path; django.contrib.contenttypes, for example, becomes an app_label of contenttypes.\n\nThe name of the model class.\n\nAdditionally, the following property is available:\n\nThe human-readable name of the content type. This is taken from the verbose_name attribute of the model.\n\nLet’s look at an example to see how this works. If you already have the contenttypes application installed, and then add the sites application to your INSTALLED_APPS setting and run manage.py migrate to install it, the model django.contrib.sites.models.Site will be installed into your database. Along with it a new instance of ContentType will be created with the following values:\n\napp_label will be set to 'sites' (the last part of the Python path django.contrib.sites).\n\nmodel will be set to 'site'.\n\nEach ContentType instance has methods that allow you to get from a ContentType instance to the model it represents, or to retrieve objects from that model:\n\nTakes a set of valid lookup arguments for the model the ContentType represents, and does a get() lookup on that model, returning the corresponding object. The using argument can be used to specify a different database than the default one.\n\nReturns the model class represented by this ContentType instance.\n\nFor example, we could look up the ContentType for the User model:\n\nAnd then use it to query for a particular User, or to get access to the User model class:\n\nTogether, get_object_for_this_type() and model_class() enable two extremely important use cases:\n\nUsing these methods, you can write high-level generic code that performs queries on any installed model – instead of importing and using a single specific model class, you can pass an app_label and model into a ContentType lookup at runtime, and then work with the model class or retrieve objects from it.\n\nYou can relate another model to ContentType as a way of tying instances of it to particular model classes, and use these methods to get access to those model classes.\n\nSeveral of Django’s bundled applications make use of the latter technique. For example, the permissions system in Django’s authentication framework uses a Permission model with a foreign key to ContentType; this lets Permission represent concepts like “can add blog entry” or “can delete news story”.\n\nContentType also has a custom manager, ContentTypeManager, which adds the following methods:\n\nClears an internal cache used by ContentType to keep track of models for which it has created ContentType instances. You probably won’t need to call this method in application code yourself; Django will call it automatically when it’s needed.\n\nYou may need to clear the cache when testing, to reset between tests, or after preparing test state. For example:\n\nLookup a ContentType by ID. Since this method uses the same shared cache as get_for_model(), it’s preferred to use this method over the usual ContentType.objects.get(pk=id)\n\nTakes either a model class or an instance of a model, and returns the ContentType instance representing that model. for_concrete_model=False allows fetching the ContentType of a proxy model.\n\nTakes a variadic number of model classes, and returns a dictionary mapping the model classes to the ContentType instances representing them. for_concrete_models=False allows fetching the ContentType of proxy models.\n\nReturns the ContentType instance uniquely identified by the given application label and model name. The primary purpose of this method is to allow ContentType objects to be referenced via a natural key during deserialization.\n\nThe get_for_model() method is especially useful when you know you need to work with a ContentType but don’t want to go to the trouble of obtaining the model’s metadata to perform a manual lookup:\n\nAdding a foreign key from one of your own models to ContentType allows your model to effectively tie itself to another model class, as in the example of the Permission model above. But it’s possible to go one step further and use ContentType to enable truly generic (sometimes called “polymorphic”) relationships between models.\n\nFor example, it could be used for a tagging system like so:\n\nA normal ForeignKey can only “point to” one other model, which means that if the TaggedItem model used a ForeignKey it would have to choose one and only one model to store tags for. The contenttypes application provides a special field type (GenericForeignKey) which works around this and allows the relationship to be with any model:\n\nThere are three parts to setting up a GenericForeignKey:\n\nGive your model a ForeignKey to ContentType. The usual name for this field is “content_type”.\n\nGive your model a field that can store primary key values from the models you’ll be relating to. For most models, this means a PositiveBigIntegerField. The usual name for this field is “object_id”.\n\nGive your model a GenericForeignKey, and pass it the names of the two fields described above. If these fields are named “content_type” and “object_id”, you can omit this – those are the default field names GenericForeignKey will look for.\n\nUnlike for the ForeignKey, a database index is not automatically created on the GenericForeignKey, so it’s recommended that you use Meta.indexes to add your own multiple column index. This behavior may change in the future.\n\nIf False, the field will be able to reference proxy models. Default is True. This mirrors the for_concrete_model argument to get_for_model().\n\nPrimary key type compatibility\n\nThe “object_id” field doesn’t have to be the same type as the primary key fields on the related models, but their primary key values must be coercible to the same type as the “object_id” field by its get_db_prep_value() method.\n\nFor example, if you want to allow generic relations to models with either IntegerField or CharField primary key fields, you can use CharField for the “object_id” field on your model since integers can be coerced to strings by get_db_prep_value().\n\nFor maximum flexibility you can use a TextField which doesn’t have a maximum length defined, however this may incur significant performance penalties depending on your database backend.\n\nThere is no one-size-fits-all solution for which field type is best. You should evaluate the models you expect to be pointing to and determine which solution will be most effective for your use case.\n\nSerializing references to ContentType objects\n\nIf you’re serializing data (for example, when generating fixtures) from a model that implements generic relations, you should probably be using a natural key to uniquely identify related ContentType objects. See natural keys and dumpdata --natural-foreign for more information.\n\nThis will enable an API similar to the one used for a normal ForeignKey; each TaggedItem will have a content_object field that returns the object it’s related to, and you can also assign to that field or use it when creating a TaggedItem:\n\nIf the related object is deleted, the content_type and object_id fields remain set to their original values and the GenericForeignKey returns None:\n\nDue to the way GenericForeignKey is implemented, you cannot use such fields directly with filters (filter() and exclude(), for example) via the database API. Because a GenericForeignKey isn’t a normal field object, these examples will not work:\n\nLikewise, GenericForeignKeys do not appear in ModelForms.\n\nThe relation on the related object back to this object doesn’t exist by default. Setting related_query_name creates a relation from the related object back to this one. This allows querying and filtering from the related object.\n\nIf you know which models you’ll be using most often, you can also add a “reverse” generic relationship to enable an additional API. For example:\n\nBookmark instances will each have a tags attribute, which can be used to retrieve their associated TaggedItems:\n\nYou can also use add(), create(), or set() to create relationships:\n\nThe remove() call will bulk delete the specified model objects:\n\nThe clear() method can be used to bulk delete all related objects for an instance:\n\nDefining GenericRelation with related_query_name set allows querying from the related object:\n\nThis enables filtering, ordering, and other query operations on Bookmark from TaggedItem:\n\nIf you don’t add the related_query_name, you can do the same types of lookups manually:\n\nJust as GenericForeignKey accepts the names of the content-type and object-ID fields as arguments, so too does GenericRelation; if the model which has the generic foreign key is using non-default names for those fields, you must pass the names of the fields when setting up a GenericRelation to it. For example, if the TaggedItem model referred to above used fields named content_type_fk and object_primary_key to create its generic foreign key, then a GenericRelation back to it would need to be defined like so:\n\nNote also, that if you delete an object that has a GenericRelation, any objects which have a GenericForeignKey pointing at it will be deleted as well. In the example above, this means that if a Bookmark object were deleted, any TaggedItem objects pointing at it would be deleted at the same time.\n\nUnlike ForeignKey, GenericForeignKey does not accept an on_delete argument to customize this behavior; if desired, you can avoid the cascade-deletion by not using GenericRelation, and alternate behavior can be provided via the pre_delete signal.\n\nDjango’s database aggregation API works with a GenericRelation. For example, you can find out how many tags all the bookmarks have:\n\nThe django.contrib.contenttypes.forms module provides:\n\nBaseGenericInlineFormSet\n\nA formset factory, generic_inlineformset_factory(), for use with GenericForeignKey.\n\nReturns a GenericInlineFormSet using modelformset_factory().\n\nYou must provide ct_field and fk_field if they are different from the defaults, content_type and object_id respectively. Other parameters are similar to those documented in modelformset_factory() and inlineformset_factory().\n\nThe for_concrete_model argument corresponds to the for_concrete_model argument on GenericForeignKey.\n\nThe django.contrib.contenttypes.admin module provides GenericTabularInline and GenericStackedInline (subclasses of GenericInlineModelAdmin)\n\nThese classes and functions enable the use of generic relations in forms and the admin. See the model formset and admin documentation for more information.\n\nThe GenericInlineModelAdmin class inherits all properties from an InlineModelAdmin class. However, it adds a couple of its own for working with the generic relation:\n\nThe name of the ContentType foreign key field on the model. Defaults to content_type.\n\nThe name of the integer field that represents the ID of the related object. Defaults to object_id.\n\nSubclasses of GenericInlineModelAdmin with stacked and tabular layouts, respectively.\n\nThis lookup is similar to Prefetch() and it should only be used on GenericForeignKey. The querysets argument accepts a list of querysets, each for a different ContentType. This is useful for GenericForeignKey with non-homogeneous set of results.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The contenttypes framework¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overview¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing the contenttypes framework¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The ContentType model¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Methods on ContentType instances¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The ContentTypeManager¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Generic relations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reverse generic relations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Generic relations and aggregation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Generic relation in forms¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Generic relations in admin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GenericPrefetch()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "You may need to clear the cache when testing, to reset between tests, or after preparing test state. For example:",
+      "code": "class ContentTypesTests(TestCase):\n    def setUp(self):\n        ContentType.objects.clear_cache()\n        self.addCleanup(ContentType.objects.clear_cache)"
+    },
+    {
+      "description": "If you know which models you’ll be using most often, you can also add a “reverse” generic relationship to enable an additional API. For example:",
+      "code": "from django.contrib.contenttypes.fields import GenericRelation\nfrom django.db import models\n\n\nclass Bookmark(models.Model):\n    url = models.URLField()\n    tags = GenericRelation(TaggedItem)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sites/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/db/aggregation/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/models/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

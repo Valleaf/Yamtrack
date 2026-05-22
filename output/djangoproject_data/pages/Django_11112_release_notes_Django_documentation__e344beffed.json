@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.12/",
+  "title": "Django 1.11.12 release notes | Django documentation | Django",
+  "content": "Django 1.11.12 fixes two bugs in 1.11.11.\n\nFixed a regression in Django 1.11.8 where combining two annotated values_list() querysets with union(), difference(), or intersection() crashed due to mismatching columns (#29229).\n\nFixed a regression in Django 1.11 where an empty choice could be initially selected for the SelectMultiple and CheckboxSelectMultiple widgets (#29273).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.12 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.12/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.13/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.11/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

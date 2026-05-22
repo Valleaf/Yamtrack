@@ -1,0 +1,42 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.3/",
+  "title": "Django 1.9.3 release notes | Django documentation | Django",
+  "content": "Django 1.9.3 fixes two security issues and several bugs in 1.9.2.\n\nDjango relies on user input in some cases (e.g. django.contrib.auth.views.login() and i18n) to redirect the user to an “on success” URL. The security check for these redirects (namely django.utils.http.is_safe_url()) considered some URLs with basic authentication credentials “safe” when they shouldn’t be.\n\nFor example, a URL like http://mysite.example.com\\@attacker.com would be considered safe if the request’s host is http://mysite.example.com, but redirecting to this URL sends the user to attacker.com.\n\nAlso, if a developer relies on is_safe_url() to provide safe redirect targets and puts such a URL into a link, they could suffer from an XSS attack.\n\nIn each major version of Django since 1.6, the default number of iterations for the PBKDF2PasswordHasher and its subclasses has increased. This improves the security of the password as the speed of hardware increases, however, it also creates a timing difference between a login request for a user with a password encoded in an older number of iterations and login request for a nonexistent user (which runs the default hasher’s default number of iterations since Django 1.6).\n\nThis only affects users who haven’t logged in since the iterations were increased. The first time a user logs in after an iterations increase, their password is updated with the new iterations and there is no longer a timing difference.\n\nThe new BasePasswordHasher.harden_runtime() method allows hashers to bridge the runtime gap between the work factor (e.g. iterations) supplied in existing encoded passwords and the default work factor of the hasher. This method is implemented for PBKDF2PasswordHasher and BCryptPasswordHasher. The number of rounds for the latter hasher hasn’t changed since Django 1.4, but some projects may subclass it and increase the work factor as needed.\n\nA warning will be emitted for any third-party password hashers that don’t implement a harden_runtime() method.\n\nIf you have different password hashes in your database (such as SHA1 hashes from users who haven’t logged in since the default hasher switched to PBKDF2 in Django 1.4), the timing difference on a login request for these users may be even greater and this fix doesn’t remedy that difference (or any difference when changing hashers). You may be able to upgrade those hashes to prevent a timing attack for that case.\n\nSkipped URL checks (new in 1.9) if the ROOT_URLCONF setting isn’t defined (#26155).\n\nFixed a crash on PostgreSQL that prevented using TIME_ZONE=None and USE_TZ=False (#26177).\n\nAdded system checks for query name clashes of hidden relationships (#26162).\n\nFixed a regression for cases where ForeignObject.get_extra_descriptor_filter() returned a Q object (#26153).\n\nFixed regression with an __in=qs lookup for a ForeignKey with to_field set (#26196).\n\nMade forms.FileField and utils.translation.lazy_number() picklable (#26212).\n\nFixed RangeField and ArrayField serialization with None values (#26215).\n\nFixed a crash when filtering by a Decimal in RawQuery (#26219).\n\nReallowed dashes in top-level domain names of URLs checked by URLValidator to fix a regression in Django 1.8 (#26204).\n\nFixed some crashing deprecation shims in SimpleTemplateResponse that regressed in Django 1.9 (#26253).\n\nFixed BoundField to reallow slices of subwidgets (#26267).\n\nChanged the admin’s “permission denied” message in the login template to use get_username instead of username to support custom user models (#26231).\n\nFixed a crash when passing a nonexistent template name to the cached template loader’s load_template() method (#26280).\n\nPrevented ContentTypeManager instances from sharing their cache (#26286).\n\nReverted a change in Django 1.9.2 (#25858) that prevented relative lazy relationships defined on abstract models to be resolved according to their concrete model’s app_label (#26186).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2016-2512: Malicious redirect and possible XSS attack via user-supplied redirect URLs containing basic auth¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2016-2513: User enumeration through timing difference on password hasher work factor upgrade¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.3/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/passwords/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

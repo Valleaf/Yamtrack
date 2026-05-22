@@ -1,0 +1,275 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0/",
+  "title": "Django 5.0 release notes | Django documentation | Django",
+  "content": "Welcome to Django 5.0!\n\nThese release notes cover the new features, as well as some backwards incompatible changes you’ll want to be aware of when upgrading from Django 4.2 or earlier. We’ve begun the deprecation process for some features.\n\nSee the How to upgrade Django to a newer version guide if you’re updating an existing project.\n\nDjango 5.0 supports Python 3.10, 3.11, and 3.12. We highly recommend and only officially support the latest release of each series.\n\nThe Django 4.2.x series is the last to support Python 3.8 and 3.9.\n\nFollowing the release of Django 5.0, we suggest that third-party app authors drop support for all versions of Django prior to 4.2. At that time, you should be able to run your package’s tests using python -Wd so that deprecation warnings appear. After making the deprecation warning fixes, your app should be compatible with Django 5.0.\n\nFacet counts are now shown for applied filters in the admin changelist when toggled on via the UI. This behavior can be changed via the new ModelAdmin.show_facets attribute. For more information see Facets.\n\nDjango 5.0 introduces the concept of a field group, and field group templates. This simplifies rendering of the related elements of a Django form field such as its label, widget, help text, and errors.\n\nFor example, the template below:\n\nCan now be simplified to:\n\nas_field_group() renders fields with the \"django/forms/field.html\" template by default and can be customized on a per-project, per-field, or per-request basis. See Reusable field group templates.\n\nThe new Field.db_default parameter sets a database-computed default value. For example:\n\nThe new GeneratedField allows creation of database generated columns. This field can be used on all supported database backends to create a field that is always computed from other fields. For example:\n\nField.choices (for model fields) and ChoiceField.choices (for form fields) allow for more flexibility when declaring their values. In previous versions of Django, choices should either be a list of 2-tuples, or an Enumeration types subclass, but the latter required accessing the .choices attribute to provide the values in the expected form:\n\nDjango 5.0 adds support for accepting a mapping or a callable instead of an iterable, and also no longer requires .choices to be used directly to expand enumeration types:\n\nUnder the hood the provided choices are normalized into a list of 2-tuples as the canonical form whenever the choices value is updated. For more information, please check the model field reference on choices.\n\nThe new AdminSite.get_log_entries() method allows customizing the queryset for the site’s listed log entries.\n\nThe django.contrib.admin.AllValuesFieldListFilter, ChoicesFieldListFilter, RelatedFieldListFilter, and RelatedOnlyFieldListFilter admin filters now handle multi-valued query parameters.\n\nXRegExp is upgraded from version 3.2.0 to 5.1.1.\n\nThe new AdminSite.get_model_admin() method returns an admin class for the given model class.\n\nProperties in ModelAdmin.list_display now support boolean attribute.\n\njQuery is upgraded from version 3.6.4 to 3.7.1.\n\nThe default iteration count for the PBKDF2 password hasher is increased from 600,000 to 720,000.\n\nThe new asynchronous functions are now provided, using an a prefix: django.contrib.auth.aauthenticate(), aget_user(), alogin(), alogout(), and aupdate_session_auth_hash().\n\nAuthenticationMiddleware now adds an HttpRequest.auser() asynchronous method that returns the currently logged-in user.\n\nThe new django.contrib.auth.hashers.acheck_password() asynchronous function and AbstractBaseUser.acheck_password() method allow asynchronous checking of user passwords.\n\nQuerySet.prefetch_related() now supports prefetching GenericForeignKey with non-homogeneous set of results.\n\nThe new ClosestPoint() function returns a 2-dimensional point on the geometry that is closest to another geometry.\n\nGIS aggregates now support the filter argument.\n\nSupport for GDAL 3.7 and GEOS 3.12 is added.\n\nThe new GEOSGeometry.equals_identical() method allows point-wise equivalence checking of geometries.\n\nThe new MessagesTestMixin.assertMessages() assertion method allows testing messages added to a response.\n\nThe new violation_error_code attribute of ExclusionConstraint allows customizing the code of ValidationError raised during model validation.\n\nUnder ASGI, http.disconnect events are now handled. This allows views to perform any necessary cleanup if a client disconnects before the response is generated. See Handling disconnects for more details.\n\nThe following decorators now support wrapping asynchronous view functions:\n\nrequires_csrf_token()\n\nsensitive_variables()\n\nsensitive_post_parameters()\n\nrequire_http_methods()\n\nxframe_options_deny()\n\nxframe_options_sameorigin()\n\nxframe_options_exempt()\n\nsensitive_variables() and sensitive_post_parameters() can now be used with asynchronous functions.\n\nFile.open() now passes all positional (*args) and keyword arguments (**kwargs) to Python’s built-in open().\n\nThe new assume_scheme argument for URLField allows specifying a default URL scheme.\n\nIn order to improve accessibility, the following changes are made:\n\nForm fields now include the aria-describedby HTML attribute to enable screen readers to associate form fields with their help text.\n\nInvalid form fields now include the aria-invalid=\"true\" HTML attribute.\n\nSupport and translations for the Uyghur language are now available.\n\nSerialization of functions decorated with functools.cache() or functools.lru_cache() is now supported without the need to write a custom serializer.\n\nThe new create_defaults argument of QuerySet.update_or_create() and QuerySet.aupdate_or_create() methods allows specifying a different field values for the create operation.\n\nThe new violation_error_code attribute of BaseConstraint, CheckConstraint, and UniqueConstraint allows customizing the code of ValidationError raised during model validation.\n\nThe force_insert argument of Model.save() now allows specifying a tuple of parent classes that must be forced to be inserted.\n\nQuerySet.bulk_create() and QuerySet.abulk_create() methods now set the primary key on each model instance when the update_conflicts parameter is enabled (if the database supports it).\n\nThe new UniqueConstraint.nulls_distinct attribute allows customizing the treatment of NULL values on PostgreSQL 15+.\n\nThe new aget_object_or_404() and aget_list_or_404() asynchronous shortcuts allow asynchronous getting objects.\n\nThe new aprefetch_related_objects() function allows asynchronous prefetching of model instances.\n\nQuerySet.aiterator() now supports previous calls to prefetch_related().\n\nOn MariaDB 10.7+, UUIDField is now created as UUID column rather than CHAR(32) column. See the migration guide above for more details on Migrating existing UUIDField on MariaDB 10.7+.\n\nDjango now supports oracledb version 1.3.2 or higher. Support for cx_Oracle is deprecated as of this release and will be removed in Django 6.0.\n\nThe new django.core.paginator.Paginator.error_messages argument allows customizing the error messages raised by Paginator.page().\n\nThe new Signal.asend() and Signal.asend_robust() methods allow asynchronous signal dispatch. Signal receivers may be synchronous or asynchronous, and will be automatically adapted to the correct calling style.\n\nThe new escapeseq template filter applies escape to each element of a sequence.\n\nClient and AsyncClient now provide asynchronous methods, using an a prefix: asession(), alogin(), aforce_login(), and alogout().\n\nAsyncClient now supports the follow parameter.\n\nDiscoverRunner now allows showing the duration of the slowest tests using the test --durations option (available on Python 3.12+).\n\nThe new offset argument of StepValueValidator allows specifying an offset for valid values.\n\nThis section describes changes that may be needed in third-party database backends.\n\nDatabaseFeatures.supports_expression_defaults should be set to False if the database doesn’t support using database functions as defaults.\n\nDatabaseFeatures.supports_default_keyword_in_insert should be set to False if the database doesn’t support the DEFAULT keyword in INSERT queries.\n\nDatabaseFeatures.supports_default_keyword_in_bulk_insert should be set to False if the database doesn’t support the DEFAULT keyword in bulk INSERT queries.\n\nSupport for GDAL 2.2 and 2.3 is removed.\n\nSupport for GEOS 3.6 and 3.7 is removed.\n\nThe django.contrib.sitemaps.ping_google() function and the ping_google management command are removed as the Google Sitemaps ping endpoint is deprecated and will be removed in January 2024.\n\nThe django.contrib.sitemaps.SitemapNotFound exception class is removed.\n\nSupport for pre-releases of MySQL 8.0.x series is removed. Django 5.0 supports MySQL 8.0.11 and higher.\n\nQuerySet.update_or_create() now supports the parameter create_defaults. As a consequence, any models that have a field named create_defaults that are used with an update_or_create() should specify the field in the lookup with create_defaults__exact.\n\nOn MariaDB 10.7+, UUIDField is now created as UUID column rather than CHAR(32) column. As a consequence, any UUIDField created in Django < 5.0 should be replaced with a UUIDField subclass backed by CHAR(32):\n\nRunning the makemigrations command will generate a migration containing a no-op AlterField operation.\n\nThe instance argument of the undocumented BaseModelFormSet.save_existing() method is renamed to obj.\n\nThe undocumented django.contrib.admin.helpers.checkbox is removed.\n\nInteger fields are now validated as 64-bit integers on SQLite to match the behavior of sqlite3.\n\nThe undocumented Query.annotation_select_mask attribute is changed from a set of strings to an ordered list of strings.\n\nImageField.update_dimension_fields() is no longer called on the post_init signal if width_field and height_field are not set.\n\nNow database function now uses LOCALTIMESTAMP instead of CURRENT_TIMESTAMP on Oracle.\n\nAdminSite.site_header is now rendered in a <div> tag instead of <h1>. Screen reader users rely on heading elements for navigation within a page. Having two <h1> elements was confusing and the site header wasn’t helpful as it is repeated on all pages.\n\nIn order to improve accessibility, the admin’s main content area and header content area are now rendered in a <main> and <header> tag instead of <div>.\n\nOn databases without native support for the SQL XOR operator, ^ as the exclusive or (XOR) operator now returns rows that are matched by an odd number of operands rather than exactly one operand. This is consistent with the behavior of MySQL, MariaDB, and Python.\n\nThe minimum supported version of asgiref is increased from 3.6.0 to 3.7.0.\n\nThe minimum supported version of selenium is increased from 3.8.0 to 4.8.0.\n\nThe AlreadyRegistered and NotRegistered exceptions are moved from django.contrib.admin.sites to django.contrib.admin.exceptions.\n\nThe minimum supported version of SQLite is increased from 3.21.0 to 3.27.0.\n\nSupport for cx_Oracle < 8.3 is removed.\n\nExecuting SQL queries before the app registry has been fully populated now raises RuntimeWarning.\n\nBadRequest is raised for non-UTF-8 encoded requests with the application/x-www-form-urlencoded content type. See RFC 1866 for more details.\n\nThe minimum supported version of colorama is increased to 0.4.6.\n\nThe minimum supported version of docutils is increased to 0.19.\n\nFiltering querysets against overflowing integer values now always returns an empty queryset. As a consequence, you may need to use ExpressionWrapper() to explicitly wrap arithmetic against integer fields in such cases.\n\nThe DjangoDivFormRenderer and Jinja2DivFormRenderer transitional form renderers are deprecated.\n\nPassing positional arguments name and violation_error_message to BaseConstraint is deprecated in favor of keyword-only arguments.\n\nrequest is added to the signature of ModelAdmin.lookup_allowed(). Support for ModelAdmin subclasses that do not accept this argument is deprecated.\n\nThe get_joining_columns() method of ForeignObject and ForeignObjectRel is deprecated. Starting with Django 6.0, django.db.models.sql.datastructures.Join will no longer fallback to get_joining_columns(). Subclasses should implement get_joining_fields() instead.\n\nThe ForeignObject.get_reverse_joining_columns() method is deprecated.\n\nThe default scheme for forms.URLField will change from \"http\" to \"https\" in Django 6.0. Set FORMS_URLFIELD_ASSUME_HTTPS transitional setting to True to opt into assuming \"https\" during the Django 5.x release cycle.\n\nFORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.\n\nSupport for calling format_html() without passing args or kwargs is deprecated.\n\nSupport for cx_Oracle is deprecated in favor of oracledb 1.3.2+ Python driver.\n\nDatabaseOperations.field_cast_sql() is deprecated in favor of DatabaseOperations.lookup_cast(). Starting with Django 6.0, BuiltinLookup.process_lhs() will no longer call field_cast_sql(). Third-party database backends should implement lookup_cast() instead.\n\nThe django.db.models.enums.ChoicesMeta metaclass is renamed to ChoicesType.\n\nThe Prefetch.get_current_queryset() method is deprecated.\n\nThe get_prefetch_queryset() method of related managers and descriptors is deprecated. Starting with Django 6.0, get_prefetcher() and prefetch_related_objects() will no longer fallback to get_prefetch_queryset(). Subclasses should implement get_prefetch_querysets() instead.\n\nThese features have reached the end of their deprecation cycle and are removed in Django 5.0.\n\nSee Features deprecated in 4.0 for details on these changes, including how to remove usage of these features.\n\nThe SERIALIZE test setting is removed.\n\nThe undocumented django.utils.baseconv module is removed.\n\nThe undocumented django.utils.datetime_safe module is removed.\n\nThe default value of the USE_TZ setting is changed from False to True.\n\nThe default sitemap protocol for sitemaps built outside the context of a request is changed from 'http' to 'https'.\n\nThe extra_tests argument for DiscoverRunner.build_suite() and DiscoverRunner.run_tests() is removed.\n\nThe django.contrib.postgres.aggregates.ArrayAgg, JSONBAgg, and StringAgg aggregates no longer return [], [], and '', respectively, when there are no rows.\n\nThe USE_L10N setting is removed.\n\nThe USE_DEPRECATED_PYTZ transitional setting is removed.\n\nSupport for pytz timezones is removed.\n\nThe is_dst argument is removed from:\n\ndjango.utils.timezone.make_aware()\n\ndjango.db.models.functions.Trunc()\n\ndjango.db.models.functions.TruncSecond()\n\ndjango.db.models.functions.TruncMinute()\n\ndjango.db.models.functions.TruncHour()\n\ndjango.db.models.functions.TruncDay()\n\ndjango.db.models.functions.TruncWeek()\n\ndjango.db.models.functions.TruncMonth()\n\ndjango.db.models.functions.TruncQuarter()\n\ndjango.db.models.functions.TruncYear()\n\nThe django.contrib.gis.admin.GeoModelAdmin and OSMGeoAdmin classes are removed.\n\nThe undocumented BaseForm._html_output() method is removed.\n\nThe ability to return a str, rather than a SafeString, when rendering an ErrorDict and ErrorList is removed.\n\nSee Features deprecated in 4.1 for details on these changes, including how to remove usage of these features.\n\nThe SitemapIndexItem.__str__() method is removed.\n\nThe CSRF_COOKIE_MASKED transitional setting is removed.\n\nThe name argument of django.utils.functional.cached_property() is removed.\n\nThe opclasses argument of django.contrib.postgres.constraints.ExclusionConstraint is removed.\n\nThe undocumented ability to pass errors=None to SimpleTestCase.assertFormError() and assertFormsetError() is removed.\n\ndjango.contrib.sessions.serializers.PickleSerializer is removed.\n\nThe usage of QuerySet.iterator() on a queryset that prefetches related objects without providing the chunk_size argument is no longer allowed.\n\nPassing unsaved model instances to related filters is no longer allowed.\n\ncreated=True is required in the signature of RemoteUserBackend.configure_user() subclasses.\n\nSupport for logging out via GET requests in the django.contrib.auth.views.LogoutView and django.contrib.auth.views.logout_then_login() is removed.\n\nThe django.utils.timezone.utc alias to datetime.timezone.utc is removed.\n\nPassing a response object and a form/formset name to SimpleTestCase.assertFormError() and assertFormSetError() is no longer allowed.\n\nThe django.contrib.gis.admin.OpenLayersWidget is removed.\n\nThe django.contrib.auth.hashers.CryptPasswordHasher is removed.\n\nThe \"django/forms/default.html\" and \"django/forms/formsets/default.html\" templates are removed.\n\nThe default form and formset rendering style is changed to the div-based.\n\nPassing nulls_first=False or nulls_last=False to Expression.asc() and Expression.desc() methods, and the OrderBy expression is no longer allowed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Third-party library support for older version of Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 5.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Facet filters in the admin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Simplified templates for form field rendering¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database-computed default values¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database generated model field¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "More options for declaring field choices¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Minor features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.contenttypes¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.messages¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Asynchronous views¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Decorators¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Error Reporting¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "File Storage¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Forms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Internationalization¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Pagination¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Signals¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Templates¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Validators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes in 5.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database backend API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for MySQL < 8.0.11¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using create_defaults__exact may now be required with QuerySet.update_or_create()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Migrating existing UUIDField on MariaDB 10.7+¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 5.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features removed in 5.0¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The new Field.db_default parameter sets a database-computed default value. For example:",
+      "code": "from django.db import models\nfrom django.db.models.functions import Now, Pi\n\n\nclass MyModel(models.Model):\n    age = models.IntegerField(db_default=18)\n    created = models.DateTimeField(db_default=Now())\n    circumference = models.FloatField(db_default=2 * Pi())"
+    },
+    {
+      "description": "The new GeneratedField allows creation of database generated columns. This field can be used on all supported database backends to create a field that is always computed from other fields. For example:",
+      "code": "from django.db import models\nfrom django.db.models import F\n\n\nclass Square(models.Model):\n    side = models.IntegerField()\n    area = models.GeneratedField(\n        expression=F(\"side\") * F(\"side\"),\n        output_field=models.BigIntegerField(),\n        db_persist=True,\n    )"
+    },
+    {
+      "description": "For example:",
+      "code": "class MyModel(models.Model):\n    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/filters/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/passwords/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+    "https://docs.djangoproject.com/en/stable/ref/csrf/",
+    "https://docs.djangoproject.com/en/stable/howto/error-reporting/",
+    "https://docs.djangoproject.com/en/stable/ref/files/file/",
+    "https://docs.djangoproject.com/en/stable/ref/models/constraints/",
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/",
+    "https://docs.djangoproject.com/en/stable/ref/paginator/",
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.1/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.30/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

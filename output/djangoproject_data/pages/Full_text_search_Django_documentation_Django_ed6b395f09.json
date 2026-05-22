@@ -1,0 +1,138 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+  "title": "Full text search | Django documentation | Django",
+  "content": "The database functions in the django.contrib.postgres.search module ease the use of PostgreSQL’s full text search engine.\n\nFor the examples in this document, we’ll use the models defined in Making queries.\n\nFor a high-level overview of searching, see the topic documentation.\n\nA common way to use full text search is to search a single term against a single column in the database. For example:\n\nThis creates a to_tsvector in the database from the body_text field and a plainto_tsquery from the search term 'Cheese', both using the default database search configuration. The results are obtained by matching the query and the vector.\n\nTo use the search lookup, 'django.contrib.postgres' must be in your INSTALLED_APPS.\n\nSearching against a single field is great but rather limiting. The Entry instances we’re searching belong to a Blog, which has a tagline field. To query against both fields, use a SearchVector:\n\nThe arguments to SearchVector can be any Expression or the name of a field. Multiple arguments will be concatenated together using a space so that the search document includes them all.\n\nSearchVector objects can be combined together, allowing you to reuse them. For example:\n\nSee Changing the search configuration and Weighting queries for an explanation of the config and weight parameters.\n\nSearchQuery translates the terms the user provides into a search query object that the database compares to a search vector. By default, all the words the user provides are passed through the stemming algorithms, and then it looks for matches for all of the resulting terms.\n\nIf search_type is 'plain', which is the default, the terms are treated as separate keywords. If search_type is 'phrase', the terms are treated as a single phrase. If search_type is 'raw', then you can provide a formatted search query with terms and operators. If search_type is 'websearch', then you can provide a formatted search query, similar to the one used by web search engines. 'websearch' requires PostgreSQL ≥ 11. Read PostgreSQL’s Full Text Search docs to learn about differences and syntax. Examples:\n\nSearchQuery terms can be combined logically to provide more flexibility:\n\nSee Changing the search configuration for an explanation of the config parameter.\n\nLexeme objects were added.\n\nSo far, we’ve returned the results for which any match between the vector and the query are possible. It’s likely you may wish to order the results by some sort of relevancy. PostgreSQL provides a ranking function which takes into account how often the query terms appear in the document, how close together the terms are in the document, and how important the part of the document is where they occur. The better the match, the higher the value of the rank. To order by relevancy:\n\nSee Weighting queries for an explanation of the weights parameter.\n\nSet the cover_density parameter to True to enable the cover density ranking, which means that the proximity of matching query terms is taken into account.\n\nProvide an integer to the normalization parameter to control rank normalization. This integer is a bit mask, so you can combine multiple behaviors:\n\nThe PostgreSQL documentation has more details about different rank normalization options.\n\nAccepts a single text field or an expression, a query, a config, and a set of options. Returns highlighted search results.\n\nSet the start_sel and stop_sel parameters to the string values to be used to wrap highlighted query terms in the document. PostgreSQL’s defaults are <b> and </b>.\n\nProvide integer values to the max_words and min_words parameters to determine the longest and shortest headlines. PostgreSQL’s defaults are 35 and 15.\n\nProvide an integer value to the short_word parameter to discard words of this length or less in each headline. PostgreSQL’s default is 3.\n\nSet the highlight_all parameter to True to use the whole document in place of a fragment and ignore max_words, min_words, and short_word parameters. That’s disabled by default in PostgreSQL.\n\nProvide a non-zero integer value to the max_fragments to set the maximum number of fragments to display. That’s disabled by default in PostgreSQL.\n\nSet the fragment_delimiter string parameter to configure the delimiter between fragments. PostgreSQL’s default is \" ... \".\n\nThe PostgreSQL documentation has more details on highlighting search results.\n\nSee Changing the search configuration for an explanation of the config parameter.\n\nYou can specify the config attribute to a SearchVector and SearchQuery to use a different search configuration. This allows using different language parsers and dictionaries as defined by the database:\n\nThe value of config could also be stored in another column:\n\nEvery field may not have the same relevance in a query, so you can set weights of various vectors before you combine them:\n\nThe weight should be one of the following letters: D, C, B, A. By default, these weights refer to the numbers 0.1, 0.2, 0.4, and 1.0, respectively. If you wish to weight them differently, pass a list of four floats to SearchRank as weights in the same order above:\n\nLexeme objects allow search operators to be safely used with strings from an untrusted source. The content of each lexeme is escaped so that any operators that may exist in the string itself will not be interpreted.\n\nYou can combine lexemes with other lexemes using the & and | operators and also negate them with the ~ operator. For example:\n\nLexeme objects also support term weighting and prefixes:\n\nSpecial database configuration isn’t necessary to use any of these functions, however, if you’re searching more than a few hundred records, you’re likely to run into performance problems. Full text search is a more intensive process than comparing the size of an integer, for example.\n\nIn the event that all the fields you’re querying on are contained within one particular model, you can create a functional GIN or GiST index which matches the search vector you wish to use. For example:\n\nThe PostgreSQL docs has details on creating indexes for full text search.\n\nIf this approach becomes too slow, you can add a SearchVectorField to your model. You’ll need to keep it populated with triggers, for example, as described in the PostgreSQL documentation. You can then query the field as if it were an annotated SearchVector:\n\nAnother approach to searching is trigram similarity. A trigram is a group of three consecutive characters. In addition to the trigram_similar, trigram_word_similar, and trigram_strict_word_similar lookups, you can use a couple of other expressions.\n\nTo use them, you need to activate the pg_trgm extension on PostgreSQL. You can install it using the TrigramExtension migration operation.\n\nAccepts a field name or expression, and a string or expression. Returns the trigram similarity between the two arguments.\n\nAccepts a string or expression, and a field name or expression. Returns the trigram word similarity between the two arguments.\n\nAccepts a string or expression, and a field name or expression. Returns the trigram strict word similarity between the two arguments. Similar to TrigramWordSimilarity(), except that it forces extent boundaries to match word boundaries.\n\nAccepts a field name or expression, and a string or expression. Returns the trigram distance between the two arguments.\n\nAccepts a string or expression, and a field name or expression. Returns the trigram word distance between the two arguments.\n\nAccepts a string or expression, and a field name or expression. Returns the trigram strict word distance between the two arguments.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Full text search¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The search lookup¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SearchVector¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SearchQuery¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SearchRank¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SearchHeadline¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Changing the search configuration¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Weighting queries¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Lexeme¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Performance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SearchVectorField¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Trigram similarity¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramSimilarity¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramWordSimilarity¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramStrictWordSimilarity¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramDistance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramWordDistance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TrigramStrictWordDistance¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "A common way to use full text search is to search a single term against a single column in the database. For example:",
+      "code": ">>> Entry.objects.filter(body_text__search=\"Cheese\")\n<QuerySet [<Entry: Cheese on Toast recipes>, <Entry: Pizza Recipes>]>"
+    },
+    {
+      "description": "SearchVector objects can be combined together, allowing you to reuse them. For example:",
+      "code": ">>> Entry.objects.annotate(\n...     search=SearchVector(\"body_text\") + SearchVector(\"blog__tagline\"),\n... ).filter(search=\"Cheese\")\n<QuerySet [<Entry: Cheese on Toast recipes>, <Entry: Pizza Recipes>]>"
+    },
+    {
+      "description": "Usage example:",
+      "code": ">>> from django.contrib.postgres.search import SearchHeadline, SearchQuery\n>>> query = SearchQuery(\"red tomato\")\n>>> entry = Entry.objects.annotate(\n...     headline=SearchHeadline(\n...         \"body_text\",\n...         query,\n...         start_sel=\"<span>\",\n...         stop_sel=\"</span>\",\n...     ),\n... ).get()\n>>> print(entry.headline)\nSandwich with <span>tomato</span> and <span>red</span> cheese."
+    },
+    {
+      "description": "You can combine lexemes with other lexemes using the & and | operators and also negate them with the ~ operator. For example:",
+      "code": ">>> from django.contrib.postgres.search import SearchQuery, SearchVector, Lexeme\n>>> vector = SearchVector(\"body_text\", \"blog__tagline\")\n>>> Entry.objects.annotate(search=vector).filter(\n...     search=SearchQuery(Lexeme(\"fruit\") & Lexeme(\"dessert\"))\n... )\n<QuerySet [<Entry: Apple Crumble Recipes>, <Entry: Banana Split Recipes>]>"
+    },
+    {
+      "description": "In the event that all the fields you’re querying on are contained within one particular model, you can create a functional GIN or GiST index which matches the search vector you wish to use. For example:",
+      "code": "GinIndex(\n    SearchVector(\"body_text\", \"headline\", config=\"english\"),\n    name=\"search_vector_idx\",\n)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/topics/db/search/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.2/",
+  "title": "Django 4.1.2 release notes | Django documentation | Django",
+  "content": "Django 4.1.2 fixes a security issue with severity “medium” and several bugs in 4.1.1.\n\nInternationalized URLs were subject to potential denial of service attack via the locale parameter.\n\nFixed a regression in Django 4.1 that caused a migration crash on PostgreSQL when adding a model with ExclusionConstraint (#33982).\n\nFixed a regression in Django 4.1 that caused aggregation over a queryset that contained an Exists annotation to crash due to too many selected columns (#33992).\n\nFixed a bug in Django 4.1 that caused an incorrect validation of CheckConstraint on NULL values (#33996).\n\nFixed a regression in Django 4.1 that caused a QuerySet.values()/values_list() crash on ArrayAgg() and JSONBAgg() (#34016).\n\nFixed a bug in Django 4.1 that caused ModelAdmin.autocomplete_fields to be incorrectly selected after adding/changing related instances via popups (#34025).\n\nFixed a regression in Django 4.1 where the app registry was not populated when running parallel tests with the multiprocessing start method spawn (#34010).\n\nFixed a regression in Django 4.1 where the --debug-mode argument to test did not work when running parallel tests with the multiprocessing start method spawn (#34010).\n\nFixed a regression in Django 4.1 that didn’t alter a sequence type when altering type of pre-Django 4.1 serial columns on PostgreSQL (#34058).\n\nFixed a regression in Django 4.1 that caused a crash for View subclasses with asynchronous handlers when handling non-allowed HTTP methods (#34062).\n\nReverted caching related managers for ForeignKey, ManyToManyField, and GenericRelation that caused the incorrect refreshing of related objects (#33984).\n\nRelaxed the system check added in Django 4.1 for the same name used for multiple template tag modules to a warning (#32987).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-41323: Potential denial-of-service vulnerability in internationalized URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.3/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

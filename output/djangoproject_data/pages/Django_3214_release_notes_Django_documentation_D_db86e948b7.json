@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.2.14/",
+  "title": "Django 3.2.14 release notes | Django documentation | Django",
+  "content": "Django 3.2.14 fixes a security issue with severity “high” in 3.2.13.\n\nTrunc() and Extract() database functions were subject to SQL injection if untrusted data was used as a kind/lookup_name value.\n\nApplications that constrain the lookup name and kind choice to a known safe list are unaffected.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.2.14 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-34265: Potential SQL injection via Trunc(kind) and Extract(lookup_name) arguments¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.2.14/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.15/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

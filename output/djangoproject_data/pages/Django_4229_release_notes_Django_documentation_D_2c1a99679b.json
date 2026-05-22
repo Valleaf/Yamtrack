@@ -1,0 +1,38 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.29/",
+  "title": "Django 4.2.29 release notes | Django documentation | Django",
+  "content": "Django 4.2.29 fixes a security issue with severity “moderate” and a security issue with severity “low” in 4.2.28.\n\nThe URLField form field’s to_python() method used urlsplit() to determine whether to prepend a URL scheme to the submitted value. On Windows, urlsplit() performs NFKC normalization, which can be disproportionately slow for large inputs containing certain characters.\n\nURLField.to_python() now uses a simplified scheme detection, avoiding Unicode normalization entirely and deferring URL validation to the appropriate layers. As a result, while leading and trailing whitespace is still stripped by default, characters such as newlines, tabs, and other control characters within the value are no longer handled by URLField.to_python(). When using the default URLValidator, these values will continue to raise ValidationError during validation, but if you rely on custom validators, ensure they do not depend on the previous behavior of URLField.to_python().\n\nThis issue has severity “moderate” according to the Django security policy.\n\nDjango’s file-system storage and file-based cache backends used the process umask to control permissions when creating directories. In multi-threaded environments, one thread’s temporary umask change can affect other threads’ file and directory creation, resulting in file system objects being created with unintended permissions.\n\nDjango now applies the requested permissions via chmod() after mkdir(), removing the dependency on the process-wide umask.\n\nThis issue has severity “low” according to the Django security policy.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.29 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2026-25673: Potential denial-of-service vulnerability in URLField via Unicode normalization on Windows¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2026-25674: Potential incorrect permissions on newly created file system objects¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.29/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.30/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.28/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

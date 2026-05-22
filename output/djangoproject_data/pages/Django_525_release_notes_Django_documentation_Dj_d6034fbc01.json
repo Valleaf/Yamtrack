@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.5/",
+  "title": "Django 5.2.5 release notes | Django documentation | Django",
+  "content": "Django 5.2.5 fixes several bugs in 5.2.4.\n\nFixed a regression in Django 5.2.1 that prevented the usage of UNNEST PostgreSQL strategy of QuerySet.bulk_create() with foreign keys (#36502).\n\nFixed a crash in Django 5.2 when filtering against a composite primary key using a tuple containing expressions (#36522).\n\nFixed a crash in Django 5.2 when validating a model that uses GeneratedField or constraints composed of Q and Case lookups (#36518).\n\nAdded compatibility for docutils 0.22 (#36535).\n\nFixed a crash in Django 5.2 when using a ManyToManyField on a model with a composite primary key, by extending the fields.E347 system check (#36530).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.5/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.6/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

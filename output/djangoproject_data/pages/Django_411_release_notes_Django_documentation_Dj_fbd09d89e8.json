@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.1/",
+  "title": "Django 4.1.1 release notes | Django documentation | Django",
+  "content": "Django 4.1.1 fixes several bugs in 4.1.\n\nReallowed, following a regression in Django 4.1, using GeoIP2() when GEOS is not installed (#33886).\n\nFixed a regression in Django 4.1 that caused a crash of admin’s autocomplete widgets when translations are deactivated (#33888).\n\nFixed a regression in Django 4.1 that caused a crash of the test management command when running in parallel and multiprocessing start method is spawn (#33891).\n\nFixed a regression in Django 4.1 that caused an incorrect redirection to the admin changelist view when using “Save and continue editing” and “Save and add another” options (#33893).\n\nFixed a regression in Django 4.1 that caused a crash of Window expressions with ArrayAgg (#33898).\n\nFixed a regression in Django 4.1 that caused a migration crash on SQLite 3.35.5+ when removing an indexed field (#33899).\n\nFixed a bug in Django 4.1 that caused a crash of model validation on UniqueConstraint() with field names in expressions (#33902).\n\nFixed a bug in Django 4.1 that caused an incorrect validation of CheckConstraint() with range fields on PostgreSQL (#33905).\n\nFixed a regression in Django 4.1 that caused an incorrect migration when adding AutoField, BigAutoField, or SmallAutoField on PostgreSQL (#33919).\n\nFixed a regression in Django 4.1 that caused a migration crash on PostgreSQL when altering AutoField, BigAutoField, or SmallAutoField to OneToOneField (#33932).\n\nFixed a migration crash on ManyToManyField fields with through referencing models in different apps (#33938).\n\nFixed a regression in Django 4.1 that caused an incorrect migration when renaming a model with ManyToManyField and db_table (#33953).\n\nReallowed, following a regression in Django 4.1, creating reverse foreign key managers on unsaved instances (#33952).\n\nFixed a regression in Django 4.1 that caused a migration crash on SQLite < 3.20 (#33960).\n\nFixed a regression in Django 4.1 that caused an admin crash when the admindocs app was used (#33955, #33971).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.1/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/templates/",
+  "title": "Templates | Django documentation | Django",
+  "content": "Being a web framework, Django needs a convenient way to generate HTML dynamically. The most common approach relies on templates. A template contains the static parts of the desired HTML output as well as some special syntax describing how dynamic content will be inserted. For a hands-on example of creating HTML pages with templates, see Tutorial 3.\n\nA Django project can be configured with one or several template engines (or even zero if you don’t use templates). Django ships built-in backends for its own template system, creatively called the Django template language (DTL), and for the popular alternative Jinja2. Backends for other template languages may be available from third-parties. You can also write your own custom backend, see Custom template backend\n\nDjango defines a standard API for loading and rendering templates regardless of the backend. Loading consists of finding the template for a given identifier and preprocessing it, usually compiling it to an in-memory representation. Rendering means interpolating the template with context data and returning the resulting string.\n\nThe Django template language is Django’s own template system. Until Django 1.8 it was the only built-in option available. It’s a good template library even though it’s fairly opinionated and sports a few idiosyncrasies. If you don’t have a pressing reason to choose another backend, you should use the DTL, especially if you’re writing a pluggable application and you intend to distribute templates. Django’s contrib apps that include templates, like django.contrib.admin, use the DTL.\n\nFor historical reasons, both the generic support for template engines and the implementation of the Django template language live in the django.template namespace.\n\nThe template system isn’t safe against untrusted template authors. For example, a site shouldn’t allow its users to provide their own templates, since template authors can do things like perform XSS attacks and access properties of template variables that may contain sensitive information.\n\nThis is an overview of the Django template language’s syntax. For details see the language syntax reference.\n\nA Django template is a text document or a Python string marked-up using the Django template language. Some constructs are recognized and interpreted by the template engine. The main ones are variables and tags.\n\nA template is rendered with a context. Rendering replaces variables with their values, which are looked up in the context, and executes tags. Everything else is output as is.\n\nThe syntax of the Django template language involves four constructs.\n\nA variable outputs a value from the context, which is a dict-like object mapping keys to values.\n\nVariables are surrounded by {{ and }} like this:\n\nWith a context of {'first_name': 'John', 'last_name': 'Doe'}, this template renders to:\n\nDictionary lookup, attribute lookup and list-index lookups are implemented with a dot notation:\n\nIf a variable resolves to a callable, the template system will call it with no arguments and use its result instead of the callable.\n\nTags provide arbitrary logic in the rendering process.\n\nThis definition is deliberately vague. For example, a tag can output content, serve as a control structure e.g. an “if” statement or a “for” loop, grab content from a database, or even enable access to other template tags.\n\nTags are surrounded by {% and %} like this:\n\nMost tags accept arguments:\n\nSome tags require beginning and ending tags:\n\nA reference of built-in tags is available as well as instructions for writing custom tags.\n\nFilters transform the values of variables and tag arguments.\n\nWith a context of {'django': 'the web framework for perfectionists with deadlines'}, this template renders to:\n\nSome filters take an argument:\n\nA reference of built-in filters is available as well as instructions for writing custom filters.\n\nComments look like this:\n\nA {% comment %} tag provides multi-line comments.\n\nThis is an overview of the Django template language’s APIs. For details see the API reference.\n\ndjango.template.Engine encapsulates an instance of the Django template system. The main reason for instantiating an Engine directly is to use the Django template language outside of a Django project.\n\ndjango.template.backends.django.DjangoTemplates is a thin wrapper adapting django.template.Engine to Django’s template backend API.\n\ndjango.template.Template represents a compiled template. Templates are obtained with Engine.get_template() or Engine.from_string().\n\nLikewise django.template.backends.django.Template is a thin wrapper adapting django.template.Template to the common template API.\n\ndjango.template.Context holds some metadata in addition to the context data. It is passed to Template.render() for rendering a template.\n\ndjango.template.RequestContext is a subclass of Context that stores the current HttpRequest and runs template context processors.\n\nThe common API doesn’t have an equivalent concept. Context data is passed in a plain dict and the current HttpRequest is passed separately if needed.\n\nTemplate loaders are responsible for locating templates, loading them, and returning Template objects.\n\nDjango provides several built-in template loaders and supports custom template loaders.\n\nContext processors are functions that receive the current HttpRequest as an argument and return a dict of data to be added to the rendering context.\n\nTheir main use is to add common data shared by all templates to the context without repeating code in every view.\n\nDjango provides many built-in context processors, and you can implement your own additional context processors, too.\n\nTemplates engines are configured with the TEMPLATES setting. It’s a list of configurations, one for each engine. The default value is empty. The settings.py generated by the startproject command defines a more useful value:\n\nBACKEND is a dotted Python path to a template engine class implementing Django’s template backend API. The built-in backends are django.template.backends.django.DjangoTemplates and django.template.backends.jinja2.Jinja2.\n\nSince most engines load templates from files, the top-level configuration for each engine contains two common settings:\n\nDIRS defines a list of directories where the engine should look for template source files, in search order.\n\nAPP_DIRS tells whether the engine should look for templates inside installed applications. Each backend defines a conventional name for the subdirectory inside applications where its templates should be stored.\n\nWhile uncommon, it’s possible to configure several instances of the same backend with different options. In that case you should define a unique NAME for each engine.\n\nOPTIONS contains backend-specific settings.\n\nThe django.template.loader module defines two functions to load templates.\n\nThis function loads the template with the given name and returns a Template object.\n\nThe exact type of the return value depends on the backend that loaded the template. Each backend has its own Template class.\n\nget_template() tries each template engine in order until one succeeds. If the template cannot be found, it raises TemplateDoesNotExist. If the template is found but contains invalid syntax, it raises TemplateSyntaxError.\n\nHow templates are searched and loaded depends on each engine’s backend and configuration.\n\nIf you want to restrict the search to a particular template engine, pass the engine’s NAME in the using argument.\n\nWhen using the DjangoTemplates backend, a specific fragment from a template can be loaded by name. This fragment should have been previously defined using the partialdef template tag:\n\nWhen loading a partial, the returned object behaves like a regular Template but contains only the partial’s content.\n\nSee Template partials for more information about defining and using template fragments.\n\nSupport for loading template partials when using the DjangoTemplates backend was added.\n\nselect_template() is just like get_template(), except it takes a list of template names. It tries each name in order and returns the first template that exists.\n\nIf loading a template fails, the following two exceptions, defined in django.template, may be raised:\n\nThis exception is raised when a template cannot be found. It accepts the following optional arguments for populating the template postmortem on the debug page:\n\nThe template backend instance from which the exception originated.\n\nA list of sources that were tried when finding the template. This is formatted as a list of tuples containing (origin, status), where origin is an origin-like object and status is a string with the reason the template wasn’t found.\n\nA list of intermediate TemplateDoesNotExist exceptions raised when trying to load a template. This is used by functions, such as get_template(), that try to load a given template from multiple engines.\n\nThis exception is raised when a template was found but contains errors.\n\nTemplate objects returned by get_template() and select_template() must provide a render() method with the following signature:\n\nRenders this template with a given context.\n\nIf context is provided, it must be a dict. If it isn’t provided, the engine will render the template with an empty context.\n\nIf request is provided, it must be an HttpRequest. Then the engine must make it, as well as the CSRF token, available in the template. How this is achieved is up to each backend.\n\nHere’s an example of the search algorithm. For this example the TEMPLATES setting is:\n\nIf you call get_template('story_detail.html'), here are the files Django will look for, in order:\n\n/home/html/example.com/story_detail.html ('django' engine)\n\n/home/html/default/story_detail.html ('django' engine)\n\n/home/html/jinja2/story_detail.html ('jinja2' engine)\n\nIf you call select_template(['story_253_detail.html', 'story_detail.html']), here’s what Django will look for:\n\n/home/html/example.com/story_253_detail.html ('django' engine)\n\n/home/html/default/story_253_detail.html ('django' engine)\n\n/home/html/jinja2/story_253_detail.html ('jinja2' engine)\n\n/home/html/example.com/story_detail.html ('django' engine)\n\n/home/html/default/story_detail.html ('django' engine)\n\n/home/html/jinja2/story_detail.html ('jinja2' engine)\n\nWhen Django finds a template that exists, it stops looking.\n\nUse django.template.loader.select_template() for more flexibility\n\nYou can use select_template() for flexible template loading. For example, if you’ve written a news story and want some stories to have custom templates, use something like select_template(['story_%s_detail.html' % story.id, 'story_detail.html']). That’ll allow you to use a custom template for an individual story, with a fallback template for stories that don’t have custom templates.\n\nIt’s possible – and preferable – to organize templates in subdirectories inside each directory containing templates. The convention is to make a subdirectory for each Django app, with subdirectories within those subdirectories as needed.\n\nDo this for your own sanity. Storing all templates in the root level of a single directory gets messy.\n\nTo load a template that’s within a subdirectory, use a slash, like so:\n\nUsing the same TEMPLATES option as above, this will attempt to load the following templates:\n\n/home/html/example.com/news/story_detail.html ('django' engine)\n\n/home/html/default/news/story_detail.html ('django' engine)\n\n/home/html/jinja2/news/story_detail.html ('jinja2' engine)\n\nIn addition, to cut down on the repetitive nature of loading and rendering templates, Django provides a shortcut function which automates the process.\n\nrender_to_string() loads a template like get_template() and calls its render() method immediately. It takes the following arguments.\n\nThe name of the template to load and render. If it’s a list of template names, Django uses select_template() instead of get_template() to find the template.\n\nA dict to be used as the template’s context for rendering.\n\nAn optional HttpRequest that will be available during the template’s rendering process.\n\nAn optional template engine NAME. The search for the template will be restricted to that engine.\n\nSee also the render() shortcut which calls render_to_string() and feeds the result into an HttpResponse suitable for returning from a view.\n\nFinally, you can use configured engines directly:\n\nTemplate engines are available in django.template.engines:\n\nThe lookup key — 'django' in this example — is the engine’s NAME.\n\nSet BACKEND to 'django.template.backends.django.DjangoTemplates' to configure a Django template engine.\n\nWhen APP_DIRS is True, DjangoTemplates engines look for templates in the templates subdirectory of installed applications. This generic name was kept for backwards-compatibility.\n\nDjangoTemplates engines accept the following OPTIONS:\n\n'autoescape': a boolean that controls whether HTML autoescaping is enabled.\n\nOnly set it to False if you’re rendering non-HTML templates!\n\n'context_processors': a list of dotted Python paths to callables that are used to populate the context when a template is rendered with a request. These callables take a request object as their argument and return a dict of items to be merged into the context.\n\nIt defaults to an empty list.\n\nSee RequestContext for more information.\n\n'debug': a boolean that turns on/off template debug mode. If it is True, the fancy error page will display a detailed report for any exception raised during template rendering. This report contains the relevant snippet of the template with the appropriate line highlighted.\n\nIt defaults to the value of the DEBUG setting.\n\n'loaders': a list of dotted Python paths to template loader classes. Each Loader class knows how to import templates from a particular source. Optionally, a tuple can be used instead of a string. The first item in the tuple should be the Loader class name, and subsequent items are passed to the Loader during initialization.\n\nThe default depends on the values of DIRS and APP_DIRS.\n\nSee Loader types for details.\n\n'string_if_invalid': the output, as a string, that the template system should use for invalid (e.g. misspelled) variables.\n\nIt defaults to an empty string.\n\nSee How invalid variables are handled for details.\n\n'file_charset': the charset used to read template files on disk.\n\nIt defaults to 'utf-8'.\n\n'libraries': A dictionary of labels and dotted Python paths of template tag modules to register with the template engine. This can be used to add new libraries or provide alternate labels for existing ones. For example:\n\nLibraries can be loaded by passing the corresponding dictionary key to the {% load %} tag.\n\n'builtins': A list of dotted Python paths of template tag modules to add to built-ins. For example:\n\nTags and filters from built-in libraries can be used without first calling the {% load %} tag.\n\nRequires Jinja2 to be installed:\n\nSet BACKEND to 'django.template.backends.jinja2.Jinja2' to configure a Jinja2 engine.\n\nWhen APP_DIRS is True, Jinja2 engines look for templates in the jinja2 subdirectory of installed applications.\n\nThe most important entry in OPTIONS is 'environment'. It’s a dotted Python path to a callable returning a Jinja2 environment. It defaults to 'jinja2.Environment'. Django invokes that callable and passes other options as keyword arguments. Furthermore, Django adds defaults that differ from Jinja2’s for a few options:\n\n'loader': a loader configured for DIRS and APP_DIRS\n\n'auto_reload': settings.DEBUG\n\n'undefined': DebugUndefined if settings.DEBUG else Undefined\n\nJinja2 engines also accept the following OPTIONS:\n\n'context_processors': a list of dotted Python paths to callables that are used to populate the context when a template is rendered with a request. These callables take a request object as their argument and return a dict of items to be merged into the context.\n\nIt defaults to an empty list.\n\nUsing context processors with Jinja2 templates is discouraged.\n\nContext processors are useful with Django templates because Django templates don’t support calling functions with arguments. Since Jinja2 doesn’t have that limitation, it’s recommended to put the function that you would use as a context processor in the global variables available to the template using jinja2.Environment as described below. You can then call that function in the template:\n\nSome Django templates context processors return a fixed value. For Jinja2 templates, this layer of indirection isn’t necessary since you can add constants directly in jinja2.Environment.\n\nThe original use case for adding context processors for Jinja2 involved:\n\nMaking an expensive computation that depends on the request.\n\nNeeding the result in every template.\n\nUsing the result multiple times in each template.\n\nUnless all of these conditions are met, passing a function to the template is more in line with the design of Jinja2.\n\nThe default configuration is purposefully kept to a minimum. If a template is rendered with a request (e.g. when using render()), the Jinja2 backend adds the globals request, csrf_input, and csrf_token to the context. Apart from that, this backend doesn’t create a Django-flavored environment. It doesn’t know about Django filters and tags. In order to use Django-specific APIs, you must configure them into the environment.\n\nFor example, you can create myproject/jinja2.py with this content:\n\nand set the 'environment' option to 'myproject.jinja2.environment'.\n\nThen you could use the following constructs in Jinja2 templates:\n\nThe concepts of tags and filters exist both in the Django template language and in Jinja2 but they’re used differently. Since Jinja2 supports passing arguments to callables in templates, many features that require a template tag or filter in Django templates can be achieved by calling a function in Jinja2 templates, as shown in the example above. Jinja2’s global namespace removes the need for template context processors. The Django template language doesn’t have an equivalent of Jinja2 tests.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The Django template language¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Syntax¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Variables¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tags¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Filters¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Comments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Components¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Engine¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Template¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Context¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Loaders¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Context processors¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Support for template engines¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Configuration¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Usage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Built-in backends¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Usage example:",
+      "code": "from django.template.loader import render_to_string\n\nrendered = render_to_string(\"my_template.html\", {\"foo\": \"bar\"})"
+    },
+    {
+      "description": "'libraries': A dictionary of labels and dotted Python paths of template tag modules to register with the template engine. This can be used to add new libraries or provide alternate labels for existing ones. For example:",
+      "code": "OPTIONS = {\n    \"libraries\": {\n        \"myapp_tags\": \"path.to.myapp.tags\",\n        \"admin.urls\": \"django.contrib.admin.templatetags.admin_urls\",\n    },\n}"
+    },
+    {
+      "description": "'builtins': A list of dotted Python paths of template tag modules to add to built-ins. For example:",
+      "code": "OPTIONS = {\n    \"builtins\": [\"myapp.builtins\"],\n}"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial03/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-template-backend/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-template-tags/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

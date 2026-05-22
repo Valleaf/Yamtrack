@@ -1,0 +1,105 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/",
+  "title": "contrib packages | Django documentation | Django",
+  "content": "Django aims to follow Python’s “batteries included” philosophy. It ships with a variety of extra, optional tools that solve common web development problems.\n\nThis code lives in django/contrib in the Django distribution. This document gives a rundown of the packages in contrib, along with any dependencies those packages have.\n\nIncluding contrib packages in INSTALLED_APPS\n\nFor most of these add-ons – specifically, the add-ons that include either models or template tags – you’ll need to add the package name (e.g., 'django.contrib.redirects') to your INSTALLED_APPS setting and rerun manage.py migrate.\n\nThe automatic Django administrative interface. For more information, see Tutorial 2 and the admin documentation.\n\nRequires the auth and contenttypes contrib packages to be installed.\n\nDjango’s authentication framework.\n\nSee User authentication in Django.\n\nA light framework for hooking into “types” of content, where each installed Django model is a separate content type.\n\nSee the contenttypes documentation.\n\nA framework for managing “flat” HTML content in a database.\n\nSee the flatpages documentation.\n\nRequires the sites contrib package to be installed as well.\n\nA world-class geospatial framework built on top of Django, that enables storage, manipulation and display of spatial data.\n\nSee the GeoDjango documentation for more.\n\nA set of Django template filters useful for adding a “human touch” to data.\n\nSee the humanize documentation.\n\nA framework for storing and retrieving temporary cookie- or session-based messages\n\nSee the messages documentation.\n\nA collection of PostgreSQL specific features.\n\nSee the contrib.postgres documentation.\n\nA framework for managing redirects.\n\nSee the redirects documentation.\n\nA framework for storing data in anonymous sessions.\n\nSee the sessions documentation.\n\nA light framework that lets you operate multiple websites off of the same database and Django installation. It gives you hooks for associating objects to one or more sites.\n\nSee the sites documentation.\n\nA framework for generating Google sitemap XML files.\n\nSee the sitemaps documentation.\n\nA framework for generating syndication feeds, in RSS and Atom, quite easily.\n\nSee the syndication documentation.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "contrib packages¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "admin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "auth¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "contenttypes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "flatpages¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "gis¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "humanize¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "messages¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "redirects¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "sites¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "syndication¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/redirects/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sites/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/syndication/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/clickjacking/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

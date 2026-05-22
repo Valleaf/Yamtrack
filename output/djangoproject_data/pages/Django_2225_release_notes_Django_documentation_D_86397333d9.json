@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.25/",
+  "title": "Django 2.2.25 release notes | Django documentation | Django",
+  "content": "Django 2.2.25 fixes a security issue with severity “low” in 2.2.24.\n\nHTTP requests for URLs with trailing newlines could bypass an upstream access control based on URL paths.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.25 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-44420: Potential bypass of an upstream access control based on URL paths¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.25/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.26/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.24/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

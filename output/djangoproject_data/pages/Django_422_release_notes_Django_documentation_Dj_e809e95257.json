@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.2/",
+  "title": "Django 4.2.2 release notes | Django documentation | Django",
+  "content": "Django 4.2.2 fixes several bugs in 4.2.1.\n\nFixed a regression in Django 4.2 that caused an unnecessary DBMS_LOB.SUBSTR() wrapping in the __isnull and __exact=None lookups for TextField()/BinaryField() on Oracle (#34544).\n\nRestored, following a regression in Django 4.2, get_prep_value() call in JSONField subclasses (#34539).\n\nFixed a regression in Django 4.2 that caused a crash of QuerySet.defer() when passing a ManyToManyField or GenericForeignKey reference. While doing so is a no-op, it was allowed in older version (#34570).\n\nFixed a regression in Django 4.2 that caused a crash of QuerySet.only() when passing a reverse OneToOneField reference (#34612).\n\nFixed a bug in Django 4.2 where makemigrations --update didn’t respect the --name option (#34568).\n\nFixed a performance regression in Django 4.2 when compiling queries without ordering (#34580).\n\nFixed a regression in Django 4.2 where nonexistent stylesheet was linked on a “Congratulations!” page (#34588).\n\nFixed a regression in Django 4.2 that caused a crash of QuerySet.aggregate() with expressions referencing other aggregates (#34551).\n\nFixed a regression in Django 4.2 that caused a crash of QuerySet.aggregate() with aggregates referencing subqueries (#34551).\n\nFixed a regression in Django 4.2 that caused a crash of querysets on SQLite when filtering on DecimalField against values outside of the defined range (#34590).\n\nFixed a regression in Django 4.2 that caused a serialization crash on a ManyToManyField without a natural key when its Manager’s base QuerySet used select_related() (#34620).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.2/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.3/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

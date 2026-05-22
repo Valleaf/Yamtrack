@@ -1,0 +1,68 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/",
+  "title": "Contributing to Django | Django documentation | Django",
+  "content": "Django is a community that lives on its volunteers. As it keeps growing, we always need more people to help others. You can contribute in many ways, either on the framework itself or in the wider ecosystem.\n\nWe’re passionate about helping Django users make the jump to contributing members of the community. Communication is key - working on Django is being part of a conversation. Join it, to become familiar with what we’re doing and how we talk about it. You’ll be able to form relationships with more experienced contributors who are there to help guide you towards success.\n\nThere are several ways you can help the Django community and others to maintain a great ecosystem to work in:\n\nJoin the Django Forum. This forum is a place for discussing the Django framework and applications and projects that use it. This is also a good place to ask and answer any questions related to installing, using, or contributing to Django.\n\nJoin the Django Discord server to discuss and answer questions. By explaining Django to other users, you’re going to learn a lot about the framework yourself.\n\nBlog about Django. We syndicate all the Django blogs we know about on the community page; if you’d like to see your blog on that page you can register it here.\n\nContribute to open-source Django projects, write some documentation, or release your own code as an open-source pluggable application. The ecosystem of pluggable applications is a big strength of Django, help us build it!\n\nDjango encourages and welcomes new contributors, and makes an effort to help them become experienced, confident contributors to Open Source Software (OSS). Our documentation contains guidance for first-time contributors, including:\n\nIf you enjoy working with Django, wait until you start working on it. Really, anyone can do something to improve Django, which will improve the experience of lots of people!\n\nThe work on Django itself falls into three major areas:\n\nFix a bug, or add a new feature. You can make a pull request and see your code in the next version of Django.\n\nDjango’s documentation is one of its key strengths. It’s informative and thorough. You can help to improve the documentation and keep it relevant as the framework evolves.\n\nDjango is translated into over 100 languages - There’s even some translation for Klingon?! The i18n team is always looking for translators to help maintain and increase language reach.\n\nExplore additional avenues of contributing to Django beyond coding. Django’s ticket tracker is the central hub for managing issues, improvements, and contributions to Django. It’s a valuable resource where you can report bugs you encounter or assist in triaging existing tickets to ensure a smooth development workflow.\n\nDjango also has a process for suggesting ideas where you can join the community in discussing ideas for new features. Beyond the Django codebase, there’s a vibrant ecosystem that is maintained by the community that you can contribute to.\n\nExplore the ways you can make a difference below, and join us in making Django better for everyone.\n\nWe’re looking forward to working with you. Welcome aboard!",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Contributing to Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Communication channels¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Join the Django community¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Getting started¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Work on the Django framework¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Contributing code¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Contributing documentation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Localizing Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Other ways of contributing¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/new-contributors/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-documentation/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/localizing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/bugs-and-features/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/triaging-tickets/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

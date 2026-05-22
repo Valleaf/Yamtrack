@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.5/",
+  "title": "Django 5.0.5 release notes | Django documentation | Django",
+  "content": "Django 5.0.5 fixes several bugs in 5.0.4.\n\nFixed a bug in Django 5.0 that caused a crash of Model.save() when creating an instance of a model with a GeneratedField and providing a primary key (#35350).\n\nFixed a compatibility issue encountered in Python 3.11.9+ and 3.12.3+ when validating email max line lengths with content decoded using the surrogateescape error handling scheme (#35361).\n\nFixed a bug in Django 5.0 that caused a crash when applying migrations including alterations to GeneratedField such as setting db_index=True on SQLite (#35373).\n\nAllowed importing aprefetch_related_objects from django.db.models (#35392).\n\nFixed a bug in Django 5.0 that caused a migration crash when a GeneratedField was added before any of the referenced fields from its expression definition (#35359).\n\nFixed a bug in Django 5.0 that caused a migration crash when altering a GeneratedField referencing a renamed field (#35422).\n\nFixed a bug in Django 5.0 where the querysets argument of GenericPrefetch was not required (#35426).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.5/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

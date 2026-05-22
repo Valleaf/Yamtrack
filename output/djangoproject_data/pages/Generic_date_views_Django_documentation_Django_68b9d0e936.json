@@ -1,0 +1,90 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/",
+  "title": "Generic date views | Django documentation | Django",
+  "content": "Date-based generic views, provided in django.views.generic.dates, are views for displaying drilldown pages for date-based data.\n\nSome of the examples on this page assume that an Article model has been defined as follows in myapp/models.py:\n\nA top-level index page showing the “latest” objects, by date. Objects with a date in the future are not included unless you set allow_future to True.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseArchiveIndexView\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nIn addition to the context provided by django.views.generic.list.MultipleObjectMixin (via django.views.generic.dates.BaseDateListView), the template’s context will be:\n\ndate_list: A QuerySet object containing all years that have objects available according to queryset, represented as datetime.datetime objects, in descending order.\n\nUses a default context_object_name of latest.\n\nUses a default template_name_suffix of _archive.\n\nDefaults to providing date_list by year, but this can be altered to month or day using the attribute date_list_period. This also applies to all subclass views.\n\nExample myapp/urls.py:\n\nExample myapp/article_archive.html:\n\nThis will output all articles.\n\nA yearly archive page showing all available months in a given year. Objects with a date in the future are not displayed unless you set allow_future to True.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseYearArchiveView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nA boolean specifying whether to retrieve the full list of objects for this year and pass those to the template. If True, the list of objects will be made available to the context. If False, the None queryset will be used as the object list. By default, this is False.\n\nDetermine if an object list will be returned as part of the context. Returns make_object_list by default.\n\nIn addition to the context provided by django.views.generic.list.MultipleObjectMixin (via django.views.generic.dates.BaseDateListView), the template’s context will be:\n\ndate_list: A QuerySet object containing all months that have objects available according to queryset, represented as datetime.datetime objects, in ascending order.\n\nyear: A date object representing the given year.\n\nnext_year: A date object representing the first day of the next year, according to allow_empty and allow_future.\n\nprevious_year: A date object representing the first day of the previous year, according to allow_empty and allow_future.\n\nUses a default template_name_suffix of _archive_year.\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nExample myapp/article_archive_year.html:\n\nA monthly archive page showing all objects in a given month. Objects with a date in the future are not displayed unless you set allow_future to True.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseMonthArchiveView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.MonthMixin\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nIn addition to the context provided by MultipleObjectMixin (via BaseDateListView), the template’s context will be:\n\ndate_list: A QuerySet object containing all days that have objects available in the given month, according to queryset, represented as datetime.datetime objects, in ascending order.\n\nmonth: A date object representing the given month.\n\nnext_month: A date object representing the first day of the next month, according to allow_empty and allow_future.\n\nprevious_month: A date object representing the first day of the previous month, according to allow_empty and allow_future.\n\nUses a default template_name_suffix of _archive_month.\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nExample myapp/article_archive_month.html:\n\nA weekly archive page showing all objects in a given week. Objects with a date in the future are not displayed unless you set allow_future to True.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseWeekArchiveView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.WeekMixin\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nIn addition to the context provided by MultipleObjectMixin (via BaseDateListView), the template’s context will be:\n\nweek: A date object representing the first day of the given week.\n\nnext_week: A date object representing the first day of the next week, according to allow_empty and allow_future.\n\nprevious_week: A date object representing the first day of the previous week, according to allow_empty and allow_future.\n\nUses a default template_name_suffix of _archive_week.\n\nThe week_format attribute is a strptime() format string used to parse the week number. The following values are supported:\n\n'%U': Based on the United States week system where the week begins on Sunday. This is the default value.\n\n'%W': Similar to '%U', except it assumes that the week begins on Monday. This is not the same as the ISO 8601 week number.\n\n'%V': ISO 8601 week number where the week begins on Monday.\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nExample myapp/article_archive_week.html:\n\nIn this example, you are outputting the week number. Keep in mind that week numbers computed by the date template filter with the 'W' format character are not always the same as those computed by strftime() and strptime() with the '%W' format string. For year 2015, for example, week numbers output by date are higher by one compared to those output by strftime(). There isn’t an equivalent for the '%U' strftime() format string in date. Therefore, you should avoid using date to generate URLs for WeekArchiveView.\n\nA day archive page showing all objects in a given day. Days in the future throw a 404 error, regardless of whether any objects exist for future days, unless you set allow_future to True.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseDayArchiveView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.MonthMixin\n\ndjango.views.generic.dates.DayMixin\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nIn addition to the context provided by MultipleObjectMixin (via BaseDateListView), the template’s context will be:\n\nday: A date object representing the given day.\n\nnext_day: A date object representing the next day, according to allow_empty and allow_future.\n\nprevious_day: A date object representing the previous day, according to allow_empty and allow_future.\n\nnext_month: A date object representing the first day of the next month, according to allow_empty and allow_future.\n\nprevious_month: A date object representing the first day of the previous month, according to allow_empty and allow_future.\n\nUses a default template_name_suffix of _archive_day.\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nExample myapp/article_archive_day.html:\n\nA day archive page showing all objects for today. This is exactly the same as django.views.generic.dates.DayArchiveView, except today’s date is used instead of the year/month/day arguments.\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseTodayArchiveView\n\ndjango.views.generic.dates.BaseDayArchiveView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.MonthMixin\n\ndjango.views.generic.dates.DayMixin\n\ndjango.views.generic.dates.BaseDateListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.base.View\n\nUses a default template_name_suffix of _archive_today.\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nWhere is the example template for TodayArchiveView?\n\nThis view uses by default the same template as the DayArchiveView, which is in the previous example. If you need a different template, set the template_name attribute to be the name of the new template.\n\nA page representing an individual object. If the object has a date value in the future, the view will throw a 404 error by default, unless you set allow_future to True.\n\ndjango.views.generic.detail.SingleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.dates.BaseDateDetailView\n\ndjango.views.generic.dates.YearMixin\n\ndjango.views.generic.dates.MonthMixin\n\ndjango.views.generic.dates.DayMixin\n\ndjango.views.generic.dates.DateMixin\n\ndjango.views.generic.detail.BaseDetailView\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.base.View\n\nIncludes the single object associated with the model specified in the DateDetailView.\n\nUses a default template_name_suffix of _detail.\n\nExample myapp/urls.py:\n\nExample myapp/article_detail.html:\n\nAll of the generic views listed above have matching Base views that only differ in that they do not include the MultipleObjectTemplateResponseMixin (for the archive views) or SingleObjectTemplateResponseMixin (for the DateDetailView):",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Generic date views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ArchiveIndexView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "YearArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "MonthArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "WeekArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DayArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "TodayArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DateDetailView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "from django.urls import path from myapp.views import ArticleMonthArchiveView urlpatterns = [ # Example: /2012/08/ path( \"<int:year>/<int:month>/\", ArticleMonthArchiveView.as_view(month_format=\"%m\"), name=\"archive_month_numeric\", ), # Example: /2012/aug/ path( \"<int:year>/<str:month>/\", ArticleMonthArchiveView.as_view(), name=\"archive_month\", ), ]",
+      "code": "from django.urls import path\n\nfrom myapp.views import ArticleMonthArchiveView\n\nurlpatterns = [\n    # Example: /2012/08/\n    path(\n        \"<int:year>/<int:month>/\",\n        ArticleMonthArchiveView.as_view(month_format=\"%m\"),\n        name=\"archive_month_numeric\",\n    ),\n    # Example: /2012/aug/\n    path(\n        \"<int:year>/<str:month>/\",\n        ArticleMonthArchiveView.as_view(),\n        name=\"archive_month\",\n    ),\n]"
+    },
+    {
+      "description": "from django.urls import path from myapp.views import ArticleMonthArchiveView urlpatterns = [ # Example: /2012/08/ path( \"<int:year>/<int:month>/\", ArticleMonthArchiveView.as_view(month_format=\"%m\"), name=\"archive_month_numeric\", ), # Example: /2012/aug/ path( \"<int:year>/<str:month>/\", ArticleMonthArchiveView.as_view(), name=\"archive_month\", ), ]",
+      "code": "from django.urls import path\n\nfrom myapp.views import ArticleMonthArchiveView\n\nurlpatterns = [\n    # Example: /2012/08/\n    path(\n        \"<int:year>/<int:month>/\",\n        ArticleMonthArchiveView.as_view(month_format=\"%m\"),\n        name=\"archive_month_numeric\",\n    ),\n    # Example: /2012/aug/\n    path(\n        \"<int:year>/<str:month>/\",\n        ArticleMonthArchiveView.as_view(),\n        name=\"archive_month\",\n    ),\n]"
+    },
+    {
+      "description": "from django.urls import path from myapp.views import ArticleWeekArchiveView urlpatterns = [ # Example: /2012/week/23/ path( \"<int:year>/week/<int:week>/\", ArticleWeekArchiveView.as_view(), name=\"archive_week\", ), ]",
+      "code": "from django.urls import path\n\nfrom myapp.views import ArticleWeekArchiveView\n\nurlpatterns = [\n    # Example: /2012/week/23/\n    path(\n        \"<int:year>/week/<int:week>/\",\n        ArticleWeekArchiveView.as_view(),\n        name=\"archive_week\",\n    ),\n]"
+    },
+    {
+      "description": "from django.urls import path from myapp.views import ArticleWeekArchiveView urlpatterns = [ # Example: /2012/week/23/ path( \"<int:year>/week/<int:week>/\", ArticleWeekArchiveView.as_view(), name=\"archive_week\", ), ]",
+      "code": "from django.urls import path\n\nfrom myapp.views import ArticleWeekArchiveView\n\nurlpatterns = [\n    # Example: /2012/week/23/\n    path(\n        \"<int:year>/week/<int:week>/\",\n        ArticleWeekArchiveView.as_view(),\n        name=\"archive_week\",\n    ),\n]"
+    },
+    {
+      "description": "from django.urls import path from myapp.views import ArticleDayArchiveView urlpatterns = [ # Example: /2012/nov/10/ path( \"<int:year>/<str:month>/<int:day>/\", ArticleDayArchiveView.as_view(), name=\"archive_day\", ), ]",
+      "code": "from django.urls import path\n\nfrom myapp.views import ArticleDayArchiveView\n\nurlpatterns = [\n    # Example: /2012/nov/10/\n    path(\n        \"<int:year>/<str:month>/<int:day>/\",\n        ArticleDayArchiveView.as_view(),\n        name=\"archive_day\",\n    ),\n]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

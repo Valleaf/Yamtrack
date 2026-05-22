@@ -1,0 +1,1349 @@
+{
+  "total_files": 190,
+  "categories": {
+    "other": [
+      ".github\\IMPORT_PIPELINE.md",
+      ".github\\IMPORTER_DEVELOPMENT.md",
+      "output\\djangoproject\\SKILL.md",
+      "output\\SKILL.md",
+      "output\\yamtrack-fork\\config_patterns\\config_patterns.md"
+    ],
+    "templates": [
+      ".github\\ISSUE_TEMPLATE\\bug_report.md",
+      ".github\\ISSUE_TEMPLATE\\feature_request.md"
+    ],
+    "api": [
+      "output\\djangoproject\\references\\api.md",
+      "output\\djangoproject\\references\\contrib.md",
+      "output\\djangoproject\\references\\howto.md",
+      "output\\djangoproject\\references\\index.md",
+      "output\\djangoproject\\references\\internals.md",
+      "output\\djangoproject\\references\\models.md",
+      "output\\djangoproject\\references\\other.md",
+      "output\\djangoproject\\references\\ref.md",
+      "output\\djangoproject\\references\\releases.md",
+      "output\\djangoproject\\references\\topics.md",
+      "output\\djangoproject\\references\\tutorials.md"
+    ],
+    "examples": [
+      "output\\yamtrack-fork\\test_examples\\test_examples.md"
+    ],
+    "guides": [
+      "output\\yamtrack-fork\\tutorials\\anilist-date-parser\\anilist-date-parser.md",
+      "output\\yamtrack-fork\\tutorials\\anime-episode-anidb-guid-mark-played\\anime-episode-anidb-guid-mark-played.md",
+      "output\\yamtrack-fork\\tutorials\\anime-episode-mark-played\\anime-episode-mark-played.md",
+      "output\\yamtrack-fork\\tutorials\\anime-movie-mark-played\\anime-movie-mark-played.md",
+      "output\\yamtrack-fork\\tutorials\\anime-unknown\\anime-unknown.md",
+      "output\\yamtrack-fork\\tutorials\\annotate-next-event\\annotate-next-event.md",
+      "output\\yamtrack-fork\\tutorials\\apply-prefetch-related\\apply-prefetch-related.md",
+      "output\\yamtrack-fork\\tutorials\\both-dates-filtering\\both-dates-filtering.md",
+      "output\\yamtrack-fork\\tutorials\\calculate-day-of-week-stats\\calculate-day-of-week-stats.md",
+      "output\\yamtrack-fork\\tutorials\\calendar-default-view\\calendar-default-view.md",
+      "output\\yamtrack-fork\\tutorials\\calendar-with-events\\calendar-with-events.md",
+      "output\\yamtrack-fork\\tutorials\\calendar-with-invalid-month-year\\calendar-with-invalid-month-year.md",
+      "output\\yamtrack-fork\\tutorials\\calendar-with-month-year-params\\calendar-with-month-year-params.md",
+      "output\\yamtrack-fork\\tutorials\\cleanup-user-messages-deletes-only-old-shown-messages\\cleanup-user-messages-deletes-only-old-shown-messages.md",
+      "output\\yamtrack-fork\\tutorials\\completed-last-season-completes-tv-show\\completed-last-season-completes-tv-show.md",
+      "output\\yamtrack-fork\\tutorials\\completed-progress\\completed-progress.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-creates-all-seasons\\completed-status-creates-all-seasons.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-creates-remaining-episodes\\completed-status-creates-remaining-episodes.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-noop-if-no-remaining-episodes\\completed-status-noop-if-no-remaining-episodes.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-skips-unaired-episodes-and-future-seasons\\completed-status-skips-unaired-episodes-and-future-seasons.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-starts-next-season\\completed-status-starts-next-season.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-with-future-next-season-keeps-tv-in-progress\\completed-status-with-future-next-season-keeps-tv-in-progress.md",
+      "output\\yamtrack-fork\\tutorials\\completed-status-with-unaired-episodes-leaves-season-in-progress\\completed-status-with-unaired-episodes-leaves-season-in-progress.md",
+      "output\\yamtrack-fork\\tutorials\\component-id\\component-id.md",
+      "output\\yamtrack-fork\\tutorials\\create-entry-post-duplicate-item\\create-entry-post-duplicate-item.md",
+      "output\\yamtrack-fork\\tutorials\\create-entry-post-episode\\create-entry-post-episode.md",
+      "output\\yamtrack-fork\\tutorials\\create-entry-post-season\\create-entry-post-season.md",
+      "output\\yamtrack-fork\\tutorials\\date-range-filtering\\date-range-filtering.md",
+      "output\\yamtrack-fork\\tutorials\\day-of-week-tag-edge-cases\\day-of-week-tag-edge-cases.md",
+      "output\\yamtrack-fork\\tutorials\\day-of-week-tag-invalid-input\\day-of-week-tag-invalid-input.md",
+      "output\\yamtrack-fork\\tutorials\\day-of-week-tag-with-variables\\day-of-week-tag-with-variables.md",
+      "output\\yamtrack-fork\\tutorials\\deduplication-skips-existing\\deduplication-skips-existing.md",
+      "output\\yamtrack-fork\\tutorials\\determine-game-status-logic\\determine-game-status-logic.md",
+      "output\\yamtrack-fork\\tutorials\\download-calendar-with-events\\download-calendar-with-events.md",
+      "output\\yamtrack-fork\\tutorials\\end-date-only-filtering\\end-date-only-filtering.md",
+      "output\\yamtrack-fork\\tutorials\\end-to-end-notification\\end-to-end-notification.md",
+      "output\\yamtrack-fork\\tutorials\\enrich-items-with-user-data\\enrich-items-with-user-data.md",
+      "output\\yamtrack-fork\\tutorials\\episode-queries-episode-endpoint\\episode-queries-episode-endpoint.md",
+      "output\\yamtrack-fork\\tutorials\\exclude-then-notify\\exclude-then-notify.md",
+      "output\\yamtrack-fork\\tutorials\\export-csv\\export-csv.md",
+      "output\\yamtrack-fork\\tutorials\\extract-external-ids\\extract-external-ids.md",
+      "output\\yamtrack-fork\\tutorials\\extract-external-ids-empty\\extract-external-ids-empty.md",
+      "output\\yamtrack-fork\\tutorials\\extract-external-ids-missing\\extract-external-ids-missing.md",
+      "output\\yamtrack-fork\\tutorials\\fallback-to-manual-when-no-results\\fallback-to-manual-when-no-results.md",
+      "output\\yamtrack-fork\\tutorials\\fetch-releases-all-types\\fetch-releases-all-types.md",
+      "output\\yamtrack-fork\\tutorials\\fetch-releases-returns-when-no-items-to-process\\fetch-releases-returns-when-no-items-to-process.md",
+      "output\\yamtrack-fork\\tutorials\\format-notification\\format-notification.md",
+      "output\\yamtrack-fork\\tutorials\\genres-fallback-to-tags\\genres-fallback-to-tags.md",
+      "output\\yamtrack-fork\\tutorials\\genres-from-genres-field\\genres-from-genres-field.md",
+      "output\\yamtrack-fork\\tutorials\\get-access-token-uses-redirect-uri\\get-access-token-uses-redirect-uri.md",
+      "output\\yamtrack-fork\\tutorials\\get-activity-data\\get-activity-data.md",
+      "output\\yamtrack-fork\\tutorials\\get-all-user-tracking-data\\get-all-user-tracking-data.md",
+      "output\\yamtrack-fork\\tutorials\\get-anime-schedule-bulk-no-airing-schedule\\get-anime-schedule-bulk-no-airing-schedule.md",
+      "output\\yamtrack-fork\\tutorials\\get-existing-media-multiple-types\\get-existing-media-multiple-types.md",
+      "output\\yamtrack-fork\\tutorials\\get-extended-statistics\\get-extended-statistics.md",
+      "output\\yamtrack-fork\\tutorials\\get-home-status-groups-media-and-annotates-home-fields\\get-home-status-groups-media-and-annotates-home-fields.md",
+      "output\\yamtrack-fork\\tutorials\\get-home-status-includes-tv-with-planning-season\\get-home-status-includes-tv-with-planning-season.md",
+      "output\\yamtrack-fork\\tutorials\\get-home-status-specific-media-type-returns-remaining-items\\get-home-status-specific-media-type-returns-remaining-items.md",
+      "output\\yamtrack-fork\\tutorials\\get-import-tasks-schedules\\get-import-tasks-schedules.md",
+      "output\\yamtrack-fork\\tutorials\\get-item-filter\\get-item-filter.md",
+      "output\\yamtrack-fork\\tutorials\\get-item-filter-with-empty-dict\\get-item-filter-with-empty-dict.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-excludes-unchanged-movie-with-events\\get-items-to-process-excludes-unchanged-movie-with-events.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-excludes-unchanged-tv-with-events\\get-items-to-process-excludes-unchanged-tv-with-events.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-changed-movie-with-existing-event\\get-items-to-process-includes-changed-movie-with-existing-event.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-completed-changed-tv\\get-items-to-process-includes-completed-changed-tv.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-movie-without-events\\get-items-to-process-includes-movie-without-events.md",
+      "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-tv-without-season-events\\get-items-to-process-includes-tv-without-season-events.md",
+      "output\\yamtrack-fork\\tutorials\\get-media-list-sort-by-regular-field\\get-media-list-sort-by-regular-field.md",
+      "output\\yamtrack-fork\\tutorials\\get-media-list-with-prefetch-related\\get-media-list-with-prefetch-related.md",
+      "output\\yamtrack-fork\\tutorials\\get-media-types-to-process\\get-media-types-to-process.md",
+      "output\\yamtrack-fork\\tutorials\\get-media-types-to-process-includes-tv-for-in-progress\\get-media-types-to-process-includes-tv-for-in-progress.md",
+      "output\\yamtrack-fork\\tutorials\\get-next-run-info-daily\\get-next-run-info-daily.md",
+      "output\\yamtrack-fork\\tutorials\\get-next-run-info-every-2-days\\get-next-run-info-every-2-days.md",
+      "output\\yamtrack-fork\\tutorials\\get-next-run-info-every-2-days-after-todays-run\\get-next-run-info-every-2-days-after-todays-run.md",
+      "output\\yamtrack-fork\\tutorials\\get-remaining-eps-release-date\\get-remaining-eps-release-date.md",
+      "output\\yamtrack-fork\\tutorials\\get-seasons-to-process-returns-empty-when-no-seasons\\get-seasons-to-process-returns-empty-when-no-seasons.md",
+      "output\\yamtrack-fork\\tutorials\\get-status-distribution\\get-status-distribution.md",
+      "output\\yamtrack-fork\\tutorials\\get-tv-tracking-data\\get-tv-tracking-data.md",
+      "output\\yamtrack-fork\\tutorials\\get-tv-tracking-data-empty-season-items\\get-tv-tracking-data-empty-season-items.md",
+      "output\\yamtrack-fork\\tutorials\\get-user-events\\get-user-events.md",
+      "output\\yamtrack-fork\\tutorials\\get-user-releases\\get-user-releases.md",
+      "output\\yamtrack-fork\\tutorials\\hardcover-get-edition-details\\hardcover-get-edition-details.md",
+      "output\\yamtrack-fork\\tutorials\\hide-completed-recommendations-disabled\\hide-completed-recommendations-disabled.md",
+      "output\\yamtrack-fork\\tutorials\\hide-completed-recommendations-enabled\\hide-completed-recommendations-enabled.md",
+      "output\\yamtrack-fork\\tutorials\\home-view\\home-view.md",
+      "output\\yamtrack-fork\\tutorials\\home-view-htmx-load-more\\home-view-htmx-load-more.md",
+      "output\\yamtrack-fork\\tutorials\\home-view-includes-in-progress-tv-with-unwatched-seasons\\home-view-includes-in-progress-tv-with-unwatched-seasons.md",
+      "output\\yamtrack-fork\\tutorials\\import-movie\\import-movie.md",
+      "output\\yamtrack-fork\\tutorials\\import-steam-games\\import-steam-games.md",
+      "output\\yamtrack-fork\\tutorials\\importer\\importer.md",
+      "output\\yamtrack-fork\\tutorials\\in-progress-status-activates-next-season\\in-progress-status-activates-next-season.md",
+      "output\\yamtrack-fork\\tutorials\\in-progress-status-creates-new-season-if-needed\\in-progress-status-creates-new-season-if-needed.md",
+      "output\\yamtrack-fork\\tutorials\\index.md",
+      "output\\yamtrack-fork\\tutorials\\integrations-uses-configured-webhook-urls\\integrations-uses-configured-webhook-urls.md",
+      "output\\yamtrack-fork\\tutorials\\is-released-date-with-custom-current-date\\is-released-date-with-custom-current-date.md",
+      "output\\yamtrack-fork\\tutorials\\is-released-date-with-full-date\\is-released-date-with-full-date.md",
+      "output\\yamtrack-fork\\tutorials\\is-user-tracking-item\\is-user-tracking-item.md",
+      "output\\yamtrack-fork\\tutorials\\last-episode-sets-season-completed\\last-episode-sets-season-completed.md",
+      "output\\yamtrack-fork\\tutorials\\last-season-completes-tv-show\\last-season-completes-tv-show.md",
+      "output\\yamtrack-fork\\tutorials\\list-detail-view-sorting\\list-detail-view-sorting.md",
+      "output\\yamtrack-fork\\tutorials\\lists-modal-view-with-new-item\\lists-modal-view-with-new-item.md",
+      "output\\yamtrack-fork\\tutorials\\lists-view-sorting\\lists-view-sorting.md",
+      "output\\yamtrack-fork\\tutorials\\manual-id-generation\\manual-id-generation.md",
+      "output\\yamtrack-fork\\tutorials\\manual-process-episodes\\manual-process-episodes.md",
+      "output\\yamtrack-fork\\tutorials\\mark-user-messages-shown\\mark-user-messages-shown.md",
+      "output\\yamtrack-fork\\tutorials\\media-url\\media-url.md",
+      "output\\yamtrack-fork\\tutorials\\media-view-url\\media-view-url.md",
+      "output\\yamtrack-fork\\tutorials\\movie-changes\\movie-changes.md",
+      "output\\yamtrack-fork\\tutorials\\movie-mark-played\\movie-mark-played.md",
+      "output\\yamtrack-fork\\tutorials\\movie-unknown\\movie-unknown.md",
+      "output\\yamtrack-fork\\tutorials\\multiple-types-in-one-csv\\multiple-types-in-one-csv.md",
+      "output\\yamtrack-fork\\tutorials\\no-dates-filtering\\no-dates-filtering.md",
+      "output\\yamtrack-fork\\tutorials\\non-last-season-starts-next-season\\non-last-season-starts-next-season.md",
+      "output\\yamtrack-fork\\tutorials\\oauth-import-full-flow\\oauth-import-full-flow.md",
+      "output\\yamtrack-fork\\tutorials\\obfuscate-unseen-episodes-post-demo-user\\obfuscate-unseen-episodes-post-demo-user.md",
+      "output\\yamtrack-fork\\tutorials\\overlapping-ranges\\overlapping-ranges.md",
+      "output\\yamtrack-fork\\tutorials\\overwrite-reimports-existing\\overwrite-reimports-existing.md",
+      "output\\yamtrack-fork\\tutorials\\overwrite-steam-game-completed-status\\overwrite-steam-game-completed-status.md",
+      "output\\yamtrack-fork\\tutorials\\process-anime-bulk\\process-anime-bulk.md",
+      "output\\yamtrack-fork\\tutorials\\process-anime-bulk-no-matching-anime-anilist\\process-anime-bulk-no-matching-anime-anilist.md",
+      "output\\yamtrack-fork\\tutorials\\process-comic-handles-issue-provider-error\\process-comic-handles-issue-provider-error.md",
+      "output\\yamtrack-fork\\tutorials\\process-comic-no-dates\\process-comic-no-dates.md",
+      "output\\yamtrack-fork\\tutorials\\process-comic-returns-when-issue-is-already-saved\\process-comic-returns-when-issue-is-already-saved.md",
+      "output\\yamtrack-fork\\tutorials\\process-comic-with-cover-date-only\\process-comic-with-cover-date-only.md",
+      "output\\yamtrack-fork\\tutorials\\process-comic-with-store-date\\process-comic-with-store-date.md",
+      "output\\yamtrack-fork\\tutorials\\process-comments\\process-comments.md",
+      "output\\yamtrack-fork\\tutorials\\process-entry\\process-entry.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-book\\process-other-book.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-game\\process-other-game.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-invalid-date\\process-other-invalid-date.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-manga\\process-other-manga.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-mangaupdates\\process-other-mangaupdates.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-movie\\process-other-movie.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-no-date\\process-other-no-date.md",
+      "output\\yamtrack-fork\\tutorials\\process-other-uses-placeholder-when-date-is-unknown\\process-other-uses-placeholder-when-date-is-unknown.md",
+      "output\\yamtrack-fork\\tutorials\\process-ratings\\process-ratings.md",
+      "output\\yamtrack-fork\\tutorials\\process-season-episodes-handles-missing-tvdb-and-episodes\\process-season-episodes-handles-missing-tvdb-and-episodes.md",
+      "output\\yamtrack-fork\\tutorials\\process-tv-does-not-reopen-completed-show-for-past-only-season\\process-tv-does-not-reopen-completed-show-for-past-only-season.md",
+      "output\\yamtrack-fork\\tutorials\\process-tv-reopens-completed-show-with-new-season-as-planning\\process-tv-reopens-completed-show-with-new-season-as-planning.md",
+      "output\\yamtrack-fork\\tutorials\\process-tv-returns-when-no-seasons-need-processing\\process-tv-returns-when-no-seasons-need-processing.md",
+      "output\\yamtrack-fork\\tutorials\\process-tv-season\\process-tv-season.md",
+      "output\\yamtrack-fork\\tutorials\\process-tv-uses-tvdb-absolute-order-for-cross-season-match\\process-tv-uses-tvdb-absolute-order-for-cross-season-match.md",
+      "output\\yamtrack-fork\\tutorials\\process-watched-episode\\process-watched-episode.md",
+      "output\\yamtrack-fork\\tutorials\\process-watched-movie\\process-watched-movie.md",
+      "output\\yamtrack-fork\\tutorials\\process-watchlist\\process-watchlist.md",
+      "output\\yamtrack-fork\\tutorials\\public-import-full-flow\\public-import-full-flow.md",
+      "output\\yamtrack-fork\\tutorials\\recommendations-from-artist-albums\\recommendations-from-artist-albums.md",
+      "output\\yamtrack-fork\\tutorials\\release-notifications-disabled\\release-notifications-disabled.md",
+      "output\\yamtrack-fork\\tutorials\\repeated-watch\\repeated-watch.md",
+      "output\\yamtrack-fork\\tutorials\\returns-required-fields\\returns-required-fields.md",
+      "output\\yamtrack-fork\\tutorials\\season-completion-with-no-date\\season-completion-with-no-date.md",
+      "output\\yamtrack-fork\\tutorials\\season-completion-with-release-date\\season-completion-with-release-date.md",
+      "output\\yamtrack-fork\\tutorials\\season-status-logic-with-completed-seasons\\season-status-logic-with-completed-seasons.md",
+      "output\\yamtrack-fork\\tutorials\\should-process-media-new-mode-not-exists\\should-process-media-new-mode-not-exists.md",
+      "output\\yamtrack-fork\\tutorials\\sidebar-post-demo-user\\sidebar-post-demo-user.md",
+      "output\\yamtrack-fork\\tutorials\\sidebar-post-update-preferences\\sidebar-post-update-preferences.md",
+      "output\\yamtrack-fork\\tutorials\\sort-home-media\\sort-home-media.md",
+      "output\\yamtrack-fork\\tutorials\\start-date-only-filtering\\start-date-only-filtering.md",
+      "output\\yamtrack-fork\\tutorials\\statistics-view-invalid-date-format\\statistics-view-invalid-date-format.md",
+      "output\\yamtrack-fork\\tutorials\\status-is-completed\\status-is-completed.md",
+      "output\\yamtrack-fork\\tutorials\\tmdb-find-next-episode\\tmdb-find-next-episode.md",
+      "output\\yamtrack-fork\\tutorials\\trakt-callback-reuses-stored-redirect-uri\\trakt-callback-reuses-stored-redirect-uri.md",
+      "output\\yamtrack-fork\\tutorials\\trakt-oauth-uses-configured-public-url\\trakt-oauth-uses-configured-public-url.md",
+      "output\\yamtrack-fork\\tutorials\\tv-changes\\tv-changes.md",
+      "output\\yamtrack-fork\\tutorials\\tv-episode-mark-played\\tv-episode-mark-played.md",
+      "output\\yamtrack-fork\\tutorials\\type-label-with-secondary-types\\type-label-with-secondary-types.md",
+      "output\\yamtrack-fork\\tutorials\\update-episode-references\\update-episode-references.md",
+      "output\\yamtrack-fork\\tutorials\\user-exclusion\\user-exclusion.md",
+      "output\\yamtrack-fork\\tutorials\\username-matching\\username-matching.md",
+      "output\\yamtrack-fork\\tutorials\\watch-method\\watch-method.md"
+    ],
+    "overview": [
+      "README.md"
+    ]
+  },
+  "files": [
+    {
+      "path": ".github\\IMPORT_PIPELINE.md",
+      "filename": "IMPORT_PIPELINE.md",
+      "category": "other",
+      "size_bytes": 13185
+    },
+    {
+      "path": ".github\\IMPORTER_DEVELOPMENT.md",
+      "filename": "IMPORTER_DEVELOPMENT.md",
+      "category": "other",
+      "size_bytes": 10477
+    },
+    {
+      "path": ".github\\ISSUE_TEMPLATE\\bug_report.md",
+      "filename": "bug_report.md",
+      "category": "templates",
+      "size_bytes": 509
+    },
+    {
+      "path": ".github\\ISSUE_TEMPLATE\\feature_request.md",
+      "filename": "feature_request.md",
+      "category": "templates",
+      "size_bytes": 529
+    },
+    {
+      "path": "output\\djangoproject\\references\\api.md",
+      "filename": "api.md",
+      "category": "api",
+      "size_bytes": 3056
+    },
+    {
+      "path": "output\\djangoproject\\references\\contrib.md",
+      "filename": "contrib.md",
+      "category": "api",
+      "size_bytes": 145758
+    },
+    {
+      "path": "output\\djangoproject\\references\\howto.md",
+      "filename": "howto.md",
+      "category": "api",
+      "size_bytes": 223286
+    },
+    {
+      "path": "output\\djangoproject\\references\\index.md",
+      "filename": "index.md",
+      "category": "api",
+      "size_bytes": 532
+    },
+    {
+      "path": "output\\djangoproject\\references\\internals.md",
+      "filename": "internals.md",
+      "category": "api",
+      "size_bytes": 98230
+    },
+    {
+      "path": "output\\djangoproject\\references\\models.md",
+      "filename": "models.md",
+      "category": "api",
+      "size_bytes": 2655
+    },
+    {
+      "path": "output\\djangoproject\\references\\other.md",
+      "filename": "other.md",
+      "category": "api",
+      "size_bytes": 54214
+    },
+    {
+      "path": "output\\djangoproject\\references\\ref.md",
+      "filename": "ref.md",
+      "category": "api",
+      "size_bytes": 1815389
+    },
+    {
+      "path": "output\\djangoproject\\references\\releases.md",
+      "filename": "releases.md",
+      "category": "api",
+      "size_bytes": 1160354
+    },
+    {
+      "path": "output\\djangoproject\\references\\topics.md",
+      "filename": "topics.md",
+      "category": "api",
+      "size_bytes": 1051520
+    },
+    {
+      "path": "output\\djangoproject\\references\\tutorials.md",
+      "filename": "tutorials.md",
+      "category": "api",
+      "size_bytes": 95847
+    },
+    {
+      "path": "output\\djangoproject\\SKILL.md",
+      "filename": "SKILL.md",
+      "category": "other",
+      "size_bytes": 3735
+    },
+    {
+      "path": "output\\SKILL.md",
+      "filename": "SKILL.md",
+      "category": "other",
+      "size_bytes": 10
+    },
+    {
+      "path": "output\\yamtrack-fork\\config_patterns\\config_patterns.md",
+      "filename": "config_patterns.md",
+      "category": "other",
+      "size_bytes": 122669
+    },
+    {
+      "path": "output\\yamtrack-fork\\test_examples\\test_examples.md",
+      "filename": "test_examples.md",
+      "category": "examples",
+      "size_bytes": 851739
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\anilist-date-parser\\anilist-date-parser.md",
+      "filename": "anilist-date-parser.md",
+      "category": "guides",
+      "size_bytes": 3693
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\anime-episode-anidb-guid-mark-played\\anime-episode-anidb-guid-mark-played.md",
+      "filename": "anime-episode-anidb-guid-mark-played.md",
+      "category": "guides",
+      "size_bytes": 2753
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\anime-episode-mark-played\\anime-episode-mark-played.md",
+      "filename": "anime-episode-mark-played.md",
+      "category": "guides",
+      "size_bytes": 2965
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\anime-movie-mark-played\\anime-movie-mark-played.md",
+      "filename": "anime-movie-mark-played.md",
+      "category": "guides",
+      "size_bytes": 2145
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\anime-unknown\\anime-unknown.md",
+      "filename": "anime-unknown.md",
+      "category": "guides",
+      "size_bytes": 2412
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\annotate-next-event\\annotate-next-event.md",
+      "filename": "annotate-next-event.md",
+      "category": "guides",
+      "size_bytes": 12279
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\apply-prefetch-related\\apply-prefetch-related.md",
+      "filename": "apply-prefetch-related.md",
+      "category": "guides",
+      "size_bytes": 12235
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\both-dates-filtering\\both-dates-filtering.md",
+      "filename": "both-dates-filtering.md",
+      "category": "guides",
+      "size_bytes": 10660
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\calculate-day-of-week-stats\\calculate-day-of-week-stats.md",
+      "filename": "calculate-day-of-week-stats.md",
+      "category": "guides",
+      "size_bytes": 6644
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\calendar-default-view\\calendar-default-view.md",
+      "filename": "calendar-default-view.md",
+      "category": "guides",
+      "size_bytes": 3852
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\calendar-with-events\\calendar-with-events.md",
+      "filename": "calendar-with-events.md",
+      "category": "guides",
+      "size_bytes": 3875
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\calendar-with-invalid-month-year\\calendar-with-invalid-month-year.md",
+      "filename": "calendar-with-invalid-month-year.md",
+      "category": "guides",
+      "size_bytes": 2359
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\calendar-with-month-year-params\\calendar-with-month-year-params.md",
+      "filename": "calendar-with-month-year-params.md",
+      "category": "guides",
+      "size_bytes": 3679
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\cleanup-user-messages-deletes-only-old-shown-messages\\cleanup-user-messages-deletes-only-old-shown-messages.md",
+      "filename": "cleanup-user-messages-deletes-only-old-shown-messages.md",
+      "category": "guides",
+      "size_bytes": 2724
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-last-season-completes-tv-show\\completed-last-season-completes-tv-show.md",
+      "filename": "completed-last-season-completes-tv-show.md",
+      "category": "guides",
+      "size_bytes": 3494
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-progress\\completed-progress.md",
+      "filename": "completed-progress.md",
+      "category": "guides",
+      "size_bytes": 1194
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-creates-all-seasons\\completed-status-creates-all-seasons.md",
+      "filename": "completed-status-creates-all-seasons.md",
+      "category": "guides",
+      "size_bytes": 3209
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-creates-remaining-episodes\\completed-status-creates-remaining-episodes.md",
+      "filename": "completed-status-creates-remaining-episodes.md",
+      "category": "guides",
+      "size_bytes": 4001
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-noop-if-no-remaining-episodes\\completed-status-noop-if-no-remaining-episodes.md",
+      "filename": "completed-status-noop-if-no-remaining-episodes.md",
+      "category": "guides",
+      "size_bytes": 3996
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-skips-unaired-episodes-and-future-seasons\\completed-status-skips-unaired-episodes-and-future-seasons.md",
+      "filename": "completed-status-skips-unaired-episodes-and-future-seasons.md",
+      "category": "guides",
+      "size_bytes": 5568
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-starts-next-season\\completed-status-starts-next-season.md",
+      "filename": "completed-status-starts-next-season.md",
+      "category": "guides",
+      "size_bytes": 4815
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-with-future-next-season-keeps-tv-in-progress\\completed-status-with-future-next-season-keeps-tv-in-progress.md",
+      "filename": "completed-status-with-future-next-season-keeps-tv-in-progress.md",
+      "category": "guides",
+      "size_bytes": 5275
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\completed-status-with-unaired-episodes-leaves-season-in-progress\\completed-status-with-unaired-episodes-leaves-season-in-progress.md",
+      "filename": "completed-status-with-unaired-episodes-leaves-season-in-progress.md",
+      "category": "guides",
+      "size_bytes": 5018
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\component-id\\component-id.md",
+      "filename": "component-id.md",
+      "category": "guides",
+      "size_bytes": 2701
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\create-entry-post-duplicate-item\\create-entry-post-duplicate-item.md",
+      "filename": "create-entry-post-duplicate-item.md",
+      "category": "guides",
+      "size_bytes": 2762
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\create-entry-post-episode\\create-entry-post-episode.md",
+      "filename": "create-entry-post-episode.md",
+      "category": "guides",
+      "size_bytes": 3837
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\create-entry-post-season\\create-entry-post-season.md",
+      "filename": "create-entry-post-season.md",
+      "category": "guides",
+      "size_bytes": 3046
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\date-range-filtering\\date-range-filtering.md",
+      "filename": "date-range-filtering.md",
+      "category": "guides",
+      "size_bytes": 11839
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\day-of-week-tag-edge-cases\\day-of-week-tag-edge-cases.md",
+      "filename": "day-of-week-tag-edge-cases.md",
+      "category": "guides",
+      "size_bytes": 2094
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\day-of-week-tag-invalid-input\\day-of-week-tag-invalid-input.md",
+      "filename": "day-of-week-tag-invalid-input.md",
+      "category": "guides",
+      "size_bytes": 2009
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\day-of-week-tag-with-variables\\day-of-week-tag-with-variables.md",
+      "filename": "day-of-week-tag-with-variables.md",
+      "category": "guides",
+      "size_bytes": 2276
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\deduplication-skips-existing\\deduplication-skips-existing.md",
+      "filename": "deduplication-skips-existing.md",
+      "category": "guides",
+      "size_bytes": 2188
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\determine-game-status-logic\\determine-game-status-logic.md",
+      "filename": "determine-game-status-logic.md",
+      "category": "guides",
+      "size_bytes": 2359
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\download-calendar-with-events\\download-calendar-with-events.md",
+      "filename": "download-calendar-with-events.md",
+      "category": "guides",
+      "size_bytes": 4935
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\end-date-only-filtering\\end-date-only-filtering.md",
+      "filename": "end-date-only-filtering.md",
+      "category": "guides",
+      "size_bytes": 11524
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\end-to-end-notification\\end-to-end-notification.md",
+      "filename": "end-to-end-notification.md",
+      "category": "guides",
+      "size_bytes": 9407
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\enrich-items-with-user-data\\enrich-items-with-user-data.md",
+      "filename": "enrich-items-with-user-data.md",
+      "category": "guides",
+      "size_bytes": 5501
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\episode-queries-episode-endpoint\\episode-queries-episode-endpoint.md",
+      "filename": "episode-queries-episode-endpoint.md",
+      "category": "guides",
+      "size_bytes": 2835
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\exclude-then-notify\\exclude-then-notify.md",
+      "filename": "exclude-then-notify.md",
+      "category": "guides",
+      "size_bytes": 10063
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\export-csv\\export-csv.md",
+      "filename": "export-csv.md",
+      "category": "guides",
+      "size_bytes": 2382
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\extract-external-ids\\extract-external-ids.md",
+      "filename": "extract-external-ids.md",
+      "category": "guides",
+      "size_bytes": 1700
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\extract-external-ids-empty\\extract-external-ids-empty.md",
+      "filename": "extract-external-ids-empty.md",
+      "category": "guides",
+      "size_bytes": 1590
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\extract-external-ids-missing\\extract-external-ids-missing.md",
+      "filename": "extract-external-ids-missing.md",
+      "category": "guides",
+      "size_bytes": 1542
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\fallback-to-manual-when-no-results\\fallback-to-manual-when-no-results.md",
+      "filename": "fallback-to-manual-when-no-results.md",
+      "category": "guides",
+      "size_bytes": 1729
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\fetch-releases-all-types\\fetch-releases-all-types.md",
+      "filename": "fetch-releases-all-types.md",
+      "category": "guides",
+      "size_bytes": 5499
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\fetch-releases-returns-when-no-items-to-process\\fetch-releases-returns-when-no-items-to-process.md",
+      "filename": "fetch-releases-returns-when-no-items-to-process.md",
+      "category": "guides",
+      "size_bytes": 1409
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\format-notification\\format-notification.md",
+      "filename": "format-notification.md",
+      "category": "guides",
+      "size_bytes": 9676
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\genres-fallback-to-tags\\genres-fallback-to-tags.md",
+      "filename": "genres-fallback-to-tags.md",
+      "category": "guides",
+      "size_bytes": 1627
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\genres-from-genres-field\\genres-from-genres-field.md",
+      "filename": "genres-from-genres-field.md",
+      "category": "guides",
+      "size_bytes": 1450
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-access-token-uses-redirect-uri\\get-access-token-uses-redirect-uri.md",
+      "filename": "get-access-token-uses-redirect-uri.md",
+      "category": "guides",
+      "size_bytes": 2496
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-activity-data\\get-activity-data.md",
+      "filename": "get-activity-data.md",
+      "category": "guides",
+      "size_bytes": 8129
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-all-user-tracking-data\\get-all-user-tracking-data.md",
+      "filename": "get-all-user-tracking-data.md",
+      "category": "guides",
+      "size_bytes": 10057
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-anime-schedule-bulk-no-airing-schedule\\get-anime-schedule-bulk-no-airing-schedule.md",
+      "filename": "get-anime-schedule-bulk-no-airing-schedule.md",
+      "category": "guides",
+      "size_bytes": 2976
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-existing-media-multiple-types\\get-existing-media-multiple-types.md",
+      "filename": "get-existing-media-multiple-types.md",
+      "category": "guides",
+      "size_bytes": 2595
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-extended-statistics\\get-extended-statistics.md",
+      "filename": "get-extended-statistics.md",
+      "category": "guides",
+      "size_bytes": 9701
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-home-status-groups-media-and-annotates-home-fields\\get-home-status-groups-media-and-annotates-home-fields.md",
+      "filename": "get-home-status-groups-media-and-annotates-home-fields.md",
+      "category": "guides",
+      "size_bytes": 12536
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-home-status-includes-tv-with-planning-season\\get-home-status-includes-tv-with-planning-season.md",
+      "filename": "get-home-status-includes-tv-with-planning-season.md",
+      "category": "guides",
+      "size_bytes": 11392
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-home-status-specific-media-type-returns-remaining-items\\get-home-status-specific-media-type-returns-remaining-items.md",
+      "filename": "get-home-status-specific-media-type-returns-remaining-items.md",
+      "category": "guides",
+      "size_bytes": 12056
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-import-tasks-schedules\\get-import-tasks-schedules.md",
+      "filename": "get-import-tasks-schedules.md",
+      "category": "guides",
+      "size_bytes": 5014
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-item-filter\\get-item-filter.md",
+      "filename": "get-item-filter.md",
+      "category": "guides",
+      "size_bytes": 2116
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-item-filter-with-empty-dict\\get-item-filter-with-empty-dict.md",
+      "filename": "get-item-filter-with-empty-dict.md",
+      "category": "guides",
+      "size_bytes": 1539
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-excludes-unchanged-movie-with-events\\get-items-to-process-excludes-unchanged-movie-with-events.md",
+      "filename": "get-items-to-process-excludes-unchanged-movie-with-events.md",
+      "category": "guides",
+      "size_bytes": 1961
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-excludes-unchanged-tv-with-events\\get-items-to-process-excludes-unchanged-tv-with-events.md",
+      "filename": "get-items-to-process-excludes-unchanged-tv-with-events.md",
+      "category": "guides",
+      "size_bytes": 1976
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-changed-movie-with-existing-event\\get-items-to-process-includes-changed-movie-with-existing-event.md",
+      "filename": "get-items-to-process-includes-changed-movie-with-existing-event.md",
+      "category": "guides",
+      "size_bytes": 1801
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-completed-changed-tv\\get-items-to-process-includes-completed-changed-tv.md",
+      "filename": "get-items-to-process-includes-completed-changed-tv.md",
+      "category": "guides",
+      "size_bytes": 2157
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-movie-without-events\\get-items-to-process-includes-movie-without-events.md",
+      "filename": "get-items-to-process-includes-movie-without-events.md",
+      "category": "guides",
+      "size_bytes": 1491
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-items-to-process-includes-tv-without-season-events\\get-items-to-process-includes-tv-without-season-events.md",
+      "filename": "get-items-to-process-includes-tv-without-season-events.md",
+      "category": "guides",
+      "size_bytes": 1669
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-media-list-sort-by-regular-field\\get-media-list-sort-by-regular-field.md",
+      "filename": "get-media-list-sort-by-regular-field.md",
+      "category": "guides",
+      "size_bytes": 10766
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-media-list-with-prefetch-related\\get-media-list-with-prefetch-related.md",
+      "filename": "get-media-list-with-prefetch-related.md",
+      "category": "guides",
+      "size_bytes": 11301
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-media-types-to-process\\get-media-types-to-process.md",
+      "filename": "get-media-types-to-process.md",
+      "category": "guides",
+      "size_bytes": 11941
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-media-types-to-process-includes-tv-for-in-progress\\get-media-types-to-process-includes-tv-for-in-progress.md",
+      "filename": "get-media-types-to-process-includes-tv-for-in-progress.md",
+      "category": "guides",
+      "size_bytes": 9823
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-next-run-info-daily\\get-next-run-info-daily.md",
+      "filename": "get-next-run-info-daily.md",
+      "category": "guides",
+      "size_bytes": 2580
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-next-run-info-every-2-days\\get-next-run-info-every-2-days.md",
+      "filename": "get-next-run-info-every-2-days.md",
+      "category": "guides",
+      "size_bytes": 2639
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-next-run-info-every-2-days-after-todays-run\\get-next-run-info-every-2-days-after-todays-run.md",
+      "filename": "get-next-run-info-every-2-days-after-todays-run.md",
+      "category": "guides",
+      "size_bytes": 2636
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-remaining-eps-release-date\\get-remaining-eps-release-date.md",
+      "filename": "get-remaining-eps-release-date.md",
+      "category": "guides",
+      "size_bytes": 4991
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-seasons-to-process-returns-empty-when-no-seasons\\get-seasons-to-process-returns-empty-when-no-seasons.md",
+      "filename": "get-seasons-to-process-returns-empty-when-no-seasons.md",
+      "category": "guides",
+      "size_bytes": 1349
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-status-distribution\\get-status-distribution.md",
+      "filename": "get-status-distribution.md",
+      "category": "guides",
+      "size_bytes": 7494
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-tv-tracking-data\\get-tv-tracking-data.md",
+      "filename": "get-tv-tracking-data.md",
+      "category": "guides",
+      "size_bytes": 10076
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-tv-tracking-data-empty-season-items\\get-tv-tracking-data-empty-season-items.md",
+      "filename": "get-tv-tracking-data-empty-season-items.md",
+      "category": "guides",
+      "size_bytes": 8035
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-user-events\\get-user-events.md",
+      "filename": "get-user-events.md",
+      "category": "guides",
+      "size_bytes": 3405
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\get-user-releases\\get-user-releases.md",
+      "filename": "get-user-releases.md",
+      "category": "guides",
+      "size_bytes": 11682
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\hardcover-get-edition-details\\hardcover-get-edition-details.md",
+      "filename": "hardcover-get-edition-details.md",
+      "category": "guides",
+      "size_bytes": 2503
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\hide-completed-recommendations-disabled\\hide-completed-recommendations-disabled.md",
+      "filename": "hide-completed-recommendations-disabled.md",
+      "category": "guides",
+      "size_bytes": 2182
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\hide-completed-recommendations-enabled\\hide-completed-recommendations-enabled.md",
+      "filename": "hide-completed-recommendations-enabled.md",
+      "category": "guides",
+      "size_bytes": 2360
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\home-view\\home-view.md",
+      "filename": "home-view.md",
+      "category": "guides",
+      "size_bytes": 4563
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\home-view-htmx-load-more\\home-view-htmx-load-more.md",
+      "filename": "home-view-htmx-load-more.md",
+      "category": "guides",
+      "size_bytes": 4580
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\home-view-includes-in-progress-tv-with-unwatched-seasons\\home-view-includes-in-progress-tv-with-unwatched-seasons.md",
+      "filename": "home-view-includes-in-progress-tv-with-unwatched-seasons.md",
+      "category": "guides",
+      "size_bytes": 3579
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\import-movie\\import-movie.md",
+      "filename": "import-movie.md",
+      "category": "guides",
+      "size_bytes": 1823
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\import-steam-games\\import-steam-games.md",
+      "filename": "import-steam-games.md",
+      "category": "guides",
+      "size_bytes": 4562
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\importer\\importer.md",
+      "filename": "importer.md",
+      "category": "guides",
+      "size_bytes": 5878
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\in-progress-status-activates-next-season\\in-progress-status-activates-next-season.md",
+      "filename": "in-progress-status-activates-next-season.md",
+      "category": "guides",
+      "size_bytes": 2220
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\in-progress-status-creates-new-season-if-needed\\in-progress-status-creates-new-season-if-needed.md",
+      "filename": "in-progress-status-creates-new-season-if-needed.md",
+      "category": "guides",
+      "size_bytes": 2871
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\index.md",
+      "filename": "index.md",
+      "category": "guides",
+      "size_bytes": 34039
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\integrations-uses-configured-webhook-urls\\integrations-uses-configured-webhook-urls.md",
+      "filename": "integrations-uses-configured-webhook-urls.md",
+      "category": "guides",
+      "size_bytes": 1682
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\is-released-date-with-custom-current-date\\is-released-date-with-custom-current-date.md",
+      "filename": "is-released-date-with-custom-current-date.md",
+      "category": "guides",
+      "size_bytes": 1793
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\is-released-date-with-full-date\\is-released-date-with-full-date.md",
+      "filename": "is-released-date-with-full-date.md",
+      "category": "guides",
+      "size_bytes": 1313
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\is-user-tracking-item\\is-user-tracking-item.md",
+      "filename": "is-user-tracking-item.md",
+      "category": "guides",
+      "size_bytes": 9963
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\last-episode-sets-season-completed\\last-episode-sets-season-completed.md",
+      "filename": "last-episode-sets-season-completed.md",
+      "category": "guides",
+      "size_bytes": 2144
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\last-season-completes-tv-show\\last-season-completes-tv-show.md",
+      "filename": "last-season-completes-tv-show.md",
+      "category": "guides",
+      "size_bytes": 2257
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\list-detail-view-sorting\\list-detail-view-sorting.md",
+      "filename": "list-detail-view-sorting.md",
+      "category": "guides",
+      "size_bytes": 3319
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\lists-modal-view-with-new-item\\lists-modal-view-with-new-item.md",
+      "filename": "lists-modal-view-with-new-item.md",
+      "category": "guides",
+      "size_bytes": 2515
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\lists-view-sorting\\lists-view-sorting.md",
+      "filename": "lists-view-sorting.md",
+      "category": "guides",
+      "size_bytes": 3798
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\manual-id-generation\\manual-id-generation.md",
+      "filename": "manual-id-generation.md",
+      "category": "guides",
+      "size_bytes": 2039
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\manual-process-episodes\\manual-process-episodes.md",
+      "filename": "manual-process-episodes.md",
+      "category": "guides",
+      "size_bytes": 6430
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\mark-user-messages-shown\\mark-user-messages-shown.md",
+      "filename": "mark-user-messages-shown.md",
+      "category": "guides",
+      "size_bytes": 2978
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\media-url\\media-url.md",
+      "filename": "media-url.md",
+      "category": "guides",
+      "size_bytes": 2637
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\media-view-url\\media-view-url.md",
+      "filename": "media-view-url.md",
+      "category": "guides",
+      "size_bytes": 2943
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\movie-changes\\movie-changes.md",
+      "filename": "movie-changes.md",
+      "category": "guides",
+      "size_bytes": 2216
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\movie-mark-played\\movie-mark-played.md",
+      "filename": "movie-mark-played.md",
+      "category": "guides",
+      "size_bytes": 2128
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\movie-unknown\\movie-unknown.md",
+      "filename": "movie-unknown.md",
+      "category": "guides",
+      "size_bytes": 2928
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\multiple-types-in-one-csv\\multiple-types-in-one-csv.md",
+      "filename": "multiple-types-in-one-csv.md",
+      "category": "guides",
+      "size_bytes": 2285
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\no-dates-filtering\\no-dates-filtering.md",
+      "filename": "no-dates-filtering.md",
+      "category": "guides",
+      "size_bytes": 10818
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\non-last-season-starts-next-season\\non-last-season-starts-next-season.md",
+      "filename": "non-last-season-starts-next-season.md",
+      "category": "guides",
+      "size_bytes": 4020
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\oauth-import-full-flow\\oauth-import-full-flow.md",
+      "filename": "oauth-import-full-flow.md",
+      "category": "guides",
+      "size_bytes": 2612
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\obfuscate-unseen-episodes-post-demo-user\\obfuscate-unseen-episodes-post-demo-user.md",
+      "filename": "obfuscate-unseen-episodes-post-demo-user.md",
+      "category": "guides",
+      "size_bytes": 2386
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\overlapping-ranges\\overlapping-ranges.md",
+      "filename": "overlapping-ranges.md",
+      "category": "guides",
+      "size_bytes": 11841
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\overwrite-reimports-existing\\overwrite-reimports-existing.md",
+      "filename": "overwrite-reimports-existing.md",
+      "category": "guides",
+      "size_bytes": 2166
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\overwrite-steam-game-completed-status\\overwrite-steam-game-completed-status.md",
+      "filename": "overwrite-steam-game-completed-status.md",
+      "category": "guides",
+      "size_bytes": 2237
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-anime-bulk\\process-anime-bulk.md",
+      "filename": "process-anime-bulk.md",
+      "category": "guides",
+      "size_bytes": 2511
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-anime-bulk-no-matching-anime-anilist\\process-anime-bulk-no-matching-anime-anilist.md",
+      "filename": "process-anime-bulk-no-matching-anime-anilist.md",
+      "category": "guides",
+      "size_bytes": 1947
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comic-handles-issue-provider-error\\process-comic-handles-issue-provider-error.md",
+      "filename": "process-comic-handles-issue-provider-error.md",
+      "category": "guides",
+      "size_bytes": 2306
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comic-no-dates\\process-comic-no-dates.md",
+      "filename": "process-comic-no-dates.md",
+      "category": "guides",
+      "size_bytes": 2272
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comic-returns-when-issue-is-already-saved\\process-comic-returns-when-issue-is-already-saved.md",
+      "filename": "process-comic-returns-when-issue-is-already-saved.md",
+      "category": "guides",
+      "size_bytes": 1978
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comic-with-cover-date-only\\process-comic-with-cover-date-only.md",
+      "filename": "process-comic-with-cover-date-only.md",
+      "category": "guides",
+      "size_bytes": 2803
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comic-with-store-date\\process-comic-with-store-date.md",
+      "filename": "process-comic-with-store-date.md",
+      "category": "guides",
+      "size_bytes": 2963
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-comments\\process-comments.md",
+      "filename": "process-comments.md",
+      "category": "guides",
+      "size_bytes": 3474
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-entry\\process-entry.md",
+      "filename": "process-entry.md",
+      "category": "guides",
+      "size_bytes": 2655
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-book\\process-other-book.md",
+      "filename": "process-other-book.md",
+      "category": "guides",
+      "size_bytes": 2000
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-game\\process-other-game.md",
+      "filename": "process-other-game.md",
+      "category": "guides",
+      "size_bytes": 2246
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-invalid-date\\process-other-invalid-date.md",
+      "filename": "process-other-invalid-date.md",
+      "category": "guides",
+      "size_bytes": 1389
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-manga\\process-other-manga.md",
+      "filename": "process-other-manga.md",
+      "category": "guides",
+      "size_bytes": 1837
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-mangaupdates\\process-other-mangaupdates.md",
+      "filename": "process-other-mangaupdates.md",
+      "category": "guides",
+      "size_bytes": 2507
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-movie\\process-other-movie.md",
+      "filename": "process-other-movie.md",
+      "category": "guides",
+      "size_bytes": 1998
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-no-date\\process-other-no-date.md",
+      "filename": "process-other-no-date.md",
+      "category": "guides",
+      "size_bytes": 1304
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-other-uses-placeholder-when-date-is-unknown\\process-other-uses-placeholder-when-date-is-unknown.md",
+      "filename": "process-other-uses-placeholder-when-date-is-unknown.md",
+      "category": "guides",
+      "size_bytes": 1743
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-ratings\\process-ratings.md",
+      "filename": "process-ratings.md",
+      "category": "guides",
+      "size_bytes": 2638
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-season-episodes-handles-missing-tvdb-and-episodes\\process-season-episodes-handles-missing-tvdb-and-episodes.md",
+      "filename": "process-season-episodes-handles-missing-tvdb-and-episodes.md",
+      "category": "guides",
+      "size_bytes": 1345
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-tv-does-not-reopen-completed-show-for-past-only-season\\process-tv-does-not-reopen-completed-show-for-past-only-season.md",
+      "filename": "process-tv-does-not-reopen-completed-show-for-past-only-season.md",
+      "category": "guides",
+      "size_bytes": 3920
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-tv-reopens-completed-show-with-new-season-as-planning\\process-tv-reopens-completed-show-with-new-season-as-planning.md",
+      "filename": "process-tv-reopens-completed-show-with-new-season-as-planning.md",
+      "category": "guides",
+      "size_bytes": 4373
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-tv-returns-when-no-seasons-need-processing\\process-tv-returns-when-no-seasons-need-processing.md",
+      "filename": "process-tv-returns-when-no-seasons-need-processing.md",
+      "category": "guides",
+      "size_bytes": 1417
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-tv-season\\process-tv-season.md",
+      "filename": "process-tv-season.md",
+      "category": "guides",
+      "size_bytes": 4286
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-tv-uses-tvdb-absolute-order-for-cross-season-match\\process-tv-uses-tvdb-absolute-order-for-cross-season-match.md",
+      "filename": "process-tv-uses-tvdb-absolute-order-for-cross-season-match.md",
+      "category": "guides",
+      "size_bytes": 3076
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-watched-episode\\process-watched-episode.md",
+      "filename": "process-watched-episode.md",
+      "category": "guides",
+      "size_bytes": 3268
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-watched-movie\\process-watched-movie.md",
+      "filename": "process-watched-movie.md",
+      "category": "guides",
+      "size_bytes": 2836
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\process-watchlist\\process-watchlist.md",
+      "filename": "process-watchlist.md",
+      "category": "guides",
+      "size_bytes": 2674
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\public-import-full-flow\\public-import-full-flow.md",
+      "filename": "public-import-full-flow.md",
+      "category": "guides",
+      "size_bytes": 2479
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\recommendations-from-artist-albums\\recommendations-from-artist-albums.md",
+      "filename": "recommendations-from-artist-albums.md",
+      "category": "guides",
+      "size_bytes": 1909
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\release-notifications-disabled\\release-notifications-disabled.md",
+      "filename": "release-notifications-disabled.md",
+      "category": "guides",
+      "size_bytes": 8838
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\repeated-watch\\repeated-watch.md",
+      "filename": "repeated-watch.md",
+      "category": "guides",
+      "size_bytes": 3100
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\returns-required-fields\\returns-required-fields.md",
+      "filename": "returns-required-fields.md",
+      "category": "guides",
+      "size_bytes": 1571
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\season-completion-with-no-date\\season-completion-with-no-date.md",
+      "filename": "season-completion-with-no-date.md",
+      "category": "guides",
+      "size_bytes": 4377
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\season-completion-with-release-date\\season-completion-with-release-date.md",
+      "filename": "season-completion-with-release-date.md",
+      "category": "guides",
+      "size_bytes": 5004
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\season-status-logic-with-completed-seasons\\season-status-logic-with-completed-seasons.md",
+      "filename": "season-status-logic-with-completed-seasons.md",
+      "category": "guides",
+      "size_bytes": 6265
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\should-process-media-new-mode-not-exists\\should-process-media-new-mode-not-exists.md",
+      "filename": "should-process-media-new-mode-not-exists.md",
+      "category": "guides",
+      "size_bytes": 1613
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\sidebar-post-demo-user\\sidebar-post-demo-user.md",
+      "filename": "sidebar-post-demo-user.md",
+      "category": "guides",
+      "size_bytes": 2489
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\sidebar-post-update-preferences\\sidebar-post-update-preferences.md",
+      "filename": "sidebar-post-update-preferences.md",
+      "category": "guides",
+      "size_bytes": 2585
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\sort-home-media\\sort-home-media.md",
+      "filename": "sort-home-media.md",
+      "category": "guides",
+      "size_bytes": 14437
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\start-date-only-filtering\\start-date-only-filtering.md",
+      "filename": "start-date-only-filtering.md",
+      "category": "guides",
+      "size_bytes": 11542
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\statistics-view-invalid-date-format\\statistics-view-invalid-date-format.md",
+      "filename": "statistics-view-invalid-date-format.md",
+      "category": "guides",
+      "size_bytes": 1661
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\status-is-completed\\status-is-completed.md",
+      "filename": "status-is-completed.md",
+      "category": "guides",
+      "size_bytes": 1526
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\tmdb-find-next-episode\\tmdb-find-next-episode.md",
+      "filename": "tmdb-find-next-episode.md",
+      "category": "guides",
+      "size_bytes": 1994
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\trakt-callback-reuses-stored-redirect-uri\\trakt-callback-reuses-stored-redirect-uri.md",
+      "filename": "trakt-callback-reuses-stored-redirect-uri.md",
+      "category": "guides",
+      "size_bytes": 3154
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\trakt-oauth-uses-configured-public-url\\trakt-oauth-uses-configured-public-url.md",
+      "filename": "trakt-oauth-uses-configured-public-url.md",
+      "category": "guides",
+      "size_bytes": 2498
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\tv-changes\\tv-changes.md",
+      "filename": "tv-changes.md",
+      "category": "guides",
+      "size_bytes": 2183
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\tv-episode-mark-played\\tv-episode-mark-played.md",
+      "filename": "tv-episode-mark-played.md",
+      "category": "guides",
+      "size_bytes": 3177
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\type-label-with-secondary-types\\type-label-with-secondary-types.md",
+      "filename": "type-label-with-secondary-types.md",
+      "category": "guides",
+      "size_bytes": 1535
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\update-episode-references\\update-episode-references.md",
+      "filename": "update-episode-references.md",
+      "category": "guides",
+      "size_bytes": 3046
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\user-exclusion\\user-exclusion.md",
+      "filename": "user-exclusion.md",
+      "category": "guides",
+      "size_bytes": 8754
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\username-matching\\username-matching.md",
+      "filename": "username-matching.md",
+      "category": "guides",
+      "size_bytes": 4047
+    },
+    {
+      "path": "output\\yamtrack-fork\\tutorials\\watch-method\\watch-method.md",
+      "filename": "watch-method.md",
+      "category": "guides",
+      "size_bytes": 5004
+    },
+    {
+      "path": "README.md",
+      "filename": "README.md",
+      "category": "overview",
+      "size_bytes": 9122
+    }
+  ]
+}

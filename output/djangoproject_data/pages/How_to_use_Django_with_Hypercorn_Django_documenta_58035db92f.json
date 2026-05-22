@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/hypercorn/",
+  "title": "How to use Django with Hypercorn | Django documentation | Django",
+  "content": "Hypercorn is an ASGI server that supports HTTP/1, HTTP/2, and HTTP/3 with an emphasis on protocol support.\n\nYou can install Hypercorn with pip:\n\nWhen Hypercorn is installed, a hypercorn command is available which runs ASGI applications. Hypercorn needs to be called with the location of a module containing an ASGI application object, followed by what the application is called (separated by a colon).\n\nFor a typical Django project, invoking Hypercorn would look like:\n\nThis will start one process listening on 127.0.0.1:8000. It requires that your project be on the Python path; to ensure that run this command from the same directory as your manage.py file.\n\nFor more advanced usage, please read the Hypercorn documentation.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to use Django with Hypercorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing Hypercorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Running Django in Hypercorn¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/hypercorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/daphne/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

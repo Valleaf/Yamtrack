@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.5.3/",
+  "title": "Django 1.5.3 release notes | Django documentation | Django",
+  "content": "This is Django 1.5.3, the third release in the Django 1.5 series. It addresses one security issue and also contains an opt-in feature to enhance the security of django.contrib.sessions.\n\nIn previous versions of Django it was possible to bypass the ALLOWED_INCLUDE_ROOTS setting used for security with the ssi template tag by specifying a relative path that starts with one of the allowed roots. For example, if ALLOWED_INCLUDE_ROOTS = (\"/var/www\",) the following would be possible:\n\nIn practice this is not a very common problem, as it would require the template author to put the ssi file in a user-controlled variable, but it’s possible in principle.\n\ndjango.contrib.sessions currently uses pickle to serialize session data before storing it in the backend. If you’re using the signed cookie session backend and SECRET_KEY is known by an attacker (there isn’t an inherent vulnerability in Django that would cause it to leak), the attacker could insert a string into their session which, when unpickled, executes arbitrary code on the server. The technique for doing so is simple and easily available on the internet. Although the cookie session storage signs the cookie-stored data to prevent tampering, a SECRET_KEY leak immediately escalates to a remote code execution vulnerability.\n\nThis attack can be mitigated by serializing session data using JSON rather than pickle. To facilitate this, Django 1.5.3 introduces a new setting, SESSION_SERIALIZER, to customize the session serialization format. For backwards compatibility, this setting defaults to using pickle. While JSON serialization does not support all Python objects like pickle does, we highly recommend switching to JSON-serialized values. Also, as JSON requires string keys, you will likely run into problems if you are using non-string keys in request.session. See the Session serialization documentation for more details.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.5.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Directory traversal vulnerability in ssi template tag¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mitigating a remote-code execution vulnerability in django.contrib.sessions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.5.3/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/actions/",
+  "title": "Admin actions | Django documentation | Django",
+  "content": "The basic workflow of Django’s admin is, in a nutshell, “select an object, then change it.” This works well for a majority of use cases. However, if you need to make the same change to many objects at once, this workflow can be quite tedious.\n\nIn these cases, Django’s admin lets you write and register “actions” – functions that get called with a list of objects selected on the change list page.\n\nIf you look at any change list in the admin, you’ll see this feature in action; Django ships with a “delete selected objects” action available to all models. For example, here’s the user module from Django’s built-in django.contrib.auth app:\n\nThe “delete selected objects” action uses QuerySet.delete() for efficiency reasons, which has an important caveat: your model’s delete() method will not be called.\n\nIf you wish to override this behavior, you can override ModelAdmin.delete_queryset() or write a custom action which does deletion in your preferred manner – for example, by calling Model.delete() for each of the selected items.\n\nFor more background on bulk deletion, see the documentation on object deletion.\n\nRead on to find out how to add your own actions to this list.\n\nThe easiest way to explain actions is by example, so let’s dive in.\n\nA common use case for admin actions is the bulk updating of a model. Imagine a news application with an Article model:\n\nA common task we might perform with a model like this is to update an article’s status from “draft” to “published”. We could easily do this in the admin one article at a time, but if we wanted to bulk-publish a group of articles, it’d be tedious. So, let’s write an action that lets us change an article’s status to “published.”\n\nFirst, we’ll need to write a function that gets called when the action is triggered from the admin. Action functions are regular functions that take three arguments:\n\nThe current ModelAdmin\n\nAn HttpRequest representing the current request,\n\nA QuerySet containing the set of objects selected by the user.\n\nOur publish-these-articles function won’t need the ModelAdmin or the request object, but we will use the queryset:\n\nFor the best performance, we’re using the queryset’s update method. Other types of actions might need to deal with each object individually; in these cases we’d iterate over the queryset:\n\nThat’s actually all there is to writing an action! However, we’ll take one more optional-but-useful step and give the action a “nice” title in the admin. By default, this action would appear in the action list as “Make published” – the function name, with underscores replaced by spaces. That’s fine, but we can provide a better, more human-friendly name by using the action() decorator on the make_published function:\n\nThis might look familiar; the admin’s list_display option uses a similar technique with the display() decorator to provide human-readable descriptions for callback functions registered there, too.\n\nNext, we’ll need to inform our ModelAdmin of the action. This works just like any other configuration option. So, the complete admin.py with the action and its registration would look like:\n\nThat code will give us an admin change list that looks something like this:\n\nThat’s really all there is to it! If you’re itching to write your own actions, you now know enough to get started. The rest of this document covers more advanced techniques.\n\nIf there are foreseeable error conditions that may occur while running your action, you should gracefully inform the user of the problem. This means handling exceptions and using django.contrib.admin.ModelAdmin.message_user() to display a user friendly description of the problem in the response.\n\nThere’s a couple of extra options and possibilities you can exploit for more advanced options.\n\nThe example above shows the make_published action defined as a function. That’s perfectly fine, but it’s not perfect from a code design point of view: since the action is tightly coupled to the Article object, it makes sense to hook the action to the ArticleAdmin object itself.\n\nYou can do it like this:\n\nNotice first that we’ve moved make_published into a method and renamed the modeladmin parameter to self, and second that we’ve now put the string 'make_published' in actions instead of a direct function reference. This tells the ModelAdmin to look up the action as a method.\n\nDefining actions as methods gives the action more idiomatic access to the ModelAdmin itself, allowing the action to call any of the methods provided by the admin.\n\nFor example, we can use self to flash a message to the user informing them that the action was successful:\n\nThis make the action match what the admin itself does after successfully performing an action:\n\nBy default, after an action is performed the user is redirected back to the original change list page. However, some actions, especially more complex ones, will need to return intermediate pages. For example, the built-in delete action asks for confirmation before deleting the selected objects.\n\nTo provide an intermediary page, return an HttpResponse (or subclass) from your action. For example, you might write an export function that uses Django’s serialization functions to dump some selected objects as JSON:\n\nGenerally, something like the above isn’t considered a great idea. Most of the time, the best practice will be to return an HttpResponseRedirect and redirect the user to a view you’ve written, passing the list of selected objects in the GET query string. This allows you to provide complex interaction logic on the intermediary pages. For example, if you wanted to provide a more complete export function, you’d want to let the user choose a format, and possibly a list of fields to include in the export. The best thing to do would be to write a small action that redirects to your custom export view:\n\nAs you can see, the action is rather short; all the complex logic would belong in your export view. This would need to deal with objects of any type, hence the business with the ContentType.\n\nWriting this view is left as an exercise to the reader.\n\nSome actions are best if they’re made available to any object in the admin site – the export action defined above would be a good candidate. You can make an action globally available using AdminSite.add_action(). For example:\n\nThis makes the export_selected_objects action globally available as an action named “export_selected_objects”. You can explicitly give the action a name – good if you later want to programmatically remove the action – by passing a second argument to AdminSite.add_action():\n\nSometimes you need to disable certain actions – especially those registered site-wide – for particular objects. There’s a few ways you can disable actions:\n\nIf you need to disable a site-wide action you can call AdminSite.disable_action().\n\nFor example, you can use this method to remove the built-in “delete selected objects” action:\n\nOnce you’ve done the above, that action will no longer be available site-wide.\n\nIf, however, you need to reenable a globally-disabled action for one particular model, list it explicitly in your ModelAdmin.actions list:\n\nIf you want no bulk actions available for a given ModelAdmin, set ModelAdmin.actions to None:\n\nThis tells the ModelAdmin to not display or allow any actions, including any site-wide actions.\n\nFinally, you can conditionally enable or disable actions on a per-request (and hence per-user basis) by overriding ModelAdmin.get_actions().\n\nThis returns a dictionary of actions allowed. The keys are action names, and the values are (function, name, short_description) tuples.\n\nFor example, if you only want users whose names begin with ‘J’ to be able to delete objects in bulk:\n\nActions may limit their availability to users with specific permissions by wrapping the action function with the action() decorator and passing the permissions argument:\n\nThe make_published() action will only be available to users that pass the ModelAdmin.has_change_permission() check.\n\nIf permissions has more than one permission, the action will be available as long as the user passes at least one of the checks.\n\nAvailable values for permissions and the corresponding method checks are:\n\n'add': ModelAdmin.has_add_permission()\n\n'change': ModelAdmin.has_change_permission()\n\n'delete': ModelAdmin.has_delete_permission()\n\n'view': ModelAdmin.has_view_permission()\n\nYou can specify any other value as long as you implement a corresponding has_<value>_permission(self, request) method on the ModelAdmin.\n\nThis decorator can be used for setting specific attributes on custom action functions that can be used with actions:\n\nThis is equivalent to setting some attributes (with the original, longer names) on the function directly:\n\nUse of this decorator is not compulsory to make an action function, but it can be useful to use it without arguments as a marker in your source to identify the purpose of the function:\n\nIn this case it will add no attributes to the function.\n\nAction descriptions are %-formatted and may contain '%(verbose_name)s' and '%(verbose_name_plural)s' placeholders, which are replaced, respectively, by the model’s verbose_name and verbose_name_plural.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Admin actions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Writing actions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Writing action functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Adding actions to the ModelAdmin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Handling errors in actions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Advanced action techniques¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Actions as ModelAdmin methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Actions that provide intermediate pages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Making actions available site-wide¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Disabling actions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Disabling a site-wide action¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Disabling all actions for a particular ModelAdmin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Conditionally enabling or disabling actions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Setting permissions for actions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The action decorator¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Some actions are best if they’re made available to any object in the admin site – the export action defined above would be a good candidate. You can make an action globally available using AdminSite.add_action(). For example:",
+      "code": "from django.contrib import admin\n\nadmin.site.add_action(export_selected_objects)"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.contrib import admin\nfrom django.contrib.auth import get_permission_codename\n\n\nclass ArticleAdmin(admin.ModelAdmin):\n    actions = [\"make_published\"]\n\n    @admin.action(permissions=[\"publish\"])\n    def make_published(self, request, queryset):\n        queryset.update(status=\"p\")\n\n    def has_publish_permission(self, request):\n        \"\"\"Does the user have the publish permission?\"\"\"\n        opts = self.opts\n        codename = get_permission_codename(\"publish\", opts)\n        return request.user.has_perm(\"%s.%s\" % (opts.app_label, codename))"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/actions/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/filters/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

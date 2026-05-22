@@ -1,0 +1,58 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/",
+  "title": "django.contrib.humanize | Django documentation | Django",
+  "content": "A set of Django template filters useful for adding a “human touch” to data.\n\nTo activate these filters, add 'django.contrib.humanize' to your INSTALLED_APPS setting. Once you’ve done that, use {% load humanize %} in a template, and you’ll have access to the following filters.\n\nFor numbers 1-9, returns the number spelled out. Otherwise, returns the number. This follows Associated Press style.\n\nYou can pass in either an integer or a string representation of an integer.\n\nConverts an integer or float (or a string representation of either) to a string containing commas every three digits.\n\n4500.2 becomes 4,500.2.\n\n45000 becomes 45,000.\n\n450000 becomes 450,000.\n\n4500000 becomes 4,500,000.\n\nFormat localization will be respected if enabled, e.g. with the 'de' language:\n\n45000 becomes '45.000'.\n\n450000 becomes '450.000'.\n\nConverts a large integer (or a string representation of an integer) to a friendly text representation. Translates 1.0 as a singular phrase and all other numeric values as plural, this may be incorrect for some languages. Works best for numbers over 1 million.\n\n1000000 becomes 1.0 million.\n\n1200000 becomes 1.2 million.\n\n1200000000 becomes 1.2 billion.\n\n-1200000000 becomes -1.2 billion.\n\nValues up to 10^100 (Googol) are supported.\n\nFormat localization will be respected if enabled, e.g. with the 'de' language:\n\n1000000 becomes '1,0 Million'.\n\n1200000 becomes '1,2 Millionen'.\n\n1200000000 becomes '1,2 Milliarden'.\n\n-1200000000 becomes '-1,2 Milliarden'.\n\nFor dates that are the current day or within one day, return “today”, “tomorrow” or “yesterday”, as appropriate. Otherwise, format the date using the passed in format string.\n\nArgument: Date formatting string as described in the date tag.\n\nExamples (when ‘today’ is 17 Feb 2007):\n\n16 Feb 2007 becomes yesterday.\n\n17 Feb 2007 becomes today.\n\n18 Feb 2007 becomes tomorrow.\n\nAny other day is formatted according to given argument or the DATE_FORMAT setting if no argument is given.\n\nFor datetime values, returns a string representing how many seconds, minutes or hours ago it was – falling back to the timesince format if the value is more than a day old. In case the datetime value is in the future the return value will automatically use an appropriate phrase.\n\nExamples (when ‘now’ is 17 Feb 2007 16:30:00):\n\n17 Feb 2007 16:30:00 becomes now.\n\n17 Feb 2007 16:29:31 becomes 29 seconds ago.\n\n17 Feb 2007 16:29:00 becomes a minute ago.\n\n17 Feb 2007 16:25:35 becomes 4 minutes ago.\n\n17 Feb 2007 15:30:29 becomes 59 minutes ago.\n\n17 Feb 2007 15:30:01 becomes 59 minutes ago.\n\n17 Feb 2007 15:30:00 becomes an hour ago.\n\n17 Feb 2007 13:31:29 becomes 2 hours ago.\n\n16 Feb 2007 13:31:29 becomes 1 day, 2 hours ago.\n\n16 Feb 2007 13:30:01 becomes 1 day, 2 hours ago.\n\n16 Feb 2007 13:30:00 becomes 1 day, 3 hours ago.\n\n17 Feb 2007 16:30:30 becomes 30 seconds from now.\n\n17 Feb 2007 16:30:29 becomes 29 seconds from now.\n\n17 Feb 2007 16:31:00 becomes a minute from now.\n\n17 Feb 2007 16:34:35 becomes 4 minutes from now.\n\n17 Feb 2007 17:30:29 becomes an hour from now.\n\n17 Feb 2007 18:31:29 becomes 2 hours from now.\n\n18 Feb 2007 16:31:29 becomes 1 day from now.\n\n26 Feb 2007 18:31:29 becomes 1 week, 2 days from now.\n\nConverts an integer to its ordinal as a string.\n\nYou can pass in either an integer or a string representation of an integer. Negative integers are returned unchanged.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django.contrib.humanize¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "apnumber¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "intcomma¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "intword¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "naturalday¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "naturaltime¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ordinal¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/formatting/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/messages/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

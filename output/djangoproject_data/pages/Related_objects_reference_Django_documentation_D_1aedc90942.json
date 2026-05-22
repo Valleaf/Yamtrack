@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+  "title": "Related objects reference | Django documentation | Django",
+  "content": "A “related manager” is a manager used in a one-to-many or many-to-many related context. This happens in two cases:\n\nThe “other side” of a ForeignKey relation. That is:\n\nIn the above example, the methods below will be available on the manager blog.entry_set.\n\nBoth sides of a ManyToManyField relation\n\nIn this example, the methods below will be available both on topping.pizza_set and on pizza.toppings.\n\nAsynchronous version: aadd\n\nAdds the specified model objects to the related object set.\n\nIn the example above, in the case of a ForeignKey relationship, QuerySet.update() is used to perform the update. This requires the objects to already be saved.\n\nYou can use the bulk=False argument to instead have the related manager perform the update by calling e.save().\n\nUsing add() with a many-to-many relationship, however, will not call any save() methods (the bulk argument doesn’t exist), but rather create the relationships using QuerySet.bulk_create(). If you need to execute some custom logic when a relationship is created, listen to the m2m_changed signal, which will trigger pre_add and post_add actions.\n\nUsing add() on a relation that already exists won’t duplicate the relation, but it will still trigger signals.\n\nFor many-to-many relationships add() accepts either model instances or field values, normally primary keys, as the *objs argument.\n\nUse the through_defaults argument to specify values for the new intermediate model instance(s), if needed. You can use callables as values in the through_defaults dictionary and they will be evaluated once before creating any intermediate instance(s).\n\nAsynchronous version: acreate\n\nCreates a new object, saves it and puts it in the related object set. Returns the newly created object:\n\nThis is equivalent to (but simpler than):\n\nNote that there’s no need to specify the keyword argument of the model that defines the relationship. In the above example, we don’t pass the parameter blog to create(). Django figures out that the new Entry object’s blog field should be set to b.\n\nUse the through_defaults argument to specify values for the new intermediate model instance, if needed. You can use callables as values in the through_defaults dictionary.\n\nAsynchronous version: aremove\n\nRemoves the specified model objects from the related object set:\n\nSimilar to add(), e.save() is called in the example above to perform the update. Using remove() with a many-to-many relationship, however, will delete the relationships using QuerySet.delete() which means no model save() methods are called; listen to the m2m_changed signal if you wish to execute custom code when a relationship is deleted.\n\nFor many-to-many relationships remove() accepts either model instances or field values, normally primary keys, as the *objs argument.\n\nFor ForeignKey objects, this method only exists if null=True. If the related field can’t be set to None (NULL), then an object can’t be removed from a relation without being added to another. In the above example, removing e from b.entry_set() is equivalent to doing e.blog = None, and because the blog ForeignKey doesn’t have null=True, this is invalid.\n\nFor ForeignKey objects, this method accepts a bulk argument to control how to perform the operation. If True (the default), QuerySet.update() is used. If bulk=False, the save() method of each individual model instance is called instead. This triggers the pre_save and post_save signals and comes at the expense of performance.\n\nFor many-to-many relationships, the bulk keyword argument doesn’t exist.\n\nAsynchronous version: aclear\n\nRemoves all objects from the related object set:\n\nNote this doesn’t delete the related objects – it just disassociates them.\n\nJust like remove(), clear() is only available on ForeignKeys where null=True and it also accepts the bulk keyword argument.\n\nFor many-to-many relationships, the bulk keyword argument doesn’t exist.\n\nAsynchronous version: aset\n\nReplace the set of related objects:\n\nThis method accepts a clear argument to control how to perform the operation. If False (the default), the elements missing from the new set are removed using remove() and only the new ones are added. If clear=True, the clear() method is called instead and the whole set is added at once.\n\nFor ForeignKey objects, the bulk argument is passed on to add() and remove().\n\nFor many-to-many relationships, the bulk keyword argument doesn’t exist.\n\nNote that since set() is a compound operation, it is subject to race conditions. For instance, new objects may be added to the database in between the call to clear() and the call to add().\n\nFor many-to-many relationships set() accepts a list of either model instances or field values, normally primary keys, as the objs argument.\n\nUse the through_defaults argument to specify values for the new intermediate model instance(s), if needed. You can use callables as values in the through_defaults dictionary and they will be evaluated once before creating any intermediate instance(s).\n\nNote that add(), aadd(), create(), acreate(), remove(), aremove(), clear(), aclear(), set(), and aset() all apply database changes immediately for all types of related fields. In other words, there is no need to call save()/asave() on either end of the relationship.\n\nIf you use prefetch_related(), the add(), aadd(), remove(), aremove(), clear(), aclear(), set(), and aset() methods clear the prefetched cache.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Related objects reference¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example:",
+      "code": ">>> b = Blog.objects.get(id=1)\n>>> e = Entry.objects.get(id=234)\n>>> b.entry_set.add(e)  # Associates Entry e with Blog b."
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/meta/",
+    "https://docs.djangoproject.com/en/stable/ref/models/class/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

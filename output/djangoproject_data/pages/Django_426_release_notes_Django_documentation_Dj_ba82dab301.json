@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.6/",
+  "title": "Django 4.2.6 release notes | Django documentation | Django",
+  "content": "Django 4.2.6 fixes a security issue with severity “moderate” and several bugs in 4.2.5.\n\nFollowing the fix for CVE 2019-14232, the regular expressions used in the implementation of django.utils.text.Truncator’s chars() and words() methods (with html=True) were revised and improved. However, these regular expressions still exhibited linear backtracking complexity, so when given a very long, potentially malformed HTML input, the evaluation would still be slow, leading to a potential denial of service vulnerability.\n\nThe chars() and words() methods are used to implement the truncatechars_html and truncatewords_html template filters, which were thus also vulnerable.\n\nThe input processed by Truncator, when operating in HTML mode, has been limited to the first five million characters in order to avoid potential performance and memory issues.\n\nFixed a regression in Django 4.2.5 where overriding the deprecated DEFAULT_FILE_STORAGE and STATICFILES_STORAGE settings in tests caused the main STORAGES to mutate (#34821).\n\nFixed a regression in Django 4.2 that caused unnecessary casting of string based fields (CharField, EmailField, TextField, CICharField, CIEmailField, and CITextField) used with the __isnull lookup on PostgreSQL. As a consequence, indexes using an __isnull expression or condition created before Django 4.2 wouldn’t be used by the query planner, leading to a performance regression (#34840).\n\nYou may need to recreate such indexes created in your database with Django 4.2 to 4.2.5, as they contain unnecessary ::text casting. Find candidate indexes with this query:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-43665: Denial-of-service possibility in django.utils.text.Truncator¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.6/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.7/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

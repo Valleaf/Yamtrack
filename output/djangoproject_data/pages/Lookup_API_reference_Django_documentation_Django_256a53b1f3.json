@@ -1,0 +1,54 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/lookups/",
+  "title": "Lookup API reference | Django documentation | Django",
+  "content": "This document has the API references of lookups, the Django API for building the WHERE clause of a database query. To learn how to use lookups, see Making queries; to learn how to create new lookups, see How to write custom lookups.\n\nThe lookup API has two components: a RegisterLookupMixin class that registers lookups, and the Query Expression API, a set of methods that a class has to implement to be registrable as a lookup.\n\nDjango has two base classes that follow the query expression API and from where all Django builtin lookups are derived:\n\nLookup: to lookup a field (e.g. the exact of field_name__exact)\n\nTransform: to transform a field\n\nA lookup expression consists of three parts:\n\nFields part (e.g. Book.objects.filter(author__best_friends__first_name...);\n\nTransforms part (may be omitted) (e.g. __lower__first3chars__reversed);\n\nA lookup (e.g. __icontains) that, if omitted, defaults to __exact.\n\nDjango uses RegisterLookupMixin to give a class the interface to register lookups on itself or its instances. The two prominent examples are Field, the base class of all model fields, and Transform, the base class of all Django transforms.\n\nA mixin that implements the lookup API on a class.\n\nRegisters a new lookup in the class or class instance. For example:\n\nwill register YearExact lookup on DateField and MonthExact lookup on the User.date_joined (you can use Field Access API to retrieve a single field instance). It overrides a lookup that already exists with the same name. Lookups registered on field instances take precedence over the lookups registered on classes. lookup_name will be used for this lookup if provided, otherwise lookup.lookup_name will be used.\n\nReturns the Lookup named lookup_name registered in the class or class instance depending on what calls it. The default implementation looks recursively on all parent classes and checks if any has a registered lookup named lookup_name, returning the first match. Instance lookups would override any class lookups with the same lookup_name.\n\nReturns a dictionary of each lookup name registered in the class or class instance mapped to the Lookup class.\n\nReturns a Transform named transform_name registered in the class or class instance. The default implementation looks recursively on all parent classes to check if any has the registered transform named transform_name, returning the first match.\n\nFor a class to be a lookup, it must follow the Query Expression API. Lookup and Transform naturally follow this API.\n\nThe query expression API is a common set of methods that classes define to be usable in query expressions to translate themselves into SQL expressions. Direct field references, aggregates, and Transform are examples that follow this API. A class is said to follow the query expression API when it implements the following methods:\n\nGenerates the SQL fragment for the expression. Returns a tuple (sql, params), where sql is the SQL string, and params is the list or tuple of query parameters. The compiler is an SQLCompiler object, which has a compile() method that can be used to compile other expressions. The connection is the connection used to execute the query.\n\nCalling expression.as_sql() is usually incorrect - instead compiler.compile(expression) should be used. The compiler.compile() method will take care of calling vendor-specific methods of the expression.\n\nCustom keyword arguments may be defined on this method if it’s likely that as_vendorname() methods or subclasses will need to supply data to override the generation of the SQL string. See Func.as_sql() for example usage.\n\nWorks like as_sql() method. When an expression is compiled by compiler.compile(), Django will first try to call as_vendorname(), where vendorname is the vendor name of the backend used for executing the query. The vendorname is one of postgresql, oracle, sqlite, or mysql for Django’s built-in backends.\n\nMust return the lookup named lookup_name. For instance, by returning self.output_field.get_lookup(lookup_name).\n\nMust return the lookup named transform_name. For instance, by returning self.output_field.get_transform(transform_name).\n\nDefines the type of class returned by the get_lookup() method. It must be a Field instance.\n\nA Transform is a generic class to implement field transformations. A prominent example is __year that transforms a DateField into a IntegerField.\n\nThe notation to use a Transform in a lookup expression is <expression>__<transformation> (e.g. date__year).\n\nThis class follows the Query Expression API, which implies that you can use <expression>__<transform1>__<transform2>. It’s a specialized Func() expression that only accepts one argument. It can also be used on the right hand side of a filter or directly as an annotation.\n\nA boolean indicating whether this transformation should apply to both lhs and rhs. Bilateral transformations will be applied to rhs in the same order as they appear in the lookup expression. By default it is set to False. For example usage, see How to write custom lookups.\n\nThe left-hand side - what is being transformed. It must follow the Query Expression API.\n\nThe name of the lookup, used for identifying it on parsing query expressions. It cannot contain the string \"__\".\n\nDefines the class this transformation outputs. It must be a Field instance. By default is the same as its lhs.output_field.\n\nA Lookup is a generic class to implement lookups. A lookup is a query expression with a left-hand side, lhs; a right-hand side, rhs; and a lookup_name that is used to produce a boolean comparison between lhs and rhs such as lhs in rhs or lhs > rhs.\n\nThe primary notation to use a lookup in an expression is <lhs>__<lookup_name>=<rhs>. Lookups can also be used directly in QuerySet filters:\n\nThe left-hand side - what is being looked up. The object typically follows the Query Expression API. It may also be a plain value.\n\nThe right-hand side - what lhs is being compared against. It can be a plain value, or something that compiles into SQL, typically an F() object or a QuerySet.\n\nThe name of this lookup, used to identify it on parsing query expressions. It cannot contain the string \"__\".\n\nDefaults to True. When rhs is a plain value, prepare_rhs determines whether it should be prepared for use as a parameter in a query. In order to do so, lhs.output_field.get_prep_value() is called if defined, or rhs is wrapped in Value() otherwise.\n\nReturns a tuple (lhs_string, lhs_params), as returned by compiler.compile(lhs). This method can be overridden to tune how the lhs is processed.\n\ncompiler is an SQLCompiler object, to be used like compiler.compile(lhs) for compiling lhs. The connection can be used for compiling vendor specific SQL. If lhs is not None, use it as the processed lhs instead of self.lhs.\n\nBehaves the same way as process_lhs(), for the right-hand side.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Lookup API reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Registration API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The Query Expression API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Transform reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Lookup reference¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Registers a new lookup in the class or class instance. For example:",
+      "code": "DateField.register_lookup(YearExact)\nUser._meta.get_field(\"date_joined\").register_lookup(MonthExact)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/lookups/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/meta/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

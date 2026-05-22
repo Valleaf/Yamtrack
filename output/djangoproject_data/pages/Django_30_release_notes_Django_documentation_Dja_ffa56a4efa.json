@@ -1,0 +1,270 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.0/",
+  "title": "Django 3.0 release notes | Django documentation | Django",
+  "content": "Welcome to Django 3.0!\n\nThese release notes cover the new features, as well as some backwards incompatible changes you’ll want to be aware of when upgrading from Django 2.2 or earlier. We’ve dropped some features that have reached the end of their deprecation cycle, and we’ve begun the deprecation process for some features.\n\nSee the How to upgrade Django to a newer version guide if you’re updating an existing project.\n\nDjango 3.0 supports Python 3.6, 3.7, 3.8, and 3.9 (as of 3.0.11). We highly recommend and only officially support the latest release of each series.\n\nThe Django 2.2.x series is the last to support Python 3.5.\n\nFollowing the release of Django 3.0, we suggest that third-party app authors drop support for all versions of Django prior to 2.2. At that time, you should be able to run your package’s tests using python -Wd so that deprecation warnings appear. After making the deprecation warning fixes, your app should be compatible with Django 3.0.\n\nDjango now officially supports MariaDB 10.1 and higher. See MariaDB notes for more details.\n\nDjango 3.0 begins our journey to making Django fully async-capable by providing support for running as an ASGI application.\n\nThis is in addition to our existing WSGI support. Django intends to support both for the foreseeable future. Async features will only be available to applications that run under ASGI, however.\n\nAt this stage async support only applies to the outer ASGI application. Internally everything remains synchronous. Asynchronous middleware, views, etc. are not yet supported. You can, however, use ASGI middleware around Django’s application, allowing you to combine Django with other ASGI frameworks.\n\nThere is no need to switch your applications over unless you want to start experimenting with asynchronous code, but we have documentation on deploying with ASGI if you want to learn more.\n\nNote that as a side-effect of this change, Django is now aware of asynchronous event loops and will block you calling code marked as “async unsafe” - such as ORM operations - from an asynchronous context. If you were using Django from async code before, this may trigger if you were doing it incorrectly. If you see a SynchronousOnlyOperation error, then closely examine your code and move any database operations to be in a synchronous child thread.\n\nThe new ExclusionConstraint class enable adding exclusion constraints on PostgreSQL. Constraints are added to models using the Meta.constraints option.\n\nExpressions that output BooleanField may now be used directly in QuerySet filters, without having to first annotate and then filter against the annotation.\n\nCustom enumeration types TextChoices, IntegerChoices, and Choices are now available as a way to define Field.choices. TextChoices and IntegerChoices types are provided for text and integer fields. The Choices class allows defining a compatible enumeration for other concrete data types. These custom enumeration types support human-readable labels that can be translated and accessed via a property on the enumeration or its members. See Enumeration types for more details and examples.\n\nAdded support for the admin_order_field attribute on properties in ModelAdmin.list_display.\n\nThe new ModelAdmin.get_inlines() method allows specifying the inlines based on the request or model instance.\n\nSelect2 library is upgraded from version 4.0.3 to 4.0.7.\n\njQuery is upgraded from version 3.3.1 to 3.4.1.\n\nThe new reset_url_token attribute in PasswordResetConfirmView allows specifying a token parameter displayed as a component of password reset URLs.\n\nAdded BaseBackend class to ease customization of authentication backends.\n\nAdded get_user_permissions() method to mirror the existing get_group_permissions() method.\n\nAdded HTML autocomplete attribute to widgets of username, email, and password fields in django.contrib.auth.forms for better interaction with browser password managers.\n\ncreatesuperuser now falls back to environment variables for password and required fields, when a corresponding command line argument isn’t provided in non-interactive mode.\n\nREQUIRED_FIELDS now supports ManyToManyFields.\n\nThe new UserManager.with_perm() method returns users that have the specified permission.\n\nThe default iteration count for the PBKDF2 password hasher is increased from 150,000 to 180,000.\n\nAllowed MySQL spatial lookup functions to operate on real geometries. Previous support was limited to bounding boxes.\n\nAdded the GeometryDistance function, supported on PostGIS.\n\nAdded support for the furlong unit in Distance.\n\nThe GEOIP_PATH setting now supports pathlib.Path.\n\nThe GeoIP2 class now accepts pathlib.Path path.\n\nThe new RangeOperators helps to avoid typos in SQL operators that can be used together with RangeField.\n\nThe new RangeBoundary expression represents the range boundaries.\n\nThe new AddIndexConcurrently and RemoveIndexConcurrently classes allow creating and dropping indexes CONCURRENTLY on PostgreSQL.\n\nThe new get_session_cookie_age() method allows dynamically specifying the session cookie age.\n\nAdded the language class attribute to the django.contrib.syndication.views.Feed to customize a feed language. The default value is get_language() instead of LANGUAGE_CODE.\n\nadd_never_cache_headers() and never_cache() now add the private directive to Cache-Control headers.\n\nThe new Storage.get_alternative_name() method allows customizing the algorithm for generating filenames if a file with the uploaded name already exists.\n\nFormsets may control the widget used when ordering forms via can_order by setting the ordering_widget attribute or overriding get_ordering_widget.\n\nAdded the LANGUAGE_COOKIE_HTTPONLY, LANGUAGE_COOKIE_SAMESITE, and LANGUAGE_COOKIE_SECURE settings to set the HttpOnly, SameSite, and Secure flags on language cookies. The default values of these settings preserve the previous behavior.\n\nAdded support and translations for the Uzbek language.\n\nThe new reporter_class parameter of AdminEmailHandler allows providing an django.views.debug.ExceptionReporter subclass to customize the traceback text sent to site ADMINS when DEBUG is False.\n\nThe new compilemessages --ignore option allows ignoring specific directories when searching for .po files to compile.\n\nshowmigrations --list now shows the applied datetimes when --verbosity is 2 and above.\n\nOn PostgreSQL, dbshell now supports client-side TLS certificates.\n\ninspectdb now introspects OneToOneField when a foreign key has a unique or primary key constraint.\n\nThe new --skip-checks option skips running system checks prior to running the command.\n\nThe startapp --template and startproject --template options now support templates stored in XZ archives (.tar.xz, .txz) and LZMA archives (.tar.lzma, .tlz).\n\nAdded hash database functions MD5, SHA1, SHA224, SHA256, SHA384, and SHA512.\n\nAdded the Sign database function.\n\nThe new is_dst parameter of the Trunc database functions determines the treatment of nonexistent and ambiguous datetimes.\n\nconnection.queries now shows COPY … TO statements on PostgreSQL.\n\nFilePathField now accepts a callable for path.\n\nAllowed symmetrical intermediate table for self-referential ManyToManyField.\n\nThe name attributes of CheckConstraint, UniqueConstraint, and Index now support app label and class interpolation using the '%(app_label)s' and '%(class)s' placeholders.\n\nThe new Field.descriptor_class attribute allows model fields to customize the get and set behavior by overriding their descriptors.\n\nAvg and Sum now support the distinct argument.\n\nAdded SmallAutoField which acts much like an AutoField except that it only allows values under a certain (database-dependent) limit. Values from 1 to 32767 are safe in all databases supported by Django.\n\nAutoField, BigAutoField, and SmallAutoField now inherit from IntegerField, BigIntegerField and SmallIntegerField respectively. System checks and validators are now also properly inherited.\n\nFileField.upload_to now supports pathlib.Path.\n\nCheckConstraint is now supported on MySQL 8.0.16+.\n\nThe new allows_group_by_selected_pks_on_model() method of django.db.backends.base.BaseDatabaseFeatures allows optimization of GROUP BY clauses to require only the selected models’ primary keys. By default, it’s supported only for managed models on PostgreSQL.\n\nTo enable the GROUP BY primary key-only optimization for unmanaged models, you have to subclass the PostgreSQL database engine, overriding the features class allows_group_by_selected_pks_on_model() method as you require. See Subclassing the built-in database backends for an example.\n\nAllowed HttpResponse to be initialized with memoryview content.\n\nFor use in, for example, Django templates, HttpRequest.headers now allows lookups using underscores (e.g. user_agent) in place of hyphens.\n\nX_FRAME_OPTIONS now defaults to 'DENY'. In older versions, the X_FRAME_OPTIONS setting defaults to 'SAMEORIGIN'. If your site uses frames of itself, you will need to explicitly set X_FRAME_OPTIONS = 'SAMEORIGIN' for them to continue working.\n\nSECURE_CONTENT_TYPE_NOSNIFF now defaults to True. With this enabled, SecurityMiddleware sets the X-Content-Type-Options: nosniff header on all responses that do not already have it.\n\nSecurityMiddleware can now send the Referrer-Policy header.\n\nThe new test Client argument raise_request_exception allows controlling whether or not exceptions raised during the request should also be raised in the test. The value defaults to True for backwards compatibility. If it is False and an exception occurs, the test client will return a 500 response with the attribute exc_info, a tuple providing information of the exception that occurred.\n\nTests and test cases to run can be selected by test name pattern using the new test -k option.\n\nHTML comparison, as used by assertHTMLEqual(), now treats text, character references, and entity references that refer to the same character as equivalent.\n\nDiscoverRunner can now spawn a debugger at each error or failure using the test --pdb option.\n\nModel.save() no longer attempts to find a row when saving a new Model instance and a default value for the primary key is provided, and always performs a single INSERT query. In older Django versions, Model.save() performed either an INSERT or an UPDATE based on whether or not the row exists.\n\nThis makes calling Model.save() while providing a default primary key value equivalent to passing force_insert=True to model’s save(). Attempts to use a new Model instance to update an existing row will result in an IntegrityError.\n\nIn order to update an existing model for a specific primary key value, use the update_or_create() method or QuerySet.filter(pk=…).update(…) instead. For example:\n\nThis section describes changes that may be needed in third-party database backends.\n\nThe second argument of DatabaseIntrospection.get_geometry_type() is now the row description instead of the column name.\n\nDatabaseIntrospection.get_field_type() may no longer return tuples.\n\nIf the database can create foreign keys in the same SQL statement that adds a field, add SchemaEditor.sql_create_column_inline_fk with the appropriate SQL; otherwise, set DatabaseFeatures.can_create_inline_fk = False.\n\nDatabaseFeatures.can_return_id_from_insert and can_return_ids_from_bulk_insert are renamed to can_return_columns_from_insert and can_return_rows_from_bulk_insert.\n\nDatabase functions now handle datetime.timezone formats when created using datetime.timedelta instances (e.g. timezone(timedelta(hours=5)), which would output 'UTC+05:00'). Third-party backends should handle this format when preparing DateTimeField in datetime_cast_date_sql(), datetime_extract_sql(), etc.\n\nEntries for AutoField, BigAutoField, and SmallAutoField are added to DatabaseOperations.integer_field_ranges to support the integer range validators on these field types. Third-party backends may need to customize the default entries.\n\nDatabaseOperations.fetch_returned_insert_id() is replaced by fetch_returned_insert_columns() which returns a list of values returned by the INSERT … RETURNING statement, instead of a single value.\n\nDatabaseOperations.return_insert_id() is replaced by return_insert_columns() that accepts a fields argument, which is an iterable of fields to be returned after insert. Usually this is only the auto-generated primary key.\n\nAdmin’s model history change messages now prefers more readable field labels instead of field names.\n\nSupport for PostGIS 2.1 is removed.\n\nSupport for SpatiaLite 4.1 and 4.2 is removed.\n\nSupport for GDAL 1.11 and GEOS 3.4 is removed.\n\nUpstream support for PostgreSQL 9.4 ends in December 2019. Django 3.0 supports PostgreSQL 9.5 and higher.\n\nUpstream support for Oracle 12.1 ends in July 2021. Django 2.2 will be supported until April 2022. Django 3.0 officially supports Oracle 12.2 and 18c.\n\nWhile Python 2 support was removed in Django 2.0, some private APIs weren’t removed from Django so that third party apps could continue using them until the Python 2 end-of-life.\n\nSince we expect apps to drop Python 2 compatibility when adding support for Django 3.0, we’re removing these APIs at this time.\n\ndjango.test.utils.str_prefix() - Strings don’t have ‘u’ prefixes in Python 3.\n\ndjango.test.utils.patch_logger() - Use unittest.TestCase.assertLogs() instead.\n\ndjango.utils.lru_cache.lru_cache() - Alias of functools.lru_cache().\n\ndjango.utils.decorators.available_attrs() - This function returns functools.WRAPPER_ASSIGNMENTS.\n\ndjango.utils.decorators.ContextDecorator - Alias of contextlib.ContextDecorator.\n\ndjango.utils._os.abspathu() - Alias of os.path.abspath().\n\ndjango.utils._os.upath() and npath() - These functions do nothing on Python 3.\n\ndjango.utils.six - Remove usage of this vendored library or switch to six.\n\ndjango.utils.encoding.python_2_unicode_compatible() - Alias of six.python_2_unicode_compatible().\n\ndjango.utils.functional.curry() - Use functools.partial() or functools.partialmethod. See 5b1c389603a353625ae1603ba345147356336afb.\n\ndjango.utils.safestring.SafeBytes - Unused since Django 2.0.\n\nIn older versions, the FILE_UPLOAD_PERMISSIONS setting defaults to None. With the default FILE_UPLOAD_HANDLERS, this results in uploaded files having different permissions depending on their size and which upload handler is used.\n\nFILE_UPLOAD_PERMISSIONS now defaults to 0o644 to avoid this inconsistency.\n\nTo make Django projects more secure by default, some security settings now have more secure default values:\n\nX_FRAME_OPTIONS now defaults to 'DENY'.\n\nSECURE_CONTENT_TYPE_NOSNIFF now defaults to True.\n\nSee the What’s New Security section above for more details on these changes.\n\nContentType.__str__() now includes the model’s app_label to disambiguate models with the same name in different apps.\n\nBecause accessing the language in the session rather than in the cookie is deprecated, LocaleMiddleware no longer looks for the user’s language in the session and django.contrib.auth.logout() no longer preserves the session’s language after logout.\n\ndjango.utils.html.escape() now uses html.escape() to escape HTML. This converts ' to &#x27; instead of the previous equivalent decimal code &#39;.\n\nThe django-admin test -k option now works as the unittest -k option rather than as a shortcut for --keepdb.\n\nSupport for pywatchman < 1.2.0 is removed.\n\nurlencode() now encodes iterable values as they are when doseq=False, rather than iterating them, bringing it into line with the standard library urllib.parse.urlencode() function.\n\nintword template filter now translates 1.0 as a singular phrase and all other numeric values as plural. This may be incorrect for some languages.\n\nAssigning a value to a model’s ForeignKey or OneToOneField '_id' attribute now unsets the corresponding field. Accessing the field afterward will result in a query.\n\npatch_vary_headers() now handles an asterisk '*' according to RFC 7231 Section 7.1.4, i.e. if a list of header field names contains an asterisk, then the Vary header will consist of a single asterisk '*'.\n\nOn MySQL 8.0.16+, PositiveIntegerField and PositiveSmallIntegerField now include a check constraint to prevent negative values in the database.\n\nalias=None is added to the signature of Expression.get_group_by_cols().\n\nRegexPattern, used by re_path(), no longer returns keyword arguments with None values to be passed to the view for the optional named groups that are missing.\n\nThe smart_text() and force_text() aliases (since Django 2.0) of smart_str() and force_str() are deprecated. Ignore this deprecation if your code supports Python 2 as the behavior of smart_str() and force_str() is different there.\n\ndjango.utils.http.urlquote(), urlquote_plus(), urlunquote(), and urlunquote_plus() are deprecated in favor of the functions that they’re aliases for: urllib.parse.quote(), quote_plus(), unquote(), and unquote_plus().\n\ndjango.utils.translation.ugettext(), ugettext_lazy(), ugettext_noop(), ungettext(), and ungettext_lazy() are deprecated in favor of the functions that they’re aliases for: django.utils.translation.gettext(), gettext_lazy(), gettext_noop(), ngettext(), and ngettext_lazy().\n\nTo limit creation of sessions and hence favor some caching strategies, django.views.i18n.set_language() will stop setting the user’s language in the session in Django 4.0. Since Django 2.1, the language is always stored in the LANGUAGE_COOKIE_NAME cookie.\n\ndjango.utils.text.unescape_entities() is deprecated in favor of html.unescape(). Note that unlike unescape_entities(), html.unescape() evaluates lazy strings immediately.\n\nTo avoid possible confusion as to effective scope, the private internal utility is_safe_url() is renamed to url_has_allowed_host_and_scheme(). That a URL has an allowed host and scheme doesn’t in general imply that it’s “safe”. It may still be quoted incorrectly, for example. Ensure to also use iri_to_uri() on the path component of untrusted URLs.\n\nThese features have reached the end of their deprecation cycle and are removed in Django 3.0.\n\nSee Features deprecated in 2.0 for details on these changes, including how to remove usage of these features.\n\nThe django.db.backends.postgresql_psycopg2 module is removed.\n\ndjango.shortcuts.render_to_response() is removed.\n\nThe DEFAULT_CONTENT_TYPE setting is removed.\n\nHttpRequest.xreadlines() is removed.\n\nSupport for the context argument of Field.from_db_value() and Expression.convert_value() is removed.\n\nThe field_name keyword argument of QuerySet.earliest() and latest() is removed.\n\nSee Features deprecated in 2.1 for details on these changes, including how to remove usage of these features.\n\nThe ForceRHR GIS function is removed.\n\ndjango.utils.http.cookie_date() is removed.\n\nThe staticfiles and admin_static template tag libraries are removed.\n\ndjango.contrib.staticfiles.templatetags.staticfiles.static() is removed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.0 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Third-party library support for older version of Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 3.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MariaDB support¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ASGI support¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Exclusion constraints on PostgreSQL¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Filter expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Enumerations for model field choices¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Minor features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.syndication¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Cache¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "File Storage¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Forms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Internationalization¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Logging¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Management Commands¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Requests and Responses¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Security¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes in 3.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Model.save() when providing a default for the primary key¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database backend API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for PostgreSQL 9.4¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for Oracle 12.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Removed private Python 2 compatibility APIs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "New default value for the FILE_UPLOAD_PERMISSIONS setting¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "New default values for security settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 3.0¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.utils.encoding.force_text() and smart_text()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features removed in 3.0¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "In order to update an existing model for a specific primary key value, use the update_or_create() method or QuerySet.filter(pk=…).update(…) instead. For example:",
+      "code": ">>> MyModel.objects.update_or_create(pk=existing_pk, defaults={\"name\": \"new name\"})\n>>> MyModel.objects.filter(pk=existing_pk).update(name=\"new name\")"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.0/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/syndication/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+    "https://docs.djangoproject.com/en/stable/ref/files/storage/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/logging/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/urls/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.1/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.28/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

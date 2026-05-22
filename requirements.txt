@@ -24,3 +24,4 @@ redis[hiredis]==7.4.0
 requests==2.33.1
 requests-ratelimiter==0.9.3
 unidecode==1.4.0
+fakeredis

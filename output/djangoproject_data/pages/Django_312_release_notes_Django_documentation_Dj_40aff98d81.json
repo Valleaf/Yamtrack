@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.2/",
+  "title": "Django 3.1.2 release notes | Django documentation | Django",
+  "content": "Django 3.1.2 fixes several bugs in 3.1.1.\n\nFixed a bug in Django 3.1 where FileField instances with a callable storage were not correctly deconstructed (#31941).\n\nFixed a regression in Django 3.1 where the QuerySet.ordered attribute returned incorrectly True for GROUP BY queries (e.g. .annotate().values()) on models with Meta.ordering. A model’s Meta.ordering doesn’t affect such queries (#31990).\n\nFixed a regression in Django 3.1 where a queryset would crash if it contained an aggregation and a Q object annotation (#32007).\n\nFixed a bug in Django 3.1 where a test database was not synced during creation when using the MIGRATE test database setting (#32012).\n\nFixed a django.contrib.admin.EmptyFieldListFilter crash when using on a GenericRelation (#32038).\n\nFixed a regression in Django 3.1.1 where the admin changelist filter sidebar would not scroll for a long list of available filters (#31986).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.2/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.3/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs",
+  "title": "The Django admin documentation generator | Django documentation | Django",
+  "content": "Django’s admindocs app pulls documentation from the docstrings of models, views, template tags, and template filters for any app in INSTALLED_APPS and makes that documentation available from the Django admin.\n\nTo activate the admindocs, you will need to do the following:\n\nAdd django.contrib.admindocs to your INSTALLED_APPS.\n\nAdd path('admin/doc/', include('django.contrib.admindocs.urls')) to your urlpatterns. Make sure it’s included before the 'admin/' entry, so that requests to /admin/doc/ don’t get handled by the latter entry.\n\nInstall the docutils 0.22+ package.\n\nOptional: Using the admindocs bookmarklets requires django.contrib.admindocs.middleware.XViewMiddleware to be installed.\n\nOnce those steps are complete, you can start browsing the documentation by going to your admin interface and clicking the “Documentation” link in the upper right of the page.\n\nThe following special markup can be used in your docstrings to easily create hyperlinks to other components:\n\nreStructuredText roles\n\n:model:`app_label.ModelName`\n\n:view:`app_label.view_name`\n\n:template:`path/to/template.html`\n\nEach of these support custom link text with the format :role:`link text <link>`. For example, :tag:`block <built_in-block>`.\n\nSupport for custom link text was added.\n\nThe models section of the admindocs page describes each model that the user has access to along with all the fields, properties, and methods available on it. Relationships to other models appear as hyperlinks. Descriptions are pulled from help_text attributes on fields or from docstrings on model methods.\n\nA model with useful documentation might look like this:\n\nAccess was restricted to only allow users with model view or change permissions.\n\nEach URL in your site has a separate entry in the admindocs page, and clicking on a given URL will show you the corresponding view. Helpful things you can document in your view function docstrings include:\n\nA short description of what the view does.\n\nThe context, or a list of variables available in the view’s template.\n\nThe name of the template or templates that are used for that view.\n\nThe tags and filters admindocs sections describe all the tags and filters that come with Django (in fact, the built-in tag reference and built-in filter reference documentation come directly from those pages). Any tags or filters that you create or are added by a third-party app will show up in these sections as well.\n\nWhile admindocs does not include a place to document templates by themselves, if you use the :template:`path/to/template.html` syntax in a docstring the resulting page will verify the path of that template with Django’s template loaders. This can be a handy way to check if the specified template exists and to show where on the filesystem that template is stored.\n\nOne bookmarklet is available from the admindocs page:\n\nJumps you from any page to the documentation for the view that generates that page.\n\nUsing this bookmarklet requires that XViewMiddleware is installed and that you are logged into the Django admin as a User with is_staff set to True.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The Django admin documentation generator¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overview¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Documentation helpers¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "View reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Template tags and filters reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Template reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Included Bookmarklets¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "from django.shortcuts import render\n\nfrom myapp.models import MyModel\n\n\ndef my_view(request, slug):\n    \"\"\"\n    Display an individual :model:`myapp.MyModel`.\n\n    **Context**\n\n    ``mymodel``\n        An instance of :model:`myapp.MyModel`.\n\n    **Template:**\n\n    :template:`myapp/my_template.html`\n    \"\"\"\n    context = {\"mymodel\": MyModel.objects.get(slug=slug)}\n    return render(request, \"myapp/my_template.html\", context)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs",
+    "https://docs.djangoproject.com/en/stable/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/filters/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/javascript/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

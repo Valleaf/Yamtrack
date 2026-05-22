@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/templates/",
+  "title": "Templates | Django documentation | Django",
+  "content": "Django’s template engine provides a powerful mini-language for defining the user-facing layer of your application, encouraging a clean separation of application and presentation logic. Templates can be maintained by anyone with an understanding of HTML; no knowledge of Python is required. For introductory material, see Templates topic guide.\n\nFor information on writing your own custom tags and filters, see How to create custom template tags and filters.\n\nTo learn how to override templates in other Django applications, see How to override templates.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Templates¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/templates/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-template-tags/",
+    "https://docs.djangoproject.com/en/stable/howto/overriding-templates/",
+    "https://docs.djangoproject.com/en/stable/ref/tasks/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/admin/",
+  "title": "GeoDjango’s admin site | Django documentation | Django",
+  "content": "The widget class to be used for GeometryField. Defaults to OSMWidget.\n\nThe keyword arguments that would be passed to the gis_widget. Defaults to an empty dictionary.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoDjango’s admin site¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GISModelAdmin¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/commands/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/feeds/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

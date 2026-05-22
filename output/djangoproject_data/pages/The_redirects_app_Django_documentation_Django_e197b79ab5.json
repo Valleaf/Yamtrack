@@ -1,0 +1,67 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/redirects/",
+  "title": "The redirects app | Django documentation | Django",
+  "content": "Django comes with an optional redirects application. It lets you store redirects in a database and handles the redirecting for you. It uses the HTTP response status code 301 Moved Permanently by default.\n\nTo install the redirects app, follow these steps:\n\nEnsure that the django.contrib.sites framework is installed.\n\nAdd 'django.contrib.redirects' to your INSTALLED_APPS setting.\n\nAdd 'django.contrib.redirects.middleware.RedirectFallbackMiddleware' to your MIDDLEWARE setting.\n\nRun the command manage.py migrate.\n\nmanage.py migrate creates a django_redirect table in your database. This is a lookup table with site_id, old_path and new_path fields.\n\nThe RedirectFallbackMiddleware does all of the work. Each time any Django application raises a 404 error, this middleware checks the redirects database for the requested URL as a last resort. Specifically, it checks for a redirect with the given old_path with a site ID that corresponds to the SITE_ID setting.\n\nIf it finds a match, and new_path is not empty, it redirects to new_path using a 301 (“Moved Permanently”) redirect. You can subclass RedirectFallbackMiddleware and set response_redirect_class to django.http.HttpResponseRedirect to use a 302 Moved Temporarily redirect instead.\n\nIf it finds a match, and new_path is empty, it sends a 410 (“Gone”) HTTP header and empty (content-less) response.\n\nIf it doesn’t find a match, the request continues to be processed as usual.\n\nThe middleware only gets activated for 404s – not for 500s or responses of any other status code.\n\nNote that the order of MIDDLEWARE matters. Generally, you can put RedirectFallbackMiddleware at the end of the list, because it’s a last resort.\n\nFor more on middleware, read the middleware docs.\n\nIf you’ve activated the automatic Django admin interface, you should see a “Redirects” section on the admin index page. Edit redirects as you edit any other object in the system.\n\nRedirects are represented by a standard Django model, which lives in django/contrib/redirects/models.py. You can access redirect objects via the Django database API. For example:\n\nYou can change the HttpResponse classes used by the middleware by creating a subclass of RedirectFallbackMiddleware and overriding response_gone_class and/or response_redirect_class.\n\nThe HttpResponse class used when a Redirect is not found for the requested path or has a blank new_path value.\n\nDefaults to HttpResponseGone.\n\nThe HttpResponse class that handles the redirect.\n\nDefaults to HttpResponsePermanentRedirect.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The redirects app¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How it works¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How to add, change and delete redirects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Via the admin interface¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Via the Python API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Middleware¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Redirects are represented by a standard Django model, which lives in django/contrib/redirects/models.py. You can access redirect objects via the Django database API. For example:",
+      "code": ">>> from django.conf import settings\n>>> from django.contrib.redirects.models import Redirect\n>>> # Add a new redirect.\n>>> redirect = Redirect.objects.create(\n...     site_id=1,\n...     old_path=\"/contact-us/\",\n...     new_path=\"/contact/\",\n... )\n>>> # Change a redirect.\n>>> redirect.new_path = \"/contact-details/\"\n>>> redirect.save()\n>>> redirect\n<Redirect: /contact-us/ ---> /contact-details/>\n>>> # Delete a redirect.\n>>> Redirect.objects.filter(site_id=1, old_path=\"/contact-us/\").delete()\n(1, {'redirects.Redirect': 1})"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/redirects/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sites/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/http/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

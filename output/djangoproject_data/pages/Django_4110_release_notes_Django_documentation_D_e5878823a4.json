@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.10/",
+  "title": "Django 4.1.10 release notes | Django documentation | Django",
+  "content": "Django 4.1.10 fixes a security issue with severity “moderate” in 4.1.9.\n\nEmailValidator and URLValidator were subject to potential regular expression denial of service attack via a very large number of domain name labels of emails and URLs.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-36053: Potential regular expression denial of service vulnerability in EmailValidator/URLValidator¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.11/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

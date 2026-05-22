@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.0.13/",
+  "title": "Django 3.0.13 release notes | Django documentation | Django",
+  "content": "Django 3.0.13 fixes a security issue in 3.0.12.\n\nDjango contains a copy of urllib.parse.parse_qsl() which was added to backport some security fixes. A further security fix has been issued recently such that parse_qsl() no longer allows using ; as a query parameter separator by default. Django now includes this fix. See bpo-42967 for further details.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.0.13 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-23336: Web cache poisoning via django.utils.http.limited_parse_qsl()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.0.13/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.14/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.12/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

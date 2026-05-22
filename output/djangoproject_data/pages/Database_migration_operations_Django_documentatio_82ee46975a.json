@@ -1,0 +1,101 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+  "title": "Database migration operations | Django documentation | Django",
+  "content": "All of these operations are available from the django.contrib.postgres.operations module.\n\nYou can create a PostgreSQL extension in your database using a migration file. This example creates an hstore extension, but the same principles apply for other extensions.\n\nSet up the hstore extension in PostgreSQL before the first CreateModel or AddField operation that involves HStoreField by adding a migration with the HStoreExtension operation. For example:\n\nThe operation skips adding the extension if it already exists.\n\nFor most extensions, this requires a database user with superuser privileges. If the Django database user doesn’t have the appropriate privileges, you’ll have to create the extension outside of Django migrations with a user that has them. In that case, connect to your Django database and run the query CREATE EXTENSION IF NOT EXISTS hstore;.\n\nAn Operation subclass which installs a PostgreSQL extension. For common extensions, use one of the more specific subclasses below.\n\nThis is a required argument. The name of the extension to be installed.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the bloom extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the btree_gin extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the btree_gist extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the citext extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the pgcrypto extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the hstore extension and also sets up the connection to interpret hstore data for possible use in subsequent migrations.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the pg_trgm extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nInstalls the unaccent extension.\n\nThe optional hints argument will be passed as **hints to the allow_migrate() method of database routers to assist them in making routing decisions.\n\nIf you need to filter or order a column using a particular collation that your operating system provides but PostgreSQL does not, you can manage collations in your database using a migration file. These collations can then be used with the db_collation parameter on CharField, TextField, and their subclasses.\n\nFor example, to create a collation for German phone book ordering:\n\nCreates a collation with the given name, locale and provider.\n\nSet the deterministic parameter to False to create a non-deterministic collation, such as for case-insensitive filtering.\n\nRemoves the collations named name.\n\nWhen reversed this is creating a collation with the provided locale, provider, and deterministic arguments. Therefore, locale is required to make this operation reversible.\n\nPostgreSQL supports the CONCURRENTLY option to CREATE INDEX and DROP INDEX statements to add and remove indexes without locking out writes. This option is useful for adding or removing an index in a live production database.\n\nLike AddIndex, but creates an index with the CONCURRENTLY option. This has a few caveats to be aware of when using this option, see the PostgreSQL documentation of building indexes concurrently.\n\nLike RemoveIndex, but removes the index with the CONCURRENTLY option. This has a few caveats to be aware of when using this option, see the PostgreSQL documentation.\n\nThe CONCURRENTLY option is not supported inside a transaction (see non-atomic migration).\n\nPostgreSQL supports the NOT VALID option with the ADD CONSTRAINT statement to add check constraints without enforcing validation on existing rows. This option is useful if you want to skip the potentially lengthy scan of the table to verify that all existing rows satisfy the constraint.\n\nTo validate check constraints created with the NOT VALID option at a later point of time, use the ValidateConstraint operation.\n\nSee the PostgreSQL documentation for more details.\n\nLike AddConstraint, but avoids validating the constraint on existing rows.\n\nScans through the table and validates the given check constraint on existing rows.\n\nAddConstraintNotValid and ValidateConstraint operations should be performed in two separate migrations. Performing both operations in the same atomic migration has the same effect as AddConstraint, whereas performing them in a single non-atomic migration, may leave your database in an inconsistent state if the ValidateConstraint operation fails.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Database migration operations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating extension using migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CreateExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BloomExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BtreeGinExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BtreeGistExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CITextExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CryptoExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "HStoreExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "TrigramExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "UnaccentExtension¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Managing collations using migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Concurrent index operations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Adding constraints without enforcing validation¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Set up the hstore extension in PostgreSQL before the first CreateModel or AddField operation that involves HStoreField by adding a migration with the HStoreExtension operation. For example:",
+      "code": "from django.contrib.postgres.operations import HStoreExtension\n\n\nclass Migration(migrations.Migration):\n    ...\n\n    operations = [HStoreExtension(), ...]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/db/multi-db/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/howto/writing-migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

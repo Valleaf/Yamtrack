@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.2.4/",
+  "title": "Django 1.2.4 release notes | Django documentation | Django",
+  "content": "Welcome to Django 1.2.4!\n\nThis is the fourth “bugfix” release in the Django 1.2 series, improving the stability and performance of the Django 1.2 codebase.\n\nWith one exception, Django 1.2.4 maintains backwards compatibility with Django 1.2.3. It also contains a number of fixes and other improvements. Django 1.2.4 is a recommended upgrade for any development or deployment currently using or targeting Django 1.2.\n\nFor full details on the new features, backwards incompatibilities, and deprecated features in the 1.2 branch, see the Django 1.2 release notes.\n\nThe Django administrative interface, django.contrib.admin, supports filtering of displayed lists of objects by fields on the corresponding models, including across database-level relationships. This is implemented by passing lookup arguments in the querystring portion of the URL, and options on the ModelAdmin class allow developers to specify particular fields or relationships which will generate automatic links for filtering.\n\nOne historically-undocumented and -unofficially-supported feature has been the ability for a user with sufficient knowledge of a model’s structure and the format of these lookup arguments to invent useful new filters on the fly by manipulating the querystring.\n\nHowever, it has been demonstrated that this can be abused to gain access to information outside of an admin user’s permissions; for example, an attacker with access to the admin and sufficient knowledge of model structure and relations could construct query strings which – with repeated use of regular-expression lookups supported by the Django database API – expose sensitive information such as users’ password hashes.\n\nTo remedy this, django.contrib.admin will now validate that querystring lookup arguments either specify only fields on the model being viewed, or cross relations which have been explicitly allowed by the application developer using the preexisting mechanism mentioned above. This is backwards-incompatible for any users relying on the prior ability to insert arbitrary lookups.\n\nOrdinarily, a point release would not include new features, but in the case of Django 1.2.4, we have made an exception to this rule.\n\nOne of the bugs fixed in Django 1.2.4 involves a set of circumstances whereby a running a test suite on a multiple database configuration could cause the original source database (i.e., the actual production database) to be dropped, causing catastrophic loss of data. In order to provide a fix for this problem, it was necessary to introduce a new setting – TEST_DEPENDENCIES – that allows you to define any creation order dependencies in your database configuration.\n\nMost users – even users with multiple-database configurations – need not be concerned about the data loss bug, or the manual configuration of TEST_DEPENDENCIES. See the original problem report documentation on controlling the creation order of test databases for details.\n\nThe function-based TEST_RUNNER previously used to execute the GeoDjango test suite, django.contrib.gis.tests.run_gis_tests, was finally deprecated in favor of a class-based test runner, django.contrib.gis.tests.GeoDjangoTestSuiteRunner, added in this release.\n\nIn addition, the GeoDjango test suite is now included when running the Django test suite with runtests.py and using spatial database backends.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.2.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Restricted filters in admin interface¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "One new feature¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GeoDjango¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.2.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.2/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/releases/1.2.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.2.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.0.1/",
+  "title": "Django 1.0.1 release notes | Django documentation | Django",
+  "content": "Welcome to Django 1.0.1!\n\nThis is the first “bugfix” release in the Django 1.0 series, improving the stability and performance of the Django 1.0 codebase. As such, Django 1.0.1 contains no new features (and, pursuant to our compatibility policy, maintains backwards compatibility with Django 1.0), but does contain a number of fixes and other improvements. Django 1.0.1 is a recommended upgrade for any development or deployment currently using or targeting Django 1.0.\n\nDjango 1.0.1 contains over two hundred fixes to the original Django 1.0 codebase; full details of every fix are available in the history of the 1.0.X branch, but here are some of the highlights:\n\nSeveral fixes in django.contrib.comments, pertaining to RSS feeds of comments, default ordering of comments and the XHTML and internationalization of the default templates for comments.\n\nMultiple fixes for Django’s support of Oracle databases, including pagination support for GIS QuerySets, more efficient slicing of results and improved introspection of existing databases.\n\nSeveral fixes for query support in the Django object-relational mapper, including repeated setting and resetting of ordering and fixes for working with INSERT-only queries.\n\nMultiple fixes for inline forms in formsets.\n\nMultiple fixes for unique and unique_together model constraints in automatically-generated forms.\n\nFixed support for custom callable upload_to declarations when handling file uploads through automatically-generated forms.\n\nFixed support for sorting an admin change list based on a callable attributes in list_display.\n\nA fix to the application of autoescaping for literal strings passed to the join template filter. Previously, literal strings passed to join were automatically escaped, contrary to the documented behavior for autoescaping and literal strings. Literal strings passed to join are no longer automatically escaped, meaning you must now manually escape them; this is an incompatibility if you were relying on this bug, but not if you were relying on escaping behaving as documented.\n\nImproved and expanded translation files for many of the languages Django supports by default.\n\nAnd as always, a large number of improvements to Django’s documentation, including both corrections to existing documents and expanded and new documentation.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.0.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Fixes and improvements in Django 1.0.1¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.0.1/",
+    "https://docs.djangoproject.com/en/stable/misc/api-stability/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/releases/1.0.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.0/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

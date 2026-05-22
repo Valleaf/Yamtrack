@@ -1,0 +1,120 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/tasks/",
+  "title": "Django’s Tasks framework | Django documentation | Django",
+  "content": "For older Django versions, the django-tasks backport is available.\n\nFor a web application, there’s often more than just turning HTTP requests into HTTP responses. For some functionality, it may be beneficial to run code outside the request-response cycle.\n\nThat’s where background Tasks come in.\n\nBackground Tasks can offload work to be run outside the request-response cycle, to be run elsewhere, potentially at a later date. This keeps requests fast, reduces latency, and improves the user experience. For example, a user shouldn’t have to wait for an email to send before their page finishes loading.\n\nDjango’s Tasks framework makes it easy to define and enqueue such work. It does not provide a worker mechanism to run Tasks. The actual execution must be handled by infrastructure outside Django, such as a separate process or service. Given that, a task backend capable of executing tasks on that service should be evaluated and configured.\n\nWhen work needs to be done in the background, Django creates a Task, which is stored in the Queue Store. This Task contains all the metadata needed to execute it, as well as a unique identifier for Django to retrieve the result later.\n\nA Worker will look at the Queue Store for new Tasks to run. When a new Task is added, a Worker claims the Task, executes it, and saves the status and result back to the Queue Store. These workers run outside the request-response lifecycle.\n\nThe Task backend determines how and where Tasks are stored for execution and how they are executed. Different Task backends have different characteristics and configuration options, which may impact the performance and reliability of your application. Django comes with built-in backends, but these are for development and testing only.\n\nDjango handles task definition, validation, queuing, and result handling, not execution, so production setups need a backend or worker process that actually runs queued work. Relevant options are listed in the Community Ecosystem page.\n\nTask backends are configured using the TASKS setting in your settings file. Whilst most applications will only need a single backend, multiple are supported.\n\nThis is the default backend if another is not specified in your settings file. The ImmediateBackend runs enqueued Tasks immediately, rather than in the background. This allows background Task functionality to be slowly added to an application, before the required infrastructure is available.\n\nTo use it, set BACKEND to \"django.tasks.backends.immediate.ImmediateBackend\":\n\nThe ImmediateBackend may also be useful in tests, to bypass the need to run a real background worker in your tests.\n\nThe DummyBackend doesn’t execute enqueued Tasks at all, instead storing results for later use. Task results will forever remain in the READY state.\n\nThis backend is not intended for use in production - it is provided as a convenience that can be used during development and testing.\n\nTo use it, set BACKEND to \"django.tasks.backends.dummy.DummyBackend\":\n\nThe results for enqueued Tasks can be retrieved from the backend’s results attribute:\n\nStored results can be cleared using the clear() method:\n\nAs mentioned at the beginning of this section, Django includes backends suitable for development and testing only. Production systems should rely on backends that supply a worker process and a durable queue implementation. Available third-party backends are listed on the Community Ecosystem page and the Tasks framework grid from Django Packages.\n\nTo use an external Task backend with Django, use the Python import path as the BACKEND of the TASKS setting, like so:\n\nA Task backend is a class that inherits BaseTaskBackend. At a minimum, it must implement BaseTaskBackend.enqueue(). If you’re building your own backend, you can use the built-in Task backends as reference implementations. You’ll find the code in the django/tasks/backends/ directory of the Django source.\n\nDjango has developing support for asynchronous Task backends.\n\nBaseTaskBackend has async variants of all base methods. By convention, the asynchronous versions of all methods are prefixed with a. The arguments for both variants are the same.\n\nBackends can be retrieved using the task_backends connection handler:\n\nThe “default” backend is available as default_task_backend:\n\nTasks are defined using the django.tasks.task() decorator on a module-level function:\n\nThe return value of the decorator is a Task instance.\n\nTask attributes can be customized via the @task decorator arguments:\n\nBy convention, Tasks are defined in a tasks.py file, however this is not enforced.\n\nSometimes, the running Task may need to know context about how it was enqueued, and how it is being executed. This can be accessed by taking a context argument, which is an instance of TaskContext.\n\nTo receive the Task context as an argument to your Task function, pass takes_context when defining it:\n\nBefore enqueueing Tasks, it may be necessary to modify certain parameters of the Task. For example, to give it a higher priority than it would normally.\n\nA Task instance cannot be modified directly. Instead, a modified instance can be created with the using() method, leaving the original as-is. For example:\n\nTo add the Task to the queue store, so it will be executed, call the enqueue() method on it. If the Task takes arguments, these can be passed as-is. For example:\n\nThis returns a TaskResult, which can be used to retrieve the result of the Task once it has finished executing.\n\nTo enqueue Tasks in an async context, aenqueue() is available as an async variant of enqueue().\n\nBecause both Task arguments and return values are serialized to JSON, they must be JSON-serializable:\n\nArguments must also be able to round-trip through a json.dumps()/ json.loads() cycle without changing type. For example, consider this Task:\n\nWith the ImmediateBackend configured as the default backend:\n\nThe double_dictionary Task fails because after the JSON round-trip the tuple (1, 2, 3) becomes the list [1, 2, 3], which cannot be used as a dictionary key.\n\nIn general, complex objects such as model instances, or built-in types like datetime and tuple cannot be used in Tasks without additional conversion.\n\nFor most backends, Tasks are run in a separate process, using a different database connection. When using a transaction, without waiting for it to commit, workers could start to process a Task which uses objects it can’t access yet.\n\nFor example, consider this simplified example:\n\nTo prevent the scenario where my_task runs before the Thing is committed to the database, use transaction.on_commit(), binding all arguments to enqueue() via functools.partial():\n\nWhen enqueueing a Task, you receive a TaskResult, however it’s likely useful to retrieve the result from somewhere else (for example another request or another Task).\n\nEach TaskResult has a unique id, which can be used to identify and retrieve the result once the code which enqueued the Task has finished.\n\nThe get_result() method can retrieve a result based on its id:\n\nTo retrieve a TaskResult, regardless of which kind of Task it was from, use the get_result() method on the backend:\n\nTo retrieve results in an async context, aget_result() is available as an async variant of get_result() on both the backend and Task.\n\nSome backends, such as the built-in ImmediateBackend do not support get_result(). Calling get_result() on these backends will raise NotImplementedError.\n\nA TaskResult contains the status of a Task’s execution at the point it was retrieved. If the Task finishes after get_result() is called, it will not update.\n\nTo refresh the values, call the django.tasks.TaskResult.refresh() method:\n\nIf your Task function returns something, it can be retrieved from the django.tasks.TaskResult.return_value attribute:\n\nIf the Task has not finished executing, or has failed, ValueError is raised.\n\nIf the Task doesn’t succeed, and instead raises an exception, either as part of the Task or as part of running it, the exception and traceback are saved to the django.tasks.TaskResult.errors list.\n\nEach entry in errors is a TaskError containing information about error raised during the execution:\n\nNote that this is just the type of exception, and contains no other values. The traceback information is reduced to a string which you can use to help debugging:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django’s Tasks framework¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Background Task fundamentals¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Configuring a Task backend¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Immediate execution¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dummy backend¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Third-party backends¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Asynchronous support¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Retrieving backends¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Defining Tasks¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Task context¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Modifying Tasks¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Enqueueing Tasks¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Transactions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Task results¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Updating results¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Return values¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Errors¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "A Task instance cannot be modified directly. Instead, a modified instance can be created with the using() method, leaving the original as-is. For example:",
+      "code": ">>> email_users.priority\n0\n>>> email_users.using(priority=10).priority\n10"
+    },
+    {
+      "description": "To add the Task to the queue store, so it will be executed, call the enqueue() method on it. If the Task takes arguments, these can be passed as-is. For example:",
+      "code": "result = email_users.enqueue(\n    emails=[\"user@example.com\"],\n    subject=\"You have a message\",\n    message=\"Hello there!\",\n)"
+    },
+    {
+      "description": "For example, consider this simplified example:",
+      "code": "@task\ndef my_task(thing_num):\n    Thing.objects.get(num=thing_num)\n\n\nwith transaction.atomic():\n    Thing.objects.create(num=1)\n    my_task.enqueue(thing_num=1)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/tasks/",
+    "https://docs.djangoproject.com/en/stable/ref/tasks/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/",
+  "title": "The flatpages app | Django documentation | Django",
+  "content": "Django comes with an optional “flatpages” application. It lets you store “flat” HTML content in a database and handles the management for you via Django’s admin interface and a Python API.\n\nA flatpage is an object with a URL, title and content. Use it for one-off, special-case pages, such as “About” or “Privacy Policy” pages, that you want to store in a database but for which you don’t want to develop a custom Django application.\n\nA flatpage can use a custom template or a default, systemwide flatpage template. It can be associated with one, or multiple, sites.\n\nThe content field may optionally be left blank if you prefer to put your content in a custom template.\n\nTo install the flatpages app, follow these steps:\n\nInstall the sites framework by adding 'django.contrib.sites' to your INSTALLED_APPS setting, if it’s not already in there.\n\nAlso make sure you’ve correctly set SITE_ID to the ID of the site the settings file represents. This will usually be 1 (i.e. SITE_ID = 1), but if you’re using the sites framework to manage multiple sites, it could be the ID of a different site.\n\nAdd 'django.contrib.flatpages' to your INSTALLED_APPS setting.\n\nAdd an entry in your URLconf. For example:\n\nAdd 'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware' to your MIDDLEWARE setting.\n\nRun the command manage.py migrate.\n\nmanage.py migrate creates two tables in your database: django_flatpage and django_flatpage_sites. django_flatpage is a lookup table that maps a URL to a title and bunch of text content. django_flatpage_sites associates a flatpage with a site.\n\nThere are several ways to include the flatpages in your URLconf. You can dedicate a particular path to flatpages:\n\nYou can also set it up as a “catchall” pattern. In this case, it is important to place the pattern at the end of the other urlpatterns:\n\nIf you set APPEND_SLASH to False, you must remove the slash in the catchall pattern or flatpages without a trailing slash will not be matched.\n\nAnother common setup is to use flatpages for a limited set of known pages and to hardcode their URLs in the URLconf:\n\nThe kwargs argument sets the url value used for the FlatPage model lookup in the flatpage view.\n\nThe name argument allows the URL to be reversed in templates, for example using the url template tag.\n\nThe FlatpageFallbackMiddleware can do all of the work.\n\nEach time any Django application raises a 404 error, this middleware checks the flatpages database for the requested URL as a last resort. Specifically, it checks for a flatpage with the given URL with a site ID that corresponds to the SITE_ID setting.\n\nIf it finds a match, it follows this algorithm:\n\nIf the flatpage has a custom template, it loads that template. Otherwise, it loads the template flatpages/default.html.\n\nIt passes that template a single context variable, flatpage, which is the flatpage object. It uses RequestContext in rendering the template.\n\nThe middleware will only add a trailing slash and redirect (by looking at the APPEND_SLASH setting) if the resulting URL refers to a valid flatpage. Redirects are permanent (301 status code).\n\nIf it doesn’t find a match, the request continues to be processed as usual.\n\nThe middleware only gets activated for 404s – not for 500s or responses of any other status code.\n\nFlatpages will not apply view middleware\n\nBecause the FlatpageFallbackMiddleware is applied only after URL resolution has failed and produced a 404, the response it returns will not apply any view middleware methods. Only requests which are successfully routed to a view via normal URL resolution apply view middleware.\n\nNote that the order of MIDDLEWARE matters. Generally, you can put FlatpageFallbackMiddleware at the end of the list. This means it will run first when processing the response, and ensures that any other response-processing middleware see the real flatpage response rather than the 404.\n\nFor more on middleware, read the middleware docs.\n\nEnsure that your 404 template works\n\nNote that the FlatpageFallbackMiddleware only steps in once another view has successfully produced a 404 response. If another view or middleware class attempts to produce a 404 but ends up raising an exception instead, the response will become an HTTP 500 (“Internal Server Error”) and the FlatpageFallbackMiddleware will not attempt to serve a flatpage.\n\nPermissions to add or edit flatpages should be restricted to trusted users. Flatpages are defined by raw HTML and are not sanitized by Django. As a consequence, a malicious flatpage can lead to various security vulnerabilities, including permission escalation.\n\nIf you’ve activated the automatic Django admin interface, you should see a “Flatpages” section on the admin index page. Edit flatpages as you edit any other object in the system.\n\nThe FlatPage model has an enable_comments field that isn’t used by contrib.flatpages, but that could be useful for your project or third-party apps. It doesn’t appear in the admin interface, but you can add it by registering a custom ModelAdmin for FlatPage:\n\nFlatpages are represented by a standard Django model, FlatPage. You can access flatpage objects via the Django database API.\n\nCheck for duplicate flatpage URLs.\n\nIf you add or modify flatpages via your own code, you will likely want to check for duplicate flatpage URLs within the same site. The flatpage form used in the admin performs this validation check, and can be imported from django.contrib.flatpages.forms.FlatpageForm and used in your own views.\n\nFlatPage objects have the following fields:\n\nRequired. 100 characters or fewer. Indexed for faster lookups.\n\nRequired. 200 characters or fewer.\n\nOptional (blank=True). TextField that typically, contains the HTML content of the page.\n\nBoolean. This field is not used by flatpages by default and does not appear in the admin interface. Please see flatpages admin interface section for a detailed explanation.\n\nOptional (blank=True). 70 characters or fewer. Specifies the template used to render the page. Defaults to flatpages/default.html if not provided.\n\nMany-to-many relationship to Site, which determines the sites the flatpage is available on.\n\nReturns the relative URL path of the page based on the url attribute.\n\nBy default, flatpages are rendered via the template flatpages/default.html, but you can override that for a particular flatpage: in the admin, a collapsed fieldset titled “Advanced options” (clicking will expand it) contains a field for specifying a template name. If you’re creating a flatpage via the Python API you can set the template name as the field template_name on the FlatPage object.\n\nCreating the flatpages/default.html template is your responsibility; in your template directory, create a flatpages directory containing a file default.html.\n\nFlatpage templates are passed a single context variable, flatpage, which is the flatpage object.\n\nHere’s a sample flatpages/default.html template:\n\nSince you’re already entering raw HTML into the admin page for a flatpage, both flatpage.title and flatpage.content are marked as not requiring automatic HTML escaping in the template.\n\nThe flatpages app provides a template tag that allows you to iterate over all of the available flatpages on the current site.\n\nLike all custom template tags, you’ll need to load its custom tag library before you can use it. After loading the library, you can retrieve all current flatpages via the get_flatpages tag:\n\nBy default, the get_flatpages template tag will only show flatpages that are marked registration_required = False. If you want to display registration-protected flatpages, you need to specify an authenticated user using a for clause.\n\nIf you provide an anonymous user, get_flatpages will behave the same as if you hadn’t provided a user – i.e., it will only show you public flatpages.\n\nAn optional argument, starts_with, can be applied to limit the returned pages to those beginning with a particular base URL. This argument may be passed as a string, or as a variable to be resolved from the context.\n\nThe sitemaps.FlatPageSitemap class looks at all publicly visible flatpages defined for the current SITE_ID (see the sites documentation) and creates an entry in the sitemap. These entries include only the location attribute – not lastmod, changefreq or priority.\n\nHere’s an example of a URLconf using FlatPageSitemap:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The flatpages app¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How it works¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using the URLconf¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using the middleware¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "How to add, change and delete flatpages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Via the admin interface¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Via the Python API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "FlatPage model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Flatpage templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Getting a list of FlatPage objects in your templates¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Displaying registration_required flatpages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Limiting flatpages by base URL¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Integrating with django.contrib.sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Example¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Add an entry in your URLconf. For example:",
+      "code": "urlpatterns = [\n    path(\"pages/\", include(\"django.contrib.flatpages.urls\")),\n]"
+    },
+    {
+      "description": "For example:",
+      "code": "{% get_flatpages for someuser as about_pages %}"
+    },
+    {
+      "description": "For example:",
+      "code": "{% get_flatpages '/about/' as about_pages %}\n{% get_flatpages about_prefix as about_pages %}\n{% get_flatpages '/about/' for someuser as about_pages %}"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sites/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/topics/http/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

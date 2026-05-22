@@ -1,0 +1,110 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/new-contributors/",
+  "title": "Advice for new contributors | Django documentation | Django",
+  "content": "New contributor and not sure what to do? Want to help but just don’t know how to get started? This is the section for you.\n\nIf you are new to contributing to Django, the Writing your first contribution for Django tutorial will give you an introduction to the tools and the workflow.\n\nThis page contains more general advice on ways you can contribute to Django, and how to approach that.\n\nIf you are looking for a reference on the details of making code contributions, see the Contributing code documentation.\n\nStart with these steps to discover Django’s development process.\n\nIf an unreviewed ticket reports a bug, try and reproduce it. If you can reproduce it and it seems valid, make a note that you confirmed the bug and accept the ticket. Make sure the ticket is filed under the correct component area. Consider writing a patch that adds a test for the bug’s behavior, even if you don’t fix the bug itself. See more at How can I help with development?.\n\nThis will help you build familiarity with the codebase and processes. Mark the appropriate flags if a patch needs docs or tests. Look through the changes a patch makes, and keep an eye out for syntax that is incompatible with older but still supported versions of Python. Run the tests and make sure they pass. Where possible and relevant, try them out on a database other than SQLite. Leave comments and feedback!\n\nOftentimes the codebase will change between a patch being submitted and the time it gets reviewed. Make sure it still applies cleanly and functions as expected. Updating a patch is both useful and important! See more on Contribution checklist.\n\nDjango’s documentation is great but it can always be improved. Did you find a typo? Do you think that something should be clarified? Go ahead and suggest a documentation patch! See also the guide on Writing documentation.\n\nThe reports page contains links to many useful Trac queries, including several that are useful for triaging tickets and reviewing patches as suggested above.\n\nThe code that you write belongs to you or your employer. If your contribution is more than one or two lines of code, you have the option to sign the CLA. See the Contributor License Agreement FAQ for a more thorough explanation.\n\nAs a newcomer on a large project, it’s easy to experience frustration. Here’s some advice to make your work on Django more useful and rewarding.\n\nThis should be something that you care about, that you are familiar with or that you want to learn about. You don’t already have to be an expert on the area you want to work on; you become an expert through your ongoing contributions to the code.\n\nTrac isn’t an absolute; the context is just as important as the words. When reading Trac, you need to take into account who says things, and when they were said. Support for an idea two years ago doesn’t necessarily mean that the idea will still have support. You also need to pay attention to who hasn’t spoken – for example, if an experienced contributor hasn’t been recently involved in a discussion, then a ticket may not have the support required to get into Django.\n\nIt’s easier to get feedback on a little issue than on a big one. See the easy pickings.\n\nThis means getting someone else to confirm that a bug is real before you fix the issue, and ensuring that there’s consensus on a proposed feature before you go implementing it.\n\nSometimes it can be scary to put your opinion out to the world and say “this ticket is correct” or “this patch needs work”, but it’s the only way the project moves forward. The contributions of the broad Django community ultimately have a much greater impact than that of any one person. We can’t do it without you!\n\nIf you’re really not certain if a ticket is ready, don’t mark it as such. Leave a comment instead, letting others know your thoughts. If you’re mostly certain, but not completely certain, you might also try asking on the #contributing-getting-started channel in the Django Discord server to see if someone else can confirm your suspicions.\n\nFocus on one or two tickets, see them through from start to finish, and repeat. The shotgun approach of taking on lots of tickets and letting some fall by the wayside ends up doing more harm than good.\n\nWhen we say “PEP 8, and must have docs and tests”, we mean it. If a patch doesn’t have docs and tests, there had better be a good reason. Arguments like “I couldn’t find any existing tests of this feature” don’t carry much weight. While it may be true, that means you have the extra-important job of writing the very first tests for that feature, not that you get a pass from writing tests altogether.\n\nIt’s not always easy for your ticket or your patch to be reviewed quickly. This isn’t personal. There are a lot of tickets and pull requests to get through.\n\nKeeping your patch up to date is important. Review the ticket on Trac to ensure that the Needs tests, Needs documentation, and Patch needs improvement flags are unchecked once you’ve addressed all review comments.\n\nRemember that Django has an eight-month release cycle, so there’s plenty of time for your patch to be reviewed.\n\nFinally, a well-timed reminder can help. See contributing code FAQ for ideas here.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Advice for new contributors¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "First steps¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Triage tickets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Review patches of accepted tickets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Keep old patches up-to-date¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Write some documentation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sign the Contributor License Agreement¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Guidelines¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Pick a subject area¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Analyze tickets’ context and history¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Start small¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Confirm support before engaging in a big task¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Be bold! Leave feedback!¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Be cautious when marking things “Ready For Check-in”¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Wait for feedback, and respond to feedback that you receive¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Be rigorous¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Be patient¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/new-contributors/",
+    "https://docs.djangoproject.com/en/stable/intro/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/triaging-tickets/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/unit-tests/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/submitting-patches/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-documentation/",
+    "https://docs.djangoproject.com/en/stable/faq/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

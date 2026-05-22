@@ -1,0 +1,39 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/external-packages/",
+  "title": "External packages | Django documentation | Django",
+  "content": "Django ships with a variety of extra, optional tools that solve common problems (contrib.*). For easier maintenance and to trim the size of the codebase, a few of those applications have been moved out to separate projects.\n\ndjango-localflavor is a collection of utilities for particular countries and cultures.\n\ndjango-contrib-comments can be used to attach comments to any model, so you can use it for comments on blog entries, photos, book chapters, or anything else. Most users will be better served with a custom solution, or a hosted product like Disqus.\n\ndjango-formtools is a collection of assorted utilities to work with forms.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "External packages¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Localflavor¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Comments¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Formtools¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/external-packages/",
+    "https://docs.djangoproject.com/en/stable/topics/checks/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

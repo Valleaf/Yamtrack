@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.15/",
+  "title": "Django 1.11.15 release notes | Django documentation | Django",
+  "content": "Django 1.11.15 fixes a security issue in 1.11.14.\n\nIf the CommonMiddleware and the APPEND_SLASH setting are both enabled, and if the project has a URL pattern that accepts any path ending in a slash (many content management systems have such a pattern), then a request to a maliciously crafted URL of that site could lead to a redirect to another site, enabling phishing and other attacks.\n\nCommonMiddleware now escapes leading slashes to prevent redirects to other domains.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.15 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-14574: Open redirect possibility in CommonMiddleware¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.15/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.16/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.14/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

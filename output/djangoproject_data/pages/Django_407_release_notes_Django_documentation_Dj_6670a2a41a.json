@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.0.7/",
+  "title": "Django 4.0.7 release notes | Django documentation | Django",
+  "content": "Django 4.0.7 fixes a security issue with severity “high” in 4.0.6.\n\nAn application may have been vulnerable to a reflected file download (RFD) attack that sets the Content-Disposition header of a FileResponse when the filename was derived from user-supplied input. The filename is now escaped to avoid this possibility.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.0.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-36359: Potential reflected file download vulnerability in FileResponse¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.0.7/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0.8/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

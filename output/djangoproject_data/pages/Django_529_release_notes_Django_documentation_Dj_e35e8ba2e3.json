@@ -1,0 +1,42 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.9/",
+  "title": "Django 5.2.9 release notes | Django documentation | Django",
+  "content": "Django 5.2.9 fixes one security issue with severity “high”, one security issue with severity “moderate”, and several bugs in 5.2.8.\n\nFilteredRelation was subject to SQL injection in column aliases, using a suitably crafted dictionary, with dictionary expansion, as the **kwargs passed to QuerySet.annotate() or QuerySet.alias() on PostgreSQL.\n\nXML Serialization was subject to a potential denial-of-service attack due to quadratic time complexity when deserializing crafted documents containing many nested invalid elements. The internal helper django.core.serializers.xml_serializer.getInnerText() previously accumulated inner text inefficiently during recursion. It now collects text per element, avoiding excessive resource usage.\n\nFixed a bug in Django 5.2 where django.utils.feedgenerator.Stylesheet.__str__() did not escape the url, mimetype, and media attributes, potentially leading to invalid XML markup (#36733).\n\nFixed a bug in Django 5.2 on PostgreSQL where bulk_create() did not apply a field’s custom query placeholders (#36748).\n\nFixed a regression in Django 5.2.2 that caused a crash when using aggregate functions with an empty Q filter over a queryset with annotations (#36751).\n\nFixed a regression in Django 5.2.8 where DisallowedRedirect was raised by HttpResponseRedirect and HttpResponsePermanentRedirect for URLs longer than 2048 characters. The limit is now 16384 characters (#36743).\n\nFixed a crash on Python 3.14+ that prevented template tag functions from being registered when their type annotations required deferred evaluation (#36712).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-13372: Potential SQL injection in FilteredRelation column aliases on PostgreSQL¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-64460: Potential denial-of-service vulnerability in XML Deserializer¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.9/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.10/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

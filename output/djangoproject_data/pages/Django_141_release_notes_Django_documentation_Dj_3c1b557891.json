@@ -1,0 +1,24 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.1/",
+  "title": "Django 1.4.1 release notes | Django documentation | Django",
+  "content": "This is the first security release in the Django 1.4 series, fixing several security issues in Django 1.4. Django 1.4.1 is a recommended upgrade for all users of Django 1.4.\n\nFor a full list of issues addressed in this release, see the security advisory.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.1 release notes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.1/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

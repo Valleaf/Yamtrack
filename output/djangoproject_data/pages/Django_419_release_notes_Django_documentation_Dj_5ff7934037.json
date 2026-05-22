@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.9/",
+  "title": "Django 4.1.9 release notes | Django documentation | Django",
+  "content": "Django 4.1.9 fixes a security issue with severity “low” in 4.1.8.\n\nUploading multiple files using one form field has never been supported by forms.FileField or forms.ImageField as only the last uploaded file was validated. Unfortunately, Uploading multiple files topic suggested otherwise.\n\nIn order to avoid the vulnerability, ClearableFileInput and FileInput form widgets now raise ValueError when the multiple HTML attribute is set on them. To prevent the exception and keep the old behavior, set allow_multiple_selected to True.\n\nFor more details on using the new attribute and handling of multiple files through a single field, see Uploading multiple files.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-31047: Potential bypass of validation when uploading multiple files using one form field¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.9/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/http/file-uploads/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.6/",
+  "title": "Django 1.9.6 release notes | Django documentation | Django",
+  "content": "Django 1.9.6 fixes several bugs in 1.9.5.\n\nAdded support for relative path redirects to the test client and to SimpleTestCase.assertRedirects() because Django 1.9 no longer converts redirects to absolute URIs (#26428).\n\nFixed TimeField microseconds round-tripping on MySQL and SQLite (#26498).\n\nPrevented makemigrations from generating infinite migrations for a model field that references a functools.partial (#26475).\n\nFixed a regression where SessionBase.pop() returned None rather than raising a KeyError for nonexistent values (#26520).\n\nFixed a regression causing the cached template loader to crash when using template names starting with a dash (#26536).\n\nRestored conversion of an empty string to null when saving values of GenericIPAddressField on SQLite and MySQL (#26557).\n\nFixed a makemessages regression where temporary .py extensions were leaked in source file paths (#26341).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

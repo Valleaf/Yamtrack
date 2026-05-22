@@ -1,0 +1,93 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/geolibs/",
+  "title": "Installing Geospatial libraries | Django documentation | Django",
+  "content": "GeoDjango uses and/or provides interfaces for the following open source geospatial libraries:\n\nGeometry Engine Open Source\n\n3.14, 3.13, 3.12, 3.11, 3.10, 3.9, 3.8\n\nCartographic Projections library\n\nYes (PostgreSQL and SQLite only)\n\nGeospatial Data Abstraction Library\n\n3.11, 3.10, 3.9, 3.8, 3.7, 3.6, 3.5, 3.4, 3.3, 3.2, 3.1\n\nIP-based geolocation library\n\nSpatial extensions for PostgreSQL\n\nYes (PostgreSQL only)\n\n3.5, 3.4, 3.3, 3.2, 3.1\n\nSpatial extensions for SQLite\n\nNote that older or more recent versions of these libraries may also work totally fine with GeoDjango. Your mileage may vary.\n\nThe GeoDjango interfaces to GEOS, GDAL, and GeoIP may be used independently of Django. In other words, no database or settings file required – import them as normal from django.contrib.gis.\n\nOn Debian/Ubuntu, you are advised to install the following packages which will install, directly or by dependency, the required geospatial libraries:\n\nPlease also consult platform-specific instructions if you are on macOS or Windows.\n\nWhen installing from source on UNIX and GNU/Linux systems, please follow the installation instructions carefully, and install the libraries in the given order. If using MySQL or Oracle as the spatial database, only GEOS is required.\n\nOn Linux platforms, it may be necessary to run the ldconfig command after installing each library. For example:\n\nmacOS users must install Xcode in order to compile software from source.\n\nGEOS is a C++ library for performing geometric operations, and is the default internal geometry representation used by GeoDjango (it’s behind the “lazy” geometries). Specifically, the C API library is called (e.g., libgeos_c.so) directly from Python using ctypes.\n\nFirst, download GEOS from the GEOS website and untar the source archive:\n\nThen step into the GEOS directory, create a build folder, and step into it:\n\nThen build and install the package:\n\nWhen GeoDjango can’t find GEOS, this error is raised:\n\nThe most common solution is to properly configure your Library environment settings or set GEOS_LIBRARY_PATH in your settings.\n\nIf using a binary package of GEOS (e.g., on Ubuntu), you may need to Install binutils.\n\nIf your GEOS library is in a non-standard location, or you don’t want to modify the system’s library path then the GEOS_LIBRARY_PATH setting may be added to your Django settings file with the full path to the GEOS C library. For example:\n\nThe setting must be the full path to the C shared library; in other words you want to use libgeos_c.so, not libgeos.so.\n\nSee also My logs are filled with GEOS-related errors.\n\nPROJ is a library for converting geospatial data to different coordinate reference systems.\n\nFirst, download the PROJ source code:\n\n… and datum shifting files (download proj-datumgrid-X.Y.tar.gz for PROJ < 7.x) [1]:\n\nNext, untar the source code archive, and extract the datum shifting files in the data subdirectory. This must be done prior to configuration:\n\nFor PROJ 9.x and greater, releases only support builds using CMake (see PROJ RFC-7).\n\nTo build with CMake ensure your system meets the build requirements. Then create a build folder in the PROJ directory, and step into it:\n\nFinally, configure, make and install PROJ:\n\nGDAL is an excellent open source geospatial library that has support for reading most vector and raster spatial data formats. Currently, GeoDjango only supports GDAL’s vector data capabilities [2]. GEOS and PROJ should be installed prior to building GDAL.\n\nFirst download the latest GDAL release version and untar the archive:\n\nFor GDAL 3.6.x and greater, releases only support builds using CMake. To build with CMake create a build folder in the GDAL directory, and step into it:\n\nFinally, configure, make and install GDAL:\n\nIf you have any problems, please see the troubleshooting section below for suggestions and solutions.\n\nWhen GeoDjango can’t find the GDAL library, configure your Library environment settings or set GDAL_LIBRARY_PATH in your settings.\n\nIf your GDAL library is in a non-standard location, or you don’t want to modify the system’s library path then the GDAL_LIBRARY_PATH setting may be added to your Django settings file with the full path to the GDAL library. For example:\n\nThe datum shifting files are needed for converting data to and from certain projections. For example, the PROJ string for the Google projection (900913 or 3857) requires the null grid file only included in the extra datum shifting files. It is easier to install the shifting files now, then to have debug a problem caused by their absence later.\n\nSpecifically, GeoDjango provides support for the OGR library, a component of GDAL.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Installing Geospatial libraries¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Geospatial libraries¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Building from source¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOS¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Troubleshooting¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "Can’t find GEOS library¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "GEOS_LIBRARY_PATH¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PROJ¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GDAL¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Troubleshooting¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "Can’t find GDAL library¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "GDAL_LIBRARY_PATH¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Note On Linux platforms, it may be necessary to run the ldconfig command after installing each library. For example: $ sudo make install $ sudo ldconfig",
+      "code": "$ sudo make install\n$ sudo ldconfig"
+    },
+    {
+      "description": "On Linux platforms, it may be necessary to run the ldconfig command after installing each library. For example:",
+      "code": "$ sudo make install\n$ sudo ldconfig"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/geolibs/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/postgis/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.2.2/",
+  "title": "Django 3.2.2 release notes | Django documentation | Django",
+  "content": "Django 3.2.2 fixes a security issue and a bug in 3.2.1.\n\nOn Python 3.9.5+, URLValidator didn’t prohibit newlines and tabs. If you used values with newlines in HTTP response, you could suffer from header injection attacks. Django itself wasn’t vulnerable because HttpResponse prohibits newlines in HTTP headers.\n\nMoreover, the URLField form field which uses URLValidator silently removes newlines and tabs on Python 3.9.5+, so the possibility of newlines entering your data only existed if you are using this validator outside of the form fields.\n\nThis issue was introduced by the bpo-43882 fix.\n\nPrevented, following a regression in Django 3.2.1, makemigrations from generating infinite migrations for a model with Meta.ordering contained OrderBy expressions (#32714).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.2.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-32052: Header injection possibility since URLValidator accepted newlines in input on Python 3.9.5+¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.2.2/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.3/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

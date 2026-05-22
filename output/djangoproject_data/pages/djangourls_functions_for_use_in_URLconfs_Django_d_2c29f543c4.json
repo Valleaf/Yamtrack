@@ -1,0 +1,106 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/urls",
+  "title": "django.urls functions for use in URLconfs | Django documentation | Django",
+  "content": "Returns an element for inclusion in urlpatterns. For example:\n\nThe route argument should be a string or gettext_lazy() (see Translating URL patterns) that contains a URL pattern. The string may contain angle brackets (like <username> above) to capture part of the URL and send it as a keyword argument to the view. The angle brackets may include a converter specification (like the int part of <int:section>) which limits the characters matched and may also change the type of the variable passed to the view. For example, <int:section> matches a string of decimal digits and converts the value to an int.\n\nWhen processing a request, Django starts at the first pattern in urlpatterns and makes its way down the list, comparing the requested URL against each pattern until it finds one that matches. See How Django processes a request for more details.\n\nPatterns don’t match GET and POST parameters, or the domain name. For example, in a request to https://www.example.com/myapp/, the URLconf will look for myapp/. In a request to https://www.example.com/myapp/?page=3, the URLconf will also look for myapp/.\n\nThe view argument is a view function or the result of as_view() for class-based views. It can also be a django.urls.include().\n\nWhen Django finds a matching pattern, it calls the specified view function with an HttpRequest object as the first argument and any “captured” values from the route as keyword arguments.\n\nThe kwargs argument allows you to pass additional arguments to the view function or method. See Passing extra options to view functions for an example.\n\nNaming your URL lets you refer to it unambiguously from elsewhere in Django, especially from within templates. This powerful feature allows you to make global changes to the URL patterns of your project while only touching a single file.\n\nSee Naming URL patterns for why the name argument is useful.\n\nReturns an element for inclusion in urlpatterns. For example:\n\nThe route argument should be a string or gettext_lazy() (see Translating URL patterns) that contains a regular expression compatible with Python’s re module. Strings typically use raw string syntax (r'') so that they can contain sequences like \\d without the need to escape the backslash with another backslash. When a match is made, captured groups from the regular expression are passed to the view – as named arguments if the groups are named, and as positional arguments otherwise. The values are passed as strings, without any type conversion.\n\nWhen a route ends with $ the whole requested URL, matching against path_info, must match the regular expression pattern (re.fullmatch() is used).\n\nThe view, kwargs and name arguments are the same as for path().\n\nA function that takes a full Python import path to another URLconf module that should be “included” in this place. Optionally, the application namespace and instance namespace where the entries will be included into can also be specified.\n\nUsually, the application namespace should be specified by the included module. If an application namespace is set, the namespace argument can be used to set a different instance namespace.\n\ninclude() also accepts as an argument either an iterable that returns URL patterns or a 2-tuple containing such iterable plus the names of the application namespaces.\n\nmodule – URLconf module (or module name)\n\nnamespace (str) – Instance namespace for the URL entries being included\n\npattern_list – Iterable of path() and/or re_path() instances.\n\napp_namespace (str) – Application namespace for the URL entries being included\n\nSee Including other URLconfs and URL namespaces and included URLconfs.\n\nThe function for registering a converter for use in path() routes.\n\nThe converter argument is a converter class, and type_name is the converter name to use in path patterns. See Registering custom path converters for an example.\n\nHelper function to return a URL pattern for serving files in debug mode:\n\nA callable, or a string representing the full Python import path to the view that should be called if the HTTP client has sent a request that caused an error condition and a response with a status code of 400.\n\nBy default, this is django.views.defaults.bad_request(). If you implement a custom view, be sure it accepts request and exception arguments and returns an HttpResponseBadRequest.\n\nA callable, or a string representing the full Python import path to the view that should be called if the user doesn’t have the permissions required to access a resource.\n\nBy default, this is django.views.defaults.permission_denied(). If you implement a custom view, be sure it accepts request and exception arguments and returns an HttpResponseForbidden.\n\nA callable, or a string representing the full Python import path to the view that should be called if none of the URL patterns match.\n\nBy default, this is django.views.defaults.page_not_found(). If you implement a custom view, be sure it accepts request and exception arguments and returns an HttpResponseNotFound.\n\nA callable, or a string representing the full Python import path to the view that should be called in case of server errors. Server errors happen when you have runtime errors in view code.\n\nBy default, this is django.views.defaults.server_error(). If you implement a custom view, be sure it accepts a request argument and returns an HttpResponseServerError.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django.urls functions for use in URLconfs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "path()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "route¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "kwargs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "name¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "re_path()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "include()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "register_converter()¶",
+      "id": ""
+    },
+    {
+      "level": "h1",
+      "text": "django.conf.urls functions for use in URLconfs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "static()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "handler400¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "handler403¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "handler404¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "handler500¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Returns an element for inclusion in urlpatterns. For example:",
+      "code": "from django.urls import include, path\n\nurlpatterns = [\n    path(\"index/\", views.index, name=\"main-view\"),\n    path(\"bio/<username>/\", views.bio, name=\"bio\"),\n    path(\"articles/<slug:title>/\", views.article, name=\"article-detail\"),\n    path(\"articles/<slug:title>/<int:section>/\", views.section, name=\"article-section\"),\n    path(\"blog/\", include(\"blog.urls\")),\n    ...,\n]"
+    },
+    {
+      "description": "Returns an element for inclusion in urlpatterns. For example:",
+      "code": "from django.urls import include, re_path\n\nurlpatterns = [\n    re_path(r\"^index/$\", views.index, name=\"index\"),\n    re_path(r\"^bio/(?P<username>\\w+)/$\", views.bio, name=\"bio\"),\n    re_path(r\"^blog/\", include(\"blog.urls\")),\n    ...,\n]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/urls",
+    "https://docs.djangoproject.com/en/stable/utils/",
+    "https://docs.djangoproject.com/en/stable/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/request-response/",
+    "https://docs.djangoproject.com/en/stable/views/",
+    "https://docs.djangoproject.com/en/stable/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

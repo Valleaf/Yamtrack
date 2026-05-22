@@ -1,0 +1,24 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.7.8/",
+  "title": "Django 1.7.8 release notes | Django documentation | Django",
+  "content": "Database introspection with SQLite 3.8.9 (released April 8, 2015) (#24637).\n\nA database table name quoting regression in 1.7.2 (#24605).\n\nThe loss of null/not null column properties during field alteration of MySQL databases (#24595).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.7.8 release notes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.7.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.9/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

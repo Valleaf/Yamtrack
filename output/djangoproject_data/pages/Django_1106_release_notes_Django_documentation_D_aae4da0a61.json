@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.10.6/",
+  "title": "Django 1.10.6 release notes | Django documentation | Django",
+  "content": "Django 1.10.6 fixes several bugs in 1.10.5.\n\nFixed ClearableFileInput’s “Clear” checkbox on model form fields where the model field has a default (#27805).\n\nFixed RequestDataTooBig and TooManyFieldsSent exceptions crashing rather than generating a bad request response (#27820).\n\nFixed a crash on Oracle and PostgreSQL when subtracting DurationField or IntegerField from DateField (#27828).\n\nFixed query expression date subtraction accuracy on PostgreSQL for differences larger than a month (#27856).\n\nFixed a GDALException raised by GDALClose on GDAL ≥ 2.0 (#27479).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.10.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.10.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

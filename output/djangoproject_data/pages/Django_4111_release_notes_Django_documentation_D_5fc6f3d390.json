@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.11/",
+  "title": "Django 4.1.11 release notes | Django documentation | Django",
+  "content": "Django 4.1.11 fixes a security issue with severity “moderate” in 4.1.10.\n\ndjango.utils.encoding.uri_to_iri() was subject to potential denial of service attack via certain inputs with a very large number of Unicode characters.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.11 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-41164: Potential denial of service vulnerability in django.utils.encoding.uri_to_iri()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.11/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.12/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

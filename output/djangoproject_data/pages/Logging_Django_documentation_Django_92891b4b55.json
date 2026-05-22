@@ -1,0 +1,140 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/logging/",
+  "title": "Logging | Django documentation | Django",
+  "content": "How to configure and use logging\n\nDjango logging overview\n\nDjango’s logging module extends Python’s builtin logging.\n\nLogging is configured as part of the general Django django.setup() function, so it’s always available unless explicitly disabled.\n\nBy default, Django uses Python’s logging.config.dictConfig format.\n\nThe full set of default logging conditions are:\n\nThe django logger sends messages in the django hierarchy (except django.server) at the INFO level or higher to the console.\n\nThe django logger sends messages in the django hierarchy (except django.server) with ERROR or CRITICAL level to AdminEmailHandler.\n\nIndependently of the value of DEBUG:\n\nThe django.server logger sends messages at the INFO level or higher to the console.\n\nAll loggers except django.server propagate logging to their parents, up to the root django logger. The console and mail_admins handlers are attached to the root logger to provide the behavior described above.\n\nPython’s own defaults send records of level WARNING and higher to the console.\n\nDjango’s default logging configuration inherits Python’s defaults. It’s available as django.utils.log.DEFAULT_LOGGING and defined in django/utils/log.py:\n\nSee Configuring logging on how to complement or replace this default logging configuration.\n\nDjango provides a number of utilities to handle the particular requirements of logging in a web server environment.\n\nDjango provides several built-in loggers.\n\nThe parent logger for messages in the django named logger hierarchy. Django does not post messages using this name. Instead, it uses one of the loggers below.\n\nLog messages related to the handling of requests. 5XX responses are raised as ERROR messages; 4XX responses are raised as WARNING messages. Requests that are logged to the django.security logger aren’t logged to django.request.\n\nMessages to this logger have the following extra context:\n\nstatus_code: The HTTP response code associated with the request.\n\nrequest: The request object that generated the logging message.\n\nLog messages related to the handling of requests received by the server invoked by the runserver command. HTTP 5XX responses are logged as ERROR messages, 4XX responses are logged as WARNING messages, and everything else is logged as INFO.\n\nMessages to this logger have the following extra context:\n\nstatus_code: The HTTP response code associated with the request.\n\nrequest: The request object (a socket.socket) that generated the logging message.\n\nLog messages related to the rendering of templates.\n\nMissing context variables are logged as DEBUG messages.\n\nMessages relating to the interaction of code with the database. For example, every application-level SQL statement executed by a request is logged at the DEBUG level to this logger.\n\nMessages to this logger have the following extra context:\n\nduration: The time taken to execute the SQL statement.\n\nsql: The SQL statement that was executed.\n\nparams: The parameters that were used in the SQL call.\n\nalias: The alias of the database used in the SQL call.\n\nFor performance reasons, SQL logging is only enabled when settings.DEBUG is set to True, regardless of the logging level or handlers that are installed.\n\nThis logging does not include framework-level initialization (e.g. SET TIMEZONE). Turn on query logging in your database if you wish to view all database queries.\n\nLog messages related to automatic code reloading during the execution of the Django development server. This logger generates an INFO message upon detecting a modification in a source code file and may produce WARNING messages during filesystem inspection and event subscription processes.\n\nLog messages related to django.contrib.auth, particularly ERROR messages are generated when a PasswordResetForm is successfully submitted but the password reset email cannot be delivered due to a mail sending exception.\n\nLog messages related to GeoDjango at various points: during the loading of external GeoSpatial libraries (GEOS, GDAL, etc.) and when reporting errors. Each ERROR log record includes the caught exception and relevant contextual data.\n\nThis logger is used in Signals, specifically within the Signal class, to report issues when dispatching a signal to a connected receiver. The ERROR log record includes the caught exception as exc_info and adds the following extra context:\n\nreceiver: The name of the receiver.\n\nerr: The exception that occurred when calling the receiver.\n\nThe security loggers will receive messages on any occurrence of SuspiciousOperation and other security-related errors. There is a sub-logger for each subtype of security error, including all SuspiciousOperations. The level of the log event depends on where the exception is handled. Most occurrences are logged as a warning, while any SuspiciousOperation that reaches the WSGI handler will be logged as an error. For example, when an HTTP Host header is included in a request from a client that does not match ALLOWED_HOSTS, Django will return a 400 response, and an error message will be logged to the django.security.DisallowedHost logger.\n\nThese log events will reach the django logger by default, which mails error events to admins when DEBUG=False. Requests resulting in a 400 response due to a SuspiciousOperation will not be logged to the django.request logger, but only to the django.security logger.\n\nTo silence a particular type of SuspiciousOperation, you can override that specific logger following this example:\n\nOther django.security loggers not based on SuspiciousOperation are:\n\ndjango.security.csrf: For CSRF failures.\n\nLogs the SQL queries that are executed during schema changes to the database by the migrations framework. Note that it won’t log the queries executed by RunPython. Messages to this logger have params and sql in their extra context (but unlike django.db.backends, not duration). The values have the same meaning as explained in django.db.backends.\n\nLog messages related to the session framework.\n\nNon-fatal errors occurring when using the django.contrib.sessions.backends.cached_db.SessionStore engine are logged as ERROR messages with the corresponding traceback.\n\nDjango provides one log handler in addition to those provided by the Python logging module.\n\nThis handler sends an email to the site ADMINS for each log message it receives.\n\nIf the log record contains a request attribute, the full details of the request will be included in the email. The email subject will include the phrase “internal IP” if the client’s IP address is in the INTERNAL_IPS setting; if not, it will include “EXTERNAL IP”.\n\nIf the log record contains stack trace information, that stack trace will be included in the email.\n\nThe include_html argument of AdminEmailHandler is used to control whether the traceback email includes an HTML attachment containing the full content of the debug web page that would have been produced if DEBUG were True. To set this value in your configuration, include it in the handler definition for django.utils.log.AdminEmailHandler, like this:\n\nBe aware of the security implications of logging when using the AdminEmailHandler.\n\nBy setting the email_backend argument of AdminEmailHandler, the email backend that is being used by the handler can be overridden, like this:\n\nBy default, an instance of the email backend specified in EMAIL_BACKEND will be used.\n\nThe reporter_class argument of AdminEmailHandler allows providing an django.views.debug.ExceptionReporter subclass to customize the traceback text sent in the email body. You provide a string import path to the class you wish to use, like this:\n\nSends emails to admin users. To customize this behavior, you can subclass the AdminEmailHandler class and override this method.\n\nDjango provides some log filters in addition to those provided by the Python logging module.\n\nThis filter accepts a callback function (which should accept a single argument, the record to be logged), and calls it for each record that passes through the filter. Handling of that record will not proceed if the callback returns False.\n\nFor instance, to filter out UnreadablePostError (raised when a user cancels an upload) from the admin emails, you would create a filter function:\n\nand then add it to your logging config:\n\nThis filter will only pass on records when settings.DEBUG is False.\n\nThis filter is used as follows in the default LOGGING configuration to ensure that the AdminEmailHandler only sends error emails to admins when DEBUG is False:\n\nThis filter is similar to RequireDebugFalse, except that records are passed only when DEBUG is True.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Logging¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Django’s default logging configuration¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Default logging conditions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Default logging definition¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Django logging extensions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Loggers¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.request¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.server¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.template¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.db.backends¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.utils.autoreload¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.dispatch¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.security.*¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.db.backends.schema¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Handlers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Filters¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "To silence a particular type of SuspiciousOperation, you can override that specific logger following this example:",
+      "code": "LOGGING = {\n    # ...\n    \"handlers\": {\n        \"null\": {\n            \"class\": \"logging.NullHandler\",\n        },\n    },\n    \"loggers\": {\n        \"django.security.DisallowedHost\": {\n            \"handlers\": [\"null\"],\n            \"propagate\": False,\n        },\n    },\n    # ...\n}"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/logging/",
+    "https://docs.djangoproject.com/en/stable/howto/logging/",
+    "https://docs.djangoproject.com/en/stable/topics/logging/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/howto/csrf/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/validation/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.8/",
+  "title": "Django 5.0.8 release notes | Django documentation | Django",
+  "content": "Django 5.0.8 fixes three security issues with severity “moderate”, one security issue with severity “high”, and several bugs in 5.0.7.\n\nIf floatformat received a string representation of a number in scientific notation with a large exponent, it could lead to significant memory consumption.\n\nTo avoid this, decimals with more than 200 digits are now returned as is.\n\nurlize and urlizetrunc were subject to a potential denial-of-service attack via very large inputs with a specific sequence of characters.\n\nurlize, urlizetrunc, and AdminURLFieldWidget were subject to a potential denial-of-service attack via certain inputs with a very large number of Unicode characters.\n\nQuerySet.values() and values_list() methods on models with a JSONField were subject to SQL injection in column aliases, via a crafted JSON object key as a passed *arg.\n\nAdded missing validation for UniqueConstraint(nulls_distinct=False) when using *expressions (#35594).\n\nFixed a regression in Django 5.0 where ModelAdmin.action_checkbox could break the admin changelist HTML page when rendering a model instance with a __html__ method (#35606).\n\nFixed a crash when creating a model with a Field.db_default and a Meta.constraints constraint composed of __endswith, __startswith, or __contains lookups (#35625).\n\nFixed a regression in Django 5.0.7 that caused a crash in LocaleMiddleware when processing a language code over 500 characters (#35627).\n\nFixed a bug in Django 5.0 that caused a system check crash when ModelAdmin.date_hierarchy was a GeneratedField with an output_field of DateField or DateTimeField (#35628).\n\nFixed a bug in Django 5.0 which caused constraint validation to either crash or incorrectly raise validation errors for constraints referring to fields using Field.db_default (#35638).\n\nFixed a crash in Django 5.0 when saving a model containing a FileField with a db_default set (#35657).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41989: Memory exhaustion in django.utils.numberformat.floatformat()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41990: Potential denial-of-service vulnerability in django.utils.html.urlize()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-41991: Potential denial-of-service vulnerability in django.utils.html.urlize() and AdminURLFieldWidget¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-42005: Potential SQL injection in QuerySet.values() and values_list()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.8/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.9/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

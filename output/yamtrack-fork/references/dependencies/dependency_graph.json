@@ -1,0 +1,1293 @@
+{
+  "nodes": [
+    {
+      "file": "apply_country_worldmap.py",
+      "language": "Python"
+    },
+    {
+      "file": "build_collection_sources.py",
+      "language": "Python"
+    },
+    {
+      "file": "build_collections.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix2.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix3.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix4.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix5.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix6.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix7.py",
+      "language": "Python"
+    },
+    {
+      "file": "fix8.py",
+      "language": "Python"
+    },
+    {
+      "file": "media_collections\\forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "media_collections\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "media_collections\\utils.py",
+      "language": "Python"
+    },
+    {
+      "file": "media_collections\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "rename_collections_app.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\admin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\config.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\context_processors.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\converters.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\date_utils.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\history_processor.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\middleware.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0001_squashed_0014_historicalanime_historicalepisode_historicalgame_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0015_customlist_listitem_squashed_0021_alter_item_media_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0022_item_source_squashed_0037_alter_item_media_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0038_comic_historicalcomic_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0039_anime_progress_changed_basicmedia_progress_changed_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0040_remove_item_app_item_source_valid_alter_item_source_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0041_alter_anime_end_date_alter_anime_start_date_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0042_enable_import_tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0043_remove_historicalanime_progress_changed_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0044_fix_episode_images.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0045_alter_episode_options_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0046_alter_anime_options_alter_basicmedia_options_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0047_alter_anime_options_alter_basicmedia_options_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0048_update_repeating_status.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0049_rename_progress_changed_anime_progressed_at_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0050_fix_null_history_users.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0051_migrate_simkl_periodoc_tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0052_alter_item_title.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0053_add_boardgame.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0054_fix_movie_progress.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0055_alter_item_media_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0056_alter_item_media_id.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0057_reopen_completed_tv_with_new_seasons.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0058_usermessage.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0059_usermessage_user_shown_idx.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0060_fix_reopened_completed_tv_seasons.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0061_add_music_media_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0062_add_music_model.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0063_add_media_country.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0063_item_country.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\0064_merge_country_migrations.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\migrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\mixins.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\bgg.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\collections_providers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\comicvine.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\filmaffinity.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\hardcover.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\igdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\mal.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\mangaupdates.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\manual.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\musicbrainz.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\openlibrary.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\senscritique.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\services.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\tmdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\providers\\tvdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\signals.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\statistics.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\templatetags\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\templatetags\\app_tags.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_episode.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_game.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_item.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_media.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_media_manager.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_season.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\models\\test_tv.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\test_metadata.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\test_musicbrainz.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\test_search.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\test_services.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\providers\\test_tvdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_history_processor.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_integration.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_statistics.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\test_templatetags.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_crud.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_entry.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_history.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_home.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_media_details.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_media_list.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_media_search.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_progress.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_search_parent.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_statistics.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_track_modal.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\tests\\views\\test_user_messages.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\app\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\celery.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\gunicorn.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\settings.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\test_settings.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\tests\\test_gunicorn.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\config\\wsgi.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\admin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\anime.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\comic.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\main.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\other.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\selectors.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\calendar\\tv.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0001_initial.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0002_alter_event_unique_together.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0003_alter_event_unique_together_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0004_fix_anime_episode_numbers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0005_alter_event_date.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0006_alter_event_options_rename_date_event_datetime.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0007_event_notification_sent.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0008_delete_tv_events.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0009_fix_movie_episode_number.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0010_alter_event_options.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0011_remove_event_unique_item_episode_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0012_remove_event_unique_item_episode_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0013_delete_single_anime_events.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\0014_delete_empty_content_number_comic_events.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\migrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\notifications.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\templatetags\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\templatetags\\events_tags.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_anime.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_comic.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_main.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_other.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_selectors.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\test_tv.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\calendar\\utils.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\test_models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\test_notification.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\test_templatetags.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\tests\\test_views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\events\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\exports.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\anilist.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\filmaffinity.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\goodreads.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\hltb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\imdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\kitsu.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\mal.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\senscritique.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\simkl.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\steam.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\trakt.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\imports\\yamtrack.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tasks.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_anilist.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_filmaffinity.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_goodreads.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_hltb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_imdb.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_import_helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_kitsu.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_mal.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_senscritique.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_simkl.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_steam.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_trakt.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\imports\\test_yamtrack.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_exports.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_oauth_views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_steam_update.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_webhooks_emby.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_webhooks_jellyfin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\tests\\test_webhooks_plex.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\webhooks\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\webhooks\\base.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\webhooks\\emby.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\webhooks\\jellyfin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\integrations\\webhooks\\plex.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\admin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\migrations\\0001_initial.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\migrations\\0002_alter_customlistitem_item_alter_customlist_items_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\migrations\\0003_alter_customlist_unique_together_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\migrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\tests\\test_forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\tests\\test_integration.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\tests\\test_models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\tests\\test_views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\lists\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\manage.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\migrations\\0001_initial.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\migrations\\0002_collection_source.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\migrations\\0003_collection_source_widened.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\migrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\media_collections\\views.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\static\\js\\copy-item.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\date-range.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\i18n\\en.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\alpinejs-3.14.9.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\chartjs-4.4.9.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\chartjs-datalabels-2.0.0.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\htmx-2.0.4.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\jquery-3.7.1.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\lazysizes-5.3.2.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\libraries\\select2-4.1.0.min.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\mediaStatusDateHandler.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\searchShortcut.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\serviceworker.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\statistics-charts.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\static\\js\\world-map-stats.js",
+      "language": "JavaScript"
+    },
+    {
+      "file": "src\\users\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\account_adapter.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\admin.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\apps.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0001_squashed_0008_user_game_layout_alter_user_last_search_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0009_alter_user_options_squashed_0022_alter_user_last_search_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0023_user_home_sort_user_home_sort_valid.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0024_remove_user_lists_sort_valid_alter_user_lists_sort_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0025_remove_user_last_search_type_valid_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0026_user_anime_sort_user_book_sort_user_game_sort_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0027_user_list_detail_sort_user_list_detail_sort_valid.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0028_user_anime_status_user_book_status_user_game_status_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0029_user_notification_urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0030_user_notification_excluded_items.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0031_remove_user_last_search_type_valid_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0032_alter_user_token_and_generate_missing_user_tokens.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0033_user_daily_digest_enabled_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0034_user_plex_usernames.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0035_remove_user_tv_status_valid_and_more.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0036_update_repeating_status.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0037_remove_user_home_sort_valid_alter_user_home_sort.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0038_alter_user_home_sort_user_home_sort_valid.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0039_user_clickable_media_cards.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0040_user_list_detail_status.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0041_add_quick_watch_date.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0042_add_date_time_format_preferences.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0043_add_boardgame_preferences.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0044_user_progress_bar.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0045_alter_user_last_search_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0046_alter_user_progress_bar.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0047_set_progress_bar_true.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0048_add_hide_completed_recommendations.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0049_add_hide_zero_rating.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0050_user_watch_provider_region.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0051_user_obfuscate_unseen_episodes.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0052_alter_user_date_format.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0053_add_music_user_prefs.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0054_add_music_to_search_type.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\0055_create_default_users.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\migrations\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\templatetags\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\templatetags\\user_tags.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\test_forms.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\test_helpers.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\test_models.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\__init__.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_delete_import.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_demo_profile.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_notifications.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_plex.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_profile.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_sidebar.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\tests\\views\\test_token.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\urls.py",
+      "language": "Python"
+    },
+    {
+      "file": "src\\users\\views.py",
+      "language": "Python"
+    }
+  ],
+  "edges": []
+}

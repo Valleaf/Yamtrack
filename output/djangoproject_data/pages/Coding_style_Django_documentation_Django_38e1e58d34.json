@@ -1,0 +1,92 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/coding-style/",
+  "title": "Coding style | Django documentation | Django",
+  "content": "Please follow these coding standards when writing code for inclusion in Django.\n\npre-commit is a framework for managing pre-commit hooks. These hooks help to identify simple issues before committing code for review. By checking for these issues before code review it allows the reviewer to focus on the change itself, and it can also help to reduce the number of CI runs.\n\nTo use the tool, first install pre-commit and then the git hooks:\n\nOn the first commit pre-commit will install the hooks, these are installed in their own environments and will take a short while to install on the first run. Subsequent checks will be significantly faster. If an error is found an appropriate error message will be displayed. If the error was with black or isort then the tool will go ahead and fix them for you. Review the changes and re-stage for commit if you are happy with them.\n\nAll files should be formatted using the black auto-formatter. This will be run by pre-commit if that is configured.\n\nThe project repository includes an .editorconfig file. We recommend using a text editor with EditorConfig support to avoid indentation and whitespace issues. The Python files use 4 spaces for indentation and the HTML files use 2 spaces.\n\nUnless otherwise specified, follow PEP 8.\n\nUse flake8 to check for problems in this area. Note that our .flake8 file excludes some errors that we don’t consider as gross violations. Remember that PEP 8 is only a guide, so respect the style of the surrounding code as a primary goal.\n\nAn exception to PEP 8 is our rules on line lengths. We allow up to 88 characters in code, as this is the line length used by black. Documentation, comments, and docstrings should be wrapped at 79 characters. These limits are checked when flake8 is run.\n\nString variable interpolation may use %-formatting, f-strings, or str.format() as appropriate, with the goal of maximizing code readability.\n\nFinal judgments of readability are left to the Merger’s discretion. As a guide, f-strings should use only plain variable and property access, with prior local variable assignment for more complex cases:\n\nf-strings should not be used for any string that may require translation, including error and logging messages. In general format() is more verbose, so the other formatting methods are preferred.\n\nDon’t waste time doing unrelated refactoring of existing code to adjust the formatting method.\n\nAvoid use of “we” in comments, e.g. “Loop over” rather than “We loop over”.\n\nUse underscores, not camelCase, for variable, function and method names (i.e. poll.get_unique_voters(), not poll.getUniqueVoters()).\n\nUse InitialCaps for class names (or for factory functions that return classes).\n\nIn docstrings, follow the style of existing docstrings and PEP 257.\n\nIn tests, use assertRaisesMessage() and assertWarnsMessage() instead of assertRaises() and assertWarns() so you can check the exception or warning message. Use assertRaisesRegex() and assertWarnsRegex() only if you need regular expression matching.\n\nUse assertIs(…, True/False) for testing boolean values, rather than assertTrue() and assertFalse(), so you can check the actual boolean value, not the truthiness of the expression.\n\nIn test docstrings, state the expected behavior that each test demonstrates. Don’t include preambles such as “Tests that” or “Ensures that”.\n\nReserve ticket references for obscure issues where the ticket has additional details that can’t be easily described in docstrings or comments. Include the ticket number at the end of a sentence like this:\n\nWhere applicable, use unpacking generalizations compliant with PEP 448, such as merging mappings ({**x, **y}) or sequences ([*a, *b]). This improves performance, readability, and maintainability while reducing errors.\n\nUse isort to automate import sorting using the guidelines below.\n\nThis runs isort recursively from your current directory, modifying any files that don’t conform to the guidelines. If you need to have imports out of order (to avoid a circular import, for example) use a comment like this:\n\nPut imports in these groups: future, standard library, third-party libraries, other Django components, local Django component, try/excepts. Sort lines in each group alphabetically by the full module name. Place all import module statements before from module import objects in each section. Use absolute imports for other Django components and a one-dot relative import (from .foo import Bar) for local components. Avoid multi-dot relative imports.\n\nOn each line, alphabetize the items with the upper case items grouped before the lowercase items.\n\nBreak long lines using parentheses and indent continuation lines by 4 spaces. Include a trailing comma after the last import and put the closing parenthesis on its own line.\n\nUse a single blank line between the last import and any module level code, and use two blank lines above the first function or class.\n\nFor example (comments are for explanatory purposes only):\n\nUse convenience imports whenever available. For example, do this\n\nFollow the below rules in Django template code.\n\n{% extends %} should be the first non-comment line.\n\nPut exactly one space between {{, variable contents, and }}.\n\nIn {% load ... %}, list libraries in alphabetical order.\n\nPut exactly one space between {%, tag contents, and %}.\n\nPut the {% block %} tag name in the {% endblock %} tag if it is not on the same line.\n\nInside curly braces, separate tokens by single spaces, except for around the . for attribute access and the | for a filter.\n\nWithin a template using {% extends %}, avoid indenting top-level {% block %} tags.\n\nIn Django views, the first parameter in a view function should be called request.\n\nField names should be all lowercase, using underscores instead of camelCase.\n\nThe class Meta should appear after the fields are defined, with a single blank line separating the fields and the class definition.\n\nThe order of model inner classes and standard methods should be as follows (noting that these are not all required):\n\nCustom manager attributes\n\ndef __str__() and other Python magic methods\n\ndef get_absolute_url()\n\nIf choices is defined for a given model field, define each choice as a mapping, with an all-uppercase name as a class attribute on the model. Example:\n\nAlternatively, consider using Enumeration types:\n\nModules should not in general use settings stored in django.conf.settings at the top level (i.e. evaluated when the module is imported). The explanation for this is as follows:\n\nManual configuration of settings (i.e. not relying on the DJANGO_SETTINGS_MODULE environment variable) is allowed and possible as follows:\n\nHowever, if any setting is accessed before the settings.configure line, this will not work. (Internally, settings is a LazyObject which configures itself automatically when the settings are accessed if it has not already been configured).\n\nSo, if there is a module containing some code as follows:\n\n…then importing this module will cause the settings object to be configured. That means that the ability for third parties to import the module at the top level is incompatible with the ability to configure the settings object manually, or makes it very difficult in some circumstances.\n\nInstead of the above code, a level of laziness or indirection must be used, such as django.utils.functional.LazyObject, django.utils.functional.lazy() or lambda.\n\nMark all strings for internationalization; see the i18n documentation for details.\n\nRemove import statements that are no longer used when you change code. flake8 will identify these imports for you. If an unused import needs to remain for backwards-compatibility, mark the end of with # NOQA to silence the flake8 warning.\n\nSystematically remove all trailing whitespaces from your code as those add unnecessary bytes, add visual clutter to the patches and can also occasionally cause unnecessary merge conflicts. Some IDE’s can be configured to automatically remove them and most VCS tools can be set to highlight them in diff outputs.\n\nPlease don’t put your name in the code you contribute. Our policy is to keep contributors’ names in the AUTHORS file distributed with Django – not scattered throughout the codebase itself. Feel free to include a change to the AUTHORS file in your patch if you make more than a single trivial change.\n\nFor details about the JavaScript code style used by Django, see JavaScript code.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Coding style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Pre-commit checks¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Imports¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Template style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "View style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Use of django.conf.settings¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "JavaScript style¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "django/contrib/admin/example.py¶ # future from __future__ import unicode_literals # standard library import json from itertools import chain # third-party import bcrypt # Django from django.http import Http404 from django.http.response import ( Http404, HttpResponse, HttpResponseNotAllowed, StreamingHttpResponse, cookie, ) # local Django from .models import LogEntry # try/except try: import yaml except ImportError: yaml = None CONSTANT = \"foo\" class Example: ...",
+      "code": "# future\nfrom __future__ import unicode_literals\n\n# standard library\nimport json\nfrom itertools import chain\n\n# third-party\nimport bcrypt\n\n# Django\nfrom django.http import Http404\nfrom django.http.response import (\n    Http404,\n    HttpResponse,\n    HttpResponseNotAllowed,\n    StreamingHttpResponse,\n    cookie,\n)\n\n# local Django\nfrom .models import LogEntry\n\n# try/except\ntry:\n    import yaml\nexcept ImportError:\n    yaml = None\n\nCONSTANT = \"foo\"\n\n\nclass Example: ..."
+    },
+    {
+      "description": "# future from __future__ import unicode_literals # standard library import json from itertools import chain # third-party import bcrypt # Django from django.http import Http404 from django.http.response import ( Http404, HttpResponse, HttpResponseNotAllowed, StreamingHttpResponse, cookie, ) # local Django from .models import LogEntry # try/except try: import yaml except ImportError: yaml = None CONSTANT = \"foo\" class Example: ...",
+      "code": "# future\nfrom __future__ import unicode_literals\n\n# standard library\nimport json\nfrom itertools import chain\n\n# third-party\nimport bcrypt\n\n# Django\nfrom django.http import Http404\nfrom django.http.response import (\n    Http404,\n    HttpResponse,\n    HttpResponseNotAllowed,\n    StreamingHttpResponse,\n    cookie,\n)\n\n# local Django\nfrom .models import LogEntry\n\n# try/except\ntry:\n    import yaml\nexcept ImportError:\n    yaml = None\n\nCONSTANT = \"foo\"\n\n\nclass Example: ..."
+    },
+    {
+      "description": "# future from __future__ import unicode_literals # standard library import json from itertools import chain # third-party import bcrypt # Django from django.http import Http404 from django.http.response import ( Http404, HttpResponse, HttpResponseNotAllowed, StreamingHttpResponse, cookie, ) # local Django from .models import LogEntry # try/except try: import yaml except ImportError: yaml = None CONSTANT = \"foo\" class Example: ...",
+      "code": "# future\nfrom __future__ import unicode_literals\n\n# standard library\nimport json\nfrom itertools import chain\n\n# third-party\nimport bcrypt\n\n# Django\nfrom django.http import Http404\nfrom django.http.response import (\n    Http404,\n    HttpResponse,\n    HttpResponseNotAllowed,\n    StreamingHttpResponse,\n    cookie,\n)\n\n# local Django\nfrom .models import LogEntry\n\n# try/except\ntry:\n    import yaml\nexcept ImportError:\n    yaml = None\n\nCONSTANT = \"foo\"\n\n\nclass Example: ..."
+    },
+    {
+      "description": "If choices is defined for a given model field, define each choice as a mapping, with an all-uppercase name as a class attribute on the model. Example:",
+      "code": "class MyModel(models.Model):\n    DIRECTION_UP = \"U\"\n    DIRECTION_DOWN = \"D\"\n    DIRECTION_CHOICES = {\n        DIRECTION_UP: \"Up\",\n        DIRECTION_DOWN: \"Down\",\n    }"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/coding-style/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/working-with-git/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}
