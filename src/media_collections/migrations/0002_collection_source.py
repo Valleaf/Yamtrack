@@ -3,16 +3,16 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("collections", "0002_collection_source"),
+        ("media_collections", "0001_initial"),
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name="collection",
             name="source",
-            field=models.CharField(default="manual", max_length=50),
+            field=models.CharField(blank=True, default="manual", max_length=50),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name="collection",
             name="source_id",
             field=models.CharField(blank=True, default="", max_length=100),

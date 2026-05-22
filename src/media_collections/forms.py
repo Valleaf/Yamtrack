@@ -1,7 +1,7 @@
 from django import forms
 from django_select2 import forms as s2forms
 
-from collections.models import Collection
+from media_collections.models import Collection
 
 
 class CollaboratorsWidget(s2forms.ModelSelect2MultipleWidget):

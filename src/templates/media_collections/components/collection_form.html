@@ -22,10 +22,8 @@
     </h2>
 
     <form method="post"
-          action="{% if collection %}{% url 'collection_edit' %}{% else %}{% url 'collection_create' %}{% endif %}">
+          action="{% if collection %}{% url 'collection_edit' collection_id=collection.id %}{% else %}{% url 'collection_create' %}{% endif %}">
       {% csrf_token %}
-      {% if collection %}<input type="hidden" name="collection_id" value="{{ collection.id }}">{% endif %}
-      <input type="hidden" name="next" value="{{ request.path }}">
       <input type="hidden" name="source" :value="source">
       <input type="hidden" name="source_id" :value="sourceId">
 
@@ -57,8 +55,6 @@
                hx-target="#source-search-results"
                hx-include="[name='source']"
                name="q">
-        {# Pass current source to the search endpoint #}
-        <input type="hidden" name="source_key" :value="source">
         <div id="source-search-results"></div>
         <p x-show="sourceId" class="mt-1.5 text-xs text-indigo-400">
           ✓ <span x-text="selectedName"></span>
@@ -91,18 +87,16 @@
           Cancel
         </button>
         <button type="submit"
-                :disabled="source !== 'manual' && !sourceId && !{{ collection.id|default:0 }}"
+                :disabled="source !== 'manual' && !sourceId && !{% if collection %}true{% else %}false{% endif %}"
                 class="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
           {% if collection %}Save{% else %}Create{% endif %}
         </button>
       </div>
     </form>
 
-    {% if collection and collection.user_can_delete(request.user) %}
-    <form method="post" action="{% url 'collection_delete' %}" class="mt-3 text-right">
+    {% if collection and collection.user_can_delete request.user %}
+    <form method="post" action="{% url 'collection_delete' collection_id=collection.id %}" class="mt-3 text-right">
       {% csrf_token %}
-      <input type="hidden" name="collection_id" value="{{ collection.id }}">
-      <input type="hidden" name="next" value="{% url 'collections' %}">
       <button type="submit" onclick="return confirm('Delete this collection?')"
               class="text-red-400 hover:text-red-300 text-xs transition-colors cursor-pointer">
         Delete collection

@@ -46,6 +46,8 @@ class Collection(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    source = models.CharField(max_length=50, blank=True, default="manual")
+    source_id = models.CharField(max_length=255, blank=True, default="")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     collaborators = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -54,7 +56,7 @@ class Collection(models.Model):
     )
     items = models.ManyToManyField(
         Item,
-        related_name="collections",
+        related_name="media_collections",
         blank=True,
         through="CollectionItem",
     )

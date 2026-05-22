@@ -215,6 +215,9 @@
           </div>
         {% endif %}
       </div>
+
+      {# Part of Collections — moved to sidebar Details column #}
+
     </div>
   </div>
 
@@ -395,6 +398,27 @@
           </div>
         </div>
 
+        {# Collections #}
+        <div x-data="{ collectionsOpen: false }">
+          <button class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-300 cursor-pointer"
+                  title="Add to collections"
+                  hx-get="{% url 'collections_modal' source=media_source media_type=media_type media_id=media_id %}"
+                  hx-target="#collections-modal-content"
+                  hx-trigger="click"
+                  @click="collectionsOpen = true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+          </button>
+
+          <div x-show="collectionsOpen"
+               @keydown.escape.window="collectionsOpen = false"
+               class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="w-96 max-h-[90vh] px-4 md:px-0 relative z-60"
+                 @click.outside="collectionsOpen = false">
+              <div id="collections-modal-content"></div>
+            </div>
+          </div>
+        </div>
+
         {# Activity History #}
         <div x-data="{ historyOpen: false }">
           <button class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition duration-300 cursor-pointer"
@@ -492,6 +516,24 @@
           <div class="text-gray-200">No details available</div>
         {% endif %}
       </div>
+
+      {# Part of Collections #}
+      {% if item_collections %}
+      <div class="mt-6">
+        <h2 class="text-xl font-bold mb-3">Part of</h2>
+        <div class="space-y-2">
+          {% for col in item_collections %}
+            <a href="{% url 'collection_detail' col.id %}"
+               class="flex items-center gap-3 px-3 py-2.5 bg-[#2a2f35] hover:bg-[#39404b] rounded-lg transition-colors group">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+              <span class="text-sm text-gray-200 group-hover:text-white truncate">{{ col.name }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-500 group-hover:text-indigo-400 ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
     </div>
 
     <div class="w-full md:w-3/4">

@@ -118,7 +118,7 @@ INSTALLED_APPS = [
     "events",
     "integrations",
     "lists",
-    "collections",
+    "media_collections",
     "users",
     "debug_toolbar",
     "django_celery_beat",
