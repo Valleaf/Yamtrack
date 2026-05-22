@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.3/",
+  "title": "Django 1.8.3 release notes | Django documentation | Django",
+  "content": "Django 1.8.3 fixes several security issues and bugs in 1.8.2.\n\nAlso, django.utils.deprecation.RemovedInDjango20Warning was renamed to RemovedInDjango110Warning as the version roadmap was revised to 1.9, 1.10, 1.11 (LTS), 2.0 (drops Python 2 support). For backwards compatibility, RemovedInDjango20Warning remains as an importable alias.\n\nIn previous versions of Django, the session backends created a new empty record in the session storage anytime request.session was accessed and there was a session key provided in the request cookies that didn’t already have a session record. This could allow an attacker to easily create many new session records simply by sending repeated requests with unknown session keys, potentially filling up the session store or causing other users’ session records to be evicted.\n\nThe built-in session backends now create a session record only if the session is actually modified; empty session records are not created. Thus this potential DoS is now only possible if the site chooses to expose a session-modifying view to anonymous users.\n\nAs each built-in session backend was fixed separately (rather than a fix in the core sessions framework), maintainers of third-party session backends should check whether the same vulnerability is present in their backend and correct it if so.\n\nSome of Django’s built-in validators (EmailValidator, most seriously) didn’t prohibit newline characters (due to the usage of $ instead of \\Z in the regular expressions). If you use values with newlines in HTTP response or email headers, you can suffer from header injection attacks. Django itself isn’t vulnerable because HttpResponse and the mail sending utilities in django.core.mail prohibit newlines in HTTP and SMTP headers, respectively. While the validators have been fixed in Django, if you’re creating HTTP responses or email messages in other ways, it’s a good idea to ensure that those methods prohibit newlines as well. You might also want to validate that any existing data in your application doesn’t contain unexpected newlines.\n\nvalidate_ipv4_address(), validate_slug(), and URLValidator are also affected, however, as of Django 1.6 the GenericIPAddresseField, IPAddressField, SlugField, and URLField form fields which use these validators all strip the input, so the possibility of newlines entering your data only exists if you are using these validators outside of the form fields.\n\nThe undocumented, internally unused validate_integer() function is now stricter as it validates using a regular expression instead of simply casting the value using int() and checking if an exception was raised.\n\nURLValidator included a regular expression that was extremely slow to evaluate against certain invalid inputs. This regular expression has been simplified and optimized.\n\nFixed BaseRangeField.prepare_value() to use each base_field’s prepare_value() method (#24841).\n\nFixed crash during makemigrations if a migrations module either is missing __init__.py or is a file (#24848).\n\nFixed QuerySet.exists() returning incorrect results after annotation with Count() (#24835).\n\nCorrected HStoreField.has_changed() (#24844).\n\nReverted an optimization to the CSRF template context processor which caused a regression (#24836).\n\nFixed a regression which caused template context processors to overwrite variables set on a RequestContext after it’s created (#24847).\n\nPrevented the loss of null/not null column properties during field renaming of MySQL databases (#24817).\n\nFixed a crash when using a reverse one-to-one relation in ModelAdmin.list_display (#24851).\n\nFixed quoting of SQL when renaming a field to AutoField in PostgreSQL (#24892).\n\nFixed lack of unique constraint when changing a field from primary_key=True to unique=True (#24893).\n\nFixed queryset pickling when using prefetch_related() after deleting objects (#24831).\n\nAllowed using choices longer than 1 day with DurationField (#24897).\n\nFixed a crash when loading squashed migrations from two apps with a dependency between them, where the dependent app’s replaced migrations are partially applied (#24895).\n\nFixed recording of applied status for squashed (replacement) migrations (#24628).\n\nFixed queryset annotations when using Case expressions with exclude() (#24833).\n\nCorrected join promotion for multiple Case expressions. Annotating a query with multiple Case expressions could unexpectedly filter out results (#24924).\n\nFixed usage of transforms in subqueries (#24744).\n\nFixed SimpleTestCase.assertRaisesMessage() on Python 2.7.10 (#24903).\n\nProvided better backwards compatibility for the verbosity argument in optparse management commands by casting it to an integer (#24769).\n\nFixed prefetch_related() on databases other than PostgreSQL for models using UUID primary keys (#24912).\n\nFixed removing unique_together constraints on MySQL (#24972).\n\nFixed crash when uploading images with MIME types that Pillow doesn’t detect, such as bitmap, in forms.ImageField (#24948).\n\nFixed a regression when deleting a model through the admin that has a GenericRelation with a related_query_name (#24940).\n\nReallowed non-ASCII values for ForeignKey.related_name on Python 3 by fixing the false positive system check (#25016).\n\nFixed inline forms that use a parent object that has a UUIDField primary key and a child object that has an AutoField primary key (#24958).\n\nFixed a regression in the unordered_list template filter on certain inputs (#25031).\n\nFixed a regression in URLValidator that invalidated Punycode TLDs (#25059).\n\nImproved pyinotify runserver polling (#23882).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service possibility by filling session store¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Header injection possibility since validators accept newlines in input¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service possibility in URL validation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.3/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

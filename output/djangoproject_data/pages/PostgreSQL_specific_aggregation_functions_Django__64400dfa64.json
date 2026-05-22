@@ -1,0 +1,164 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+  "title": "PostgreSQL specific aggregation functions | Django documentation | Django",
+  "content": "These functions are available from the django.contrib.postgres.aggregates module. They are described in more detail in the PostgreSQL docs.\n\nAll functions come without default aliases, so you must explicitly provide one. For example:\n\nCommon aggregate options\n\nAll aggregates have the filter keyword argument and most also have the default keyword argument.\n\nReturns a list of values, including nulls, concatenated into an array, or default if there are no values.\n\nAn optional boolean argument that determines if array values will be distinct. Defaults to False.\n\nAn optional string of a field name (with an optional \"-\" prefix which indicates descending order) or an expression (or a tuple or list of strings and/or expressions) that specifies the ordering of the elements in the result list.\n\nDeprecated since version 5.2: The ordering keyword argument is deprecated. Use ArrayAgg.order_by instead.\n\nReturns an int of the bitwise AND of all non-null input values, or default if all values are null.\n\nReturns an int of the bitwise OR of all non-null input values, or default if all values are null.\n\nReturns an int of the bitwise XOR of all non-null input values, or default if all values are null. It requires PostgreSQL 14+.\n\nReturns True, if all input values are true, default if all values are null or if there are no values, otherwise False.\n\nReturns True if at least one input value is true, default if all values are null or if there are no values, otherwise False.\n\nReturns the input values as a JSON array, or default if there are no values. You can query the result using key and index lookups.\n\nAn optional boolean argument that determines if array values will be distinct. Defaults to False.\n\nAn optional string of a field name (with an optional \"-\" prefix which indicates descending order) or an expression (or a tuple or list of strings and/or expressions) that specifies the ordering of the elements in the result list.\n\nExamples are the same as for ArrayAgg.order_by.\n\nDeprecated since version 5.2: The ordering keyword argument is deprecated. Use JSONBAgg.order_by instead.\n\nDeprecated since version 6.0: The PostgreSQL StringAgg class is deprecated in favor of the generally available StringAgg class.\n\nReturns the input values concatenated into a string, separated by the delimiter string, or default if there are no values.\n\nRequired argument. A string, Value, or expression representing the string for separating values. For example, Value(\",\").\n\nSupport for providing a Value or expression rather than a string was added.\n\nDeprecated since version 6.0: Support for providing a string is deprecated.\n\nAn optional boolean argument that determines if concatenated values will be distinct. Defaults to False.\n\nAn optional string of a field name (with an optional \"-\" prefix which indicates descending order) or an expression (or a tuple or list of strings and/or expressions) that specifies the ordering of the elements in the result string.\n\nExamples are the same as for ArrayAgg.order_by.\n\nDeprecated since version 5.2: The ordering keyword argument is deprecated. Use StringAgg.order_by instead.\n\nThe arguments y and x for all these functions can be the name of a field or an expression returning a numeric data. Both are required.\n\nReturns the correlation coefficient as a float, or default if there aren’t any matching rows.\n\nReturns the population covariance as a float, or default if there aren’t any matching rows.\n\nOptional. By default CovarPop returns the general population covariance. However, if sample=True, the return value will be the sample population covariance.\n\nReturns the average of the independent variable (sum(x)/N) as a float, or default if there aren’t any matching rows.\n\nReturns the average of the dependent variable (sum(y)/N) as a float, or default if there aren’t any matching rows.\n\nReturns an int of the number of input rows in which both expressions are not null.\n\nThe default argument is not supported.\n\nReturns the y-intercept of the least-squares-fit linear equation determined by the (x, y) pairs as a float, or default if there aren’t any matching rows.\n\nReturns the square of the correlation coefficient as a float, or default if there aren’t any matching rows.\n\nReturns the slope of the least-squares-fit linear equation determined by the (x, y) pairs as a float, or default if there aren’t any matching rows.\n\nReturns sum(x^2) - sum(x)^2/N (“sum of squares” of the independent variable) as a float, or default if there aren’t any matching rows.\n\nReturns sum(x*y) - sum(x) * sum(y)/N (“sum of products” of independent times dependent variable) as a float, or default if there aren’t any matching rows.\n\nReturns sum(y^2) - sum(y)^2/N (“sum of squares” of the dependent variable) as a float, or default if there aren’t any matching rows.\n\nWe will use this example table:\n\nHere’s some examples of some of the general-purpose aggregation functions:\n\nThe next example shows the usage of statistical aggregate functions. The underlying math will be not described (you can read about this, for example, at wikipedia):",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific aggregation functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "General-purpose aggregation functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ArrayAgg¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BitAnd¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BitOr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BitXor¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BoolAnd¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BoolOr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "JSONBAgg¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "StringAgg¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Aggregate functions for statistics¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "y and x¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Corr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CovarPop¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrAvgX¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrAvgY¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrCount¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrIntercept¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrR2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrSlope¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrSXX¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrSXY¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegrSYY¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Usage examples¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Note All functions come without default aliases, so you must explicitly provide one. For example: >>> SomeModel.objects.aggregate(arr=ArrayAgg(\"somefield\")) {'arr': [0, 1, 2]}",
+      "code": ">>> SomeModel.objects.aggregate(arr=ArrayAgg(\"somefield\"))\n{'arr': [0, 1, 2]}"
+    },
+    {
+      "description": "All functions come without default aliases, so you must explicitly provide one. For example:",
+      "code": ">>> SomeModel.objects.aggregate(arr=ArrayAgg(\"somefield\"))\n{'arr': [0, 1, 2]}"
+    },
+    {
+      "description": "Usage example:",
+      "code": "class Comment(models.Model):\n    body = models.TextField()\n    published = models.BooleanField()\n    rank = models.IntegerField()"
+    },
+    {
+      "description": "Usage example:",
+      "code": "class Comment(models.Model):\n    body = models.TextField()\n    published = models.BooleanField()\n    rank = models.IntegerField()"
+    },
+    {
+      "description": "Usage example:",
+      "code": "class Room(models.Model):\n    number = models.IntegerField(unique=True)\n\n\nclass HotelReservation(models.Model):\n    room = models.ForeignKey(\"Room\", on_delete=models.CASCADE)\n    start = models.DateTimeField()\n    end = models.DateTimeField()\n    requirements = models.JSONField(blank=True, null=True)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

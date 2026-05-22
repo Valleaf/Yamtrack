@@ -1,0 +1,307 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/forms/fields",
+  "title": "Form fields | Django documentation | Django",
+  "content": "When you create a Form class, the most important part is defining the fields of the form. Each field has custom validation logic, along with a few other hooks.\n\nAlthough the primary way you’ll use Field classes is in Form classes, you can also instantiate them and use them directly to get a better idea of how they work. Each Field instance has a clean() method, which takes a single argument and either raises a django.core.exceptions.ValidationError exception or returns the clean value:\n\nEach Field class constructor takes at least these arguments. Some Field classes take additional, field-specific arguments, but the following should always be accepted:\n\nBy default, each Field class assumes the value is required, so if you pass an empty value – either None or the empty string (\"\") – then clean() will raise a ValidationError exception:\n\nTo specify that a field is not required, pass required=False to the Field constructor:\n\nIf a Field has required=False and you pass clean() an empty value, then clean() will return a normalized empty value rather than raising ValidationError. For CharField, this will return empty_value which defaults to an empty string. For other Field classes, it might be None. (This varies from field to field.)\n\nWidgets of required form fields have the required HTML attribute. Set the Form.use_required_attribute attribute to False to disable it. The required attribute isn’t included on forms of formsets because the browser validation may not be correct when adding and deleting formsets.\n\nThe label argument lets you specify the “human-friendly” label for this field. This is used when the Field is displayed in a Form.\n\nAs explained in Outputting forms as HTML, the default label for a Field is generated from the field name by converting all underscores to spaces and upper-casing the first letter. Specify a string for label if that default behavior doesn’t result in an adequate label. Use an empty string (\"\") to hide the label.\n\nHere’s a full example Form that implements label for two of its fields. We’ve specified auto_id=False to simplify the output:\n\nThe label_suffix argument lets you override the form’s label_suffix on a per-field basis:\n\nThe initial argument lets you specify the initial value to use when rendering this Field in an unbound Form.\n\nTo specify dynamic initial data, see the Form.initial parameter.\n\nThe use-case for this is when you want to display an “empty” form in which a field is initialized to a particular value. For example:\n\nYou may be thinking, why not just pass a dictionary of the initial values as data when displaying the form? Well, if you do that, you’ll trigger validation, and the HTML output will include any validation errors:\n\nThis is why initial values are only displayed for unbound forms. For bound forms, the HTML output will use the bound data.\n\nAlso note that initial values are not used as “fallback” data in validation if a particular field’s value is not given. initial values are only intended for initial form display:\n\nInstead of a constant, you can also pass any callable:\n\nThe callable will be evaluated only when the unbound form is displayed, not when it is defined.\n\nThe widget argument lets you specify a Widget class to use when rendering this Field. See Widgets for more information.\n\nThe help_text argument lets you specify descriptive text for this Field. If you provide help_text, it will be displayed next to the Field when the Field is rendered by one of the convenience Form methods (e.g., as_ul()).\n\nLike the model field’s help_text, this value isn’t HTML-escaped in automatically-generated forms.\n\nHere’s a full example Form that implements help_text for two of its fields. We’ve specified auto_id=False to simplify the output:\n\nWhen a field has help text it is associated with its input using the aria-describedby HTML attribute. If the widget is rendered in a <fieldset> then aria-describedby is added to this element, otherwise it is added to the widget’s <input>:\n\nWhen adding a custom aria-describedby attribute, make sure to also include the id of the help_text element (if used) in the desired order. For screen reader users, descriptions will be read in their order of appearance inside aria-describedby:\n\nThe error_messages argument lets you override the default messages that the field will raise. Pass in a dictionary with keys matching the error messages you want to override. For example, here is the default error message:\n\nAnd here is a custom error message:\n\nIn the built-in Field classes section below, each Field defines the error message keys it uses.\n\nThe validators argument lets you provide a list of validation functions for this field.\n\nSee the validators documentation for more information.\n\nThe localize argument enables the localization of form data input, as well as the rendered output.\n\nSee the format localization documentation for more information.\n\nThe disabled boolean argument, when set to True, disables a form field using the disabled HTML attribute so that it won’t be editable by users. Even if a user tampers with the field’s value submitted to the server, it will be ignored in favor of the value from the form’s initial data.\n\nThe template_name argument allows a custom template to be used when the field is rendered with as_field_group(). By default this value is set to \"django/forms/field.html\". Can be changed per field by overriding this attribute or more generally by overriding the default template, see also Overriding built-in field templates.\n\nThe bound_field_class attribute allows a per-field override of Form.bound_field_class.\n\nThe has_changed() method is used to determine if the field value has changed from the initial value. Returns True or False.\n\nSee the Form.has_changed documentation for more information.\n\nNaturally, the forms library comes with a set of Field classes that represent common validation needs. This section documents each built-in field.\n\nFor each field, we describe the default widget used if you don’t specify widget. We also specify the value returned when you provide an empty value (see the section on required above to understand what that means).\n\nDefault widget: CheckboxInput\n\nNormalizes to: A Python True or False value.\n\nValidates that the value is True (e.g. the check box is checked) if the field has required=True.\n\nError message keys: required\n\nSince all Field subclasses have required=True by default, the validation condition here is important. If you want to include a boolean in your form that can be either True or False (e.g. a checked or unchecked checkbox), you must remember to pass in required=False when creating the BooleanField.\n\nDefault widget: TextInput\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A string.\n\nUses MaxLengthValidator and MinLengthValidator if max_length and min_length are provided. Otherwise, all inputs are valid.\n\nError message keys: required, max_length, min_length\n\nHas the following optional arguments for validation:\n\nIf provided, these arguments ensure that the string is at most or at least the given length.\n\nIf True (default), the value will be stripped of leading and trailing whitespace.\n\nThe value to use to represent “empty”. Defaults to an empty string.\n\nDefault widget: Select\n\nEmpty value: '' (an empty string)\n\nNormalizes to: A string.\n\nValidates that the given value exists in the list of choices.\n\nError message keys: required, invalid_choice\n\nThe invalid_choice error message may contain %(value)s, which will be replaced with the selected choice.\n\nTakes one extra argument:\n\nEither an iterable of 2-tuples to use as choices for this field, enumeration type, or a callable that returns such an iterable. This argument accepts the same formats as the choices argument to a model field. See the model field reference documentation on choices for more details. If the argument is a callable, it is evaluated each time the field’s form is initialized, in addition to during rendering. Defaults to an empty list.\n\nThis field normalizes choices to strings, so if choices are required in other data types, such as integers or booleans, consider using TypedChoiceField instead.\n\nDefault widget: DateInput\n\nNormalizes to: A Python datetime.date object.\n\nValidates that the given value is either a datetime.date, datetime.datetime or string formatted in a particular date format.\n\nError message keys: required, invalid\n\nTakes one optional argument:\n\nAn iterable of formats used to attempt to convert a string to a valid datetime.date object.\n\nIf no input_formats argument is provided, the default input formats are taken from the active locale format DATE_INPUT_FORMATS key, or from DATE_INPUT_FORMATS if localization is disabled. See also format localization.\n\nDefault widget: DateTimeInput\n\nNormalizes to: A Python datetime.datetime object.\n\nValidates that the given value is either a datetime.datetime, datetime.date or string formatted in a particular datetime format.\n\nError message keys: required, invalid\n\nTakes one optional argument:\n\nAn iterable of formats used to attempt to convert a string to a valid datetime.datetime object, in addition to ISO 8601 formats.\n\nThe field always accepts strings in ISO 8601 formatted dates or similar recognized by parse_datetime(). Some examples are:\n\n'2006-10-25 14:30:59'\n\n'2006-10-25T14:30:59'\n\n'2006-10-25T14:30+02:00'\n\nIf no input_formats argument is provided, the default input formats are taken from the active locale format DATETIME_INPUT_FORMATS and DATE_INPUT_FORMATS keys, or from DATETIME_INPUT_FORMATS and DATE_INPUT_FORMATS if localization is disabled. See also format localization.\n\nDefault widget: NumberInput when Field.localize is False, else TextInput.\n\nNormalizes to: A Python decimal.\n\nValidates that the given value is a decimal. Uses MaxValueValidator and MinValueValidator if max_value and min_value are provided. Uses StepValueValidator if step_size is provided. Leading and trailing whitespace is ignored.\n\nError message keys: required, invalid, max_value, min_value, max_digits, max_decimal_places, max_whole_digits, step_size.\n\nThe max_value and min_value error messages may contain %(limit_value)s, which will be substituted by the appropriate limit. Similarly, the max_digits, max_decimal_places and max_whole_digits error messages may contain %(max)s.\n\nTakes five optional arguments:\n\nThese control the range of values permitted in the field, and should be given as decimal.Decimal values.\n\nThe maximum number of digits (those before the decimal point plus those after the decimal point, with leading zeros stripped) permitted in the value.\n\nThe maximum number of decimal places permitted.\n\nLimit valid inputs to an integral multiple of step_size. If min_value is also provided, it’s added as an offset to determine if the step size matches.\n\nDefault widget: TextInput\n\nNormalizes to: A Python timedelta.\n\nValidates that the given value is a string which can be converted into a timedelta. The value must be between datetime.timedelta.min and datetime.timedelta.max.\n\nError message keys: required, invalid, overflow.\n\nAccepts any format understood by parse_duration().\n\nDefault widget: EmailInput\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A string.\n\nUses EmailValidator to validate that the given value is a valid email address, using a moderately complex regular expression.\n\nError message keys: required, invalid\n\nHas the optional arguments max_length, min_length, and empty_value which work just as they do for CharField. The max_length argument defaults to 320 (see RFC 3696 Section 3).\n\nDefault widget: ClearableFileInput\n\nNormalizes to: An UploadedFile object that wraps the file content and file name into a single object.\n\nCan validate that non-empty file data has been bound to the form.\n\nError message keys: required, invalid, missing, empty, max_length\n\nHas the optional arguments for validation: max_length and allow_empty_file. If provided, these ensure that the file name is at most the given length, and that validation will succeed even if the file content is empty.\n\nTo learn more about the UploadedFile object, see the file uploads documentation.\n\nWhen you use a FileField in a form, you must also remember to bind the file data to the form.\n\nThe max_length error refers to the length of the filename. In the error message for that key, %(max)d will be replaced with the maximum filename length and %(length)d will be replaced with the current filename length.\n\nDefault widget: Select\n\nEmpty value: '' (an empty string)\n\nNormalizes to: A string.\n\nValidates that the selected choice exists in the list of choices.\n\nError message keys: required, invalid_choice\n\nThe field allows choosing from files inside a certain directory. It takes five extra arguments; only path is required:\n\nThe absolute path to the directory whose contents you want listed. This directory must exist.\n\nIf False (the default) only the direct contents of path will be offered as choices. If True, the directory will be descended into recursively and all descendants will be listed as choices.\n\nA regular expression pattern; only files with names matching this expression will be allowed as choices.\n\nOptional. Either True or False. Default is True. Specifies whether files in the specified location should be included. Either this or allow_folders must be True.\n\nOptional. Either True or False. Default is False. Specifies whether folders in the specified location should be included. Either this or allow_files must be True.\n\nDefault widget: NumberInput when Field.localize is False, else TextInput.\n\nNormalizes to: A Python float.\n\nValidates that the given value is a float. Uses MaxValueValidator and MinValueValidator if max_value and min_value are provided. Uses StepValueValidator if step_size is provided. Leading and trailing whitespace is allowed, as in Python’s float() function.\n\nError message keys: required, invalid, max_value, min_value, step_size.\n\nTakes three optional arguments:\n\nThese control the range of values permitted in the field.\n\nLimit valid inputs to an integral multiple of step_size. If min_value is also provided, it’s added as an offset to determine if the step size matches.\n\nA field containing either an IPv4 or an IPv6 address.\n\nDefault widget: TextInput\n\nEmpty value: '' (an empty string)\n\nNormalizes to: A string. IPv6 addresses are normalized as described below.\n\nValidates that the given value is a valid IP address.\n\nError message keys: required, invalid, max_length\n\nThe IPv6 address normalization follows RFC 4291 Section 2.2 section 2.2, including using the IPv4 format suggested in paragraph 3 of that section, like ::ffff:192.0.2.0. For example, 2001:0::0:01 would be normalized to 2001::1, and ::ffff:0a0a:0a0a to ::ffff:10.10.10.10. All characters are converted to lowercase.\n\nTakes three optional arguments:\n\nLimits valid inputs to the specified protocol. Accepted values are both (default), IPv4 or IPv6. Matching is case insensitive.\n\nUnpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.\n\nDefaults to 39, and behaves the same way as it does for CharField.\n\nDefault widget: ClearableFileInput\n\nNormalizes to: An UploadedFile object that wraps the file content and file name into a single object.\n\nValidates that file data has been bound to the form. Also uses FileExtensionValidator to validate that the file extension is supported by Pillow.\n\nError message keys: required, invalid, missing, empty, invalid_image\n\nUsing an ImageField requires that pillow is installed with support for the image formats you use. If you encounter a corrupt image error when you upload an image, it usually means that Pillow doesn’t understand its format. To fix this, install the appropriate library and reinstall Pillow.\n\nWhen you use an ImageField on a form, you must also remember to bind the file data to the form.\n\nAfter the field has been cleaned and validated, the UploadedFile object will have an additional image attribute containing the Pillow Image instance used to check if the file was a valid image. Pillow closes the underlying file descriptor after verifying an image, so while non-image data attributes, such as format, height, and width, are available, methods that access the underlying image data, such as getdata() or getpixel(), cannot be used without reopening the file. For example:\n\nAdditionally, UploadedFile.content_type will be updated with the image’s content type if Pillow can determine it, otherwise it will be set to None.\n\nDefault widget: NumberInput when Field.localize is False, else TextInput.\n\nNormalizes to: A Python integer.\n\nValidates that the given value is an integer. Uses MaxValueValidator and MinValueValidator if max_value and min_value are provided. Uses StepValueValidator if step_size is provided. Leading and trailing whitespace is allowed, as in Python’s int() function.\n\nError message keys: required, invalid, max_value, min_value, step_size\n\nThe max_value, min_value and step_size error messages may contain %(limit_value)s, which will be substituted by the appropriate limit.\n\nTakes three optional arguments for validation:\n\nThese control the range of values permitted in the field.\n\nLimit valid inputs to an integral multiple of step_size. If min_value is also provided, it’s added as an offset to determine if the step size matches.\n\nA field which accepts JSON encoded data for a JSONField.\n\nDefault widget: Textarea\n\nNormalizes to: A Python representation of the JSON value (usually as a dict, list, or None), depending on JSONField.decoder.\n\nValidates that the given value is a valid JSON.\n\nError message keys: required, invalid\n\nTakes two optional arguments:\n\nA json.JSONEncoder subclass to serialize data types not supported by the standard JSON serializer (e.g. datetime.datetime or UUID). For example, you can use the DjangoJSONEncoder class.\n\nDefaults to json.JSONEncoder.\n\nA json.JSONDecoder subclass to deserialize the input. Your deserialization may need to account for the fact that you can’t be certain of the input type. For example, you run the risk of returning a datetime that was actually a string that just happened to be in the same format chosen for datetimes.\n\nThe decoder can be used to validate the input. If json.JSONDecodeError is raised during the deserialization, a ValidationError will be raised.\n\nDefaults to json.JSONDecoder.\n\nIf you use a ModelForm, the encoder and decoder from JSONField will be used.\n\nJSONField is not particularly user friendly in most cases. However, it is a useful way to format data from a client-side widget for submission to the server.\n\nDefault widget: SelectMultiple\n\nEmpty value: [] (an empty list)\n\nNormalizes to: A list of strings.\n\nValidates that every value in the given list of values exists in the list of choices.\n\nError message keys: required, invalid_choice, invalid_list\n\nThe invalid_choice error message may contain %(value)s, which will be replaced with the selected choice.\n\nTakes one extra required argument, choices, as for ChoiceField.\n\nDefault widget: NullBooleanSelect\n\nNormalizes to: A Python True, False or None value.\n\nValidates nothing (i.e., it never raises a ValidationError).\n\nNullBooleanField may be used with widgets such as Select or RadioSelect by providing the widget choices:\n\nDefault widget: TextInput\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A string.\n\nUses RegexValidator to validate that the given value matches a certain regular expression.\n\nError message keys: required, invalid\n\nTakes one required argument:\n\nA regular expression specified either as a string or a compiled regular expression object.\n\nAlso takes max_length, min_length, strip, and empty_value which work just as they do for CharField.\n\nDefaults to False. If enabled, stripping will be applied before the regex validation.\n\nDefault widget: TextInput\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A string.\n\nUses validate_slug or validate_unicode_slug to validate that the given value contains only letters, numbers, underscores, and hyphens.\n\nError messages: required, invalid\n\nThis field is intended for use in representing a model SlugField in forms.\n\nTakes two optional parameters:\n\nA boolean instructing the field to accept Unicode letters in addition to ASCII letters. Defaults to False.\n\nThe value to use to represent “empty”. Defaults to an empty string.\n\nDefault widget: TimeInput\n\nNormalizes to: A Python datetime.time object.\n\nValidates that the given value is either a datetime.time or string formatted in a particular time format.\n\nError message keys: required, invalid\n\nTakes one optional argument:\n\nAn iterable of formats used to attempt to convert a string to a valid datetime.time object.\n\nIf no input_formats argument is provided, the default input formats are taken from the active locale format TIME_INPUT_FORMATS key, or from TIME_INPUT_FORMATS if localization is disabled. See also format localization.\n\nJust like a ChoiceField, except TypedChoiceField takes two extra arguments, coerce and empty_value.\n\nDefault widget: Select\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A value of the type provided by the coerce argument.\n\nValidates that the given value exists in the list of choices and can be coerced.\n\nError message keys: required, invalid_choice\n\nTakes extra arguments:\n\nA function that takes one argument and returns a coerced value. Examples include the built-in int, float, bool and other types. Defaults to an identity function. Note that coercion happens after input validation, so it is possible to coerce to a value not present in choices.\n\nThe value to use to represent “empty.” Defaults to the empty string; None is another common choice here. Note that this value will not be coerced by the function given in the coerce argument, so choose it accordingly.\n\nJust like a MultipleChoiceField, except TypedMultipleChoiceField takes two extra arguments, coerce and empty_value.\n\nDefault widget: SelectMultiple\n\nEmpty value: Whatever you’ve given as empty_value\n\nNormalizes to: A list of values of the type provided by the coerce argument.\n\nValidates that the given values exists in the list of choices and can be coerced.\n\nError message keys: required, invalid_choice\n\nThe invalid_choice error message may contain %(value)s, which will be replaced with the selected choice.\n\nTakes two extra arguments, coerce and empty_value, as for TypedChoiceField.\n\nDefault widget: URLInput\n\nEmpty value: Whatever you’ve given as empty_value.\n\nNormalizes to: A string.\n\nUses URLValidator to validate that the given value is a valid URL.\n\nError message keys: required, invalid\n\nHas the optional arguments max_length, min_length, empty_value which work just as they do for CharField, and one more argument:\n\nThe scheme assumed for URLs provided without one. Defaults to \"https\". For example, if assume_scheme is \"https\" and the provided value is \"example.com\", the normalized value will be \"https://example.com\".\n\nDefault widget: TextInput\n\nNormalizes to: A UUID object.\n\nError message keys: required, invalid\n\nThis field will accept any string format accepted as the hex argument to the UUID constructor.\n\nDefault widget: TextInput\n\nEmpty value: '' (an empty string)\n\nNormalizes to: A string.\n\nValidates the given value against each of the fields specified as an argument to the ComboField.\n\nError message keys: required, invalid\n\nTakes one extra required argument:\n\nThe list of fields that should be used to validate the field’s value (in the order in which they are provided).\n\nDefault widget: TextInput\n\nEmpty value: '' (an empty string)\n\nNormalizes to: the type returned by the compress method of the subclass.\n\nValidates the given value against each of the fields specified as an argument to the MultiValueField.\n\nError message keys: required, invalid, incomplete\n\nAggregates the logic of multiple fields that together produce a single value.\n\nThis field is abstract and must be subclassed. In contrast with the single-value fields, subclasses of MultiValueField must not implement clean() but instead - implement compress().\n\nTakes one extra required argument:\n\nA tuple of fields whose values are cleaned and subsequently combined into a single value. Each value of the field is cleaned by the corresponding field in fields – the first value is cleaned by the first field, the second value is cleaned by the second field, etc. Once all fields are cleaned, the list of clean values is combined into a single value by compress().\n\nAlso takes some optional arguments:\n\nDefaults to True, in which case a required validation error will be raised if no value is supplied for any field.\n\nWhen set to False, the Field.required attribute can be set to False for individual fields to make them optional. If no value is supplied for a required field, an incomplete validation error will be raised.\n\nA default incomplete error message can be defined on the MultiValueField subclass, or different messages can be defined on each individual field. For example:\n\nMust be a subclass of django.forms.MultiWidget. Default value is TextInput, which probably is not very useful in this case.\n\nTakes a list of valid values and returns a “compressed” version of those values – in a single value. For example, SplitDateTimeField is a subclass which combines a time field and a date field into a datetime object.\n\nThis method must be implemented in the subclasses.\n\nDefault widget: SplitDateTimeWidget\n\nNormalizes to: A Python datetime.datetime object.\n\nValidates that the given value is a datetime.datetime or string formatted in a particular datetime format.\n\nError message keys: required, invalid, invalid_date, invalid_time\n\nTakes two optional arguments:\n\nA list of formats used to attempt to convert a string to a valid datetime.date object.\n\nIf no input_date_formats argument is provided, the default input formats for DateField are used.\n\nA list of formats used to attempt to convert a string to a valid datetime.time object.\n\nIf no input_time_formats argument is provided, the default input formats for TimeField are used.\n\nTwo fields are available for representing relationships between models: ModelChoiceField and ModelMultipleChoiceField. Both of these fields require a single queryset parameter that is used to create the choices for the field. Upon form validation, these fields will place either one model object (in the case of ModelChoiceField) or multiple model objects (in the case of ModelMultipleChoiceField) into the cleaned_data dictionary of the form.\n\nFor more complex uses, you can specify queryset=None when declaring the form field and then populate the queryset in the form’s __init__() method:\n\nBoth ModelChoiceField and ModelMultipleChoiceField have an iterator attribute which specifies the class used to iterate over the queryset when generating choices. See Iterating relationship choices for details.\n\nDefault widget: Select\n\nNormalizes to: A model instance.\n\nValidates that the given id exists in the queryset.\n\nError message keys: required, invalid_choice\n\nThe invalid_choice error message may contain %(value)s, which will be replaced with the selected choice.\n\nAllows the selection of a single model object, suitable for representing a foreign key. Note that the default widget for ModelChoiceField becomes impractical when the number of entries increases. You should avoid using it for more than 100 items.\n\nA single argument is required:\n\nA QuerySet of model objects from which the choices for the field are derived and which is used to validate the user’s selection. It’s evaluated when the form is rendered.\n\nModelChoiceField also takes several optional arguments:\n\nBy default the <select> widget used by ModelChoiceField will have an empty choice at the top of the list. You can change the text of this label (which is \"---------\" by default) with the empty_label attribute, or you can disable the empty label entirely by setting empty_label to None:\n\nNote that no empty choice is created (regardless of the value of empty_label) if a ModelChoiceField is required and has a default initial value, or a widget is set to RadioSelect and the blank argument is False.\n\nThis optional argument is used to specify the field to use as the value of the choices in the field’s widget. Be sure it’s a unique field for the model, otherwise the selected value could match more than one object. By default it is set to None, in which case the primary key of each object will be used. For example:\n\nWhen using the RadioSelect widget, this optional boolean argument determines whether an empty choice is created. By default, blank is False, in which case no empty choice is created.\n\nModelChoiceField also has the attribute:\n\nThe iterator class used to generate field choices from queryset. By default, ModelChoiceIterator.\n\nThe __str__() method of the model will be called to generate string representations of the objects for use in the field’s choices. To provide customized representations, subclass ModelChoiceField and override label_from_instance. This method will receive a model object and should return a string suitable for representing it. For example:\n\nDefault widget: SelectMultiple\n\nEmpty value: An empty QuerySet (self.queryset.none())\n\nNormalizes to: A QuerySet of model instances.\n\nValidates that every id in the given list of values exists in the queryset.\n\nError message keys: required, invalid_list, invalid_choice, invalid_pk_value\n\nThe invalid_choice message may contain %(value)s and the invalid_pk_value message may contain %(pk)s, which will be substituted by the appropriate values.\n\nAllows the selection of one or more model objects, suitable for representing a many-to-many relation. As with ModelChoiceField, you can use label_from_instance to customize the object representations.\n\nA single argument is required:\n\nSame as ModelChoiceField.queryset.\n\nTakes one optional argument:\n\nSame as ModelChoiceField.to_field_name.\n\nModelMultipleChoiceField also has the attribute:\n\nSame as ModelChoiceField.iterator.\n\nBy default, ModelChoiceField and ModelMultipleChoiceField use ModelChoiceIterator to generate their field choices.\n\nWhen iterated, ModelChoiceIterator yields 2-tuple choices containing ModelChoiceIteratorValue instances as the first value element in each choice. ModelChoiceIteratorValue wraps the choice value while maintaining a reference to the source model instance that can be used in custom widget implementations, for example, to add data-* attributes to <option> elements.\n\nFor example, consider the following models:\n\nYou can use a Select widget subclass to include the value of Topping.price as the HTML attribute data-price for each <option> element:\n\nThis will render the Pizza.topping select as:\n\nFor more advanced usage you may subclass ModelChoiceIterator in order to customize the yielded 2-tuple choices.\n\nThe default class assigned to the iterator attribute of ModelChoiceField and ModelMultipleChoiceField. An iterable that yields 2-tuple choices from the queryset.\n\nA single argument is required:\n\nThe instance of ModelChoiceField or ModelMultipleChoiceField to iterate and yield choices.\n\nModelChoiceIterator has the following method:\n\nYields 2-tuple choices, in the (value, label) format used by ChoiceField.choices. The first value element is a ModelChoiceIteratorValue instance.\n\nTwo arguments are required:\n\nThe value of the choice. This value is used to render the value attribute of an HTML <option> element.\n\nThe model instance from the queryset. The instance can be accessed in custom ChoiceWidget.create_option() implementations to adjust the rendered HTML.\n\nModelChoiceIteratorValue has the following method:\n\nReturn value as a string to be rendered in HTML.\n\nIf the built-in Field classes don’t meet your needs, you can create custom Field classes. To do this, create a subclass of django.forms.Field. Its only requirements are that it implement a clean() method and that its __init__() method accept the core arguments mentioned above (required, label, initial, widget, help_text).\n\nYou can also customize how a field will be accessed by overriding bound_field_class or override Field.get_bound_field() if you need more flexibility when creating the BoundField:\n\nTakes an instance of Form and the name of the field. The returned BoundField instance will be used when accessing the field in a template.\n\nSee Customizing BoundField for examples of overriding a BoundField.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Form fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Core field arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "required¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "label¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "label_suffix¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "initial¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "widget¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "help_text¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "error_messages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "validators¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "localize¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "disabled¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "template_name¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "bound_field_class¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Checking if the field data has changed¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "has_changed()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Built-in Field classes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BooleanField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CharField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DateField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DateTimeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DecimalField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DurationField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "EmailField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FileField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FilePathField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FloatField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GenericIPAddressField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ImageField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "IntegerField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "JSONField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultipleChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NullBooleanField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RegexField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SlugField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TimeField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TypedChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TypedMultipleChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "URLField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "UUIDField¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Slightly complex built-in Field classes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ComboField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiValueField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SplitDateTimeField¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Fields which handle relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ModelChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ModelMultipleChoiceField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Iterating relationship choices¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "ModelChoiceIterator¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "ModelChoiceIteratorValue¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating custom fields¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The use-case for this is when you want to display an “empty” form in which a field is initialized to a particular value. For example:",
+      "code": ">>> from django import forms\n>>> class CommentForm(forms.Form):\n...     name = forms.CharField(initial=\"Your name\")\n...     url = forms.URLField(initial=\"https://\")\n...     comment = forms.CharField()\n...\n>>> f = CommentForm(auto_id=False)\n>>> print(f)\n<div>Name:<input type=\"text\" name=\"name\" value=\"Your name\" required></div>\n<div>Url:<input type=\"url\" name=\"url\" value=\"https://\" required></div>\n<div>Comment:<input type=\"text\" name=\"comment\" required></div>"
+    },
+    {
+      "description": "After the field has been cleaned and validated, the UploadedFile object will have an additional image attribute containing the Pillow Image instance used to check if the file was a valid image. Pillow closes the underlying file descriptor after verifying an image, so while non-image data attributes, such as format, height, and width, are available, methods that access the underlying image data, such as getdata() or getpixel(), cannot be used without reopening the file. For example:",
+      "code": ">>> from PIL import Image\n>>> from django import forms\n>>> from django.core.files.uploadedfile import SimpleUploadedFile\n>>> class ImageForm(forms.Form):\n...     img = forms.ImageField()\n...\n>>> file_data = {\"img\": SimpleUploadedFile(\"test.png\", b\"file data\")}\n>>> form = ImageForm({}, file_data)\n# Pillow closes the underlying file descriptor.\n>>> form.is_valid()\nTrue\n>>> image_field = form.cleaned_data[\"img\"]\n>>> image_field.image\n<PIL.PngImagePlugin.PngImageFile image mode=RGBA size=191x287 at 0x7F5985045C18>\n>>> image_field.image.width\n191\n>>> image_field.image.height\n287\n>>> image_field.image.format\n'PNG'\n>>> image_field.image.getdata()\n# Raises AttributeError: 'NoneType' object has no attribute 'seek'.\n>>> image = Image.open(image_field)\n>>> image.getdata()\n<ImagingCore object at 0x7f5984f874b0>"
+    },
+    {
+      "description": "A default incomplete error message can be defined on the MultiValueField subclass, or different messages can be defined on each individual field. For example:",
+      "code": "from django.core.validators import RegexValidator\n\n\nclass PhoneField(MultiValueField):\n    def __init__(self, **kwargs):\n        # Define one message for all fields.\n        error_messages = {\n            \"incomplete\": \"Enter a country calling code and a phone number.\",\n        }\n        # Or define a different message for each field.\n        fields = (\n            CharField(\n                error_messages={\"incomplete\": \"Enter a country calling code.\"},\n                validators=[\n                    RegexValidator(r\"^[0-9]+$\", \"Enter a valid country calling code.\"),\n                ],\n            ),\n            CharField(\n                error_messages={\"incomplete\": \"Enter a phone number.\"},\n                validators=[RegexValidator(r\"^[0-9]+$\", \"Enter a valid phone number.\")],\n            ),\n            CharField(\n                validators=[RegexValidator(r\"^[0-9]+$\", \"Enter a valid extension.\")],\n                required=False,\n            ),\n        )\n        super().__init__(\n            error_messages=error_messages,\n            fields=fields,\n            require_all_fields=False,\n            **kwargs\n        )"
+    },
+    {
+      "description": "This optional argument is used to specify the field to use as the value of the choices in the field’s widget. Be sure it’s a unique field for the model, otherwise the selected value could match more than one object. By default it is set to None, in which case the primary key of each object will be used. For example:",
+      "code": "# No custom to_field_name\nfield1 = forms.ModelChoiceField(queryset=...)"
+    },
+    {
+      "description": "The __str__() method of the model will be called to generate string representations of the objects for use in the field’s choices. To provide customized representations, subclass ModelChoiceField and override label_from_instance. This method will receive a model object and should return a string suitable for representing it. For example:",
+      "code": "from django.forms import ModelChoiceField\n\n\nclass MyModelChoiceField(ModelChoiceField):\n    def label_from_instance(self, obj):\n        return \"My Object #%i\" % obj.id"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields",
+    "https://docs.djangoproject.com/en/stable/ref/api/",
+    "https://docs.djangoproject.com/en/stable/ref/widgets/",
+    "https://docs.djangoproject.com/en/stable/models/fields/",
+    "https://docs.djangoproject.com/en/stable/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/renderers/",
+    "https://docs.djangoproject.com/en/stable/settings/",
+    "https://docs.djangoproject.com/en/stable/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/files/file/",
+  "title": "The File object | Django documentation | Django",
+  "content": "The django.core.files module and its submodules contain built-in classes for basic file handling in Django.\n\nThe File class is a thin wrapper around a Python file object with some Django-specific additions. Internally, Django uses this class when it needs to represent a file.\n\nFile objects have the following attributes and methods:\n\nThe name of the file including the relative path from MEDIA_ROOT.\n\nThe size of the file in bytes.\n\nThe underlying file object that this class wraps.\n\nBe careful with this attribute in subclasses.\n\nSome subclasses of File, including ContentFile and FieldFile, may replace this attribute with an object other than a Python file object. In these cases, this attribute may itself be a File subclass (and not necessarily the same subclass). Whenever possible, use the attributes and methods of the subclass itself rather than the those of the subclass’s file attribute.\n\nThe read/write mode for the file.\n\nOpen or reopen the file (which also does File.seek(0)). The mode argument allows the same values as Python’s built-in open(). *args and **kwargs are passed after mode to Python’s built-in open().\n\nWhen reopening a file, mode will override whatever mode the file was originally opened with; None means to reopen with the original mode.\n\nIt can be used as a context manager, e.g. with file.open() as f:.\n\nIterate over the file yielding one line at a time.\n\nIterate over the file yielding “chunks” of a given size. chunk_size defaults to 64 KB.\n\nThis is especially useful with very large files since it allows them to be streamed off disk and avoids storing the whole file in memory.\n\nReturns True if the file is large enough to require multiple chunks to access all of its content give some chunk_size.\n\nIn addition to the listed methods, File exposes the following attributes and methods of its file object: encoding, fileno, flush, isatty, newlines, read, readinto, readline, readlines, seek, tell, truncate, write, writelines, readable(), writable(), and seekable().\n\nThe ContentFile class inherits from File, but unlike File it operates on string content (bytes also supported), rather than an actual file. For example:\n\nDjango provides a built-in class specifically for images. django.core.files.images.ImageFile inherits all the attributes and methods of File, and additionally provides the following:\n\nWidth of the image in pixels.\n\nHeight of the image in pixels.\n\nAny File that is associated with an object (as with Car.photo, below) will also have a couple of extra methods:\n\nSaves a new file with the file name and contents provided. This will not replace the existing file, but will create a new file and update the object to point to it. If save is True, the model’s save() method will be called once the file is saved. That is, these two lines:\n\nNote that the content argument must be an instance of either File or of a subclass of File, such as ContentFile.\n\nRemoves the file from the model instance and deletes the underlying file. If save is True, the model’s save() method will be called once the file is deleted.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The File object¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The File class¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The ContentFile class¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The ImageFile class¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Additional methods on files attached to objects¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The ContentFile class inherits from File, but unlike File it operates on string content (bytes also supported), rather than an actual file. For example:",
+      "code": "from django.core.files.base import ContentFile\n\nf1 = ContentFile(\"esta frase está en español\")\nf2 = ContentFile(b\"these are bytes\")"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/files/file/",
+    "https://docs.djangoproject.com/en/stable/ref/files/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/files/storage/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

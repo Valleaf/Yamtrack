@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.2.20/",
+  "title": "Django 3.2.20 release notes | Django documentation | Django",
+  "content": "Django 3.2.20 fixes a security issue with severity “moderate” in 3.2.19.\n\nEmailValidator and URLValidator were subject to potential regular expression denial of service attack via a very large number of domain name labels of emails and URLs.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.2.20 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-36053: Potential regular expression denial of service vulnerability in EmailValidator/URLValidator¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.2.20/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.21/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.19/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

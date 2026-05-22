@@ -1,0 +1,38 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.1/",
+  "title": "Django 5.2.1 release notes | Django documentation | Django",
+  "content": "Django 5.2.1 fixes a security issue with severity “moderate” and several bugs in 5.2.\n\nThis release was built using an upgraded setuptools, producing filenames compliant with PEP 491 and PEP 625 and thus addressing a PyPI warning about non-compliant distribution filenames. This change only affects the Django packaging process and does not impact Django’s behavior.\n\nstrip_tags() would be slow to evaluate certain inputs containing large sequences of incomplete HTML tags. This function is used to implement the striptags template filter, which was thus also vulnerable.\n\nstrip_tags() now raises a SuspiciousOperation exception if it encounters an unusually large number of unclosed opening tags.\n\nFixed a regression in Django 5.2 that caused a crash when annotating aggregate expressions over query that uses explicit grouping by transforms followed by field references (#36292).\n\nFixed a regression in Django 5.2 that caused unnecessary queries when prefetching nullable foreign key relationships (#36290).\n\nFixed a regression in Django 5.2 that caused a crash of QuerySet.bulk_create() with nullable geometry fields on PostGIS (#36289).\n\nFixed a regression in Django 5.2 that caused fields to be incorrectly selected when using QuerySet.alias() after values() (#36299).\n\nFixed a data corruption possibility in file_move_safe() when allow_overwrite=True, where leftover content from a previously larger file could remain after overwriting with a smaller one due to lack of truncation (#36298).\n\nFixed a regression in Django 5.2 that caused a crash when using QuerySet.select_for_update(of=(…)) with values()/values_list() including expressions (#36301).\n\nFixed a regression in Django 5.2 that caused improper values to be returned from QuerySet.values_list() when duplicate field names were specified (#36288).\n\nFixed a regression in Django 5.2 where the password validation error message from MinimumLengthValidator was not translated when using non-English locales (#36314).\n\nFixed a regression in Django 5.2 that caused the object-tools block to be rendered twice when using custom admin templates with overridden blocks due to changes in the base admin page block structure (#36331).\n\nFixed a regression in Django 5.2, introduced when fixing CVE 2025-26699, where the wordwrap template filter did not preserve empty lines between paragraphs after wrapping text (#36341).\n\nFixed a regression in Django 5.2 that caused a crash when serializing email alternatives or attachments due to named tuple mismatches (#36309).\n\nFixed a regression in Django 5.2 that caused a crash when using update() on a QuerySet filtered against a related model and including references to annotations through values() (#36360).\n\nFixed a bug in Django 5.2 that caused composite primary key introspection to wrongly identify IntegerField as AutoField on SQLite (#36358).\n\nFixed a bug in Django 5.2 that caused a redundant unique_together constraint to be generated for composite primary keys when using inspectdb (#36357).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-32873: Denial-of-service possibility in strip_tags()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.1/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.2/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

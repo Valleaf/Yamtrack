@@ -1,0 +1,389 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+  "title": "django-admin and manage.py | Django documentation | Django",
+  "content": "django-admin is Django’s command-line utility for administrative tasks. This document outlines all it can do.\n\nIn addition, manage.py is automatically created in each Django project. It does the same thing as django-admin but also sets the DJANGO_SETTINGS_MODULE environment variable so that it points to your project’s settings.py file.\n\nThe django-admin script should be on your system path if you installed Django via pip. If it’s not in your path, ensure you have your virtual environment activated.\n\nGenerally, when working on a single Django project, it’s easier to use manage.py than django-admin. If you need to switch between multiple Django settings files, use django-admin with DJANGO_SETTINGS_MODULE or the --settings command line option.\n\nThe command-line examples throughout this document use django-admin to be consistent, but any example can use manage.py or python -m django just as well.\n\ncommand should be one of the commands listed in this document. options, which is optional, should be zero or more of the options available for the given command.\n\nRun django-admin help to display usage information and a list of the commands provided by each application.\n\nRun django-admin help --commands to display a list of all available commands.\n\nRun django-admin help <command> to display a description of the given command and a list of its available options.\n\nMany commands take a list of “app names.” An “app name” is the basename of the package containing your models. For example, if your INSTALLED_APPS contains the string 'mysite.blog', the app name is blog.\n\nRun django-admin version to display the current Django version.\n\nThe output follows the schema described in PEP 440:\n\nUse --verbosity, where it is supported, to specify the amount of notification and debug information that django-admin prints to the console.\n\nUses the system check framework to inspect the entire Django project for common problems.\n\nBy default, all apps will be checked. You can check a subset of apps by providing a list of app labels as arguments:\n\nThe system check framework performs many different types of checks that are categorized with tags. You can use these tags to restrict the checks performed to just those in a particular category. For example, to perform only models and compatibility checks, run:\n\nSpecifies the database to run checks requiring database access:\n\nBy default, these checks will not be run.\n\nLists all available tags.\n\nActivates some additional checks that are only relevant in a deployment setting.\n\nYou can use this option in your local development environment, but since your local development settings module may not have many of your production settings, you will probably want to point the check command at a different settings module, either by setting the DJANGO_SETTINGS_MODULE environment variable, or by passing the --settings option:\n\nOr you could run it directly on a production or staging deployment to verify that the correct settings are in use (omitting --settings). You could even make it part of your integration test suite.\n\nSpecifies the message level that will cause the command to exit with a non-zero status. Default is ERROR.\n\nCompiles .po files created by makemessages to .mo files for use with the built-in gettext support. See Internationalization and localization.\n\nSpecifies the locale(s) to process. If not provided, all locales are processed.\n\nSpecifies the locale(s) to exclude from processing. If not provided, no locales are excluded.\n\nIncludes fuzzy translations into compiled files.\n\nIgnores directories matching the given glob-style pattern. Use multiple times to ignore more.\n\nCreates the cache tables for use with the database cache backend using the information from your settings file. See Django’s cache framework for more information.\n\nSpecifies the database in which the cache table(s) will be created. Defaults to default.\n\nPrints the SQL that would be run without actually running it, so you can customize it or use the migrations framework.\n\nRuns the command-line client for the database engine specified in your ENGINE setting, with the connection parameters specified in your USER, PASSWORD, etc., settings.\n\nFor PostgreSQL, this runs the psql command-line client.\n\nFor MySQL, this runs the mysql command-line client.\n\nFor SQLite, this runs the sqlite3 command-line client.\n\nFor Oracle, this runs the sqlplus command-line client.\n\nThis command assumes the programs are on your PATH so that a call to the program name (psql, mysql, sqlite3, sqlplus) will find the program in the right place. There’s no way to specify the location of the program manually.\n\nSpecifies the database onto which to open a shell. Defaults to default.\n\nAny arguments following a -- divider will be passed on to the underlying command-line client. For example, with PostgreSQL you can use the psql command’s -c flag to execute a raw SQL query directly:\n\nOn MySQL/MariaDB, you can do this with the mysql command’s -e flag:\n\nBe aware that not all options set in the OPTIONS part of your database configuration in DATABASES are passed to the command-line client, e.g. 'isolation_level'.\n\nDisplays differences between the current settings file and Django’s default settings (or another settings file specified by --default).\n\nSettings that don’t appear in the defaults are followed by \"###\". For example, the default settings don’t define ROOT_URLCONF, so ROOT_URLCONF is followed by \"###\" in the output of diffsettings.\n\nDisplays all settings, even if they have Django’s default value. Such settings are prefixed by \"###\".\n\nThe settings module to compare the current settings against. Leave empty to compare against Django’s default settings.\n\nSpecifies the output format. Available values are hash and unified. hash is the default mode that displays the output that’s described above. unified displays the output similar to diff -u. Default settings are prefixed with a minus sign, followed by the changed setting prefixed with a plus sign.\n\nOutputs to standard output all data in the database associated with the named application(s).\n\nIf no application name is provided, all installed applications will be dumped.\n\nThe output of dumpdata can be used as input for loaddata.\n\nWhen result of dumpdata is saved as a file, it can serve as a fixture for tests or as an initial data.\n\nNote that dumpdata uses the default manager on the model for selecting the records to dump. If you’re using a custom manager as the default manager and it filters some of the available records, not all of the objects will be dumped.\n\nUses Django’s base manager, dumping records which might otherwise be filtered or modified by a custom manager.\n\nSpecifies the serialization format of the output. Defaults to JSON. Supported formats are listed in Serialization formats.\n\nSpecifies the number of indentation spaces to use in the output. Defaults to None which displays all data on single line.\n\nPrevents specific applications or models (specified in the form of app_label.ModelName) from being dumped. If you specify a model name, then only that model will be excluded, rather than the entire application. You can also mix application names and model names.\n\nIf you want to exclude multiple applications, pass --exclude more than once:\n\nSpecifies the database from which data will be dumped. Defaults to default.\n\nUses the natural_key() model method to serialize any foreign key and many-to-many relationship to objects of the type that defines the method. If you’re dumping contrib.auth Permission objects or contrib.contenttypes ContentType objects, you should probably use this flag. See the natural keys documentation for more details on this and the next option.\n\nOmits the primary key in the serialized data of this object since it can be calculated during deserialization.\n\nOutputs only the objects specified by a comma separated list of primary keys. This is only available when dumping one model. By default, all the records of the model are output.\n\nSpecifies a file to write the serialized data to. By default, the data goes to standard output.\n\nWhen this option is set and --verbosity is greater than 0 (the default), a progress bar is shown in the terminal.\n\nThe output file can be compressed with one of the bz2, gz, lzma, or xz formats by ending the filename with the corresponding extension. For example, to output the data as a compressed JSON file:\n\nRemoves all data from the database and re-executes any post-synchronization handlers. The table of which migrations have been applied is not cleared.\n\nIf you would rather start from an empty database and rerun all migrations, you should drop and recreate the database and then run migrate instead.\n\nSuppresses all user prompts.\n\nSpecifies the database to flush. Defaults to default.\n\nIntrospects the database tables in the database pointed-to by the NAME setting and outputs a Django model module (a models.py file) to standard output.\n\nYou may choose what tables or views to inspect by passing their names as arguments. If no arguments are provided, models are created for views only if the --include-views option is used. Models for partition tables are created on PostgreSQL if the --include-partitions option is used.\n\nUse this if you have a legacy database with which you’d like to use Django. The script will inspect the database and create a model for each table within it.\n\nAs you might expect, the created models will have an attribute for every field in the table. Note that inspectdb has a few special cases in its field-name output:\n\nIf inspectdb cannot map a column’s type to a model field type, it’ll use TextField and will insert the Python comment 'This field type is a guess.' next to the field in the generated model. The recognized fields may depend on apps listed in INSTALLED_APPS. For example, django.contrib.postgres adds recognition for several PostgreSQL-specific field types.\n\nIf the database column name is a Python reserved word (such as 'pass', 'class' or 'for'), inspectdb will append '_field' to the attribute name. For example, if a table has a column 'for', the generated model will have a field 'for_field', with the db_column attribute set to 'for'. inspectdb will insert the Python comment 'Field renamed because it was a Python reserved word.' next to the field.\n\nThis feature is meant as a shortcut, not as definitive model generation. After you run it, you’ll want to look over the generated models yourself to make customizations. In particular, you’ll need to rearrange models’ order, so that models that refer to other models are ordered properly.\n\nDjango doesn’t create database defaults when a default is specified on a model field. Similarly, database defaults aren’t translated to model field defaults or detected in any fashion by inspectdb.\n\nBy default, inspectdb creates unmanaged models. That is, managed = False in the model’s Meta class tells Django not to manage each table’s creation, modification, and deletion. If you do want to allow Django to manage the table’s lifecycle, you’ll need to change the managed option to True (or remove it because True is its default value).\n\nModels are created for materialized views if --include-views is used.\n\nModels are created for foreign tables.\n\nModels are created for materialized views if --include-views is used.\n\nModels are created for partition tables if --include-partitions is used.\n\nSpecifies the database to introspect. Defaults to default.\n\nIf this option is provided, models are also created for partitions.\n\nOnly support for PostgreSQL is implemented.\n\nIf this option is provided, models are also created for database views.\n\nSearches for and loads the contents of the named fixture into the database.\n\nSpecifies the database into which the data will be loaded. Defaults to default.\n\nIgnores fields and models that may have been removed since the fixture was originally generated.\n\nSpecifies a single app to look for fixtures in rather than looking in all apps.\n\nSpecifies the serialization format (e.g., json or xml) for fixtures read from stdin.\n\nExcludes loading the fixtures from the given applications and/or models (in the form of app_label or app_label.ModelName). Use the option multiple times to exclude more than one app or model.\n\nYou can use a dash as the fixture name to load input from sys.stdin. For example:\n\nWhen reading from stdin, the --format option is required to specify the serialization format of the input (e.g., json or xml).\n\nLoading from stdin is useful with standard input and output redirections. For example:\n\nThe dumpdata command can be used to generate input for loaddata.\n\nFor more detail about fixtures see the Fixtures topic.\n\nRuns over the entire source tree of the current directory and pulls out all strings marked for translation. It creates (or updates) a message file in the conf/locale (in the Django tree) or locale (for project and application) directory. After making changes to the messages files you need to compile them with compilemessages for use with the builtin gettext support. See the i18n documentation for details.\n\nThis command doesn’t require configured settings. However, when settings aren’t configured, the command can’t ignore the MEDIA_ROOT and STATIC_ROOT directories or include LOCALE_PATHS.\n\nUpdates the message files for all available languages.\n\nSpecifies a list of file extensions to examine (default: html, txt, py or js if --domain is djangojs).\n\nSeparate multiple extensions with commas or use -e or --extension multiple times:\n\nSpecifies the locale(s) to process.\n\nSpecifies the locale(s) to exclude from processing. If not provided, no locales are excluded.\n\nSpecifies the domain of the messages files. Supported options are:\n\ndjango for all *.py, *.html and *.txt files (default)\n\ndjangojs for *.js files\n\nFollows symlinks to directories when looking for new translation strings.\n\nIgnores files or directories matching the given glob-style pattern. Use multiple times to ignore more.\n\nThese patterns are used by default: 'CVS', '.*', '*~', '*.pyc'.\n\nDisables the default values of --ignore.\n\nDisables breaking long message lines into several lines in language files.\n\nSuppresses writing ‘#: filename:line’ comment lines in language files. Using this option makes it harder for technically skilled translators to understand each message’s context.\n\nControls #: filename:line comment lines in language files. If the option is:\n\nfull (the default if not given): the lines include both file name and line number.\n\nfile: the line number is omitted.\n\nnever: the lines are suppressed (same as --no-location).\n\nRequires gettext 0.19 or newer.\n\nRemoves obsolete message strings from the .po files.\n\nPrevents deleting the temporary .pot files generated before creating the .po file. This is useful for debugging errors which may prevent the final language files from being created.\n\nSee Customizing the makemessages command for instructions on how to customize the keywords that makemessages passes to xgettext.\n\nCreates new migrations based on the changes detected to your models. Migrations, their relationship with apps and more are covered in depth in the migrations documentation.\n\nProviding one or more app names as arguments will limit the migrations created to the app(s) specified and any dependencies needed (the table at the other end of a ForeignKey, for example).\n\nTo add migrations to an app that doesn’t have a migrations directory, run makemigrations with the app’s app_label.\n\nSuppresses all user prompts. If a suppressed prompt cannot be resolved automatically, the command will exit with error code 3.\n\nOutputs an empty migration for the specified apps, for manual editing. This is for advanced users and should not be used unless you are familiar with the migration format, migration operations, and the dependencies between your migrations.\n\nShows what migrations would be made without actually writing any migrations files to disk. Using this option along with --verbosity 3 will also show the complete migrations files that would be written.\n\nEnables fixing of migration conflicts.\n\nAllows naming the generated migration(s) instead of using a generated name. The name must be a valid Python identifier.\n\nGenerate migration files without Django version and timestamp header.\n\nMakes makemigrations exit with a non-zero status when model changes without migrations are detected. Implies --dry-run.\n\nDiverts log output and input prompts to stderr, writing only paths of generated migration files to stdout.\n\nMerges model changes into the latest migration and optimize the resulting operations.\n\nThe updated migration will have a generated name. In order to preserve the previous name, set it using --name.\n\nSynchronizes the database state with the current set of models and migrations. Migrations, their relationship with apps and more are covered in depth in the migrations documentation.\n\nThe behavior of this command changes depending on the arguments provided:\n\nNo arguments: All apps have all of their migrations run.\n\n<app_label>: The specified app has its migrations run, up to the most recent migration. This may involve running other apps’ migrations too, due to dependencies.\n\n<app_label> <migrationname>: Brings the database schema to a state where the named migration is applied, but no later migrations in the same app are applied. This may involve unapplying migrations if you have previously migrated past the named migration. You can use a prefix of the migration name, e.g. 0001, as long as it’s unique for the given app name. Use the name zero to migrate all the way back i.e. to revert all applied migrations for an app.\n\nWhen unapplying migrations, all dependent migrations will also be unapplied, regardless of <app_label>. You can use --plan to check which migrations will be unapplied.\n\nSpecifies the database to migrate. Defaults to default.\n\nMarks the migrations up to the target one (following the rules above) as applied, but without actually running the SQL to change your database schema.\n\nThis is intended for advanced users to manipulate the current migration state directly if they’re manually applying changes; be warned that using --fake runs the risk of putting the migration state table into a state where manual recovery will be needed to make migrations run correctly.\n\nAllows Django to skip an app’s initial migration if all database tables with the names of all models created by all CreateModel operations in that migration already exist. This option is intended for use when first running migrations against a database that preexisted the use of migrations. This option does not, however, check for matching database schema beyond matching table names and so is only safe to use if you are confident that your existing schema matches what is recorded in your initial migration.\n\nShows the migration operations that will be performed for the given migrate command.\n\nAllows creating tables for apps without migrations. While this isn’t recommended, the migrations framework is sometimes too slow on large projects with hundreds of models.\n\nSuppresses all user prompts. An example prompt is asking about removing stale content types.\n\nMakes migrate exit with a non-zero status when unapplied migrations are detected.\n\nDeletes nonexistent migrations from the django_migrations table. This is useful when migration files replaced by a squashed migration have been removed. See Squashing migrations for more details.\n\nOptimizes the operations for the named migration and overrides the existing file. If the migration contains functions that must be manually copied, the command creates a new migration file suffixed with _optimized that is meant to replace the named migration.\n\nMakes optimizemigration exit with a non-zero status when a migration can be optimized.\n\nStarts a lightweight development web server on the local machine. By default, the server runs on port 8000 on the IP address 127.0.0.1. You can pass in an IP address and port number explicitly.\n\nIf you run this script as a user with normal privileges (recommended), you might not have access to start a port on a low port number. Low port numbers are reserved for the superuser (root).\n\nThis server uses the WSGI application object specified by the WSGI_APPLICATION setting.\n\nDO NOT USE THIS SERVER IN A PRODUCTION SETTING.\n\nThis lightweight development server has not gone through security audits or performance tests, hence is unsuitable for production. Making this server able to handle a production environment is outside the scope of Django.\n\nThe development server automatically reloads Python code for each request, as needed. You don’t need to restart the server for code changes to take effect. However, some actions like adding files don’t trigger a restart, so you’ll have to restart the server in these cases.\n\nIf you’re using Linux or MacOS and install both pywatchman and the Watchman service, kernel signals will be used to autoreload the server (rather than polling file modification timestamps each second). This offers better performance on large projects, reduced response time after code changes, more robust change detection, and a reduction in power usage. Django supports pywatchman 1.2.0 and higher.\n\nLarge directories with many files may cause performance issues\n\nWhen using Watchman with a project that includes large non-Python directories like node_modules, it’s advisable to ignore this directory for optimal performance. See the watchman documentation for information on how to do this.\n\nThe default timeout of Watchman client is 5 seconds. You can change it by setting the DJANGO_WATCHMAN_TIMEOUT environment variable.\n\nWhen you start the server, and each time you change Python code while the server is running, the system check framework will check your entire Django project for some common errors (see the check command). If any errors are found, they will be printed to standard output. You can use the --skip-checks option to skip running system checks.\n\nYou can run as many concurrent servers as you want, as long as they’re on separate ports by executing django-admin runserver more than once.\n\nNote that the default IP address, 127.0.0.1, is not accessible from other machines on your network. To make your development server viewable to other machines on the network, use its own IP address (e.g. 192.168.2.1), 0 (shortcut for 0.0.0.0), 0.0.0.0, or :: (with IPv6 enabled).\n\nYou can provide an IPv6 address surrounded by brackets (e.g. [200a::1]:8000). This will automatically enable IPv6 support.\n\nA hostname containing ASCII-only characters can also be used.\n\nIf the staticfiles contrib app is enabled (default in new projects) the runserver command will be overridden with its own runserver command.\n\nLogging of each request and response of the server is sent to the django.server logger.\n\nDisables the auto-reloader. This means any Python code changes you make while the server is running will not take effect if the particular Python modules have already been loaded into memory.\n\nDisables use of threading in the development server. The server is multithreaded by default.\n\nUses IPv6 for the development server. This changes the default IP address from 127.0.0.1 to ::1.\n\nBy default, a warning is printed to the console that runserver is not suitable for production:\n\nSet this environment variable to \"true\" to hide this warning.\n\nPort 8000 on IP address 127.0.0.1:\n\nPort 8000 on IP address 1.2.3.4:\n\nPort 7000 on IP address 127.0.0.1:\n\nPort 7000 on IP address 1.2.3.4:\n\nPort 8000 on IPv6 address ::1:\n\nPort 7000 on IPv6 address ::1:\n\nPort 7000 on IPv6 address 2001:0db8:1234:5678::9:\n\nPort 8000 on IPv4 address of host localhost:\n\nPort 8000 on IPv6 address of host localhost:\n\nBy default, the development server doesn’t serve any static files for your site (such as CSS files, images, things under MEDIA_URL and so forth). If you want to configure Django to serve static media, read How to manage static files (e.g. images, JavaScript, CSS).\n\nDjango’s runserver command provides a WSGI server. In order to run under ASGI you will need to use an ASGI server. The Django Daphne project provides Integration with runserver that you can use.\n\nSends a test email (to confirm email sending through Django is working) to the recipient(s) specified. For example:\n\nThere are a couple of options, and you may use any combination of them together:\n\nMails the email addresses specified in MANAGERS using mail_managers().\n\nMails the email addresses specified in ADMINS using mail_admins().\n\nStarts the Python interactive interpreter.\n\nAll models from installed apps are automatically imported into the shell environment. Models from apps listed earlier in INSTALLED_APPS take precedence. The following common utilities are also imported:\n\nFor a --verbosity of 2 or higher, the automatically imported objects will be listed. To disable automatic importing entirely, use the --no-imports flag.\n\nSee the guide on customizing this behavior to add or remove automatic imports.\n\nAutomatic models import was added.\n\nAutomatic imports of common utilities, such as django.conf.settings, were added.\n\nSpecifies the shell to use. By default, Django will use IPython or bpython if either is installed. If both are installed, specify which one you want like so:\n\nIf you have a “rich” shell installed but want to force use of the “plain” Python interpreter, use python as the interface name, like so:\n\nDisables reading the startup script for the “plain” Python interpreter. By default, the script pointed to by the PYTHONSTARTUP environment variable or the ~/.pythonrc.py script is read.\n\nDisables the automatic import of models from INSTALLED_APPS.\n\nLets you pass a command as a string to execute it as Django, like so:\n\nYou can also pass code in on standard input to execute it. For example:\n\nOn Windows, the REPL is output due to implementation limits of select.select() on that platform.\n\nShows all migrations in a project. You can choose from one of two formats:\n\nLists all of the apps Django knows about, the migrations available for each app, and whether or not each migration is applied (marked by an [X] next to the migration name). For a --verbosity of 2 and above, the applied datetimes are also shown.\n\nApps without migrations are also listed, but have (no migrations) printed under them.\n\nThis is the default output format.\n\nShows the migration plan Django will follow to apply migrations. Like --list, applied migrations are marked by an [X]. For a --verbosity of 2 and above, all dependencies of a migration will also be shown.\n\napp_labels arguments limit the output, however, dependencies of provided apps may also be included.\n\nSpecifies the database to examine. Defaults to default.\n\nPrints the SQL statements that would be executed for the flush command.\n\nSpecifies the database for which to print the SQL. Defaults to default.\n\nPrints the SQL for the named migration. This requires an active database connection, which it will use to resolve constraint names; this means you must generate the SQL against a copy of the database you wish to later apply it on.\n\nNote that sqlmigrate doesn’t colorize its output.\n\nGenerates the SQL for unapplying the migration. By default, the SQL created is for running the migration in the forwards direction.\n\nSpecifies the database for which to generate the SQL. Defaults to default.\n\nPrints the SQL statements for resetting sequences for the given app name(s).\n\nSequences are indexes used by some database engines to track the next available number for automatically incremented fields.\n\nUse this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data.\n\nSpecifies the database for which to print the SQL. Defaults to default.\n\nSquashes the migrations for app_label up to and including migration_name down into fewer migrations, if possible. The resulting squashed migrations can live alongside the unsquashed ones safely. For more information, please read Squashing migrations.\n\nWhen start_migration_name is given, Django will only include migrations starting from and including this migration. This helps to mitigate the squashing limitation of RunPython and django.db.migrations.operations.RunSQL migration operations.\n\nDisables the optimizer when generating a squashed migration. By default, Django will try to optimize the operations in your migrations to reduce the size of the resulting file. Use this option if this process is failing or creating incorrect migrations, though please also file a Django bug report about the behavior, as optimization is meant to be safe.\n\nSuppresses all user prompts.\n\nSets the name of the squashed migration. When omitted, the name is based on the first and last migration, with _squashed_ in between.\n\nGenerate squashed migration file without Django version and timestamp header.\n\nCreates a Django app directory structure for the given app name in the current directory or the given destination.\n\nBy default, the new directory contains a models.py file and other app template files. If only the app name is given, the app directory will be created in the current working directory.\n\nIf the optional destination is provided, Django will use that name instead. If the directory with the given name doesn’t exist, it will be created. You can use ‘.’ to denote the current working directory.\n\nAutomatic creation of the destination directory was added.\n\nProvides the path to a directory with a custom app template file, or a path to an uncompressed archive (.tar) or a compressed archive (.tar.gz, .tar.bz2, .tar.xz, .tar.lzma, .tgz, .tbz2, .txz, .tlz, .zip) containing the app template files.\n\nFor example, this would look for an app template in the given directory when creating the myapp app:\n\nDjango will also accept URLs (http, https, ftp) to compressed archives with the app template files, downloading and extracting them on the fly.\n\nFor example, taking advantage of GitHub’s feature to expose repositories as zip files, you can use a URL like:\n\nTemplates provided via --template are used as is. Malicious or poorly constructed templates may introduce security weaknesses or unintended behavior. Compressed archives may also consume excessive resources during extraction, potentially causing crashes or hangs.\n\nContents of templates should be carefully inspected before use.\n\nSpecifies which file extensions in the app template should be rendered with the template engine. Defaults to py.\n\nSpecifies which files in the app template (in addition to those matching --extension) should be rendered with the template engine. Defaults to an empty list.\n\nSpecifies which directories in the app template should be excluded, in addition to .git and __pycache__. If this option is not provided, directories named __pycache__ or starting with . will be excluded.\n\nThe template context used for all matching files is:\n\nAny option passed to the startapp command (among the command’s supported options)\n\napp_name – the app name as passed to the command\n\napp_directory – the full path of the newly created app\n\ncamel_case_app_name – the app name in camel case format\n\ndocs_version – the version of the documentation: 'dev' or '1.x'\n\ndjango_version – the version of Django, e.g. '2.0.3'\n\nWhen the app template files are rendered with the Django template engine (by default all *.py files), Django will also replace all stray template variables contained. For example, if one of the Python files contains a docstring explaining a particular feature related to template rendering, it might result in an incorrect example.\n\nTo work around this problem, you can use the templatetag template tag to “escape” the various parts of the template syntax.\n\nIn addition, to allow Python template files that contain Django template language syntax while also preventing packaging systems from trying to byte-compile invalid *.py files, template files ending with .py-tpl will be renamed to .py.\n\nThe contents of custom app (or project) templates should always be audited before use: Such templates define code that will become part of your project, and this means that such code will be trusted as much as any app you install, or code you write yourself. Further, even rendering the templates is, effectively, executing code that was provided as input to the management command. The Django template language may provide wide access into the system, so make sure any custom template you use is worthy of your trust.\n\nCreates a Django project directory structure for the given project name in the current directory or the given destination.\n\nBy default, the new directory contains manage.py and a project package (containing a settings.py and other files).\n\nIf only the project name is given, both the project directory and project package will be named <projectname> and the project directory will be created in the current working directory.\n\nIf the optional destination is provided, Django will use that name as the project directory, and create manage.py and the project package within it. If the directory with the given name doesn’t exist, it will be created. Use ‘.’ to denote the current working directory.\n\nAutomatic creation of the destination directory was added.\n\nSpecifies a directory, file path, or URL of a custom project template. See the startapp --template documentation for examples and usage. The same security considerations described for startapp templates apply here: malicious or poorly constructed templates may introduce weaknesses or consume excessive resources, and templates should be carefully inspected before use.\n\nSpecifies which file extensions in the project template should be rendered with the template engine. Defaults to py.\n\nSpecifies which files in the project template (in addition to those matching --extension) should be rendered with the template engine. Defaults to an empty list.\n\nSpecifies which directories in the project template should be excluded, in addition to .git and __pycache__. If this option is not provided, directories named __pycache__ or starting with . will be excluded.\n\nThe template context used is:\n\nAny option passed to the startproject command (among the command’s supported options)\n\nproject_name – the project name as passed to the command\n\nproject_directory – the full path of the newly created project\n\nsecret_key – a random key for the SECRET_KEY setting\n\ndocs_version – the version of the documentation: 'dev' or '1.x'\n\ndjango_version – the version of Django, e.g. '2.0.3'\n\nPlease also see the rendering warning and trusted code warning as mentioned for startapp.\n\nRuns tests for all installed apps. See Testing in Django for more information.\n\nStops running tests and reports the failure immediately after a test fails.\n\nControls the test runner class that is used to execute tests. This value overrides the value provided by the TEST_RUNNER setting.\n\nSuppresses all user prompts. A typical prompt is a warning about deleting an existing test database.\n\nThe test command receives options on behalf of the specified --testrunner. These are the options of the default test runner: DiscoverRunner.\n\nPreserves the test database between test runs. This has the advantage of skipping both the create and destroy actions which can greatly decrease the time to run tests, especially those in a large test suite. If the test database does not exist, it will be created on the first run and then preserved for each subsequent run. Unless the MIGRATE test setting is False, any unapplied migrations will also be applied to the test database before running the test suite.\n\nRandomizes the order of tests before running them. This can help detect tests that aren’t properly isolated. The test order generated by this option is a deterministic function of the integer seed given. When no seed is passed, a seed is chosen randomly and printed to the console. To repeat a particular test order, pass a seed. The test orders generated by this option preserve Django’s guarantees on test order. They also keep tests grouped by test case class.\n\nThe shuffled orderings also have a special consistency property useful when narrowing down isolation issues. Namely, for a given seed and when running a subset of tests, the new order will be the original shuffling restricted to the smaller set. Similarly, when adding tests while keeping the seed the same, the order of the original tests will be the same in the new order.\n\nSorts test cases in the opposite execution order. This may help in debugging the side effects of tests that aren’t properly isolated. Grouping by test class is preserved when using this option. This can be used in conjunction with --shuffle to reverse the order for a particular seed.\n\nSets the DEBUG setting to True prior to running tests. This may help troubleshoot test failures.\n\nEnables SQL logging for failing tests. If --verbosity is 2, then queries in passing tests are also output.\n\nRuns tests in separate parallel processes. Since modern processors have multiple cores, this allows running tests significantly faster.\n\nUsing --parallel without a value, or with the value auto, runs one test process per core according to multiprocessing.cpu_count(). You can override this by passing the desired number of processes, e.g. --parallel 4, or by setting the DJANGO_TEST_PROCESSES environment variable.\n\nDjango distributes test cases — unittest.TestCase subclasses — to subprocesses. If there are fewer test case classes than configured processes, Django will reduce the number of processes accordingly.\n\nEach process gets its own database. You must ensure that different test case classes don’t access the same resources. For instance, test case classes that touch the filesystem should create a temporary directory for their own use.\n\nIf you have test classes that cannot be run in parallel, you can use SerializeMixin to run them sequentially. See Enforce running test classes sequentially.\n\nThis option requires the third-party tblib package to display tracebacks correctly:\n\nThis feature isn’t available on Windows. It doesn’t work with the Oracle database backend either.\n\nIf you want to use pdb while debugging tests, you must disable parallel execution (--parallel=1). You’ll see something like bdb.BdbQuit if you don’t.\n\nWhen test parallelization is enabled and a test fails, Django may be unable to display the exception traceback. This can make debugging difficult. If you encounter this problem, run the affected test without parallelization to see the traceback of the failure.\n\nThis is a known limitation. It arises from the need to serialize objects in order to exchange them between processes. See What can be pickled and unpickled? for details.\n\nRuns only tests marked with the specified tags. May be specified multiple times and combined with test --exclude-tag.\n\nTests that fail to load are always considered matching.\n\nExcludes tests marked with the specified tags. May be specified multiple times and combined with test --tag.\n\nRuns test methods and classes matching test name patterns, in the same way as unittest's -k option. Can be specified multiple times.\n\nSpawns a pdb debugger at each test error or failure. If you have it installed, ipdb is used instead.\n\nDiscards output (stdout and stderr) for passing tests, in the same way as unittest's --buffer option.\n\nDjango automatically calls faulthandler.enable() when starting the tests, which allows it to print a traceback if the interpreter crashes. Pass --no-faulthandler to disable this behavior.\n\nOutputs timings, including database setup and total run time.\n\nShows the N slowest test cases (N=0 for all).\n\nRuns a Django development server (as in runserver) using data from the given fixture(s).\n\nFor example, this command:\n\n…would perform the following steps:\n\nCreate a test database, as described in The test database.\n\nPopulate the test database with fixture data from the given fixtures. (For more on fixtures, see the documentation for loaddata above.)\n\nRuns the Django development server (as in runserver), pointed at this newly created test database instead of your production database.\n\nThis is useful in a number of ways:\n\nWhen you’re writing unit tests of how your views act with certain fixture data, you can use testserver to interact with the views in a web browser, manually.\n\nLet’s say you’re developing your Django application and have a “pristine” copy of a database that you’d like to interact with. You can dump your database to a fixture (using the dumpdata command, explained above), then use testserver to run your web application with that data. With this arrangement, you have the flexibility of messing up your data in any way, knowing that whatever data changes you’re making are only being made to a test database.\n\nNote that this server does not automatically detect changes to your Python source code (as runserver does). It does, however, detect changes to templates.\n\nSpecifies a different port, or IP address and port, from the default of 127.0.0.1:8000. This value follows exactly the same format and serves exactly the same function as the argument to the runserver command.\n\nTo run the test server on port 7000 with fixture1 and fixture2:\n\n(The above statements are equivalent. We include both of them to demonstrate that it doesn’t matter whether the options come before or after the fixture arguments.)\n\nTo run on 1.2.3.4:7000 with a test fixture:\n\nSuppresses all user prompts. A typical prompt is a warning about deleting an existing test database.\n\nSome commands are only available when the django.contrib application that implements them has been enabled. This section describes them grouped by their application.\n\nThis command is only available if Django’s authentication system (django.contrib.auth) is installed.\n\nAllows changing a user’s password. It prompts you to enter a new password twice for the given user. If the entries are identical, this immediately becomes the new password. If you do not supply a user, the command will attempt to change the password whose username matches the current user.\n\nSpecifies the database to query for the user. Defaults to default.\n\nThis command is only available if Django’s authentication system (django.contrib.auth) is installed.\n\nCreates a superuser account (a user who has all permissions). This is useful if you need to create an initial superuser account or if you need to programmatically generate superuser accounts for your site(s).\n\nWhen run interactively, this command will prompt for a password for the new superuser account. When run non-interactively, you can provide a password by setting the DJANGO_SUPERUSER_PASSWORD environment variable. Otherwise, no password will be set, and the superuser account will not be able to log in until a password has been manually set for it.\n\nIn non-interactive mode, the USERNAME_FIELD and required fields (listed in REQUIRED_FIELDS) fall back to DJANGO_SUPERUSER_<uppercase_field_name> environment variables, unless they are overridden by a command line argument. For example, to provide an email field, you can use DJANGO_SUPERUSER_EMAIL environment variable.\n\nSuppresses all user prompts. If a suppressed prompt cannot be resolved automatically, the command will exit with error code 1.\n\nThe username and email address for the new account can be supplied by using the --username and --email arguments on the command line. If either of those is not supplied, createsuperuser will prompt for it when running interactively.\n\nSpecifies the database into which the superuser object will be saved.\n\nYou can subclass the management command and override get_input_data() if you want to customize data input and validation. Consult the source code for details on the existing implementation and the method’s parameters. For example, it could be useful if you have a ForeignKey in REQUIRED_FIELDS and want to allow creating an instance instead of entering the primary key of an existing instance.\n\nThis command is only available if Django’s contenttypes app (django.contrib.contenttypes) is installed.\n\nDeletes stale content types (from deleted models) in your database. Any objects that depend on the deleted content types will also be deleted. A list of deleted objects will be displayed before you confirm it’s okay to proceed with the deletion.\n\nSpecifies the database to use. Defaults to default.\n\nDeletes stale content types including ones from previously installed apps that have been removed from INSTALLED_APPS. Defaults to False.\n\nThis command is only available if GeoDjango (django.contrib.gis) is installed.\n\nPlease refer to its description in the GeoDjango documentation.\n\nCan be run as a cron job or directly to clean out expired sessions.\n\nThis command is only available if the static files application (django.contrib.staticfiles) is installed.\n\nPlease refer to its description in the staticfiles documentation.\n\nThis command is only available if the static files application (django.contrib.staticfiles) is installed.\n\nPlease refer to its description in the staticfiles documentation.\n\nAlthough some commands may allow their own custom options, every command allows for the following options by default:\n\nAdds the given filesystem path to the Python sys.path module attribute. If this isn’t provided, django-admin will use the PYTHONPATH environment variable.\n\nThis option is unnecessary in manage.py, because it takes care of setting the Python path for you.\n\nSpecifies the settings module to use. The settings module should be in Python package syntax, e.g. mysite.settings. If this isn’t provided, django-admin will use the DJANGO_SETTINGS_MODULE environment variable.\n\nThis option is unnecessary in manage.py, because it uses settings.py from the current project by default.\n\nDisplays a full stack trace when a CommandError is raised. By default, django-admin will show an error message when a CommandError occurs and a full stack trace for any other exception.\n\nThis option is ignored by runserver.\n\nSpecifies the amount of notification and debug information that a command should print to the console.\n\n1 means normal output (default).\n\n2 means verbose output.\n\n3 means very verbose output.\n\nThis option is ignored by runserver.\n\nDisables colorized command output. Some commands format their output to be colorized. For example, errors will be printed to the console in red and SQL statements will be syntax highlighted.\n\nForces colorization of the command output if it would otherwise be disabled as discussed in Syntax coloring. For example, you may want to pipe colored output to another command.\n\nSkips running system checks prior to running the command. This option is only available if the requires_system_checks command attribute is not an empty list or tuple.\n\nThe django-admin / manage.py commands will use pretty color-coded output if your terminal supports ANSI-colored output. It won’t use the color codes if you’re piping the command’s output to another program unless the --force-color option is used.\n\nOn Windows 10, the Windows Terminal application, VS Code, and PowerShell (where virtual terminal processing is enabled) allow colored output, and are supported by default.\n\nUnder Windows, the legacy cmd.exe native console doesn’t support ANSI escape sequences so by default there is no color output. In this case either of two third-party libraries are needed:\n\nInstall colorama, a Python package that translates ANSI color codes into Windows API calls. Django commands will detect its presence and will make use of its services to color output just like on Unix-based platforms. colorama can be installed via pip:\n\nInstall ANSICON, a third-party tool that allows cmd.exe to process ANSI color codes. Django commands will detect its presence and will make use of its services to color output just like on Unix-based platforms.\n\nOther modern terminal environments on Windows, that support terminal colors, but which are not automatically detected as supported by Django, may “fake” the installation of ANSICON by setting the appropriate environmental variable, ANSICON=\"on\".\n\nThe colors used for syntax highlighting can be customized. Django ships with three color palettes:\n\ndark, suited to terminals that show white text on a black background. This is the default palette.\n\nlight, suited to terminals that show black text on a white background.\n\nnocolor, which disables syntax highlighting.\n\nYou select a palette by setting a DJANGO_COLORS environment variable to specify the palette you want to use. For example, to specify the light palette under a Unix or OS/X BASH shell, you would run the following at a command prompt:\n\nYou can also customize the colors that are used. Django specifies a number of roles in which color is used:\n\nerror - A major error.\n\nnotice - A minor error.\n\nsql_field - The name of a model field in SQL.\n\nsql_coltype - The type of a model field in SQL.\n\nsql_keyword - An SQL keyword.\n\nsql_table - The name of a model in SQL.\n\nhttp_info - A 1XX HTTP Informational server response.\n\nhttp_success - A 2XX HTTP Success server response.\n\nhttp_not_modified - A 304 HTTP Not Modified server response.\n\nhttp_redirect - A 3XX HTTP Redirect server response other than 304.\n\nhttp_not_found - A 404 HTTP Not Found server response.\n\nhttp_bad_request - A 4XX HTTP Bad Request server response other than 404.\n\nhttp_server_error - A 5XX HTTP Server Error response.\n\nmigrate_heading - A heading in a migrations management command.\n\nmigrate_label - A migration name.\n\nEach of these roles can be assigned a specific foreground and background color, from the following list:\n\nEach of these colors can then be modified by using the following display options:\n\nA color specification follows one of the following patterns:\n\nrole=fg,option,option\n\nrole=fg/bg,option,option\n\nwhere role is the name of a valid color role, fg is the foreground color, bg is the background color and each option is one of the color modifying options. Multiple color specifications are then separated by a semicolon. For example:\n\nwould specify that errors be displayed using blinking yellow on blue, and notices displayed using magenta. All other color roles would be left uncolored.\n\nColors can also be specified by extending a base palette. If you put a palette name in a color specification, all the colors implied by that palette will be loaded. So:\n\nwould specify the use of all the colors in the light color palette, except for the colors for errors and notices which would be overridden as specified.\n\nIf you use the Bash shell, consider installing the Django bash completion script, which lives in extras/django_bash_completion in the Django source distribution. It enables tab-completion of django-admin and manage.py commands, so you can, for instance…\n\nPress [TAB] to see all available options.\n\nType sql, then [TAB], to see all available options whose names start with sql.\n\nSee How to create custom django-admin commands for how to add customized actions.\n\nThe Python files created by startproject, startapp, optimizemigration, makemigrations, and squashmigrations are formatted using the black command if it is present on your PATH.\n\nIf you have black globally installed, but do not wish it used for the current project, you can set the PATH explicitly:\n\nFor commands using stdout you can pipe the output to black if needed:\n\nTo call a management command from code use call_command().\n\nthe name of the command to call or a command object. Passing the name is preferred unless the object is required for testing.\n\na list of arguments accepted by the command. Arguments are passed to the argument parser, so you can use the same style as you would on the command line. For example, call_command('flush', '--verbosity=0').\n\nnamed options accepted on the command-line. Options are passed to the command without triggering the argument parser, which means you’ll need to pass the correct type. For example, call_command('flush', verbosity=0) (zero must be an integer rather than a string).\n\nNote that command options that take no arguments are passed as keywords with True or False, as you can see with the interactive option above.\n\nNamed arguments can be passed by using either one of the following syntaxes:\n\nSome command options have different names when using call_command() instead of django-admin or manage.py. For example, django-admin createsuperuser --no-input translates to call_command('createsuperuser', interactive=False). To find what keyword argument name to use for call_command(), check the command’s source code for the dest argument passed to parser.add_argument().\n\nCommand options which take multiple options are passed a list:\n\nThe return value of the call_command() function is the same as the return value of the handle() method of the command.\n\nNote that you can redirect standard output and error streams as all commands support the stdout and stderr options. For example, you could write:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django-admin and manage.py¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Usage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Getting runtime help¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "App names¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Determining the version¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Displaying debug output¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Available commands¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "check¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "compilemessages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "createcachetable¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "dbshell¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "diffsettings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "dumpdata¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Fixtures compression¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "flush¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "inspectdb¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Database-specific notes¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "Oracle¶",
+      "id": ""
+    },
+    {
+      "level": "h5",
+      "text": "PostgreSQL¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "loaddata¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Loading fixtures from stdin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "makemessages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "makemigrations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "migrate¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "optimizemigration¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "runserver¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Examples of using different ports and addresses¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Serving static files with the development server¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Serving with ASGI in development¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "sendtestemail¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "shell¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "showmigrations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "sqlflush¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "sqlmigrate¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "sqlsequencereset¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "squashmigrations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "startapp¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "startproject¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "test¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Test runner options¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "testserver¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Commands provided by applications¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "changepassword¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "createsuperuser¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.contenttypes¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "remove_stale_contenttypes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "ogrinspect¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "clearsessions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.staticfiles¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "collectstatic¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "findstatic¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Default options¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Extra niceties¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Syntax coloring¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Windows support¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Custom colors¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Bash completion¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Black formatting¶",
+      "id": ""
+    },
+    {
+      "level": "h1",
+      "text": "Running management commands from your code¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Output redirection¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example usage:",
+      "code": "django-admin compilemessages --locale=pt_BR\ndjango-admin compilemessages --locale=pt_BR --locale=fr -f\ndjango-admin compilemessages -l pt_BR\ndjango-admin compilemessages -l pt_BR -l fr --use-fuzzy\ndjango-admin compilemessages --exclude=pt_BR\ndjango-admin compilemessages --exclude=pt_BR --exclude=fr\ndjango-admin compilemessages -x pt_BR\ndjango-admin compilemessages -x pt_BR -x fr"
+    },
+    {
+      "description": "Example usage:",
+      "code": "django-admin compilemessages --ignore=cache --ignore=outdated/*/locale"
+    },
+    {
+      "description": "You can use a dash as the fixture name to load input from sys.stdin. For example:",
+      "code": "django-admin loaddata --format=json -"
+    },
+    {
+      "description": "Loading from stdin is useful with standard input and output redirections. For example:",
+      "code": "django-admin dumpdata --format=json --database=test app_label.ModelName | django-admin loaddata --format=json --database=prod -"
+    },
+    {
+      "description": "Example usage:",
+      "code": "django-admin makemessages --locale=de --extension xhtml"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/checks/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/topics/db/fixtures/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/howto/initial-data/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/logging/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/daphne/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-shell/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/overview/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-management-commands/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/commands/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

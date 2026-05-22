@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.8/",
+  "title": "Django 4.1.8 release notes | Django documentation | Django",
+  "content": "Django 4.1.8 fixes a bug in 4.1.7.\n\nFixed a bug in Django 4.1 that caused invalidation of sessions when rotating secret keys with SECRET_KEY_FALLBACKS (#34384).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.8/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

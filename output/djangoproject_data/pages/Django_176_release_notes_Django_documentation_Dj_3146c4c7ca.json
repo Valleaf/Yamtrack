@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.7.6/",
+  "title": "Django 1.7.6 release notes | Django documentation | Django",
+  "content": "Django 1.7.6 fixes a security issue and several bugs in 1.7.5.\n\nThe ModelAdmin.readonly_fields attribute in the Django admin allows displaying model fields and model attributes. While the former were correctly escaped, the latter were not. Thus untrusted content could be injected into the admin, presenting an exploitation vector for XSS attacks.\n\nIn this vulnerability, every model attribute used in readonly_fields that is not an actual model field (e.g. a property) will fail to be escaped even if that attribute is not marked as safe. In this release, autoescaping is now correctly applied.\n\nFixed crash when coercing ManyRelatedManager to a string (#24352).\n\nFixed a bug that prevented migrations from adding a foreign key constraint when converting an existing field to a foreign key (#24447).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.7.6 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mitigated an XSS attack via properties in ModelAdmin.readonly_fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.7.6/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.5/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

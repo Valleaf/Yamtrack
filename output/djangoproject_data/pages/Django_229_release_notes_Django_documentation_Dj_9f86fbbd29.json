@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.9/",
+  "title": "Django 2.2.9 release notes | Django documentation | Django",
+  "content": "Django 2.2.9 fixes a security issue and a data loss bug in 2.2.8.\n\nBy submitting a suitably crafted email address making use of Unicode characters, that compared equal to an existing user email when lower-cased for comparison, an attacker could be sent a password reset token for the matched account.\n\nIn order to avoid this vulnerability, password reset requests now compare the submitted email using the stricter, recommended algorithm for case-insensitive comparison of two identifiers from Unicode Technical Report 36, section 2.11.2(B)(2). Upon a match, the email containing the reset token will be sent to the email address on record rather than the submitted address.\n\nFixed a data loss possibility in SplitArrayField. When using with ArrayField(BooleanField()), all values after the first True value were marked as checked instead of preserving passed values (#31073).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2019-19844: Potential account hijack via password reset form¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.9/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.10/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

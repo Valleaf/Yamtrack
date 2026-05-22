@@ -1,0 +1,41 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/",
+  "title": "How to use Django with Uvicorn | Django documentation | Django",
+  "content": "Uvicorn is an ASGI server based on uvloop and httptools, with an emphasis on speed.\n\nYou can install Uvicorn with pip:\n\nWhen Uvicorn is installed, a uvicorn command is available which runs ASGI applications. Uvicorn needs to be called with the location of a module containing an ASGI application object, followed by what the application is called (separated by a colon).\n\nFor a typical Django project, invoking Uvicorn would look like:\n\nThis will start one process listening on 127.0.0.1:8000. It requires that your project be on the Python path; to ensure that run this command from the same directory as your manage.py file.\n\nIn development mode, you can add --reload to cause the server to reload any time a file is changed on disk.\n\nFor more advanced usage, please read the Uvicorn documentation.\n\nGunicorn is a robust web server that implements process monitoring and automatic restarts. This can be useful when running Uvicorn in a production environment.\n\nTo install Uvicorn and Gunicorn, use the following:\n\nThen start Gunicorn using the Uvicorn worker class like this:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to use Django with Uvicorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing Uvicorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Running Django in Uvicorn¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Deploying Django using Uvicorn and Gunicorn¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/hypercorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/checklist/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

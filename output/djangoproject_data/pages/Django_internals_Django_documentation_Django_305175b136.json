@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/",
+  "title": "Django internals | Django documentation | Django",
+  "content": "Documentation for people hacking on Django itself. This is the place to go if you’d like to help improve Django or learn about how Django is managed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django internals¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/mailing-lists/",
+    "https://docs.djangoproject.com/en/stable/internals/organization/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/internals/release-process/",
+    "https://docs.djangoproject.com/en/stable/internals/deprecation/",
+    "https://docs.djangoproject.com/en/stable/internals/git/",
+    "https://docs.djangoproject.com/en/stable/internals/howto-release-django/",
+    "https://docs.djangoproject.com/en/stable/releases/security/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.3/",
+  "title": "Django 3.1.3 release notes | Django documentation | Django",
+  "content": "Django 3.1.3 fixes several bugs in 3.1.2 and adds compatibility with Python 3.9.\n\nFixed a regression in Django 3.1.2 that caused the incorrect height of the admin changelist search bar (#32072).\n\nFixed a regression in Django 3.1.2 that caused the incorrect width of the admin changelist search bar on a filtered page (#32091).\n\nFixed displaying Unicode characters in forms.JSONField and read-only models.JSONField values in the admin (#32080).\n\nFixed a regression in Django 3.1 that caused a crash of ArrayAgg and StringAgg with ordering on key transforms for JSONField (#32096).\n\nFixed a regression in Django 3.1 that caused a crash of __in lookup when using key transforms for JSONField in the lookup value (#32096).\n\nFixed a regression in Django 3.1 that caused a crash of ExpressionWrapper with key transforms for JSONField (#32096).\n\nFixed a regression in Django 3.1 that caused a migrations crash on PostgreSQL when adding an ExclusionConstraint with key transforms for JSONField in expressions (#32096).\n\nFixed a regression in Django 3.1 where ProtectedError.protected_objects and RestrictedError.restricted_objects attributes returned iterators instead of set of objects (#32107).\n\nFixed a regression in Django 3.1.2 that caused incorrect form input layout on small screens in the admin change form view (#32069).\n\nFixed a regression in Django 3.1 that invalidated pre-Django 3.1 password reset tokens (#32130).\n\nAdded support for asgiref 3.3 (#32128).\n\nFixed a regression in Django 3.1 that caused incorrect textarea layout on medium-sized screens in the admin change form view with the sidebar open (#32127).\n\nFixed a regression in Django 3.0.7 that didn’t use Subquery() aliases in the GROUP BY clause (#32152).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.3/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.4/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

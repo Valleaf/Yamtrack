@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.7/",
+  "title": "Django 2.2.7 release notes | Django documentation | Django",
+  "content": "Django 2.2.7 fixes several bugs in 2.2.6.\n\nFixed a crash when using a contains, contained_by, has_key, has_keys, or has_any_keys lookup on django.contrib.postgres.fields.JSONField, if the right or left hand side of an expression is a key transform (#30826).\n\nPrevented migrate --plan from showing that RunPython operations are irreversible when reverse_code callables don’t have docstrings or when showing a forward migration plan (#30870).\n\nFixed migrations crash on PostgreSQL when adding an Index with fields ordering and opclasses (#30903).\n\nRestored the ability to override get_FOO_display() (#30931).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.7/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.8/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

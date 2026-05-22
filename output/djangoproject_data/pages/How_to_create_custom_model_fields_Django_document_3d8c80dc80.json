@@ -1,0 +1,165 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/",
+  "title": "How to create custom model fields | Django documentation | Django",
+  "content": "The model reference documentation explains how to use Django’s standard field classes – CharField, DateField, etc. For many purposes, those classes are all you’ll need. Sometimes, though, the Django version won’t meet your precise requirements, or you’ll want to use a field that is entirely different from those shipped with Django.\n\nDjango’s built-in field types don’t cover every possible database column type – only the common types, such as VARCHAR and INTEGER. For more obscure column types, such as geographic polygons or even user-created types such as PostgreSQL custom types, you can define your own Django Field subclasses.\n\nAlternatively, you may have a complex Python object that can somehow be serialized to fit into a standard database column type. This is another case where a Field subclass will help you use your object with your models.\n\nCreating custom fields requires a bit of attention to detail. To make things easier to follow, we’ll use a consistent example throughout this document: wrapping a Python object representing the deal of cards in a hand of Bridge. Don’t worry, you don’t have to know how to play Bridge to follow this example. You only need to know that 52 cards are dealt out equally to four players, who are traditionally called north, east, south and west. Our class looks something like this:\n\nThis is an ordinary Python class, with nothing Django-specific about it. We’d like to be able to do things like this in our models (we assume the hand attribute on the model is an instance of Hand):\n\nWe assign to and retrieve from the hand attribute in our model just like any other Python class. The trick is to tell Django how to handle saving and loading such an object.\n\nIn order to use the Hand class in our models, we do not have to change this class at all. This is ideal, because it means you can easily write model support for existing classes where you cannot change the source code.\n\nYou might only be wanting to take advantage of custom database column types and deal with the data as standard Python types in your models; strings, or floats, for example. This case is similar to our Hand example and we’ll note any differences as we go along.\n\nLet’s start with model fields. If you break it down, a model field provides a way to take a normal Python object – string, boolean, datetime, or something more complex like Hand – and convert it to and from a format that is useful when dealing with the database. (Such a format is also useful for serialization, but as we’ll see later, that is easier once you have the database side under control).\n\nFields in a model must somehow be converted to fit into an existing database column type. Different databases provide different sets of valid column types, but the rule is still the same: those are the only types you have to work with. Anything you want to store in the database must fit into one of those types.\n\nNormally, you’re either writing a Django field to match a particular database column type, or you will need a way to convert your data to, say, a string.\n\nFor our Hand example, we could convert the card data to a string of 104 characters by concatenating all the cards together in a predetermined order – say, all the north cards first, then the east, south and west cards. So Hand objects can be saved to text or character columns in the database.\n\nAll of Django’s fields (and when we say fields in this document, we always mean model fields and not form fields) are subclasses of django.db.models.Field. Most of the information that Django records about a field is common to all fields – name, help text, uniqueness and so forth. Storing all that information is handled by Field. We’ll get into the precise details of what Field can do later on; for now, suffice it to say that everything descends from Field and then customizes key pieces of the class behavior.\n\nIt’s important to realize that a Django field class is not what is stored in your model attributes. The model attributes contain normal Python objects. The field classes you define in a model are actually stored in the Meta class when the model class is created (the precise details of how this is done are unimportant here). This is because the field classes aren’t necessary when you’re just creating and modifying attributes. Instead, they provide the machinery for converting between the attribute value and what is stored in the database or sent to the serializer.\n\nKeep this in mind when creating your own custom fields. The Django Field subclass you write provides the machinery for converting between your Python instances and the database/serializer values in various ways (there are differences between storing a value and using a value for lookups, for example). If this sounds a bit tricky, don’t worry – it will become clearer in the examples below. Just remember that you will often end up creating two classes when you want a custom field:\n\nThe first class is the Python object that your users will manipulate. They will assign it to the model attribute, they will read from it for displaying purposes, things like that. This is the Hand class in our example.\n\nThe second class is the Field subclass. This is the class that knows how to convert your first class back and forth between its permanent storage form and the Python form.\n\nWhen planning your Field subclass, first give some thought to which existing Field class your new field is most similar to. Can you subclass an existing Django field and save yourself some work? If not, you should subclass the Field class, from which everything is descended.\n\nInitializing your new field is a matter of separating out any arguments that are specific to your case from the common arguments and passing the latter to the __init__() method of Field (or your parent class).\n\nIn our example, we’ll call our field HandField. (It’s a good idea to call your Field subclass <Something>Field, so it’s easily identifiable as a Field subclass.) It doesn’t behave like any existing field, so we’ll subclass directly from Field:\n\nOur HandField accepts most of the standard field options (see the list below), but we ensure it has a fixed length, since it only needs to hold 52 card values plus their suits; 104 characters in total.\n\nMany of Django’s model fields accept options that they don’t do anything with. For example, you can pass both editable and auto_now to a django.db.models.DateField and it will ignore the editable parameter (auto_now being set implies editable=False). No error is raised in this case.\n\nThis behavior simplifies the field classes, because they don’t need to check for options that aren’t necessary. They pass all the options to the parent class and then don’t use them later on. It’s up to you whether you want your fields to be more strict about the options they select, or to use the more permissive behavior of the current fields.\n\nThe Field.__init__() method takes the following parameters:\n\nrel: Used for related fields (like ForeignKey). For advanced use only.\n\nserialize: If False, the field will not be serialized when the model is passed to Django’s serializers. Defaults to True.\n\ndb_tablespace: Only for index creation, if the backend supports tablespaces. You can usually ignore this option.\n\nauto_created: True if the field was automatically created, as for the OneToOneField used by model inheritance. For advanced use only.\n\nAll of the options without an explanation in the above list have the same meaning they do for normal Django fields. See the field documentation for examples and details.\n\nThe counterpoint to writing your __init__() method is writing the deconstruct() method. It’s used during model migrations to tell Django how to take an instance of your new field and reduce it to a serialized form - in particular, what arguments to pass to __init__() to recreate it.\n\nIf you haven’t added any extra options on top of the field you inherited from, then there’s no need to write a new deconstruct() method. If, however, you’re changing the arguments passed in __init__() (like we are in HandField), you’ll need to supplement the values being passed.\n\ndeconstruct() returns a tuple of four items: the field’s attribute name, the full import path of the field class, the positional arguments (as a list), and the keyword arguments (as a dict). Note this is different from the deconstruct() method for custom classes which returns a tuple of three things.\n\nAs a custom field author, you don’t need to care about the first two values; the base Field class has all the code to work out the field’s attribute name and import path. You do, however, have to care about the positional and keyword arguments, as these are likely the things you are changing.\n\nFor example, in our HandField class we’re always forcibly setting max_length in __init__(). The deconstruct() method on the base Field class will see this and try to return it in the keyword arguments; thus, we can drop it from the keyword arguments for readability:\n\nIf you add a new keyword argument, you need to write code in deconstruct() that puts its value into kwargs yourself. You should also omit the value from kwargs when it isn’t necessary to reconstruct the state of the field, such as when the default value is being used:\n\nMore complex examples are beyond the scope of this document, but remember - for any configuration of your Field instance, deconstruct() must return arguments that you can pass to __init__ to reconstruct that state.\n\nPay extra attention if you set new default values for arguments in the Field superclass; you want to make sure they’re always included, rather than disappearing if they take on the old default value.\n\nIn addition, try to avoid returning values as positional arguments; where possible, return values as keyword arguments for maximum future compatibility. If you change the names of things more often than their position in the constructor’s argument list, you might prefer positional, but bear in mind that people will be reconstructing your field from the serialized version for quite a while (possibly years), depending how long your migrations live for.\n\nYou can see the results of deconstruction by looking in migrations that include the field, and you can test deconstruction in unit tests by deconstructing and reconstructing the field:\n\nYou can override Field.non_db_attrs to customize attributes of a field that don’t affect a column definition. It’s used during model migrations to detect no-op AlterField operations.\n\nYou can’t change the base class of a custom field because Django won’t detect the change and make a migration for it. For example, if you start with:\n\nand then decide that you want to use TextField instead, you can’t change the subclass like this:\n\nInstead, you must create a new custom field class and update your models to reference it:\n\nAs discussed in removing fields, you must retain the original CustomCharField class as long as you have migrations that reference it.\n\nAs always, you should document your field type, so users will know what it is. In addition to providing a docstring for it, which is useful for developers, you can also allow users of the admin app to see a short description of the field type via the django.contrib.admindocs application. To do this provide descriptive text in a description class attribute of your custom field. In the above example, the description displayed by the admindocs application for a HandField will be ‘A hand of cards (bridge style)’.\n\nIn the django.contrib.admindocs display, the field description is interpolated with field.__dict__ which allows the description to incorporate arguments of the field. For example, the description for CharField is:\n\nOnce you’ve created your Field subclass, you might consider overriding a few standard methods, depending on your field’s behavior. The list of methods below is in approximately decreasing order of importance, so start from the top.\n\nSay you’ve created a PostgreSQL custom type called mytype. You can subclass Field and implement the db_type() method, like so:\n\nOnce you have MytypeField, you can use it in any model, just like any other Field type:\n\nIf you aim to build a database-agnostic application, you should account for differences in database column types. For example, the date/time column type in PostgreSQL is called timestamp, while the same column in MySQL is called datetime. You can handle this in a db_type() method by checking the connection.vendor attribute. Current built-in vendor names are: sqlite, postgresql, mysql, and oracle.\n\nThe db_type() and rel_db_type() methods are called by Django when the framework constructs the CREATE TABLE statements for your application – that is, when you first create your tables. The methods are also called when constructing a WHERE clause that includes the model field – that is, when you retrieve data using QuerySet methods like get(), filter(), and exclude() and have the model field as an argument.\n\nSome database column types accept parameters, such as CHAR(25), where the parameter 25 represents the maximum column length. In cases like these, it’s more flexible if the parameter is specified in the model rather than being hardcoded in the db_type() method. For example, it wouldn’t make much sense to have a CharMaxlength25Field, shown here:\n\nThe better way of doing this would be to make the parameter specifiable at run time – i.e., when the class is instantiated. To do that, implement Field.__init__(), like so:\n\nFinally, if your column requires truly complex SQL setup, return None from db_type(). This will cause Django’s SQL creation code to skip over this field. You are then responsible for creating the column in the right table in some other way, but this gives you a way to tell Django to get out of the way.\n\nThe rel_db_type() method is called by fields such as ForeignKey and OneToOneField that point to another field to determine their database column data types. For example, if you have an UnsignedAutoField, you also need the foreign keys that point to that field to use the same data type:\n\nIf your custom Field class deals with data structures that are more complex than strings, dates, integers, or floats, then you may need to override from_db_value() and to_python().\n\nIf present for the field subclass, from_db_value() will be called in all circumstances when the data is loaded from the database, including in aggregates and values() calls.\n\nto_python() is called by deserialization and during the clean() method used from forms.\n\nAs a general rule, to_python() should deal gracefully with any of the following arguments:\n\nAn instance of the correct type (e.g., Hand in our ongoing example).\n\nNone (if the field allows null=True)\n\nIn our HandField class, we’re storing the data as a VARCHAR field in the database, so we need to be able to process strings and None in the from_db_value(). In to_python(), we need to also handle Hand instances:\n\nNotice that we always return a Hand instance from these methods. That’s the Python object type we want to store in the model’s attribute.\n\nFor to_python(), if anything goes wrong during value conversion, you should raise a ValidationError exception.\n\nSince using a database requires conversion in both ways, if you override from_db_value() you also have to override get_prep_value() to convert Python objects back to query values.\n\nIf your custom field uses the CHAR, VARCHAR or TEXT types for MySQL, you must make sure that get_prep_value() always returns a string type. MySQL performs flexible and unexpected matching when a query is performed on these types and the provided value is an integer, which can cause queries to include unexpected objects in their results. This problem cannot occur if you always return a string type from get_prep_value().\n\nSome data types (for example, dates) need to be in a specific format before they can be used by a database backend. get_db_prep_value() is the method where those conversions should be made. The specific connection that will be used for the query is passed as the connection parameter. This allows you to use backend-specific conversion logic if it is required.\n\nFor example, Django uses the following method for its BinaryField:\n\nIn case your custom field needs a special conversion when being saved that is not the same as the conversion used for normal query parameters, you can override get_db_prep_save().\n\nIf you want to preprocess the value just before saving, you can use pre_save(). For example, Django’s DateTimeField uses this method to set the attribute correctly in the case of auto_now or auto_now_add.\n\nIf you do override this method, you must return the value of the attribute at the end. You should also update the model’s attribute if you make any changes to the value so that code holding references to the model will always see the correct value.\n\nTo customize the form field used by ModelForm, you can override formfield().\n\nThe form field class can be specified via the form_class and choices_form_class arguments; the latter is used if the field has choices specified, the former otherwise. If these arguments are not provided, CharField or TypedChoiceField will be used.\n\nAll of the kwargs dictionary is passed directly to the form field’s __init__() method. Normally, all you need to do is set up a good default for the form_class (and maybe choices_form_class) argument and then delegate further handling to the parent class. This might require you to write a custom form field (and even a form widget). See the forms documentation for information about this.\n\nIf you wish to exclude the field from the ModelForm, you can override the formfield() method to return None.\n\nContinuing our ongoing example, we can write the formfield() method as:\n\nThis assumes we’ve imported a MyFormField field class (which has its own default widget). This document doesn’t cover the details of writing custom form fields.\n\nIf you have created a db_type() method, you don’t need to worry about get_internal_type() – it won’t be used much. Sometimes, though, your database storage is similar in type to some other field, so you can use that other field’s logic to create the right column.\n\nNo matter which database backend we are using, this will mean that migrate and other SQL commands create the right column type for storing a string.\n\nIf get_internal_type() returns a string that is not known to Django for the database backend you are using – that is, it doesn’t appear in django.db.backends.<db_name>.base.DatabaseWrapper.data_types – the string will still be used by the serializer, but the default db_type() method will return None. See the documentation of db_type() for reasons why this might be useful. Putting a descriptive string in as the type of the field for the serializer is a useful idea if you’re ever going to be using the serializer output in some other place, outside of Django.\n\nTo customize how the values are serialized by a serializer, you can override value_to_string(). Using value_from_object() is the best way to get the field’s value prior to serialization. For example, since HandField uses strings for its data storage anyway, we can reuse some existing conversion code:\n\nWriting a custom field can be a tricky process, particularly if you’re doing complex conversions between your Python types and your database and serialization formats. Here are a couple of tips to make things go more smoothly:\n\nLook at the existing Django fields (in django/db/models/fields/__init__.py) for inspiration. Try to find a field that’s similar to what you want and extend it a little bit, instead of creating an entirely new field from scratch.\n\nPut a __str__() method on the class you’re wrapping up as a field. There are a lot of places where the default behavior of the field code is to call str() on the value. (In our examples in this document, value would be a Hand instance, not a HandField). So if your __str__() method automatically converts to the string form of your Python object, you can save yourself a lot of work.\n\nIn addition to the above methods, fields that deal with files have a few other special requirements which must be taken into account. The majority of the mechanics provided by FileField, such as controlling database storage and retrieval, can remain unchanged, leaving subclasses to deal with the challenge of supporting a particular type of file.\n\nDjango provides a File class, which is used as a proxy to the file’s contents and operations. This can be subclassed to customize how the file is accessed, and what methods are available. It lives at django.db.models.fields.files, and its default behavior is explained in the file documentation.\n\nOnce a subclass of File is created, the new FileField subclass must be told to use it. To do so, assign the new File subclass to the special attr_class attribute of the FileField subclass.\n\nIn addition to the above details, there are a few guidelines which can greatly improve the efficiency and readability of the field’s code.\n\nThe source for Django’s own ImageField (in django/db/models/fields/files.py) is a great example of how to subclass FileField to support a particular type of file, as it incorporates all of the techniques described above.\n\nCache file attributes wherever possible. Since files may be stored in remote storage systems, retrieving them may cost extra time, or even money, that isn’t always necessary. Once a file is retrieved to obtain some data about its content, cache as much of that data as possible to reduce the number of times the file must be retrieved on subsequent calls for that information.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to create custom model fields¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Introduction¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Our example object¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Background theory¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database storage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "What does a field class do?¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Writing a field subclass¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field deconstruction¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field attributes not affecting database column definition¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changing a custom field’s base class¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Documenting your custom field¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Useful methods¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Custom database types¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Converting values to Python objects¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Converting Python objects to query values¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Converting query values to database values¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Preprocessing values before saving¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Specifying the form field for a model field¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Emulating built-in field types¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Converting field data for serialization¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Some general advice¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Writing a FileField subclass¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "A few suggestions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "class CommaSepField(models.Field):\n    @property\n    def non_db_attrs(self):\n        return super().non_db_attrs + (\"separator\",)"
+    },
+    {
+      "description": "For example:",
+      "code": "class MyDateField(models.Field):\n    def db_type(self, connection):\n        if connection.vendor == \"mysql\":\n            return \"datetime\"\n        else:\n            return \"timestamp\""
+    },
+    {
+      "description": "For example:",
+      "code": "class HandField(models.Field):\n    # ...\n\n    def get_prep_value(self, value):\n        return \"\".join(\n            [\"\".join(l) for l in (value.north, value.east, value.south, value.west)]\n        )"
+    },
+    {
+      "description": "For example:",
+      "code": "class HandField(models.Field):\n    # ...\n\n    def get_internal_type(self):\n        return \"CharField\""
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/topics/db/tablespaces/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/admindocs/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/files/file/",
+    "https://docs.djangoproject.com/en/stable/howto/legacy-databases/",
+    "https://docs.djangoproject.com/en/stable/howto/writing-migrations/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

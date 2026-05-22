@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.9/",
+  "title": "Django 4.2.9 release notes | Django documentation | Django",
+  "content": "Django 4.2.9 fixes a bug in 4.2.8.\n\nFixed a regression in Django 4.2.8 where admin fields on the same line could overflow the page and become non-interactive (#35012).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.9/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.10/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

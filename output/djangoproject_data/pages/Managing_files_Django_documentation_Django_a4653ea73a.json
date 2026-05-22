@@ -1,0 +1,74 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/files/",
+  "title": "Managing files | Django documentation | Django",
+  "content": "This document describes Django’s file access APIs for files such as those uploaded by a user. The lower level APIs are general enough that you could use them for other purposes. If you want to handle “static files” (JS, CSS, etc.), see How to manage static files (e.g. images, JavaScript, CSS).\n\nBy default, Django stores files locally, using the MEDIA_ROOT and MEDIA_URL settings. The examples below assume that you’re using these defaults.\n\nHowever, Django provides ways to write custom file storage systems that allow you to completely customize where and how Django stores files. The second half of this document describes how these storage systems work.\n\nWhen you use a FileField or ImageField, Django provides a set of APIs you can use to deal with that file.\n\nConsider the following model, using an ImageField to store a photo:\n\nAny Car instance will have a photo attribute that you can use to get at the details of the attached photo:\n\nThis object – car.photo in the example – is a File object, which means it has all the methods and attributes described below.\n\nThe file is saved as part of saving the model in the database, so the actual file name used on disk cannot be relied on until after the model has been saved.\n\nFor example, you can change the file name by setting the file’s name to a path relative to the file storage’s location (MEDIA_ROOT if you are using the default FileSystemStorage):\n\nTo save an existing file on disk to a FileField:\n\nWhile ImageField non-image data attributes, such as height, width, and size are available on the instance, the underlying image data cannot be used without reopening the image. For example:\n\nInternally, Django uses a django.core.files.File instance any time it needs to represent a file.\n\nMost of the time you’ll use a File that Django’s given you (i.e. a file attached to a model as above, or perhaps an uploaded file).\n\nIf you need to construct a File yourself, the easiest way is to create one using a Python built-in file object:\n\nNow you can use any of the documented attributes and methods of the File class.\n\nBe aware that files created in this way are not automatically closed. The following approach may be used to close files automatically:\n\nClosing files is especially important when accessing file fields in a loop over a large number of objects. If files are not manually closed after accessing them, the risk of running out of file descriptors may arise. This may lead to the following error:\n\nBehind the scenes, Django delegates decisions about how and where to store files to a file storage system. This is the object that actually understands things like file systems, opening and reading files, etc.\n\nDjango’s default file storage is 'django.core.files.storage.FileSystemStorage'. If you don’t explicitly provide a storage system in the default key of the STORAGES setting, this is the one that will be used.\n\nSee below for details of the built-in default file storage system, and see How to write a custom storage class for information on writing your own file storage system.\n\nThough most of the time you’ll want to use a File object (which delegates to the proper storage for that file), you can use file storage systems directly. You can create an instance of some custom file storage class, or – often more useful – you can use the global default storage system:\n\nSee File storage API for the file storage API.\n\nDjango ships with a django.core.files.storage.FileSystemStorage class which implements basic local filesystem file storage.\n\nFor example, the following code will store uploaded files under /media/photos regardless of what your MEDIA_ROOT setting is:\n\nCustom storage systems work the same way: you can pass them in as the storage argument to a FileField.\n\nYou can use a callable as the storage parameter for FileField or ImageField. This allows you to modify the used storage at runtime, selecting different storages for different environments, for example.\n\nYour callable will be evaluated when your models classes are loaded, and must return an instance of Storage.\n\nIn order to set a storage defined in the STORAGES setting you can use storages:\n\nBecause the callable is evaluated when your models classes are loaded, if you need to override the STORAGES setting in tests, you should use a LazyObject subclass instead:\n\nThe LazyObject delays the evaluation of the storage until it’s actually needed, allowing override_settings() to take effect:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Managing files¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using files in models¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The File object¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "File storage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Storage objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The built-in filesystem storage class¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using a callable¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Note While ImageField non-image data attributes, such as height, width, and size are available on the instance, the underlying image data cannot be used without reopening the image. For example: >>> from PIL import Image >>> car = Car.objects.get(name=\"57 Chevy\") >>> car.photo.width 191 >>> car.photo.height 287 >>> image = Image.open(car.photo) # Raises ValueError: seek of closed file. >>> car.photo.open() <ImageFieldFile: cars/chevy.jpg> >>> image = Image.open(car.photo) >>> image <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=191x287 at 0x7F99A94E9048>",
+      "code": ">>> from PIL import Image\n>>> car = Car.objects.get(name=\"57 Chevy\")\n>>> car.photo.width\n191\n>>> car.photo.height\n287\n>>> image = Image.open(car.photo)\n# Raises ValueError: seek of closed file.\n>>> car.photo.open()\n<ImageFieldFile: cars/chevy.jpg>\n>>> image = Image.open(car.photo)\n>>> image\n<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=191x287 at 0x7F99A94E9048>"
+    },
+    {
+      "description": "While ImageField non-image data attributes, such as height, width, and size are available on the instance, the underlying image data cannot be used without reopening the image. For example:",
+      "code": ">>> from PIL import Image\n>>> car = Car.objects.get(name=\"57 Chevy\")\n>>> car.photo.width\n191\n>>> car.photo.height\n287\n>>> image = Image.open(car.photo)\n# Raises ValueError: seek of closed file.\n>>> car.photo.open()\n<ImageFieldFile: cars/chevy.jpg>\n>>> image = Image.open(car.photo)\n>>> image\n<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=191x287 at 0x7F99A94E9048>"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.conf import settings\nfrom django.db import models\nfrom .storages import MyLocalStorage, MyRemoteStorage\n\n\ndef select_storage():\n    return MyLocalStorage() if settings.DEBUG else MyRemoteStorage()\n\n\nclass MyModel(models.Model):\n    my_file = models.FileField(storage=select_storage)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/files/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/files/file/",
+    "https://docs.djangoproject.com/en/stable/ref/files/storage/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-file-storage/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

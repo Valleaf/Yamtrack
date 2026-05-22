@@ -1,0 +1,199 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.1/",
+  "title": "Django 1.1 release notes | Django documentation | Django",
+  "content": "Welcome to Django 1.1!\n\nDjango 1.1 includes a number of nifty new features, lots of bug fixes, and an easy upgrade path from Django 1.0.\n\nDjango has a policy of API stability. This means that, in general, code you develop against Django 1.0 should continue to work against 1.1 unchanged. However, we do sometimes make backwards-incompatible changes if they’re necessary to resolve bugs, and there are a handful of such (minor) changes between Django 1.0 and Django 1.1.\n\nBefore upgrading to Django 1.1 you should double-check that the following changes don’t impact you, and upgrade your code if they do.\n\nDjango 1.1 modifies the method used to generate database constraint names so that names are consistent regardless of machine word size. This change is backwards incompatible for some users.\n\nIf you are using a 32-bit platform, you’re off the hook; you’ll observe no differences as a result of this change.\n\nHowever, users on 64-bit platforms may experience some problems using the reset management command. Prior to this change, 64-bit platforms would generate a 64-bit, 16 character digest in the constraint name; for example:\n\nFollowing this change, all platforms, regardless of word size, will generate a 32-bit, 8 character digest in the constraint name; for example:\n\nAs a result of this change, you will not be able to use the reset management command on any table made by a 64-bit machine. This is because the new generated name will not match the historically generated name; as a result, the SQL constructed by the reset command will be invalid.\n\nIf you need to reset an application that was created with 64-bit constraints, you will need to manually drop the old constraint prior to invoking reset.\n\nDjango 1.1 runs tests inside a transaction, allowing better test performance (see test performance improvements for details).\n\nThis change is slightly backwards incompatible if existing tests need to test transactional behavior, if they rely on invalid assumptions about the test environment, or if they require a specific test case ordering.\n\nFor these cases, TransactionTestCase can be used instead. This is a just a quick fix to get around test case errors revealed by the new rollback approach; in the long-term tests should be rewritten to correct the test case.\n\nFor convenience, Django 1.0 included an optional middleware class – django.middleware.http.SetRemoteAddrFromForwardedFor – which updated the value of REMOTE_ADDR based on the HTTP X-Forwarded-For header commonly set by some proxy configurations.\n\nIt has been demonstrated that this mechanism cannot be made reliable enough for general-purpose use, and that (despite documentation to the contrary) its inclusion in Django may lead application developers to assume that the value of REMOTE_ADDR is “safe” or in some way reliable as a source of authentication.\n\nWhile not directly a security issue, we’ve decided to remove this middleware with the Django 1.1 release. It has been replaced with a class that does nothing other than raise a DeprecationWarning.\n\nIf you’ve been relying on this middleware, the easiest upgrade path is:\n\nExamine the code as it existed before it was removed.\n\nVerify that it works correctly with your upstream proxy, modifying it to support your particular proxy (if necessary).\n\nIntroduce your modified version of SetRemoteAddrFromForwardedFor as a piece of middleware in your own project.\n\nIn Django 1.0, files uploaded and stored in a model’s FileField were saved to disk before the model was saved to the database. This meant that the actual file name assigned to the file was available before saving. For example, it was available in a model’s pre-save signal handler.\n\nIn Django 1.1 the file is saved as part of saving the model in the database, so the actual file name used on disk cannot be relied on until after the model has been saved.\n\nIn Django 1.1, BaseModelFormSet now calls ModelForm.save().\n\nThis is backwards-incompatible if you were modifying self.initial in a model formset’s __init__, or if you relied on the internal _total_form_count or _initial_form_count attributes of BaseFormSet. Those attributes are now public methods.\n\nThe join filter no longer escapes the literal value that is passed in for the connector.\n\nThis is backwards incompatible for the special situation of the literal string containing one of the five special HTML characters. Thus, if you were writing {{ foo|join:\"&\" }}, you now have to write {{ foo|join:\"&amp;\" }}.\n\nThe previous behavior was a bug and contrary to what was documented and expected.\n\nDjango 1.1 adds a permanent argument to the django.views.generic.simple.redirect_to() view. This is technically backwards-incompatible if you were using the redirect_to view with a format-string key called ‘permanent’, which is highly unlikely.\n\nOne feature has been marked as deprecated in Django 1.1:\n\nYou should no longer use AdminSite.root() to register that admin views. That is, if your URLconf contains the line:\n\nYou should change it to read:\n\nYou should begin to remove use of this feature from your code immediately.\n\nAdminSite.root will raise a PendingDeprecationWarning if used in Django 1.1. This warning is hidden by default. In Django 1.2, this warning will be upgraded to a DeprecationWarning, which will be displayed loudly. Django 1.3 will remove AdminSite.root() entirely.\n\nFor more details on our deprecation policies and strategy, see Django’s release process.\n\nQuite a bit: since Django 1.0, we’ve made 1,290 code commits, fixed 1,206 bugs, and added roughly 10,000 lines of documentation.\n\nThe major new features in Django 1.1 are:\n\nTwo major enhancements have been added to Django’s object-relational mapper (ORM): aggregate support, and query expressions.\n\nIt’s now possible to run SQL aggregate queries (i.e. COUNT(), MAX(), MIN(), etc.) from within Django’s ORM. You can choose to either return the results of the aggregate directly, or else annotate the objects in a QuerySet with the results of the aggregate query.\n\nThis feature is available as new aggregate() and annotate() methods, and is covered in detail in the ORM aggregation documentation.\n\nQueries can now refer to another field on the query and can traverse relationships to refer to fields on related models. This is implemented in the new F object; for full details, including examples, consult the F expressions documentation.\n\nA number of features have been added to Django’s model layer:\n\nYou can now control whether or not Django manages the life-cycle of the database tables for a model using the managed model option. This defaults to True, meaning that Django will create the appropriate database tables in syncdb and remove them as part of the reset command. That is, Django manages the database table’s lifecycle.\n\nIf you set this to False, however, no database table creating or deletion will be automatically performed for this model. This is useful if the model represents an existing table or a database view that has been created by some other means.\n\nFor more details, see the documentation for the managed option.\n\nYou can now create proxy models: subclasses of existing models that only add Python-level (rather than database-level) behavior and aren’t represented by a new table. That is, the new model is a proxy for some underlying model, which stores all the real data.\n\nAll the details can be found in the proxy models documentation. This feature is similar on the surface to unmanaged models, so the documentation has an explanation of how proxy models differ from unmanaged models.\n\nIn some complex situations, your models might contain fields which could contain a lot of data (for example, large text fields), or require expensive processing to convert them to Python objects. If you know you don’t need those particular fields, you can now tell Django not to retrieve them from the database.\n\nYou’ll do this with the new queryset methods defer() and only().\n\nA few notable improvements have been made to the testing framework.\n\nTests written using Django’s testing framework now run dramatically faster (as much as 10 times faster in many cases).\n\nThis was accomplished through the introduction of transaction-based tests: when using django.test.TestCase, your tests will now be run in a transaction which is rolled back when finished, instead of by flushing and re-populating the database. This results in an immense speedup for most types of unit tests. See the documentation for TestCase and TransactionTestCase for a full description, and some important notes on database support.\n\nA couple of small – but highly useful – improvements have been made to the test client:\n\nThe test Client now can automatically follow redirects with the follow argument to Client.get() and Client.post(). This makes testing views that issue redirects simpler.\n\nIt’s now easier to get at the template context in the response returned the test client: you’ll simply access the context as request.context[key]. The old way, which treats request.context as a list of contexts, one for each rendered template in the inheritance chain, is still available if you need it.\n\nDjango 1.1 adds a couple of nifty new features to Django’s admin interface:\n\nYou can now make fields editable on the admin list views via the new list_editable admin option. These fields will show up as form widgets on the list pages, and can be edited and saved in bulk.\n\nYou can now define admin actions that can perform some action to a group of models in bulk. Users will be able to select objects on the change list page and then apply these bulk actions to all selected objects.\n\nDjango ships with one pre-defined admin action to delete a group of objects in one fell swoop.\n\nDjango now has much better support for conditional view processing using the standard ETag and Last-Modified HTTP headers. This means you can now easily short-circuit view processing by testing less-expensive conditions. For many views this can lead to a serious improvement in speed and reduction in bandwidth.\n\nDjango 1.1 improves named URL patterns with the introduction of URL “namespaces.”\n\nIn short, this feature allows the same group of URLs, from the same application, to be included in a Django URLConf multiple times, with varying (and potentially nested) named prefixes which will be used when performing reverse resolution. In other words, reusable applications like Django’s admin interface may be registered multiple times without URL conflicts.\n\nFor full details, see the documentation on defining URL namespaces.\n\nIn Django 1.1, GeoDjango (i.e. django.contrib.gis) has several new features:\n\nSupport for SpatiaLite – a spatial database for SQLite – as a spatial backend.\n\nGeographic aggregates (Collect, Extent, MakeLine, Union) and F expressions.\n\nNew GeoQuerySet methods: collect, geojson, and snap_to_grid.\n\nA new list interface methods for GEOSGeometry objects.\n\nFor more details, see the GeoDjango documentation.\n\nOther new features and changes introduced since Django 1.0 include:\n\nThe CSRF protection middleware has been split into two classes – CsrfViewMiddleware checks incoming requests, and CsrfResponseMiddleware processes outgoing responses. The combined CsrfMiddleware class (which does both) remains for backwards-compatibility, but using the split classes is now recommended in order to allow fine-grained control of when and where the CSRF processing takes place.\n\nreverse() and code which uses it (e.g., the {% url %} template tag) now works with URLs in Django’s administrative site, provided that the admin URLs are set up via include(admin.site.urls) (sending admin requests to the admin.site.root view still works, but URLs in the admin will not be “reversible” when configured this way).\n\nThe include() function in Django URLconf modules can now accept sequences of URL patterns (generated by patterns()) in addition to module names.\n\nInstances of Django forms (see the forms overview) now have two additional methods, hidden_fields() and visible_fields(), which return the list of hidden – i.e., <input type=\"hidden\"> – and visible fields on the form, respectively.\n\nThe redirect_to generic view now accepts an additional keyword argument permanent. If permanent is True, the view will emit an HTTP permanent redirect (status code 301). If False, the view will emit an HTTP temporary redirect (status code 302).\n\nA new database lookup type – week_day – has been added for DateField and DateTimeField. This type of lookup accepts a number between 1 (Sunday) and 7 (Saturday), and returns objects where the field value matches that day of the week. See the full list of lookup types for details.\n\nThe {% for %} tag in Django’s template language now accepts an optional {% empty %} clause, to be displayed when {% for %} is asked to loop over an empty sequence. See the list of built-in template tags for examples of this.\n\nThe dumpdata management command now accepts individual model names as arguments, allowing you to export the data just from particular models.\n\nThere’s a new safeseq template filter which works just like safe for lists, marking each item in the list as safe.\n\nCache backends now support incr() and decr() commands to increment and decrement the value of a cache key. On cache backends that support atomic increment/decrement – most notably, the memcached backend – these operations will be atomic, and quite fast.\n\nDjango now can easily delegate authentication to the web server via a new authentication backend that supports the standard REMOTE_USER environment variable used for this purpose.\n\nThere’s a new django.shortcuts.redirect() function that makes it easier to issue redirects given an object, a view name, or a URL.\n\nThe postgresql_psycopg2 backend now supports native PostgreSQL autocommit. This is an advanced, PostgreSQL-specific feature, that can make certain read-heavy applications a good deal faster.\n\nWe’ll take a short break, and then work on Django 1.2 will begin – no rest for the weary! If you’d like to help, discussion of Django development, including progress toward the 1.2 release, takes place daily on the django-developers mailing list and in the #django-dev IRC channel on irc.libera.chat. Feel free to join the discussions!\n\nDjango’s online documentation also includes pointers on how to contribute to Django:\n\nHow to contribute to Django\n\nContributions on any level – developing code, writing documentation or simply triaging tickets and helping to test proposed bugfixes – are always welcome and appreciated.\n\nAnd that’s the way it is.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards-incompatible changes in 1.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changes to constraint names¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Test cases are now run in a transaction¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Removed SetRemoteAddrFromForwardedFor middleware¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Names of uploaded files are available later¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changes to how model formsets are saved¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fixed the join filter’s escaping behavior¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Permanent redirects and the redirect_to() generic view¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 1.1¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 1.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ORM improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Aggregate support¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Query expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Model improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "“Unmanaged” models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Proxy models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Deferred fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Testing improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Test performance improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Test client improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "New admin features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Editable fields on the change list¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Admin “actions”¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Conditional view processing¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "URL namespaces¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeoDjango¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Other improvements¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s next?¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "However, users on 64-bit platforms may experience some problems using the reset management command. Prior to this change, 64-bit platforms would generate a 64-bit, 16 character digest in the constraint name; for example:",
+      "code": "ALTER TABLE myapp_sometable ADD CONSTRAINT object_id_refs_id_5e8f10c132091d1e FOREIGN KEY ..."
+    },
+    {
+      "description": "Following this change, all platforms, regardless of word size, will generate a 32-bit, 8 character digest in the constraint name; for example:",
+      "code": "ALTER TABLE myapp_sometable ADD CONSTRAINT object_id_refs_id_32091d1e FOREIGN KEY ..."
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.1/",
+    "https://docs.djangoproject.com/en/stable/misc/api-stability/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/internals/release-process/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/aggregation/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/actions/",
+    "https://docs.djangoproject.com/en/stable/topics/conditional-view-processing/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/csrf/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/howto/auth-remote-user/",
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/internals/mailing-lists/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/releases/1.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.0.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

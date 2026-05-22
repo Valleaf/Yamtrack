@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.2.10/",
+  "title": "Django 3.2.10 release notes | Django documentation | Django",
+  "content": "Django 3.2.10 fixes a security issue with severity “low” and a bug in 3.2.9.\n\nHTTP requests for URLs with trailing newlines could bypass an upstream access control based on URL paths.\n\nFixed a regression in Django 3.2 that caused a crash of setUpTestData() with BinaryField on PostgreSQL, which is memoryview-backed (#33333).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.2.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-44420: Potential bypass of an upstream access control based on URL paths¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.2.10/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.11/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

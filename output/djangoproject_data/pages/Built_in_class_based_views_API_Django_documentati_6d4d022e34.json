@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+  "title": "Built-in class-based views API | Django documentation | Django",
+  "content": "Class-based views API reference. For introductory material, see the Class-based views topic guide.\n\nEach request served by a class-based view has an independent state; therefore, it is safe to store state variables on the instance (i.e., self.foo = 3 is a thread-safe operation).\n\nA class-based view is deployed into a URL pattern using the as_view() classmethod:\n\nThread safety with view arguments\n\nArguments passed to a view are shared between every instance of a view. This means that you shouldn’t use a list, dictionary, or any other mutable object as an argument to a view. If you do and the shared object is modified, the actions of one user visiting your view could have an effect on subsequent users visiting the same view.\n\nArguments passed into as_view() will be assigned onto the instance that is used to service a request. Using the previous example, this means that every request on MyView is able to use self.size. Arguments must correspond to attributes that already exist on the class (return True on a hasattr check).\n\nBase class-based views can be thought of as parent views, which can be used by themselves or inherited from. They may not provide all the capabilities required for projects, in which case there are Mixins which extend what base views can do.\n\nDjango’s generic views are built off of those base views, and were developed as a shortcut for common usage patterns such as displaying the details of an object. They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.\n\nMost generic views require the queryset key, which is a QuerySet instance; see Making queries for more information about QuerySet objects.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Built-in class-based views API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Specification¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Base vs Generic views¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/checks/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/legacy-databases/",
+  "title": "How to integrate Django with a legacy database | Django documentation | Django",
+  "content": "While Django is best suited for developing new applications, it’s quite possible to integrate it into legacy databases. Django includes a couple of utilities to automate as much of this process as possible.\n\nThis document assumes you know the Django basics, as covered in the tutorial.\n\nOnce you’ve got Django set up, you’ll follow this general process to integrate with an existing database.\n\nYou’ll need to tell Django what your database connection parameters are, and what the name of the database is. Do that by editing the DATABASES setting and assigning values to the following keys for the 'default' connection:\n\nDjango comes with a utility called inspectdb that can create models by introspecting an existing database. You can view the output by running this command:\n\nSave this as a file by using standard Unix output redirection:\n\nThis feature is meant as a shortcut, not as definitive model generation. See the documentation of inspectdb for more information.\n\nOnce you’ve cleaned up your models, name the file models.py and put it in the Python package that holds your app. Then add the app to your INSTALLED_APPS setting.\n\nBy default, inspectdb creates unmanaged models. That is, managed = False in the model’s Meta class tells Django not to manage each table’s creation, modification, and deletion:\n\nIf you do want to allow Django to manage the table’s lifecycle, you’ll need to change the managed option above to True (or remove it because True is its default value).\n\nNext, run the migrate command to install any extra needed database records such as admin permissions and content types:\n\nThose are the basic steps – from here you’ll want to tweak the models Django generated until they work the way you’d like. Try accessing your data via the Django database API, and try editing objects via Django’s admin site, and edit the models file accordingly.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to integrate Django with a legacy database¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Give Django your database parameters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Auto-generate the models¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Install the core Django tables¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Test and tweak¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/legacy-databases/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial01/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/howto/initial-data/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-model-fields/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

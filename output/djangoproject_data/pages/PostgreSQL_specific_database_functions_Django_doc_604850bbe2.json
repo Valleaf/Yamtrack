@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/",
+  "title": "PostgreSQL specific database functions | Django documentation | Django",
+  "content": "All of these functions are available from the django.contrib.postgres.functions module.\n\nReturns a version 4 UUID.\n\nReturns the date and time on the database server that the current transaction started. If you are not in a transaction it will return the date and time of the current statement. This is a complement to django.db.models.functions.Now, which returns the date and time of the current statement.\n\nNote that only the outermost call to atomic() sets up a transaction and thus sets the time that TransactionNow() will return; nested calls create savepoints which do not affect the transaction time.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific database functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "RandomUUID¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "TransactionNow¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Usage example:",
+      "code": ">>> from django.contrib.postgres.functions import RandomUUID\n>>> Article.objects.update(uuid=RandomUUID())"
+    },
+    {
+      "description": "Usage example:",
+      "code": ">>> from django.contrib.postgres.functions import TransactionNow\n>>> Article.objects.filter(published__lte=TransactionNow())\n<QuerySet [<Article: How to Django>]>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

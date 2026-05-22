@@ -1,0 +1,77 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/template-response/",
+  "title": "TemplateResponse and SimpleTemplateResponse | Django documentation | Django",
+  "content": "Standard HttpResponse objects are static structures. They are provided with a block of pre-rendered content at time of construction, and while that content can be modified, it isn’t in a form that makes it easy to perform modifications.\n\nHowever, it can sometimes be beneficial to allow decorators or middleware to modify a response after it has been constructed by the view. For example, you may want to change the template that is used, or put additional data into the context.\n\nTemplateResponse provides a way to do just that. Unlike basic HttpResponse objects, TemplateResponse objects retain the details of the template and context that was provided by the view to compute the response. The final output of the response is not computed until it is needed, later in the response process.\n\nThe name of the template to be rendered. Accepts a backend-dependent template object (such as those returned by get_template()), the name of a template, or a list of template names.\n\nExample: ['foo.html', 'path/to/bar.html']\n\nThe context data to be used when rendering the template. It must be a dict.\n\nExample: {'foo': 123}\n\nThe current rendered value of the response content, using the current template and context data.\n\nA boolean indicating whether the response content has been rendered.\n\nInstantiates a SimpleTemplateResponse object with the given template, context, content type, HTTP status, and charset.\n\nA backend-dependent template object (such as those returned by get_template()), the name of a template, or a list of template names.\n\nA dict of values to add to the template context. By default, this is an empty dictionary.\n\nThe value included in the HTTP Content-Type header, including the MIME type specification and the character set encoding. If content_type is specified, then its value is used. Otherwise, 'text/html' is used.\n\nThe HTTP status code for the response.\n\nThe charset in which the response will be encoded. If not given it will be extracted from content_type, and if that is unsuccessful, the DEFAULT_CHARSET setting will be used.\n\nThe NAME of a template engine to use for loading the template.\n\nA dict of HTTP headers to add to the response.\n\nPreprocesses context data that will be used for rendering a template. Accepts a dict of context data. By default, returns the same dict.\n\nOverride this method in order to customize the context.\n\nResolves the template instance to use for rendering. Accepts a backend-dependent template object (such as those returned by get_template()), the name of a template, or a list of template names.\n\nReturns the backend-dependent template object instance to be rendered.\n\nOverride this method in order to customize template loading.\n\nAdd a callback that will be invoked after rendering has taken place. This hook can be used to defer certain processing operations (such as caching) until after rendering has occurred.\n\nIf the SimpleTemplateResponse has already been rendered, the callback will be invoked immediately.\n\nWhen called, callbacks will be passed a single argument – the rendered SimpleTemplateResponse instance.\n\nIf the callback returns a value that is not None, this will be used as the response instead of the original response object (and will be passed to the next post rendering callback etc.)\n\nSets response.content to the result obtained by SimpleTemplateResponse.rendered_content, runs all post-rendering callbacks, and returns the resulting response object.\n\nrender() will only have an effect the first time it is called. On subsequent calls, it will return the result obtained from the first call.\n\nTemplateResponse is a subclass of SimpleTemplateResponse that knows about the current HttpRequest.\n\nInstantiates a TemplateResponse object with the given request, template, context, content type, HTTP status, and charset.\n\nAn HttpRequest instance.\n\nA backend-dependent template object (such as those returned by get_template()), the name of a template, or a list of template names.\n\nA dict of values to add to the template context. By default, this is an empty dictionary.\n\nThe value included in the HTTP Content-Type header, including the MIME type specification and the character set encoding. If content_type is specified, then its value is used. Otherwise, 'text/html' is used.\n\nThe HTTP status code for the response.\n\nThe charset in which the response will be encoded. If not given it will be extracted from content_type, and if that is unsuccessful, the DEFAULT_CHARSET setting will be used.\n\nThe NAME of a template engine to use for loading the template.\n\nA dict of HTTP headers to add to the response.\n\nBefore a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.\n\nThere are three circumstances under which a TemplateResponse will be rendered:\n\nWhen the TemplateResponse instance is explicitly rendered, using the SimpleTemplateResponse.render() method.\n\nWhen the content of the response is explicitly set by assigning response.content.\n\nAfter passing through template response middleware, but before passing through response middleware.\n\nA TemplateResponse can only be rendered once. The first call to SimpleTemplateResponse.render() sets the content of the response; subsequent rendering calls do not change the response content.\n\nHowever, when response.content is explicitly assigned, the change is always applied. If you want to force the content to be re-rendered, you can reevaluate the rendered content, and assign the content of the response manually:\n\nSome operations – such as caching – cannot be performed on an unrendered template. They must be performed on a fully complete and rendered response.\n\nIf you’re using middleware, you can do that. Middleware provides multiple opportunities to process a response on exit from a view. If you put behavior in the response middleware, it’s guaranteed to execute after template rendering has taken place.\n\nHowever, if you’re using a decorator, the same opportunities do not exist. Any behavior defined in a decorator is handled immediately.\n\nTo compensate for this (and any other analogous use cases), TemplateResponse allows you to register callbacks that will be invoked when rendering has completed. Using this callback, you can defer critical processing until a point where you can guarantee that rendered content will be available.\n\nTo define a post-render callback, define a function that takes a single argument – response – and register that function with the template response:\n\nmy_render_callback() will be invoked after the mytemplate.html has been rendered, and will be provided the fully rendered TemplateResponse instance as an argument.\n\nIf the template has already been rendered, the callback will be invoked immediately.\n\nA TemplateResponse object can be used anywhere that a normal django.http.HttpResponse can be used. It can also be used as an alternative to calling render().\n\nFor example, the following view returns a TemplateResponse with a template and a context containing a queryset:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "TemplateResponse and SimpleTemplateResponse¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SimpleTemplateResponse objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "TemplateResponse objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The rendering process¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Post-render callbacks¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using TemplateResponse and SimpleTemplateResponse¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example: ['foo.html', 'path/to/bar.html']",
+      "code": "# Set up a rendered TemplateResponse\n>>> from django.template.response import TemplateResponse\n>>> t = TemplateResponse(request, \"original.html\", {})\n>>> t.render()\n>>> print(t.content)\nOriginal content\n\n# Re-rendering doesn't change content\n>>> t.template_name = \"new.html\"\n>>> t.render()\n>>> print(t.content)\nOriginal content\n\n# Assigning content does change, no render() call required\n>>> t.content = t.rendered_content\n>>> print(t.content)\nNew content"
+    },
+    {
+      "description": "Example: {'foo': 123}",
+      "code": "# Set up a rendered TemplateResponse\n>>> from django.template.response import TemplateResponse\n>>> t = TemplateResponse(request, \"original.html\", {})\n>>> t.render()\n>>> print(t.content)\nOriginal content\n\n# Re-rendering doesn't change content\n>>> t.template_name = \"new.html\"\n>>> t.render()\n>>> print(t.content)\nOriginal content\n\n# Assigning content does change, no render() call required\n>>> t.content = t.rendered_content\n>>> print(t.content)\nNew content"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/template-response/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/unicode/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

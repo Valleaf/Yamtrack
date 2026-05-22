@@ -1,0 +1,41 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.7/",
+  "title": "Django 5.2.7 release notes | Django documentation | Django",
+  "content": "Django 5.2.7 fixes one security issue with severity “high”, one security issue with severity “low”, and one bug in 5.2.6. Also, the latest string translations from Transifex are incorporated.\n\nQuerySet.annotate(), alias(), aggregate(), and extra() methods were subject to SQL injection in column aliases, using a suitably crafted dictionary, with dictionary expansion, as the **kwargs passed to these methods (follow up to CVE 2022-28346).\n\nThe django.utils.archive.extract() function, used by startapp --template and startproject --template, allowed partial directory-traversal via an archive with file paths sharing a common prefix with the target directory (follow up to CVE 2021-3281).\n\nFixed a regression in Django 5.2 that reduced the color contrast of the chosen label of filter_horizontal and filter_vertical widgets within a TabularInline (#36601).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-59681: Potential SQL injection in QuerySet.annotate(), alias(), aggregate(), and extra() on MySQL and MariaDB¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-59682: Potential partial directory-traversal via archive.extract()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.7/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.8/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.14/",
+  "title": "Django 5.0.14 release notes | Django documentation | Django",
+  "content": "Django 5.0.14 fixes a security issue with severity “moderate” in 5.0.13.\n\nPython’s NFKC normalization is slow on Windows. As a consequence, LoginView, LogoutView, and set_language() were subject to a potential denial-of-service attack via certain inputs with a very large number of Unicode characters.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.14 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-27556: Potential denial-of-service vulnerability in LoginView, LogoutView, and set_language() on Windows¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.14/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

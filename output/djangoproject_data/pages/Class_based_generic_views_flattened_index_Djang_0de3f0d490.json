@@ -1,0 +1,137 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+  "title": "Class-based generic views - flattened index | Django documentation | Django",
+  "content": "This index provides an alternate organization of the reference documentation for class-based views. For each view, the effective attributes and methods from the class tree are represented under that view. For the reference documentation organized by the class which defines the behavior, see Class-based views.\n\nClassy Class-Based Views provides a nice interface to navigate the class hierarchy of the built-in class-based views.\n\nAttributes (with optional accessor):\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nurl [get_redirect_url()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\ncontext_object_name [get_context_object_name()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\nslug_field [get_slug_field()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\ncontext_object_name [get_context_object_name()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nform_class [get_form_class()]\n\ninitial [get_initial()]\n\nprefix [get_prefix()]\n\nresponse_class [render_to_response()]\n\nsuccess_url [get_success_url()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\ncontext_object_name [get_context_object_name()]\n\nform_class [get_form_class()]\n\ninitial [get_initial()]\n\nprefix [get_prefix()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\nslug_field [get_slug_field()]\n\nsuccess_url [get_success_url()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\ncontext_object_name [get_context_object_name()]\n\nform_class [get_form_class()]\n\ninitial [get_initial()]\n\nprefix [get_prefix()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\nslug_field [get_slug_field()]\n\nsuccess_url [get_success_url()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\ncontext_object_name [get_context_object_name()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\nslug_field [get_slug_field()]\n\nsuccess_url [get_success_url()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nmake_object_list [get_make_object_list()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nmonth_format [get_month_format()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nweek_format [get_week_format()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nday_format [get_day_format()]\n\nmonth_format [get_month_format()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_empty [get_allow_empty()]\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nday_format [get_day_format()]\n\nmonth_format [get_month_format()]\n\nordering [get_ordering()]\n\npaginate_by [get_paginate_by()]\n\npaginate_orphans [get_paginate_orphans()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\ntemplate_name [get_template_names()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()\n\nAttributes (with optional accessor):\n\nallow_future [get_allow_future()]\n\ncontext_object_name [get_context_object_name()]\n\ndate_field [get_date_field()]\n\nday_format [get_day_format()]\n\nmonth_format [get_month_format()]\n\nqueryset [get_queryset()]\n\nresponse_class [render_to_response()]\n\nslug_field [get_slug_field()]\n\ntemplate_name [get_template_names()]\n\nyear_format [get_year_format()]\n\nhttp_method_not_allowed()",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Class-based generic views - flattened index¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Simple generic views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "View¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TemplateView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RedirectView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Detail Views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DetailView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "List Views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ListView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Editing views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FormView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CreateView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "UpdateView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DeleteView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Date-based views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ArchiveIndexView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "YearArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MonthArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "WeekArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DayArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TodayArchiveView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DateDetailView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/clickjacking/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

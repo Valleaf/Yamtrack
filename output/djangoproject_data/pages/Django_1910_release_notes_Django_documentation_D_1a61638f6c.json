@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.10/",
+  "title": "Django 1.9.10 release notes | Django documentation | Django",
+  "content": "Django 1.9.10 fixes a security issue in 1.9.9.\n\nAn interaction between Google Analytics and Django’s cookie parsing could allow an attacker to set arbitrary cookies leading to a bypass of CSRF protection.\n\nThe parser for request.COOKIES is simplified to better match the behavior of browsers and to mitigate this attack. request.COOKIES may now contain cookies that are invalid according to RFC 6265 but are possible to set via document.cookie.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CSRF protection bypass on a site with Google Analytics¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

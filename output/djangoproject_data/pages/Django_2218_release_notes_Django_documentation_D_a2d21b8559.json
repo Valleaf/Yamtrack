@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.18/",
+  "title": "Django 2.2.18 release notes | Django documentation | Django",
+  "content": "Django 2.2.18 fixes a security issue with severity “low” in 2.2.17.\n\nThe django.utils.archive.extract() function, used by startapp --template and startproject --template, allowed directory-traversal via an archive with absolute paths or relative paths with dot segments.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.18 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-3281: Potential directory-traversal via archive.extract()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.18/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.19/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.17/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

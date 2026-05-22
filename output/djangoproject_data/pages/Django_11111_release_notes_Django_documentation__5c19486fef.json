@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.11/",
+  "title": "Django 1.11.11 release notes | Django documentation | Django",
+  "content": "Django 1.11.11 fixes two security issues in 1.11.10.\n\nThe django.utils.html.urlize() function was extremely slow to evaluate certain inputs due to catastrophic backtracking vulnerabilities in two regular expressions. The urlize() function is used to implement the urlize and urlizetrunc template filters, which were thus vulnerable.\n\nThe problematic regular expressions are replaced with parsing logic that behaves similarly.\n\nIf django.utils.text.Truncator’s chars() and words() methods were passed the html=True argument, they were extremely slow to evaluate certain inputs due to a catastrophic backtracking vulnerability in a regular expression. The chars() and words() methods are used to implement the truncatechars_html and truncatewords_html template filters, which were thus vulnerable.\n\nThe backtracking problem in the regular expression is fixed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.11 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-7536: Denial-of-service possibility in urlize and urlizetrunc template filters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-7537: Denial-of-service possibility in truncatechars_html and truncatewords_html template filters¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.12/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

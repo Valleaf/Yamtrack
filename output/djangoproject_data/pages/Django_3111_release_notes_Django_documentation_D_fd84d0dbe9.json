@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.11/",
+  "title": "Django 3.1.11 release notes | Django documentation | Django",
+  "content": "Django 3.1.11 fixes a regression in 3.1.9.\n\nFixed a regression in Django 3.1.9 where saving FileField would raise a SuspiciousFileOperation even when a custom upload_to returns a valid file path (#32718).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.11 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.11/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.12/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

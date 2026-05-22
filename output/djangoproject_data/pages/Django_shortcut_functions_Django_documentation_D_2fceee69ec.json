@@ -1,0 +1,98 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/http/shortcuts",
+  "title": "Django shortcut functions | Django documentation | Django",
+  "content": "The package django.shortcuts collects helper functions and classes that “span” multiple levels of MVC. In other words, these functions/classes introduce controlled coupling for convenience’s sake.\n\nCombines a given template with a given context dictionary and returns an HttpResponse object with that rendered text.\n\nDjango does not provide a shortcut function which returns a TemplateResponse because the constructor of TemplateResponse offers the same level of convenience as render().\n\nThe request object used to generate this response.\n\nThe full name of a template to use or sequence of template names. If a sequence is given, the first template that exists will be used. See the template loading documentation for more information on how templates are found.\n\nA dictionary of values to add to the template context. By default, this is an empty dictionary. If a value in the dictionary is callable, the view will call it just before rendering the template.\n\nThe MIME type to use for the resulting document. Defaults to 'text/html'.\n\nThe status code for the response. Defaults to 200.\n\nThe NAME of a template engine to use for loading the template.\n\nThe following example renders the template myapp/index.html with the MIME type application/xhtml+xml:\n\nThis example is equivalent to:\n\nReturns an HttpResponseRedirect to the appropriate URL for the arguments passed.\n\nThe arguments could be:\n\nA model: the model’s get_absolute_url() function will be called.\n\nA view name, possibly with arguments: reverse() will be used to reverse-resolve the name.\n\nAn absolute or relative URL, which will be used as-is for the redirect location.\n\nBy default, a temporary redirect is issued with a 302 status code. If permanent=True, a permanent redirect is issued with a 301 status code.\n\nIf preserve_request=True, the response instructs the user agent to preserve the method and body of the original request when issuing the redirect. In this case, temporary redirects use a 307 status code, and permanent redirects use a 308 status code. This is better illustrated in the following table:\n\nThe argument preserve_request was added.\n\nYou can use the redirect() function in a number of ways.\n\nBy passing some object; that object’s get_absolute_url() method will be called to figure out the redirect URL:\n\nBy passing the name of a view and optionally some positional or keyword arguments; the URL will be reverse resolved using the reverse() method:\n\nBy passing a hardcoded URL to redirect to:\n\nThis also works with full URLs:\n\nBy default, redirect() returns a temporary redirect. All of the above forms accept a permanent argument; if set to True a permanent redirect will be returned:\n\nAdditionally, the preserve_request argument can be used to preserve the original HTTP method:\n\nReturns a URL string by resolving and normalizing the given to argument into a concrete URL. The parameter to may be:\n\nAn object implementing get_absolute_url(), in which case the method will be called and its result returned.\n\nA view name, view function, or view class, possibly with arguments passed as *args and **kwargs, in which case reverse() will be used to reverse-resolve the view.\n\nA URL string, which will be returned unchanged.\n\nThis function is used internally by the redirect() shortcut to determine the target URL for the redirect location.\n\nResolving a URL for a model that defines get_absolute_url():\n\nResolving a target URL for use outside of a redirect, such as in an HTTP response header:\n\nAsynchronous version: aget_object_or_404()\n\nCalls get() on a given model manager, but it raises Http404 instead of the model’s DoesNotExist exception.\n\nA Model class, a Manager, or a QuerySet instance from which to get the object.\n\nLookup parameters, which should be in the format accepted by get() and filter().\n\nThe following example gets the object with the primary key of 1 from MyModel:\n\nThis example is equivalent to:\n\nThe most common use case is to pass a Model, as shown above. However, you can also pass a QuerySet instance:\n\nThe above example is a bit contrived since it’s equivalent to doing:\n\nbut it can be useful if you are passed the queryset variable from somewhere else.\n\nFinally, you can also use a Manager. This is useful for example if you have a custom manager:\n\nYou can also use related managers:\n\nNote: As with get(), a MultipleObjectsReturned exception will be raised if more than one object is found.\n\nAsynchronous version: aget_list_or_404()\n\nReturns the result of filter() on a given model manager cast to a list, raising Http404 if the resulting list is empty.\n\nA Model, Manager or QuerySet instance from which to get the list.\n\nLookup parameters, which should be in the format accepted by get() and filter().\n\nThe following example gets all published objects from MyModel:\n\nThis example is equivalent to:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django shortcut functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "render()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Required arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Optional arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "redirect()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Examples¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "resolve_url()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Examples¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "get_object_or_404()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "get_list_or_404()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Example¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/http/shortcuts",
+    "https://docs.djangoproject.com/en/stable/templates/",
+    "https://docs.djangoproject.com/en/stable/topics/views/",
+    "https://docs.djangoproject.com/en/stable/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/file-uploads/",
+    "https://docs.djangoproject.com/en/stable/topics/generic-views/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

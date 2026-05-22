@@ -1,0 +1,1305 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/security/",
+  "title": "Archive of security issues | Django documentation | Django",
+  "content": "Django’s development team is strongly committed to responsible reporting and disclosure of security-related issues, as outlined in Django’s security policies.\n\nAs part of that commitment, we maintain the following historical list of issues which have been fixed and disclosed. For each issue, the list below includes the date, a brief description, the CVE identifier if applicable, a list of affected versions, a link to the full disclosure and links to the appropriate patch(es).\n\nSome important caveats apply to this information:\n\nLists of affected versions include only those versions of Django which had stable, security-supported releases at the time of disclosure. This means older versions (whose security support had expired) and versions which were in pre-release (alpha/beta/RC) states at the time of disclosure may have been affected, but are not listed.\n\nThe Django project has on occasion issued security advisories, pointing out potential security problems which can arise from improper configuration or from other issues outside of Django itself. Some of these advisories have received CVEs; when that is the case, they are listed here, but as they have no accompanying patches or releases, only the description, disclosure and CVE will be listed.\n\nAll security issues have been handled under versions of Django’s security process. These are listed below.\n\nPotential denial-of-service vulnerability in ASGI requests via file upload limit bypass. Full description\n\nSession fixation via public cached pages and SESSION_SAVE_EVERY_REQUEST. Full description\n\nPotential exposure of private data due to incorrect handling of Vary: * in UpdateCacheMiddleware. Full description\n\nASGI header spoofing via underscore/hyphen conflation. Full description\n\nPrivilege abuse in GenericInlineModelAdmin. Full description\n\nPrivilege abuse in ModelAdmin.list_editable. Full description\n\nPotential denial-of-service vulnerability in MultiPartParser via base64-encoded file upload. Full description\n\nPotential denial-of-service vulnerability in ASGI requests via memory upload limit bypass. Full description\n\nPotential denial-of-service vulnerability in URLField via Unicode normalization on Windows. Full description\n\nPotential incorrect permissions on newly created file system objects. Full description\n\nUsername enumeration through timing difference in mod_wsgi authentication handler. Full description\n\nPotential denial-of-service vulnerability via repeated headers when using ASGI. Full description\n\nPotential SQL injection via raster lookups on PostGIS. Full description\n\nPotential denial-of-service vulnerability in django.utils.text.Truncator HTML methods. Full description\n\nPotential SQL injection in column aliases via control characters. Full description\n\nPotential SQL injection via QuerySet.order_by and FilteredRelation. Full description\n\nPotential SQL injection in FilteredRelation column aliases on PostgreSQL. Full description\n\nPotential denial-of-service vulnerability in XML serializer text extraction. Full description\n\nPotential denial-of-service vulnerability in HttpResponseRedirect and HttpResponsePermanentRedirect on Windows. Full description\n\nPotential SQL injection via _connector keyword argument in QuerySet and Q objects. Full description\n\nPotential SQL injection in QuerySet.annotate(), alias(), aggregate(), and extra() on MySQL and MariaDB. Full description\n\nPotential partial directory-traversal via archive.extract(). Full description\n\nPotential SQL injection in FilteredRelation column aliases. Full description\n\nPotential log injection via unescaped request path. Full description\n\nThere was an additional hardening with new patch releases published on June 10, 2025. Full description\n\nDjango 5.1.11 (patch)\n\nDjango 4.2.23 (patch)\n\nDenial-of-service possibility in strip_tags(). Full description\n\nPotential denial-of-service vulnerability in LoginView, LogoutView, and set_language() on Windows. Full description\n\nPotential denial-of-service in django.utils.text.wrap(). Full description\n\nPotential denial-of-service vulnerability in IPv6 validation. Full description\n\nPotential denial-of-service in django.utils.html.strip_tags(). Full description\n\nPotential SQL injection in HasKey(lhs, rhs) on Oracle. Full description\n\nPotential user email enumeration via response status on password reset. Full description\n\nPotential denial-of-service vulnerability in django.utils.html.urlize(). Full description\n\nPotential SQL injection in QuerySet.values() and values_list(). Full description\n\nPotential denial-of-service vulnerability in django.utils.html.urlize() and AdminURLFieldWidget. Full description\n\nPotential denial-of-service vulnerability in django.utils.html.urlize(). Full description\n\nPotential memory exhaustion in django.utils.numberformat.floatformat(). Full description\n\nPotential denial-of-service in django.utils.translation.get_supported_language_variant(). Full description\n\nPotential directory-traversal in django.core.files.storage.Storage.save(). Full description\n\nUsername enumeration through timing difference for users with unusable passwords. Full description\n\nPotential denial-of-service in django.utils.html.urlize(). Full description\n\nPotential regular expression denial-of-service in django.utils.text.Truncator.words(). Full description\n\nPotential denial-of-service in intcomma template filter. Full description\n\nPotential denial of service vulnerability in UsernameField on Windows. Full description\n\nDenial-of-service possibility in django.utils.text.Truncator. Full description\n\nPotential denial of service vulnerability in django.utils.encoding.uri_to_iri(). Full description\n\nPotential regular expression denial of service vulnerability in EmailValidator/URLValidator. Full description\n\nPotential bypass of validation when uploading multiple files using one form field. Full description\n\nPotential denial-of-service vulnerability in file uploads. Full description\n\nPotential denial-of-service via Accept-Language headers. Full description\n\nPotential denial-of-service vulnerability in internationalized URLs. Full description\n\nPotential reflected file download vulnerability in FileResponse. Full description\n\nPotential SQL injection via Trunc(kind) and Extract(lookup_name) arguments. Full description\n\nPotential SQL injection in QuerySet.annotate(), aggregate(), and extra(). Full description\n\nPotential SQL injection via QuerySet.explain(**options) on PostgreSQL. Full description\n\nPossible XSS via {% debug %} template tag. Full description\n\nDenial-of-service possibility in file uploads. Full description\n\nPotential directory-traversal via Storage.save(). Full description\n\nPotential information disclosure in dictsort template filter. Full description\n\nDenial-of-service possibility in UserAttributeSimilarityValidator. Full description\n\nPotential bypass of an upstream access control based on URL paths. Full description\n\nPotential SQL injection via unsanitized QuerySet.order_by() input. Full description\n\nPotential directory traversal via admindocs. Full description\n\nPossible indeterminate SSRF, RFI, and LFI attacks since validators accepted leading zeros in IPv4 addresses. Full description\n\nHeader injection possibility since URLValidator accepted newlines in input on Python 3.9.5+. Full description\n\nPotential directory-traversal via uploaded files. Full description\n\nPotential directory-traversal via uploaded files. Full description\n\nWeb cache poisoning via django.utils.http.limited_parse_qsl(). Full description\n\nPotential directory-traversal via archive.extract(). Full description\n\nPermission escalation in intermediate-level directories of the file system cache on Python 3.7+. Full description\n\nIncorrect permissions on intermediate-level directories on Python 3.7+. Full description\n\nPossible XSS via admin ForeignKeyRawIdWidget. Full description\n\nPotential data leakage via malformed memcached keys. Full description\n\nPotential SQL injection via tolerance parameter in GIS functions and aggregates on Oracle. Full description\n\nPotential SQL injection via StringAgg(delimiter). Full description\n\nPotential account hijack via password reset form. Full description\n\nPrivilege escalation in the Django admin. Full description\n\nPotential memory exhaustion in django.utils.encoding.uri_to_iri(). Full description\n\nSQL injection possibility in key and index lookups for JSONField/HStoreField. Full description\n\nDenial-of-service possibility in strip_tags(). Full description\n\nDenial-of-service possibility in django.utils.text.Truncator. Full description\n\nIncorrect HTTP detection with reverse-proxy connecting via HTTPS. Full description\n\nXSS via “Current URL” link generated by AdminURLFieldWidget. Full description\n\nPrototype pollution in bundled jQuery. Full description\n\nMemory exhaustion in django.utils.numberformat.format(). Full description\n\nDjango 2.0 (patch and correction)\n\nContent spoofing possibility in the default 404 page. Full description\n\nPassword hash disclosure to “view only” admin users. Full description\n\nOpen redirect possibility in CommonMiddleware. Full description\n\nDenial-of-service possibility in truncatechars_html and truncatewords_html template filters. Full description\n\nDenial-of-service possibility in urlize and urlizetrunc template filters. Full description\n\nInformation leakage in AuthenticationForm. Full description\n\nPossible XSS in traceback section of technical 500 debug page. Full description\n\nOpen redirect vulnerability in django.views.static.serve(). Full description\n\nOpen redirect and possible XSS attack via user-supplied numeric redirect URLs. Full description\n\nDNS rebinding vulnerability when DEBUG=True. Full description\n\nUser with hardcoded password created when running tests on Oracle. Full description\n\nCSRF protection bypass on a site with Google Analytics. Full description\n\nXSS in admin’s add/change related popup. Full description\n\nUser enumeration through timing difference on password hasher work factor upgrade. Full description\n\nMalicious redirect and possible XSS attack via user-supplied redirect URLs containing basic auth. Full description\n\nUser with “change” but not “add” permission can create objects for ModelAdmin’s with save_as=True. Full description\n\nSettings leak possibility in date template filter. Full description\n\nDenial-of-service possibility in logout() view by filling session store. Full description\n\nDenial-of-service possibility in URL validation. Full description\n\nHeader injection possibility since validators accept newlines in input. Full description\n\nDenial-of-service possibility by filling session store. Full description\n\nFixed session flushing in the cached_db backend. Full description\n\nMitigated possible XSS attack via user-supplied redirect URLs. Full description\n\nDenial-of-service possibility with strip_tags(). Full description\n\nXSS attack via properties in ModelAdmin.readonly_fields. Full description\n\nDatabase denial-of-service with ModelMultipleChoiceField. Full description\n\nDenial-of-service attack against django.views.static.serve(). Full description\n\nMitigated possible XSS attack via user-supplied redirect URLs. Full description\n\nWSGI header spoofing via underscore/dash conflation. Full description\n\nData leakage via querystring manipulation in admin. Full description\n\nRemoteUserMiddleware session hijacking. Full description\n\nFile upload denial of service. Full description\n\nreverse() can generate URLs pointing to other hosts. Full description\n\nMalformed URLs from user input incorrectly validated. Full description\n\nCaches may be allowed to store and serve private data. Full description\n\nMySQL typecasting causes unexpected query results. Full description\n\nCaching of anonymous pages could reveal CSRF token. Full description\n\nUnexpected code execution using reverse(). Full description\n\nDenial-of-service via large passwords. Full description\n\nDjango 1.4 (patch and Python compatibility fix)\n\nDirectory-traversal via ssi template tag. Full description\n\nPossible XSS via unvalidated URL redirect schemes. Full description\n\nXSS via admin trusting URLField values. Full description\n\nDenial-of-service via formset max_num bypass. Full description\n\nInformation leakage via admin history log. Full description\n\nEntity-based attacks against Python XML libraries. Full description\n\nAdditional hardening of Host header handling. Full description\n\nAdditional hardening of redirect validation. Full description\n\nAdditional hardening of Host header handling. Full description\n\nHost header poisoning. Full description\n\nDenial-of-service via large image files. Full description\n\nDenial-of-service via compressed image files. Full description\n\nXSS via failure to validate redirect scheme. Full description\n\nPotential CSRF via Host header. Full description\n\nThis notification was an advisory only, so no patches were issued.\n\nHost header cache poisoning. Full description\n\nInformation leakage/arbitrary request issuance via URLField.verify_exists. Full description\n\nDenial-of-service via URLField.verify_exists. Full description\n\nSession manipulation when using memory-cache-backed session. Full description\n\nDirectory-traversal on Windows via incorrect path-separator handling. Full description\n\nXSS via unsanitized names of uploaded files. Full description\n\nCSRF via forged HTTP headers. Full description\n\nDenial-of-service in password-reset mechanism. Full description\n\nInformation leakage in administrative interface. Full description\n\nXSS via trusting unsafe cookie value. Full description\n\nDenial-of-service via pathological regular expression performance. Full description\n\nDirectory-traversal in development server media handler. Full description\n\nCSRF via preservation of POST data during admin login. Full description\n\nXSS via admin login redirect. Full description\n\nDenial-of-service via arbitrarily-large Accept-Language header. Full description\n\nSome security issues were handled before Django had a formalized security process in use. For these, new releases may not have been issued at the time and CVEs may not have been assigned.\n\nApparent “caching” of authenticated user. Full description\n\nFilename validation issue in translation framework. Full description\n\nDjango 0.95 (patch) (released January 21 2007)",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Archive of security issues¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Issues under Django’s security process¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 5, 2026 - CVE 2026-5766¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 5, 2026 - CVE 2026-35192¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 5, 2026 - CVE 2026-6907¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 7, 2026 - CVE 2026-3902¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 7, 2026 - CVE 2026-4277¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 7, 2026 - CVE 2026-4292¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 7, 2026 - CVE 2026-33033¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 7, 2026 - CVE 2026-33034¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 3, 2026 - CVE 2026-25673¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 3, 2026 - CVE 2026-25674¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2025-13473¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2025-14550¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2026-1207¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2026-1285¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2026-1287¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2026 - CVE 2026-1312¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 2, 2025 - CVE 2025-13372¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 2, 2025 - CVE 2025-64460¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 5, 2025 - CVE 2025-64458¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 5, 2025 - CVE 2025-64459¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 1, 2025 - CVE 2025-59681¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 1, 2025 - CVE 2025-59682¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 3, 2025 - CVE 2025-57833¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 4, 2025 - CVE 2025-48432¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 7, 2025 - CVE 2025-32873¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 2, 2025 - CVE 2025-27556¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 6, 2025 - CVE 2025-26699¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 14, 2025 - CVE 2024-56374¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 4, 2024 - CVE 2024-53907¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 4, 2024 - CVE 2024-53908¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 3, 2024 - CVE 2024-45231¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 3, 2024 - CVE 2024-45230¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 6, 2024 - CVE 2024-42005¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 6, 2024 - CVE 2024-41991¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 6, 2024 - CVE 2024-41990¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 6, 2024 - CVE 2024-41989¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 9, 2024 - CVE 2024-39614¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 9, 2024 - CVE 2024-39330¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 9, 2024 - CVE 2024-39329¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 9, 2024 - CVE 2024-38875¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 4, 2024 - CVE 2024-27351¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 6, 2024 - CVE 2024-24680¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 1, 2023 - CVE 2023-46695¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 4, 2023 - CVE 2023-43665¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 4, 2023 - CVE 2023-41164¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 3, 2023 - CVE 2023-36053¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 3, 2023 - CVE 2023-31047¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 14, 2023 - CVE 2023-24580¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2023 - CVE 2023-23969¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 4, 2022 - CVE 2022-41323¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 3, 2022 - CVE 2022-36359¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 4, 2022 - CVE 2022-34265¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 11, 2022 - CVE 2022-28346¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 11, 2022 - CVE 2022-28347¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2022 - CVE 2022-22818¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2022 - CVE 2022-23833¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 4, 2022 - CVE 2021-45452¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 4, 2022 - CVE 2021-45116¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 4, 2022 - CVE 2021-45115¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 7, 2021 - CVE 2021-44420¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 1, 2021 - CVE 2021-35042¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 2, 2021 - CVE 2021-33203¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 2, 2021 - CVE 2021-33571¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 6, 2021 - CVE 2021-32052¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 4, 2021 - CVE 2021-31542¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 6, 2021 - CVE 2021-28658¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 19, 2021 - CVE 2021-23336¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2021 - CVE 2021-3281¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 1, 2020 - CVE 2020-24584¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 1, 2020 - CVE 2020-24583¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 3, 2020 - CVE 2020-13596¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 3, 2020 - CVE 2020-13254¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 4, 2020 - CVE 2020-9402¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 3, 2020 - CVE 2020-7471¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 18, 2019 - CVE 2019-19844¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 2, 2019 - CVE 2019-19118¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 1, 2019 - CVE 2019-14235¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 1, 2019 - CVE 2019-14234¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 1, 2019 - CVE 2019-14233¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 1, 2019 - CVE 2019-14232¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 1, 2019 - CVE 2019-12781¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 3, 2019 - CVE 2019-12308¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "June 3, 2019 - CVE 2019-11358¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 11, 2019 - CVE 2019-6975¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 4, 2019 - CVE 2019-3498¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 1, 2018 - CVE 2018-16984¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 1, 2018 - CVE 2018-14574¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 6, 2018 - CVE 2018-7537¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 6, 2018 - CVE 2018-7536¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2018 - CVE 2018-6188¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 5, 2017 - CVE 2017-12794¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 4, 2017 - CVE 2017-7234¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 4, 2017 - CVE 2017-7233¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 1, 2016 - CVE 2016-9014¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 1, 2016 - CVE 2016-9013¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 26, 2016 - CVE 2016-7401¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 18, 2016 - CVE 2016-6186¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 1, 2016 - CVE 2016-2513¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 1, 2016 - CVE 2016-2512¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 1, 2016 - CVE 2016-2048¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "November 24, 2015 - CVE 2015-8213¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 18, 2015 - CVE 2015-5963 / CVE 2015-5964¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 8, 2015 - CVE 2015-5145¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 8, 2015 - CVE 2015-5144¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 8, 2015 - CVE 2015-5143¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 20, 2015 - CVE 2015-3982¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 18, 2015 - CVE 2015-2317¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 18, 2015 - CVE 2015-2316¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "March 9, 2015 - CVE 2015-2241¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 13, 2015 - CVE 2015-0222¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 13, 2015 - CVE 2015-0221¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 13, 2015 - CVE 2015-0220¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 13, 2015 - CVE 2015-0219¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 20, 2014 - CVE 2014-0483¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 20, 2014 - CVE 2014-0482¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 20, 2014 - CVE 2014-0481¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 20, 2014 - CVE 2014-0480¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 18, 2014 - CVE 2014-3730¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 18, 2014 - CVE 2014-1418¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 21, 2014 - CVE 2014-0474¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 21, 2014 - CVE 2014-0473¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "April 21, 2014 - CVE 2014-0472¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 14, 2013 - CVE 2013-1443¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 10, 2013 - CVE 2013-4315¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 13, 2013 - CVE 2013-6044¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 13, 2013 - CVE 2013-4249¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 19, 2013 - CVE 2013-0306¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 19, 2013 - CVE 2013-0305¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 19, 2013 - CVE 2013-1664 / CVE 2013-1665¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 19, 2013 - No CVE¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 10, 2012 - No CVE 2¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 10, 2012 - No CVE 1¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 17, 2012 - CVE 2012-4520¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 30, 2012 - CVE 2012-3444¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 30, 2012 - CVE 2012-3443¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 30, 2012 - CVE 2012-3442¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 9, 2011 - CVE 2011-4140¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 9, 2011 - CVE 2011-4139¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 9, 2011 - CVE 2011-4138¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 9, 2011 - CVE 2011-4137¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 9, 2011 - CVE 2011-4136¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 8, 2011 - CVE 2011-0698¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 8, 2011 - CVE 2011-0697¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "February 8, 2011 - CVE 2011-0696¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 22, 2010 - CVE 2010-4535¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "December 22, 2010 - CVE 2010-4534¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 8, 2010 - CVE 2010-3082¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 9, 2009 - CVE 2009-3695¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "July 28, 2009 - CVE 2009-2659¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "September 2, 2008 - CVE 2008-3909¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "May 14, 2008 - CVE 2008-2302¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "October 26, 2007 - CVE 2007-5712¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Issues prior to Django’s security process¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "January 21, 2007 - CVE 2007-0405¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "August 16, 2006 - CVE 2007-0404¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Versions affected¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/security/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/releases/0.95/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/one_to_one/",
+  "title": "One-to-one relationships | Django documentation | Django",
+  "content": "To define a one-to-one relationship, use OneToOneField.\n\nIn this example, a Place optionally can be a Restaurant:\n\nWhat follows are examples of operations that can be performed using the Python API facilities.\n\nCreate a couple of Places:\n\nCreate a Restaurant. Pass the “parent” object as this object’s primary key:\n\nA Restaurant can access its place:\n\nA Place can access its restaurant, if available:\n\np2 doesn’t have an associated restaurant:\n\nYou can also use hasattr to avoid the need for exception catching:\n\nSet the place using assignment notation. Because place is the primary key on Restaurant, the save will create a new restaurant:\n\nSet the place back again, using assignment in the reverse direction:\n\nNote that you must save an object before it can be assigned to a one-to-one relationship. For example, creating a Restaurant with unsaved Place raises ValueError:\n\nRestaurant.objects.all() returns the Restaurants, not the Places. Note that there are two restaurants - Ace Hardware the Restaurant was created in the call to r.place = p2:\n\nPlace.objects.all() returns all Places, regardless of whether they have Restaurants:\n\nYou can query the models using lookups across relationships:\n\nThis also works in reverse:\n\nIf you delete a place, its restaurant will be deleted (assuming that the OneToOneField was defined with on_delete set to CASCADE, which is the default):\n\nAdd a Waiter to the Restaurant:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "One-to-one relationships¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/one_to_one/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/",
+    "https://docs.djangoproject.com/en/stable/topics/http/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/forms/formsets",
+  "title": "Formset Functions | Django documentation | Django",
+  "content": "Formset API reference. For introductory material about formsets, see the Formsets topic guide.\n\nReturns a FormSet class for the given form class.\n\nSee formsets for example usage.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Formset Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "formset_factory¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/forms/formsets",
+    "https://docs.djangoproject.com/en/stable/ref/models/",
+    "https://docs.djangoproject.com/en/stable/ref/renderers/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

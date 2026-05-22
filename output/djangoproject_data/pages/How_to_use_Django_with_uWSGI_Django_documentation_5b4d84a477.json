@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/",
+  "title": "How to use Django with uWSGI | Django documentation | Django",
+  "content": "uWSGI is a fast, self-healing and developer/sysadmin-friendly application container server coded in pure C.\n\nThe uWSGI docs offer a tutorial covering Django, nginx, and uWSGI (one possible deployment setup of many). The docs below are focused on how to integrate Django with uWSGI.\n\nThe uWSGI wiki describes several installation procedures. Using pip, the Python package manager, you can install any uWSGI version with a single command. For example:\n\nuWSGI operates on a client-server model. Your web server (e.g., nginx, Apache) communicates with a django-uwsgi “worker” process to serve dynamic content.\n\nuWSGI supports multiple ways to configure the process. See uWSGI’s configuration documentation.\n\nHere’s an example command to start a uWSGI server:\n\nThis assumes you have a top-level project package named mysite, and within it a module mysite/wsgi.py that contains a WSGI application object. This is the layout you’ll have if you ran django-admin startproject mysite (using your own project name in place of mysite) with a recent version of Django. If this file doesn’t exist, you’ll need to create it. See the How to deploy with WSGI documentation for the default contents you should put in this file and what else you can add to it.\n\nThe Django-specific options here are:\n\nchdir: The path to the directory that needs to be on Python’s import path – i.e., the directory containing the mysite package.\n\nmodule: The WSGI module to use – probably the mysite.wsgi module that startproject creates.\n\nenv: Should probably contain at least DJANGO_SETTINGS_MODULE.\n\nhome: Optional path to your project virtual environment.\n\nExample ini configuration file:\n\nExample ini configuration file usage:\n\nFixing UnicodeEncodeError for file uploads\n\nIf you get a UnicodeEncodeError when uploading files with file names that contain non-ASCII characters, make sure uWSGI is configured to accept non-ASCII file names by adding this to your uwsgi.ini:\n\nSee the Files section of the Unicode reference guide for details.\n\nSee the uWSGI docs on managing the uWSGI process for information on starting, stopping and reloading the uWSGI workers.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to use Django with uWSGI¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Prerequisite: uWSGI¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "uWSGI model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Configuring and starting the uWSGI server for Django¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The uWSGI wiki describes several installation procedures. Using pip, the Python package manager, you can install any uWSGI version with a single command. For example:",
+      "code": "# Install current stable version.\n$ python -m pip install uwsgi"
+    },
+    {
+      "description": "Example ini configuration file usage:",
+      "code": "uwsgi --ini uwsgi.ini"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/unicode/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

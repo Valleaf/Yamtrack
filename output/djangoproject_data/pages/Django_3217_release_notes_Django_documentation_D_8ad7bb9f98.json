@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.2.17/",
+  "title": "Django 3.2.17 release notes | Django documentation | Django",
+  "content": "Django 3.2.17 fixes a security issue with severity “moderate” in 3.2.16.\n\nThe parsed values of Accept-Language headers are cached in order to avoid repetitive parsing. This leads to a potential denial-of-service vector via excessive memory usage if large header values are sent.\n\nIn order to avoid this vulnerability, the Accept-Language header is now parsed up to a maximum length.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.2.17 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2023-23969: Potential denial-of-service via Accept-Language headers¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.2.17/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.18/",
+    "https://docs.djangoproject.com/en/stable/releases/3.2.16/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

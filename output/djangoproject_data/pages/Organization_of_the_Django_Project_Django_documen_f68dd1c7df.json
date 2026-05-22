@@ -1,0 +1,95 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/organization/",
+  "title": "Organization of the Django Project | Django documentation | Django",
+  "content": "The Django Project is managed by a team of volunteers pursuing three goals:\n\nDriving the development of the Django web framework,\n\nFostering the ecosystem of Django-related software,\n\nLeading the Django community in accordance with the values described in the Django Code of Conduct.\n\nThe Django Project isn’t a legal entity. The Django Software Foundation, a non-profit organization, handles financial and legal matters related to the Django Project. Other than that, the Django Software Foundation lets the Django Project manage the development of the Django framework, its ecosystem and its community.\n\nMergers are a small set of people who merge pull requests to the Django Git repository.\n\nMergers hold the following prerogatives:\n\nMerging any pull request which constitutes a minor change (small enough not to require the use of the DEP process). A Merger must not merge a change primarily authored by that Merger, unless the pull request has been approved by:\n\na steering council member,\n\na member of the triage & review team, or\n\na member of the security team.\n\nInitiating discussion of a minor change in the appropriate venue, and request that other Mergers refrain from merging it while discussion proceeds.\n\nRequesting a vote of the steering council regarding any minor change if, in the Merger’s opinion, discussion has failed to reach a consensus.\n\nRequesting a vote of the steering council when a major change (significant enough to require the use of the DEP process) reaches one of its implementation milestones and is intended to merge.\n\nThe steering council selects Mergers as necessary to maintain their number at a minimum of three, in order to spread the workload and avoid over-burdening or burning out any individual Merger. There is no upper limit to the number of Mergers.\n\nIt’s not a requirement that a Merger is also a Django Fellow, but the Django Software Foundation has the power to use funding of Fellow positions as a way to make the role of Merger sustainable.\n\nThe following restrictions apply to the role of Merger:\n\nA person must not simultaneously serve as a member of the steering council. If a Merger is elected to the steering council, they shall cease to be a Merger immediately upon taking up membership in the steering council.\n\nA person may serve in the roles of Releaser and Merger simultaneously.\n\nThe selection process, when a vacancy occurs or when the steering council deems it necessary to select additional persons for such a role, occur as follows:\n\nAny member in good standing of an appropriate discussion venue, or the Django Software Foundation board acting with the input of the DSF’s Fellowship committee, may suggest a person for consideration.\n\nThe steering council considers the suggestions put forth, and then any member of the steering council formally nominates a candidate for the role.\n\nThe steering council votes on nominees.\n\nMergers may resign their role at any time, but should endeavor to provide some advance notice in order to allow the selection of a replacement. Termination of the contract of a Django Fellow by the Django Software Foundation temporarily suspends that person’s Merger role until such time as the steering council can vote on their nomination.\n\nOtherwise, a Merger may be removed by:\n\nBecoming disqualified due to election to the steering council.\n\nBecoming disqualified due to actions taken by the Code of Conduct committee of the Django Software Foundation.\n\nA vote of the steering council.\n\nReleasers are a small set of people who have the authority to upload packaged releases of Django to the Python Package Index and to the djangoproject.com website.\n\nReleasers build Django releases and upload them to the Python Package Index and to the djangoproject.com website.\n\nThe steering council selects Releasers as necessary to maintain their number at a minimum of three, in order to spread the workload and avoid over-burdening or burning out any individual Releaser. There is no upper limit to the number of Releasers.\n\nIt’s not a requirement that a Releaser is also a Django Fellow, but the Django Software Foundation has the power to use funding of Fellow positions as a way to make the role of Releaser sustainable.\n\nA person may serve in the roles of Releaser and Merger simultaneously.\n\nThe selection process, when a vacancy occurs or when the steering council deems it necessary to select additional persons for such a role, occur as follows:\n\nAny member in good standing of an appropriate discussion venue, or the Django Software Foundation board acting with the input of the DSF’s Fellowship committee, may suggest a person for consideration.\n\nThe steering council considers the suggestions put forth, and then any member of the steering council formally nominates a candidate for the role.\n\nThe steering council votes on nominees.\n\nReleasers may resign their role at any time, but should endeavor to provide some advance notice in order to allow the selection of a replacement. Termination of the contract of a Django Fellow by the Django Software Foundation temporarily suspends that person’s Releaser role until such time as the steering council can vote on their nomination.\n\nOtherwise, a Releaser may be removed by:\n\nBecoming disqualified due to actions taken by the Code of Conduct committee of the Django Software Foundation.\n\nA vote of the steering council.\n\nThe steering council is a group of experienced contributors who:\n\nprovide oversight of Django’s development and release process,\n\nassist in setting the direction of feature development and releases,\n\nselect Mergers and Releasers, and\n\nhave a tie-breaking vote when other decision-making processes fail.\n\nTheir main concern is to maintain the quality and stability of the Django Web Framework.\n\nThe steering council holds the following prerogatives:\n\nMaking a binding decision regarding any question of a technical change to Django.\n\nVetoing the merging of any particular piece of code into Django or ordering the reversion of any particular merge or commit.\n\nAnnouncing calls for proposals and ideas for the future technical direction of Django.\n\nSelecting and removing mergers and releasers.\n\nParticipating in the removal of members of the steering council, when deemed appropriate.\n\nCalling elections of the steering council outside of those which are automatically triggered, at times when the steering council deems an election is appropriate.\n\nParticipating in modifying Django’s governance (see Changing the organization).\n\nDeclining to vote on a matter the steering council feels is unripe for a binding decision, or which the steering council feels is outside the scope of its powers.\n\nTaking charge of the governance of other technical teams within the Django open-source project, and governing those teams accordingly.\n\nThe steering council is an elected group of five experienced contributors who demonstrate:\n\nA history of substantive contributions to Django or the Django ecosystem. This history must begin at least 18 months prior to the individual’s candidacy for the Steering Council, and include substantive contributions in at least two of these bullet points:\n\nCode contributions to Django projects or major third-party packages in the Django ecosystem\n\nReviewing pull requests and/or triaging Django project tickets\n\nDocumentation, tutorials or blog posts\n\nDiscussions about Django on the Django Forum\n\nRunning Django-related events or user groups\n\nA history of engagement with the direction and future of Django. This does not need to be recent, but candidates who have not engaged in the past three years must still demonstrate an understanding of Django’s changes and direction within those three years.\n\nA new council is elected after each release cycle of Django. The election process works as follows:\n\nThe steering council directs one of its members to notify the Secretary of the Django Software Foundation, in writing, of the triggering of the election, and the condition which triggered it. The Secretary post to the appropriate venue – the Django Forum to announce the election and its timeline.\n\nAs soon as the election is announced, the DSF Board begin a period of voter registration. All individual members of the DSF are automatically registered and need not explicitly register. All other persons who believe themselves eligible to vote, but who have not yet registered to vote, may make an application to the DSF Board for voting privileges. The voter registration form and roll of voters is maintained by the DSF Board. The DSF Board may challenge and reject the registration of voters it believes are registering in bad faith or who it believes have falsified their qualifications or are otherwise unqualified.\n\nRegistration of voters close one week after the announcement of the election. At that point, registration of candidates begin. Any qualified person may register as a candidate. The candidate registration form and roster of candidates are maintained by the DSF Board, and candidates must provide evidence of their qualifications as part of registration. The DSF Board may challenge and reject the registration of candidates it believes do not meet the qualifications of members of the Steering Council, or who it believes are registering in bad faith.\n\nRegistration of candidates close one week after it has opened. One week after registration of candidates closes, the Secretary of the DSF publishes the roster of candidates to the Django Forum, and the election begins. The DSF Board provides a voting form accessible to registered voters, and is the custodian of the votes.\n\nVoting is by secret ballot containing the roster of candidates, and any relevant materials regarding the candidates, in a randomized order. Each voter may vote for up to five candidates on the ballot.\n\nThe election conclude one week after it begins. The DSF Board then tally the votes and produce a summary, including the total number of votes cast and the number received by each candidate. This summary is ratified by a majority vote of the DSF Board, then posted by the Secretary of the DSF to the Django Forum. The five candidates with the highest vote totals immediately become the new steering council.\n\nA member of the steering council may be removed by:\n\nBecoming disqualified due to actions taken by the Code of Conduct committee of the Django Software Foundation.\n\nDetermining that they did not possess the qualifications of a member of the steering council. This determination must be made jointly by the other members of the steering council, and the DSF Board. A valid determination of ineligibility requires that all other members of the steering council and all members of the DSF Board vote who can vote on the issue (the affected person, if a DSF Board member, must not vote) vote “yes” on a motion that the person in question is ineligible.\n\nChanges to this document require the use of the DEP process, with modifications described in DEP 0010.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Organization of the Django Project¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Principles¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mergers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Role¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Prerogatives¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Membership¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Releasers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Role¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Prerogatives¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Membership¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Steering council¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Role¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Prerogatives¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Membership¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Changing the organization¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/organization/",
+    "https://docs.djangoproject.com/en/stable/internals/howto-release-django/",
+    "https://docs.djangoproject.com/en/stable/internals/mailing-lists/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

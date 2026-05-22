@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/",
+  "title": "Models and databases | Django documentation | Django",
+  "content": "A model is the single, definitive source of information about your data. It contains the essential fields and behaviors of the data you’re storing. Generally, each model maps to a single database table.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Models and databases¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/topics/db/aggregation/",
+    "https://docs.djangoproject.com/en/stable/topics/db/search/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/multi-db/",
+    "https://docs.djangoproject.com/en/stable/topics/db/tablespaces/",
+    "https://docs.djangoproject.com/en/stable/topics/db/optimization/",
+    "https://docs.djangoproject.com/en/stable/topics/db/instrumentation/",
+    "https://docs.djangoproject.com/en/stable/topics/db/fixtures/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/",
+    "https://docs.djangoproject.com/en/stable/topics/install/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

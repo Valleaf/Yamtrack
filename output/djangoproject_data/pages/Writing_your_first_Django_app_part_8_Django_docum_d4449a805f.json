@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/intro/tutorial08/",
+  "title": "Writing your first Django app, part 8 | Django documentation | Django",
+  "content": "This tutorial begins where Tutorial 7 left off. We’ve built our web-poll application and will now look at third-party packages. One of Django’s strengths is the rich ecosystem of third-party packages. They’re community developed packages that can be used to quickly improve the feature set of an application.\n\nThis tutorial will show how to add Django Debug Toolbar, a commonly used third-party package. The Django Debug Toolbar has ranked in the top three most used third-party packages in the Django Developers Survey in recent years.\n\nIf you’re having trouble going through this tutorial, please head over to the Getting Help section of the FAQ.\n\nDjango Debug Toolbar is a useful tool for debugging Django web applications. It’s a third-party package that is maintained by the community organization Django Commons. The toolbar helps you understand how your application functions and to identify problems. It does so by providing panels that provide debug information about the current request and response.\n\nTo install a third-party application like the toolbar, you need to install the package by running the below command within an activated virtual environment. This is similar to our earlier step to install Django.\n\nThird-party packages that integrate with Django need some post-installation setup to integrate them with your project. Often you will need to add the package’s Django app to your INSTALLED_APPS setting. Some packages need other changes, like additions to your URLconf (urls.py).\n\nDjango Debug Toolbar requires several setup steps. Follow them in its installation guide. The steps are not duplicated in this tutorial, because as a third-party package, it may change separately to Django’s schedule.\n\nOnce installed, you should be able to see the DjDT “handle” on the right side of the browser window when you browse to http://localhost:8000/admin/. Click it to open the debug toolbar and use the tools in each panel. See the panels documentation page for more information on what the panels show.\n\nAt some point you will run into a problem, for example the toolbar may not render. When this happens and you’re unable to resolve the issue yourself, there are options available to you.\n\nIf the problem is with a specific package, check if there’s a troubleshooting guide or FAQ in the package’s documentation. For example the Django Debug Toolbar has a Tips section that outlines troubleshooting options.\n\nSearch for similar issues on the package’s issue tracker. Django Debug Toolbar’s is on GitHub.\n\nConsult the Django Forum.\n\nJoin the Django Discord server.\n\nThere are many more third-party packages, which you can find using the fantastic Django resource, Django Packages.\n\nIt can be difficult to know what third-party packages you should use. This depends on your needs and goals. Sometimes it’s fine to use a package that’s in its alpha state. Other times, you need to know it’s production ready. Adam Johnson has a blog post that outlines a set of characteristics that qualifies a package as “well maintained”. Django Packages shows data for some of these characteristics, such as when the package was last updated.\n\nAs Adam points out in his post, when the answer to one of the questions is “no”, that’s an opportunity to contribute.\n\nThe beginner tutorial ends here. In the meantime, you might want to check out some pointers on where to go from here.\n\nIf you are familiar with Python packaging and interested in learning how to turn polls into a “reusable app”, check out Advanced tutorial: How to write reusable apps.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Writing your first Django app, part 8¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing Django Debug Toolbar¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Getting help from others¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Installing other third-party packages¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s next?¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/intro/tutorial08/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial07/",
+    "https://docs.djangoproject.com/en/stable/faq/help/",
+    "https://docs.djangoproject.com/en/stable/topics/install/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/intro/whatsnext/",
+    "https://docs.djangoproject.com/en/stable/intro/reusable-apps/",
+    "https://docs.djangoproject.com/en/stable/intro/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

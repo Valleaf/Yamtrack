@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.0.8/",
+  "title": "Django 4.0.8 release notes | Django documentation | Django",
+  "content": "Django 4.0.8 fixes a security issue with severity “medium” in 4.0.7.\n\nInternationalized URLs were subject to potential denial of service attack via the locale parameter.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.0.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2022-41323: Potential denial-of-service vulnerability in internationalized URLs¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.0.8/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0.9/",
+    "https://docs.djangoproject.com/en/stable/releases/4.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

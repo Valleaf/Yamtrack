@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.1.1/",
+  "title": "Django 2.1.1 release notes | Django documentation | Django",
+  "content": "Django 2.1.1 fixes several bugs in 2.1.\n\nFixed a race condition in QuerySet.update_or_create() that could result in data loss (#29499).\n\nFixed a regression where QueryDict.urlencode() crashed if the dictionary contains a non-string value (#29627).\n\nFixed a regression in Django 2.0 where using manage.py test --keepdb fails on PostgreSQL if the database exists and the user doesn’t have permission to create databases (#29613).\n\nFixed a regression in Django 2.0 where combining Q objects with __in lookups and lists crashed (#29643).\n\nFixed translation failure of DurationField’s “overflow” error message (#29623).\n\nFixed a regression where the admin change form crashed if the user doesn’t have the ‘add’ permission to a model that uses TabularInline (#29637).\n\nFixed a regression where a related_query_name reverse accessor wasn’t set up when a GenericRelation is declared on an abstract base model (#29653).\n\nFixed the test client’s JSON serialization of a request data dictionary for structured content type suffixes (#29662).\n\nMade the admin change view redirect to the changelist view after a POST if the user has the ‘view’ permission (#29663).\n\nFixed admin change view crash for view-only users if the form has an extra form field (#29682).\n\nFixed a regression in Django 2.0.5 where QuerySet.values() or values_list() after combining querysets with extra() with union(), difference(), or intersection() crashed due to mismatching columns (#29694).\n\nFixed crash if InlineModelAdmin.has_add_permission() doesn’t accept the obj argument (#29723).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.1.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1.2/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

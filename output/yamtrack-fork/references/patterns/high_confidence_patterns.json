@@ -1,0 +1,16 @@
+[
+  {
+    "pattern_type": "Adapter",
+    "category": "Structural",
+    "confidence": 0.7,
+    "location": "C:\\yamtrack-fork\\src\\users\\account_adapter.py",
+    "class_name": "NoNewUsersAccountAdapter",
+    "method_name": null,
+    "line_number": 4,
+    "evidence": [
+      "Class name suggests Adapter: NoNewUsersAccountAdapter"
+    ],
+    "related_classes": [],
+    "file_path": "C:\\yamtrack-fork\\src\\users\\account_adapter.py"
+  }
+]

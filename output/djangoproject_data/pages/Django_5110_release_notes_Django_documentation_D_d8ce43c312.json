@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.1.10/",
+  "title": "Django 5.1.10 release notes | Django documentation | Django",
+  "content": "Django 5.1.10 fixes a security issue with severity “low” in 5.1.9.\n\nInternal HTTP response logging used request.path directly, allowing control characters (e.g. newlines or ANSI escape sequences) to be written unescaped into logs. This could enable log injection or forgery, letting attackers manipulate log appearance or structure, especially in logs processed by external systems or viewed in terminals.\n\nAlthough this does not directly impact Django’s security model, it poses risks when logs are consumed or interpreted by other tools. To fix this, the internal django.utils.log.log_response() function now escapes all positional formatting arguments using a safe encoding.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.1.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2025-48432: Potential log injection via unescaped request path¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.1.10/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.11/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

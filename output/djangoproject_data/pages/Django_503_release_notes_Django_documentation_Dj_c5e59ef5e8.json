@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.3/",
+  "title": "Django 5.0.3 release notes | Django documentation | Django",
+  "content": "Django 5.0.3 fixes a security issue with severity “moderate” and several bugs in 5.0.2.\n\ndjango.utils.text.Truncator.words() method (with html=True) and truncatewords_html template filter were subject to a potential regular expression denial-of-service attack using a suitably crafted string (follow up to CVE 2019-14232 and CVE 2023-43665).\n\nFixed a regression in Django 5.0.2 where intcomma template filter could return a leading comma for string representation of floats (#35172).\n\nFixed a bug in Django 5.0 that caused a crash of Signal.asend() and asend_robust() when all receivers were asynchronous functions (#35174).\n\nFixed a regression in Django 5.0.1 where ModelAdmin.lookup_allowed() would prevent filtering against foreign keys using lookups like __isnull when the field was not included in ModelAdmin.list_filter (#35173).\n\nFixed a regression in Django 5.0 that caused a crash of @sensitive_variables and @sensitive_post_parameters decorators on functions loaded from .pyc files (#35187).\n\nFixed a regression in Django 5.0 that caused a crash when reloading a test database and a base queryset for a base manager used prefetch_related() (#35238).\n\nFixed a bug in Django 5.0 where facet filters in the admin would crash on a SimpleListFilter using a queryset without primary keys (#35198).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.3 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2024-27351: Potential regular expression denial-of-service in django.utils.text.Truncator.words()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.3/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.4/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

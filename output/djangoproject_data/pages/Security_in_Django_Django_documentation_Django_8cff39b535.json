@@ -1,0 +1,117 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/security/",
+  "title": "Security in Django | Django documentation | Django",
+  "content": "This document is an overview of Django’s security features. It includes advice on securing a Django-powered site.\n\nThe golden rule of web application security is to never trust user-controlled data. Hence, all user input should be sanitized before being used in your application. See the forms documentation for details on validating user inputs in Django.\n\nXSS attacks allow a user to inject client side scripts into the browsers of other users. This is usually achieved by storing the malicious scripts in the database where it will be retrieved and displayed to other users, or by getting users to click a link which will cause the attacker’s JavaScript to be executed by the user’s browser. However, XSS attacks can originate from any untrusted source of data, such as cookies or web services, whenever the data is not sufficiently sanitized before including in a page.\n\nUsing Django templates protects you against the majority of XSS attacks. However, it is important to understand what protections it provides and its limitations.\n\nDjango templates escape specific characters which are particularly dangerous to HTML. While this protects users from most malicious input, it is not entirely foolproof. For example, it will not protect the following:\n\nIf var is set to 'class1 onmouseover=javascript:func()', this can result in unauthorized JavaScript execution, depending on how the browser renders imperfect HTML. (Quoting the attribute value would fix this case.)\n\nIt is also important to be particularly careful when using is_safe with custom template tags, the safe template tag, mark_safe, and when autoescape is turned off.\n\nIn addition, if you are using the template system to output something other than HTML, there may be entirely separate characters and words which require escaping.\n\nYou should also be very careful when storing HTML in the database, especially when that HTML is retrieved and displayed.\n\nCSRF attacks allow a malicious user to execute actions using the credentials of another user without that user’s knowledge or consent.\n\nDjango has built-in protection against most types of CSRF attacks, providing you have enabled and used it where appropriate. However, as with any mitigation technique, there are limitations. For example, it is possible to disable the CSRF module globally or for particular views. You should only do this if you know what you are doing. There are other limitations if your site has subdomains that are outside of your control.\n\nCSRF protection works by checking for a secret in each POST request. This ensures that a malicious user cannot “replay” a form POST to your website and have another logged-in user unwittingly submit that form. The malicious user would have to know the secret, which is user specific (using a cookie).\n\nWhen deployed with HTTPS, CsrfViewMiddleware will check that the HTTP referer header is set to a URL on the same origin (including subdomain and port). Because HTTPS provides additional security, it is imperative to ensure connections use HTTPS where it is available by forwarding insecure connection requests and using HSTS for supported browsers.\n\nBe very careful with marking views with the csrf_exempt decorator unless it is absolutely necessary.\n\nSQL injection is a type of attack where a malicious user is able to execute arbitrary SQL code on a database. This can result in records being deleted or data leakage.\n\nDjango’s querysets are protected from SQL injection since their queries are constructed using query parameterization. A query’s SQL code is defined separately from the query’s parameters. Since parameters may be user-provided and therefore unsafe, they are escaped by the underlying database driver.\n\nDjango also gives developers power to write raw queries or execute custom sql. These capabilities should be used sparingly and you should always be careful to properly escape any parameters that the user can control. In addition, you should exercise caution when using extra() and RawSQL.\n\nClickjacking is a type of attack where a malicious site wraps another site in a frame. This attack can result in an unsuspecting user being tricked into performing unintended actions on the target site.\n\nDjango contains clickjacking protection in the form of the X-Frame-Options middleware which in a supporting browser can prevent a site from being rendered inside a frame. It is possible to disable the protection on a per view basis or to configure the exact header value sent.\n\nThe middleware is strongly recommended for any site that does not need to have its pages wrapped in a frame by third party sites, or only needs to allow that for a small section of the site.\n\nIt is always better for security to deploy your site behind HTTPS. Without this, it is possible for malicious network users to sniff authentication credentials or any other information transferred between client and server, and in some cases – active network attackers – to alter data that is sent in either direction.\n\nIf you want the protection that HTTPS provides, and have enabled it on your server, there are some additional steps you may need:\n\nIf necessary, set SECURE_PROXY_SSL_HEADER, ensuring that you have understood the warnings there thoroughly. Failure to do this can result in CSRF vulnerabilities, and failure to do it correctly can also be dangerous!\n\nSet SECURE_SSL_REDIRECT to True, so that requests over HTTP are redirected to HTTPS.\n\nPlease note the caveats under SECURE_PROXY_SSL_HEADER. For the case of a reverse proxy, it may be easier or more secure to configure the main web server to do the redirect to HTTPS.\n\nUse ‘secure’ cookies.\n\nIf a browser connects initially via HTTP, which is the default for most browsers, it is possible for existing cookies to be leaked. For this reason, you should set your SESSION_COOKIE_SECURE and CSRF_COOKIE_SECURE settings to True. This instructs the browser to only send these cookies over HTTPS connections. Note that this will mean that sessions will not work over HTTP, and the CSRF protection will prevent any POST data being accepted over HTTP (which will be fine if you are redirecting all HTTP traffic to HTTPS).\n\nUse HTTP Strict Transport Security (HSTS)\n\nHSTS is an HTTP header that informs a browser that all future connections to a particular site should always use HTTPS. Combined with redirecting requests over HTTP to HTTPS, this will ensure that connections always enjoy the added security of SSL provided one successful connection has occurred. HSTS may either be configured with SECURE_HSTS_SECONDS, SECURE_HSTS_INCLUDE_SUBDOMAINS, and SECURE_HSTS_PRELOAD, or on the web server.\n\nDjango uses the Host header provided by the client to construct URLs in certain cases. While these values are sanitized to prevent Cross Site Scripting attacks, a fake Host value can be used for Cross-Site Request Forgery, cache poisoning attacks, and poisoning links in emails.\n\nBecause even seemingly-secure web server configurations are susceptible to fake Host headers, Django validates Host headers against the ALLOWED_HOSTS setting in the django.http.HttpRequest.get_host() method.\n\nThis validation only applies via get_host(); if your code accesses the Host header directly from request.META you are bypassing this security protection.\n\nFor more details see the full ALLOWED_HOSTS documentation.\n\nPrevious versions of this document recommended configuring your web server to ensure it validates incoming HTTP Host headers. While this is still recommended, in many common web servers a configuration that seems to validate the Host header may not in fact do so. For instance, even if Apache is configured such that your Django site is served from a non-default virtual host with the ServerName set, it is still possible for an HTTP request to match this virtual host and supply a fake Host header. Thus, Django now requires that you set ALLOWED_HOSTS explicitly rather than relying on web server configuration.\n\nAdditionally, Django requires you to explicitly enable support for the X-Forwarded-Host header (via the USE_X_FORWARDED_HOST setting) if your configuration requires it.\n\nBrowsers use the Referer header as a way to send information to a site about how users got there. By setting a Referrer Policy you can help to protect the privacy of your users, restricting under which circumstances the Referer header is set. See the referrer policy section of the security middleware reference for details.\n\nThe cross-origin opener policy (COOP) header allows browsers to isolate a top-level window from other documents by putting them in a different context group so that they cannot directly interact with the top-level window. If a document protected by COOP opens a cross-origin popup window, the popup’s window.opener property will be null. COOP protects against cross-origin attacks. See the cross-origin opener policy section of the security middleware reference for details.\n\nSimilar to the CSRF limitations requiring a site to be deployed such that untrusted users don’t have access to any subdomains, django.contrib.sessions also has limitations. See the session topic guide section on security for details.\n\nConsider serving static files from a cloud service or CDN to avoid some of these issues.\n\nIf your site accepts file uploads, it is strongly advised that you limit these uploads in your web server configuration to a reasonable size in order to prevent denial of service (DOS) attacks. In Apache, this can be easily set using the LimitRequestBody directive. You should not rely solely on DATA_UPLOAD_MAX_MEMORY_SIZE nor FILE_UPLOAD_MAX_MEMORY_SIZE.\n\nIf you are serving your own static files, be sure that handlers like Apache’s mod_php, which would execute static files as code, are disabled. You don’t want users to be able to execute arbitrary code by uploading and requesting a specially crafted file.\n\nDjango’s media upload handling poses some vulnerabilities when that media is served in ways that do not follow security best practices. Specifically, an HTML file can be uploaded as an image if that file contains a valid PNG header followed by malicious HTML. This file will pass verification of the library that Django uses for ImageField image processing (Pillow). When this file is subsequently displayed to a user, it may be displayed as HTML depending on the type and configuration of your web server.\n\nNo bulletproof technical solution exists at the framework level to safely validate all user uploaded file content, however, there are some other steps you can take to mitigate these attacks:\n\nOne class of attacks can be prevented by always serving user uploaded content from a distinct top-level or second-level domain. This prevents any exploit blocked by same-origin policy protections such as cross site scripting. For example, if your site runs on example.com, you would want to serve uploaded content (the MEDIA_URL setting) from something like usercontent-example.com. It’s not sufficient to serve content from a subdomain like usercontent.example.com.\n\nBeyond this, applications may choose to define a list of allowable file extensions for user uploaded files and configure the web server to only serve such files.\n\nForm submissions containing files are not limited by DATA_UPLOAD_MAX_MEMORY_SIZE. Under ASGI, the entire request may be spooled to disk before any file size validation is performed. It is strongly advised that you limit the maximum request body size in your web server configuration to prevent denial of service (DOS) attacks.\n\nContent Security Policy (CSP) is a browser security mechanism that helps protect web applications against attacks such as cross-site scripting (XSS) and other content injection attacks.\n\nCSP allows web applications to define which sources of content are trusted, instructing the browser to load, execute, or render resources only from those sources. This effectively creates an allowlist of content origins, reducing the risk of malicious code execution.\n\nKey benefits of enabling CSP include:\n\nMitigating XSS attacks by blocking inline scripts and restricting external script loading.\n\nControlling which external resources (e.g., images, fonts, stylesheets) can be loaded.\n\nPreventing unwanted framing of your site to protect against clickjacking.\n\nReporting violations to a specified endpoint, enabling monitoring and debugging.\n\nFor configuration instructions, see the Using CSP documentation, and refer to the CSP overview for details on directives and settings.\n\nWhile CSP is a powerful security mechanism, it’s important to understand its limitations and implications, particularly when used in Django:\n\nPolicy exclusion risks: Avoid excluding specific paths or responses from CSP protection. Due to the browser’s same-origin policy, a vulnerability on an unprotected page (e.g., one allowing arbitrary script injection) may be leveraged to attack protected pages. Excluding any route can significantly weaken the site’s overall CSP protection.\n\nPerformance overhead: Although typically negligible, CSP adds some processing overhead. Nonce generation involves secure randomness for each applicable request. For high-traffic applications or resource-constrained environments, measure the performance impact accordingly.\n\nBrowser support: While CSP Levels 1 and 2 are widely supported, newer directives (CSP Level 3+) or complex policy behaviors may vary across browsers. Test your policy across the environments you intend to support.\n\nDespite these limitations, CSP remains an important and recommended security layer for web applications. Understanding its constraints will help you design a more effective and reliable deployment.\n\nWhile Django provides good security protection out of the box, it is still important to properly deploy your application and take advantage of the security protection of the web server, operating system and other components.\n\nMake sure that your Python code is outside of the web server’s root. This will ensure that your Python code is not accidentally served as plain text (or accidentally executed).\n\nTake care with any user uploaded files.\n\nDjango does not throttle requests to authenticate users. To protect against brute-force attacks against the authentication system, you may consider deploying a Django plugin or web server module to throttle these requests.\n\nKeep your SECRET_KEY, and SECRET_KEY_FALLBACKS if in use, secret.\n\nIt is a good idea to limit the accessibility of your caching system and database using a firewall.\n\nTake a look at the Open Web Application Security Project (OWASP) Top 10 list which identifies some common vulnerabilities in web applications. While Django has tools to address some of the issues, other issues must be accounted for in the design of your project.\n\nMozilla discusses various topics regarding web security. Their pages also include security principles that apply to any system.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Security in Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Always sanitize user input¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Cross site scripting (XSS) protection¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Cross site request forgery (CSRF) protection¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SQL injection protection¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Clickjacking protection¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SSL/HTTPS¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Host header validation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Referrer policy¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Cross-origin opener policy¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Session security¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "User-uploaded content¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Form Submissions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Content Security Policy¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Limitations and considerations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Additional security topics¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/language/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/howto/csrf/",
+    "https://docs.djangoproject.com/en/stable/ref/csrf/",
+    "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/clickjacking/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/howto/csp/",
+    "https://docs.djangoproject.com/en/stable/ref/csp/",
+    "https://docs.djangoproject.com/en/stable/topics/pagination/",
+    "https://docs.djangoproject.com/en/stable/topics/performance/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

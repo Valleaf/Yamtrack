@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.19/",
+  "title": "Django 1.4.19 release notes | Django documentation | Django",
+  "content": "Django 1.4.19 fixes a regression in the 1.4.18 security release.\n\nGZipMiddleware now supports streaming responses. As part of the 1.4.18 security release, the django.views.static.serve() function was altered to stream the files it serves. Unfortunately, the GZipMiddleware consumed the stream prematurely and prevented files from being served properly (#24158).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.19 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.19/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.20/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.18/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,433 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/database-functions",
+  "title": "Database Functions | Django documentation | Django",
+  "content": "The classes documented below provide a way for users to use functions provided by the underlying database as annotations, aggregations, or filters in Django. Functions are also expressions, so they can be used and combined with other expressions like aggregate functions. See the Func documentation for security considerations.\n\nWe’ll be using the following model in examples of each function:\n\nWe don’t usually recommend allowing null=True for CharField since this allows the field to have two “empty values”, but it’s important for the Coalesce example below.\n\nForces the result type of expression to be the one from output_field.\n\nAccepts a list of at least two field names or expressions and returns the first non-null value (note that an empty string is not considered a null value). Each argument must be of a similar type, so mixing text and numbers will result in a database error.\n\nA Python value passed to Coalesce on MySQL may be converted to an incorrect type unless explicitly cast to the correct database type:\n\nTakes an expression and a collation name to query against.\n\nFor example, to filter case-insensitively in SQLite:\n\nIt can also be used when ordering, for example with PostgreSQL:\n\nAccepts a list of at least two field names or expressions and returns the greatest value. Each argument must be of a similar type, so mixing text and numbers will result in a database error.\n\nannotated_comment.last_updated will be the most recent of blog.modified and comment.modified.\n\nThe behavior of Greatest when one or more expression may be null varies between databases:\n\nPostgreSQL: Greatest will return the largest non-null expression, or null if all expressions are null.\n\nSQLite, Oracle, and MySQL: If any expression is null, Greatest will return null.\n\nThe PostgreSQL behavior can be emulated using Coalesce if you know a sensible minimum value to provide as a default.\n\nAccepts a list of at least two field names or expressions and returns the least value. Each argument must be of a similar type, so mixing text and numbers will result in a database error.\n\nThe behavior of Least when one or more expression may be null varies between databases:\n\nPostgreSQL: Least will return the smallest non-null expression, or null if all expressions are null.\n\nSQLite, Oracle, and MySQL: If any expression is null, Least will return null.\n\nThe PostgreSQL behavior can be emulated using Coalesce if you know a sensible maximum value to provide as a default.\n\nAccepts two expressions and returns None if they are equal, otherwise returns expression1.\n\nDue to an Oracle convention, this function returns the empty string instead of None when the expressions are of type CharField.\n\nPassing Value(None) to expression1 is prohibited on Oracle since Oracle doesn’t accept NULL as the first argument.\n\nWe’ll be using the following model in examples of each function:\n\nExtracts a component of a date as a number.\n\nTakes an expression representing a DateField, DateTimeField, TimeField, or DurationField and a lookup_name, and returns the part of the date referenced by lookup_name as an IntegerField. Django usually uses the databases’ extract function, so you may use any lookup_name that your database supports. A tzinfo subclass, usually provided by zoneinfo, can be passed to extract a value in a specific timezone.\n\nGiven the datetime 2015-06-15 23:30:01.000321+00:00, the built-in lookup_names return:\n\nIf a different timezone like Australia/Melbourne is active in Django, then the datetime is converted to the timezone before the value is extracted. The timezone offset for Melbourne in the example date above is +10:00. The values returned when this timezone is active will be the same as above except for:\n\nThe week_day lookup_type is calculated differently from most databases and from Python’s standard functions. This function will return 1 for Sunday, 2 for Monday, through 7 for Saturday.\n\nThe equivalent calculation in Python is:\n\nThe week lookup_type is calculated based on ISO-8601, i.e., a week starts on a Monday. The first week of a year is the one that contains the year’s first Thursday, i.e. the first week has the majority (four or more) of its days in the year. The value returned is in the range 1 to 52 or 53.\n\nEach lookup_name above has a corresponding Extract subclass (listed below) that should typically be used instead of the more verbose equivalent, e.g. use ExtractYear(...) rather than Extract(..., lookup_name='year').\n\nReturns the ISO-8601 week-numbering year.\n\nReturns the ISO-8601 week day with day 1 being Monday and day 7 being Sunday.\n\nThese are logically equivalent to Extract('date_field', lookup_name). Each class is also a Transform registered on DateField and DateTimeField as __(lookup_name), e.g. __year.\n\nSince DateFields don’t have a time component, only Extract subclasses that deal with date-parts can be used with DateField:\n\nIn addition to the following, all extracts for DateField listed above may also be used on DateTimeFields .\n\nThese are logically equivalent to Extract('datetime_field', lookup_name). Each class is also a Transform registered on DateTimeField as __(lookup_name), e.g. __minute.\n\nDateTimeField examples:\n\nWhen USE_TZ is True then datetimes are stored in the database in UTC. If a different timezone is active in Django, the datetime is converted to that timezone before the value is extracted. The example below converts to the Melbourne timezone (UTC +10:00), which changes the day, weekday, and hour values that are returned:\n\nExplicitly passing the timezone to the Extract function behaves in the same way, and takes priority over an active timezone:\n\nReturns the database server’s current date and time when the query is executed, typically using the SQL CURRENT_TIMESTAMP.\n\nPostgreSQL considerations\n\nOn PostgreSQL, the SQL CURRENT_TIMESTAMP returns the time that the current transaction started. Therefore for cross-database compatibility, Now() uses STATEMENT_TIMESTAMP instead. If you need the transaction timestamp, use django.contrib.postgres.functions.TransactionNow.\n\nOn Oracle, the SQL LOCALTIMESTAMP is used to avoid issues with casting CURRENT_TIMESTAMP to DateTimeField.\n\nTruncates a date up to a significant component.\n\nWhen you only care if something happened in a particular year, hour, or day, but not the exact second, then Trunc (and its subclasses) can be useful to filter or aggregate your data. For example, you can use Trunc to calculate the number of sales per day.\n\nTrunc takes a single expression, representing a DateField, TimeField, or DateTimeField, a kind representing a date or time part, and an output_field that’s either DateTimeField(), TimeField(), or DateField(). It returns a datetime, date, or time depending on output_field, with fields up to kind set to their minimum value. If output_field is omitted, it will default to the output_field of expression. A tzinfo subclass, usually provided by zoneinfo, can be passed to truncate a value in a specific timezone.\n\nGiven the datetime 2015-06-15 14:30:50.000321+00:00, the built-in kinds return:\n\n“year”: 2015-01-01 00:00:00+00:00\n\n“quarter”: 2015-04-01 00:00:00+00:00\n\n“month”: 2015-06-01 00:00:00+00:00\n\n“week”: 2015-06-15 00:00:00+00:00\n\n“day”: 2015-06-15 00:00:00+00:00\n\n“hour”: 2015-06-15 14:00:00+00:00\n\n“minute”: 2015-06-15 14:30:00+00:00\n\n“second”: 2015-06-15 14:30:50+00:00\n\nIf a different timezone like Australia/Melbourne is active in Django, then the datetime is converted to the new timezone before the value is truncated. The timezone offset for Melbourne in the example date above is +10:00. The values returned when this timezone is active will be:\n\n“year”: 2015-01-01 00:00:00+11:00\n\n“quarter”: 2015-04-01 00:00:00+10:00\n\n“month”: 2015-06-01 00:00:00+10:00\n\n“week”: 2015-06-16 00:00:00+10:00\n\n“day”: 2015-06-16 00:00:00+10:00\n\n“hour”: 2015-06-16 00:00:00+10:00\n\n“minute”: 2015-06-16 00:30:00+10:00\n\n“second”: 2015-06-16 00:30:50+10:00\n\nThe year has an offset of +11:00 because the result transitioned into daylight saving time.\n\nEach kind above has a corresponding Trunc subclass (listed below) that should typically be used instead of the more verbose equivalent, e.g. use TruncYear(...) rather than Trunc(..., kind='year').\n\nThe subclasses are all defined as transforms, but they aren’t registered with any fields, because the lookup names are already reserved by the Extract subclasses.\n\nTruncates to midnight on the Monday of the week.\n\nThese are logically equivalent to Trunc('date_field', kind). They truncate all parts of the date up to kind which allows grouping or filtering dates with less precision. expression can have an output_field of either DateField or DateTimeField.\n\nSince DateFields don’t have a time component, only Trunc subclasses that deal with date-parts can be used with DateField:\n\nTruncDate casts expression to a date rather than using the built-in SQL truncate function. It’s also registered as a transform on DateTimeField as __date.\n\nTruncTime casts expression to a time rather than using the built-in SQL truncate function. It’s also registered as a transform on DateTimeField as __time.\n\nThese are logically equivalent to Trunc('datetime_field', kind). They truncate all parts of the date up to kind and allow grouping or filtering datetimes with less precision. expression must have an output_field of DateTimeField.\n\nThese are logically equivalent to Trunc('time_field', kind). They truncate all parts of the time up to kind which allows grouping or filtering times with less precision. expression can have an output_field of either TimeField or DateTimeField.\n\nSince TimeFields don’t have a date component, only Trunc subclasses that deal with time-parts can be used with TimeField:\n\nAccepts a list of field names or expressions and returns a JSON array containing those values.\n\nTakes a list of key-value pairs and returns a JSON object containing those pairs.\n\nWe’ll be using the following model in math function examples:\n\nReturns the absolute value of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the arccosine of a numeric field or expression. The expression value must be within the range -1 to 1.\n\nIt can also be registered as a transform. For example:\n\nReturns the arcsine of a numeric field or expression. The expression value must be in the range -1 to 1.\n\nIt can also be registered as a transform. For example:\n\nReturns the arctangent of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the arctangent of expression1 / expression2.\n\nReturns the smallest integer greater than or equal to a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the cosine of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the cotangent of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nConverts a numeric field or expression from radians to degrees.\n\nIt can also be registered as a transform. For example:\n\nReturns the value of e (the natural logarithm base) raised to the power of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the largest integer value not greater than a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the natural logarithm a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nAccepts two numeric fields or expressions and returns the logarithm of the second to base of the first.\n\nAccepts two numeric fields or expressions and returns the remainder of the first divided by the second (modulo operation).\n\nReturns the value of the mathematical constant π.\n\nAccepts two numeric fields or expressions and returns the value of the first raised to the power of the second.\n\nConverts a numeric field or expression from degrees to radians.\n\nIt can also be registered as a transform. For example:\n\nReturns a random value in the range 0.0 ≤ x < 1.0.\n\nRounds a numeric field or expression to precision (must be an integer) decimal places. By default, it rounds to the nearest integer. Whether half values are rounded up or down depends on the database.\n\nIt can also be registered as a transform. For example:\n\nReturns the sign (-1, 0, 1) of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the sine of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the square root of a nonnegative numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nReturns the tangent of a numeric field or expression.\n\nIt can also be registered as a transform. For example:\n\nAccepts a numeric field or expression and returns the text representation of the expression as a single character. It works the same as Python’s chr() function.\n\nLike Length, it can be registered as a transform on IntegerField. The default lookup name is chr.\n\nAccepts a list of at least two text fields or expressions and returns the concatenated text. Each argument must be of a text or char type. If you want to concatenate a TextField() with a CharField(), then be sure to tell Django that the output_field should be a TextField(). Specifying an output_field is also required when concatenating a Value as in the example below.\n\nThis function will never have a null result. On backends where a null argument results in the entire expression being null, Django will ensure that each null part is converted to an empty string first.\n\nReturns the first length characters of the given text field or expression.\n\nAccepts a single text field or expression and returns the number of characters the value has. If the expression is null, then the length will also be null.\n\nIt can also be registered as a transform. For example:\n\nAccepts a single text field or expression and returns the lowercase representation.\n\nIt can also be registered as a transform as described in Length.\n\nReturns the value of the given text field or expression padded on the left side with fill_text so that the resulting value is length characters long. The default fill_text is a space.\n\nSimilar to Trim, but removes only leading spaces.\n\nAccepts a single text field or expression and returns the MD5 hash of the string.\n\nIt can also be registered as a transform as described in Length.\n\nAccepts a single text field or expression and returns the Unicode code point value for the first character of that expression. It works similar to Python’s ord() function, but an exception isn’t raised if the expression is more than one character long.\n\nIt can also be registered as a transform as described in Length. The default lookup name is ord.\n\nReturns the value of the given text field or expression repeated number times.\n\nReplaces all occurrences of text with replacement in expression. The default replacement text is the empty string. The arguments to the function are case-sensitive.\n\nAccepts a single text field or expression and returns the characters of that expression in reverse order.\n\nIt can also be registered as a transform as described in Length. The default lookup name is reverse.\n\nReturns the last length characters of the given text field or expression.\n\nSimilar to LPad, but pads on the right side.\n\nSimilar to Trim, but removes only trailing spaces.\n\nAccepts a single text field or expression and returns the particular hash of the string.\n\nThey can also be registered as transforms as described in Length.\n\nThe pgcrypto extension must be installed. You can use the CryptoExtension migration operation to install it.\n\nOracle doesn’t support the SHA224 function.\n\nReturns a positive integer corresponding to the 1-indexed position of the first occurrence of substring inside expression, or 0 if substring is not found.\n\nIn MySQL, a database table’s collation determines whether string comparisons (such as the expression and substring of this function) are case-sensitive. Comparisons are case-insensitive by default.\n\nReturns a substring of length length from the field or expression starting at position pos. The position is 1-indexed, so the position must be greater than 0. If length is None, then the rest of the string will be returned.\n\nReturns the value of the given text field or expression with leading and trailing spaces removed.\n\nAccepts a single text field or expression and returns the uppercase representation.\n\nIt can also be registered as a transform as described in Length.\n\nThere are a number of functions to use in a Window expression for computing the rank of elements or the Ntile of some rows.\n\nCalculates the cumulative distribution of a value within a window or partition. The cumulative distribution is defined as the number of rows preceding or peered with the current row divided by the total number of rows in the frame.\n\nEquivalent to Rank but does not have gaps.\n\nReturns the value evaluated at the row that’s the first row of the window frame, or None if no such value exists.\n\nCalculates the value offset by offset, and if no row exists there, returns default.\n\ndefault must have the same type as the expression, however, this is only validated by the database and not in Python.\n\nMariaDB doesn’t support the default parameter.\n\nComparable to FirstValue, it calculates the last value in a given frame clause.\n\nCalculates the leading value in a given frame. Both offset and default are evaluated with respect to the current row.\n\ndefault must have the same type as the expression, however, this is only validated by the database and not in Python.\n\nMariaDB doesn’t support the default parameter.\n\nComputes the row relative to the offset nth (must be a positive value) within the window. Returns None if no row exists.\n\nSome databases may handle a nonexistent nth-value differently. For example, Oracle returns an empty string rather than None for character-based expressions. Django doesn’t do any conversions in these cases.\n\nCalculates a partition for each of the rows in the frame clause, distributing numbers as evenly as possible between 1 and num_buckets. If the rows don’t divide evenly into a number of buckets, one or more buckets will be represented more frequently.\n\nComputes the relative rank of the rows in the frame clause. This computation is equivalent to evaluating:\n\nThe following table explains the calculation for the relative rank of a row:\n\nComparable to RowNumber, this function ranks rows in the window. The computed rank contains gaps. Use DenseRank to compute rank without gaps.\n\nComputes the row number according to the ordering of either the frame clause or the ordering of the whole query if there is no partitioning of the window frame.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Database Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Comparison and conversion functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Cast¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Coalesce¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Collate¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Greatest¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Least¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NullIf¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Date functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Extract¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateField extracts¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateTimeField extracts¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Now¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Trunc¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateField truncation¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "DateTimeField truncation¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "TimeField truncation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "JSON Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "JSONArray¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "JSONObject¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Math Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Abs¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ACos¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ASin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ATan¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ATan2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Ceil¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Cos¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Cot¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Degrees¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Exp¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Floor¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Ln¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Log¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Mod¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Pi¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Power¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Radians¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Random¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Round¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sign¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sin¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sqrt¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Tan¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Text functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Chr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Concat¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Left¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Length¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Lower¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LPad¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LTrim¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MD5¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Ord¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Repeat¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Replace¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reverse¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Right¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RPad¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RTrim¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SHA1, SHA224, SHA256, SHA384, and SHA512¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "StrIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Substr¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Trim¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Upper¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Window functions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CumeDist¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DenseRank¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FirstValue¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Lag¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LastValue¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Lead¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NthValue¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Ntile¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PercentRank¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Rank¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RowNumber¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Usage example:",
+      "code": ">>> from django.db.models import FloatField\n>>> from django.db.models.functions import Cast\n>>> Author.objects.create(age=25, name=\"Margaret Smith\")\n>>> author = Author.objects.annotate(\n...     age_as_float=Cast(\"age\", output_field=FloatField()),\n... ).get()\n>>> print(author.age_as_float)\n25.0"
+    },
+    {
+      "description": "Usage example:",
+      "code": "class Blog(models.Model):\n    body = models.TextField()\n    modified = models.DateTimeField(auto_now=True)\n\n\nclass Comment(models.Model):\n    body = models.TextField()\n    modified = models.DateTimeField(auto_now=True)\n    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)"
+    },
+    {
+      "description": "Usage example:",
+      "code": ">>> from datetime import datetime\n>>> from django.db.models.functions import Extract\n>>> start = datetime(2015, 6, 15)\n>>> end = datetime(2015, 7, 2)\n>>> Experiment.objects.create(\n...     start_datetime=start, start_date=start.date(), end_datetime=end, end_date=end.date()\n... )\n>>> # Add the experiment start year as a field in the QuerySet.\n>>> experiment = Experiment.objects.annotate(\n...     start_year=Extract(\"start_datetime\", \"year\")\n... ).get()\n>>> experiment.start_year\n2015\n>>> # How many experiments completed in the same year in which they started?\n>>> Experiment.objects.filter(start_datetime__year=Extract(\"end_datetime\", \"year\")).count()\n1"
+    },
+    {
+      "description": "Usage example:",
+      "code": ">>> from django.db.models.functions import Now\n>>> Article.objects.filter(published__lte=Now())\n<QuerySet [<Article: How to Django>]>"
+    },
+    {
+      "description": "Usage example:",
+      "code": ">>> from datetime import datetime\n>>> from django.db.models import Count, DateTimeField\n>>> from django.db.models.functions import Trunc\n>>> Experiment.objects.create(start_datetime=datetime(2015, 6, 15, 14, 30, 50, 321))\n>>> Experiment.objects.create(start_datetime=datetime(2015, 6, 15, 14, 40, 2, 123))\n>>> Experiment.objects.create(start_datetime=datetime(2015, 12, 25, 10, 5, 27, 999))\n>>> experiments_per_day = (\n...     Experiment.objects.annotate(\n...         start_day=Trunc(\"start_datetime\", \"day\", output_field=DateTimeField())\n...     )\n...     .values(\"start_day\")\n...     .annotate(experiments=Count(\"id\"))\n... )\n>>> for exp in experiments_per_day:\n...     print(exp[\"start_day\"], exp[\"experiments\"])\n...\n2015-06-15 00:00:00 2\n2015-12-25 00:00:00 1\n>>> experiments = Experiment.objects.annotate(\n...     start_day=Trunc(\"start_datetime\", \"day\", output_field=DateTimeField())\n... ).filter(start_day=datetime(2015, 6, 15))\n>>> for exp in experiments:\n...     print(exp.start_datetime)\n...\n2015-06-15 14:30:50.000321\n2015-06-15 14:40:02.000123"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions",
+    "https://docs.djangoproject.com/en/stable/ref/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/querysets/",
+    "https://docs.djangoproject.com/en/stable/databases/",
+    "https://docs.djangoproject.com/en/stable/ref/fields/",
+    "https://docs.djangoproject.com/en/stable/settings/",
+    "https://docs.djangoproject.com/en/stable/contrib/postgres/functions/",
+    "https://docs.djangoproject.com/en/stable/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/conditional-expressions/",
+    "https://docs.djangoproject.com/en/stable/paginator/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

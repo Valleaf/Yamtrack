@@ -1,0 +1,86 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/http/views/",
+  "title": "Writing views | Django documentation | Django",
+  "content": "A view function, or view for short, is a Python function that takes a web request and returns a web response. This response can be the HTML contents of a web page, or a redirect, or a 404 error, or an XML document, or an image … or anything, really. The view itself contains whatever arbitrary logic is necessary to return that response. This code can live anywhere you want, as long as it’s on your Python path. There’s no other requirement–no “magic,” so to speak. For the sake of putting the code somewhere, the convention is to put views in a file called views.py, placed in your project or application directory.\n\nHere’s a view that returns the current date and time, as an HTML document:\n\nLet’s step through this code one line at a time:\n\nFirst, we import the class HttpResponse from the django.http module, along with Python’s datetime library.\n\nNext, we define a function called current_datetime. This is the view function. Each view function takes an HttpRequest object as its first parameter, which is typically named request.\n\nNote that the name of the view function doesn’t matter; it doesn’t have to be named in a certain way in order for Django to recognize it. We’re calling it current_datetime here, because that name clearly indicates what it does.\n\nThe view returns an HttpResponse object that contains the generated response. Each view function is responsible for returning an HttpResponse object. (There are exceptions, but we’ll get to those later.)\n\nDjango includes a TIME_ZONE setting that defaults to America/Chicago. This probably isn’t where you live, so you might want to change it in your settings file.\n\nSo, to recap, this view function returns an HTML page that includes the current date and time. To display this view at a particular URL, you’ll need to create a URLconf; see URL dispatcher for instructions.\n\nDjango provides help for returning HTTP error codes. There are subclasses of HttpResponse for a number of common HTTP status codes other than 200 (which means “OK”). You can find the full list of available subclasses in the request/response documentation. Return an instance of one of those subclasses instead of a normal HttpResponse in order to signify an error. For example:\n\nThere isn’t a specialized subclass for every possible HTTP response code, since many of them aren’t going to be that common. However, as documented in the HttpResponse documentation, you can also pass the HTTP status code into the constructor for HttpResponse to create a return class for any status code you like. For example:\n\nBecause 404 errors are by far the most common HTTP error, there’s an easier way to handle those errors.\n\nWhen you return an error such as HttpResponseNotFound, you’re responsible for defining the HTML of the resulting error page:\n\nFor convenience, and because it’s a good idea to have a consistent 404 error page across your site, Django provides an Http404 exception. If you raise Http404 at any point in a view function, Django will catch it and return the standard error page for your application, along with an HTTP error code 404.\n\nIn order to show customized HTML when Django returns a 404, you can create an HTML template named 404.html and place it in the top level of your template tree. This template will then be served when DEBUG is set to False.\n\nWhen DEBUG is True, you can provide a message to Http404 and it will appear in the standard 404 debug template. Use these messages for debugging purposes; they generally aren’t suitable for use in a production 404 template.\n\nThe default error views in Django should suffice for most web applications, but can easily be overridden if you need any custom behavior. Specify the handlers as seen below in your URLconf (setting them anywhere else will have no effect).\n\nThe page_not_found() view is overridden by handler404:\n\nThe server_error() view is overridden by handler500:\n\nThe permission_denied() view is overridden by handler403:\n\nThe bad_request() view is overridden by handler400:\n\nUse the CSRF_FAILURE_VIEW setting to override the CSRF error view.\n\nTo test the response of a custom error handler, raise the appropriate exception in a test view. For example:\n\nAs well as being synchronous functions, views can also be asynchronous (“async”) functions, normally defined using Python’s async def syntax. Django will automatically detect these and run them in an async context. However, you will need to use an async server based on ASGI to get their performance benefits.\n\nHere’s an example of an async view:\n\nYou can read more about Django’s async support, and how to best use async views, in Asynchronous support.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Writing views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "A simple view¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mapping URLs to views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Returning errors¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The Http404 exception¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Customizing error views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Testing custom error views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Async views¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Django provides help for returning HTTP error codes. There are subclasses of HttpResponse for a number of common HTTP status codes other than 200 (which means “OK”). You can find the full list of available subclasses in the request/response documentation. Return an instance of one of those subclasses instead of a normal HttpResponse in order to signify an error. For example:",
+      "code": "from django.http import HttpResponse, HttpResponseNotFound\n\n\ndef my_view(request):\n    # ...\n    if foo:\n        return HttpResponseNotFound(\"<h1>Page not found</h1>\")\n    else:\n        return HttpResponse(\"<h1>Page was found</h1>\")"
+    },
+    {
+      "description": "There isn’t a specialized subclass for every possible HTTP response code, since many of them aren’t going to be that common. However, as documented in the HttpResponse documentation, you can also pass the HTTP status code into the constructor for HttpResponse to create a return class for any status code you like. For example:",
+      "code": "from django.http import HttpResponse\n\n\ndef my_view(request):\n    # ...\n\n    # Return a \"created\" (201) response code.\n    return HttpResponse(status=201)"
+    },
+    {
+      "description": "Example usage:",
+      "code": "from django.http import Http404\nfrom django.shortcuts import render\nfrom polls.models import Poll\n\n\ndef detail(request, poll_id):\n    try:\n        p = Poll.objects.get(pk=poll_id)\n    except Poll.DoesNotExist:\n        raise Http404(\"Poll does not exist\")\n    return render(request, \"polls/detail.html\", {\"poll\": p})"
+    },
+    {
+      "description": "To test the response of a custom error handler, raise the appropriate exception in a test view. For example:",
+      "code": "from django.core.exceptions import PermissionDenied\nfrom django.http import HttpResponse\nfrom django.test import SimpleTestCase, override_settings\nfrom django.urls import path\n\n\ndef response_error_handler(request, exception=None):\n    return HttpResponse(\"Error handler content\", status=403)\n\n\ndef permission_denied_view(request):\n    raise PermissionDenied\n\n\nurlpatterns = [\n    path(\"403/\", permission_denied_view),\n]\n\nhandler403 = response_error_handler\n\n\n# ROOT_URLCONF must specify the module that contains handler403 = ...\n@override_settings(ROOT_URLCONF=__name__)\nclass CustomErrorHandlerTests(SimpleTestCase):\n    def test_handler_renders_template_response(self):\n        response = self.client.get(\"/403/\")\n        # Make assertions on the response here. For example:\n        self.assertContains(response, \"Error handler content\", status_code=403)"
+    },
+    {
+      "description": "from django.core.exceptions import PermissionDenied from django.http import HttpResponse from django.test import SimpleTestCase, override_settings from django.urls import path def response_error_handler(request, exception=None): return HttpResponse(\"Error handler content\", status=403) def permission_denied_view(request): raise PermissionDenied urlpatterns = [ path(\"403/\", permission_denied_view), ] handler403 = response_error_handler # ROOT_URLCONF must specify the module that contains handler403 = ... @override_settings(ROOT_URLCONF=__name__) class CustomErrorHandlerTests(SimpleTestCase): def test_handler_renders_template_response(self): response = self.client.get(\"/403/\") # Make assertions on the response here. For example: self.assertContains(response, \"Error handler content\", status_code=403)",
+      "code": "from django.core.exceptions import PermissionDenied\nfrom django.http import HttpResponse\nfrom django.test import SimpleTestCase, override_settings\nfrom django.urls import path\n\n\ndef response_error_handler(request, exception=None):\n    return HttpResponse(\"Error handler content\", status=403)\n\n\ndef permission_denied_view(request):\n    raise PermissionDenied\n\n\nurlpatterns = [\n    path(\"403/\", permission_denied_view),\n]\n\nhandler403 = response_error_handler\n\n\n# ROOT_URLCONF must specify the module that contains handler403 = ...\n@override_settings(ROOT_URLCONF=__name__)\nclass CustomErrorHandlerTests(SimpleTestCase):\n    def test_handler_renders_template_response(self):\n        response = self.client.get(\"/403/\")\n        # Make assertions on the response here. For example:\n        self.assertContains(response, \"Error handler content\", status_code=403)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/views/",
+    "https://docs.djangoproject.com/en/stable/ref/urls/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/topics/http/decorators/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/http/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

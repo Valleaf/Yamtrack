@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+  "title": "GeoDjango | Django documentation | Django",
+  "content": "GeoDjango intends to be a world-class geographic web framework. Its goal is to make it as easy as possible to build GIS web applications and harness the power of spatially enabled data.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoDjango¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/tutorial/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/install/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/layermapping/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/ogrinspect/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/commands/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/feeds/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/flatpages/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

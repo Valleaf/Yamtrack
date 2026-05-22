@@ -1,0 +1,99 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/unicode/",
+  "title": "Unicode data | Django documentation | Django",
+  "content": "Django supports Unicode data everywhere.\n\nThis document tells you what you need to know if you’re writing applications that use data or templates that are encoded in something other than ASCII.\n\nMake sure your database is configured to be able to store arbitrary string data. Normally, this means giving it an encoding of UTF-8 or UTF-16. If you use a more restrictive encoding – for example, latin1 (iso8859-1) – you won’t be able to store certain characters in the database, and information will be lost.\n\nMySQL users, refer to the MySQL manual for details on how to set or alter the database character set encoding.\n\nPostgreSQL users, refer to the PostgreSQL manual for details on creating databases with the correct encoding.\n\nOracle users, refer to the Oracle manual for details on how to set (section 2) or alter (section 11) the database character set encoding.\n\nSQLite users, there is nothing you need to do. SQLite always uses UTF-8 for internal encoding.\n\nAll of Django’s database backends automatically convert strings into the appropriate encoding for talking to the database. They also automatically convert strings retrieved from the database into strings. You don’t even need to tell Django what encoding your database uses: that is handled transparently.\n\nFor more, see the section “The database API” below.\n\nWhenever you use strings with Django – e.g., in database lookups, template rendering or anywhere else – you have two choices for encoding those strings. You can use normal strings or bytestrings (starting with a ‘b’).\n\nA bytestring does not carry any information with it about its encoding. For that reason, we have to make an assumption, and Django assumes that all bytestrings are in UTF-8.\n\nIf you pass a string to Django that has been encoded in some other format, things will go wrong in interesting ways. Usually, Django will raise a UnicodeDecodeError at some point.\n\nIf your code only uses ASCII data, it’s safe to use your normal strings, passing them around at will, because ASCII is a subset of UTF-8.\n\nDon’t be fooled into thinking that if your DEFAULT_CHARSET setting is set to something other than 'utf-8' you can use that other encoding in your bytestrings! DEFAULT_CHARSET only applies to the strings generated as the result of template rendering (and email). Django will always assume UTF-8 encoding for internal bytestrings. The reason for this is that the DEFAULT_CHARSET setting is not actually under your control (if you are the application developer). It’s under the control of the person installing and using your application – and if that person chooses a different setting, your code must still continue to work. Ergo, it cannot rely on that setting.\n\nIn most cases when Django is dealing with strings, it will convert them to strings before doing anything else. So, as a general rule, if you pass in a bytestring, be prepared to receive a string back in the result.\n\nAside from strings and bytestrings, there’s a third type of string-like object you may encounter when using Django. The framework’s internationalization features introduce the concept of a “lazy translation” – a string that has been marked as translated but whose actual translation result isn’t determined until the object is used in a string. This feature is useful in cases where the translation locale is unknown until the string is used, even though the string might have originally been created when the code was first imported.\n\nNormally, you won’t have to worry about lazy translations. Just be aware that if you examine an object and it claims to be a django.utils.functional.__proxy__ object, it is a lazy translation. Calling str() with the lazy translation as the argument will generate a string in the current locale.\n\nFor more details about lazy translation objects, refer to the internationalization documentation.\n\nBecause some string operations come up again and again, Django ships with a few useful functions that should make working with string and bytestring objects a bit easier.\n\nThe django.utils.encoding module contains a few functions that are handy for converting back and forth between strings and bytestrings.\n\nsmart_str(s, encoding='utf-8', strings_only=False, errors='strict') converts its input to a string. The encoding parameter specifies the input encoding. (For example, Django uses this internally when processing form input data, which might not be UTF-8 encoded.) The strings_only parameter, if set to True, will result in Python numbers, booleans and None not being converted to a string (they keep their original types). The errors parameter takes any of the values that are accepted by Python’s str() function for its error handling.\n\nforce_str(s, encoding='utf-8', strings_only=False, errors='strict') is identical to smart_str() in almost all cases. The difference is when the first argument is a lazy translation instance. While smart_str() preserves lazy translations, force_str() forces those objects to a string (causing the translation to occur). Normally, you’ll want to use smart_str(). However, force_str() is useful in template tags and filters that absolutely must have a string to work with, not just something that can be converted to a string.\n\nsmart_bytes(s, encoding='utf-8', strings_only=False, errors='strict') is essentially the opposite of smart_str(). It forces the first argument to a bytestring. The strings_only parameter has the same behavior as for smart_str() and force_str(). This is slightly different semantics from Python’s builtin str() function, but the difference is needed in a few places within Django’s internals.\n\nNormally, you’ll only need to use force_str(). Call it as early as possible on any input data that might be either a string or a bytestring, and from then on, you can treat the result as always being a string.\n\nWeb frameworks have to deal with URLs (which are a type of IRI). One requirement of URLs is that they are encoded using only ASCII characters. However, in an international environment, you might need to construct a URL from an IRI – very loosely speaking, a URI that can contain Unicode characters. Use these functions for quoting and converting an IRI to a URI:\n\nThe django.utils.encoding.iri_to_uri() function, which implements the conversion from IRI to URI as required by RFC 3987 Section 3.1.\n\nThe urllib.parse.quote() and urllib.parse.quote_plus() functions from Python’s standard library.\n\nThese two groups of functions have slightly different purposes, and it’s important to keep them straight. Normally, you would use quote() on the individual portions of the IRI or URI path so that any reserved characters such as ‘&’ or ‘%’ are correctly encoded. Then, you apply iri_to_uri() to the full IRI and it converts any non-ASCII characters to the correct encoded values.\n\nTechnically, it isn’t correct to say that iri_to_uri() implements the full algorithm in the IRI specification. It doesn’t (yet) perform the international domain name encoding portion of the algorithm.\n\nThe iri_to_uri() function will not change ASCII characters that are otherwise permitted in a URL. So, for example, the character ‘%’ is not further encoded when passed to iri_to_uri(). This means you can pass a full URL to this function and it will not mess up the query string or anything like that.\n\nAn example might clarify things here:\n\nIf you look carefully, you can see that the portion that was generated by quote() in the second example was not double-quoted when passed to iri_to_uri(). This is a very important and useful feature. It means that you can construct your IRI without worrying about whether it contains non-ASCII characters and then, right at the end, call iri_to_uri() on the result.\n\nSimilarly, Django provides django.utils.encoding.uri_to_iri() which implements the conversion from URI to IRI as per RFC 3987 Section 3.2.\n\nAn example to demonstrate:\n\nIn the first example, the UTF-8 characters are unquoted. In the second, the percent-encodings remain unchanged because they lie outside the valid UTF-8 range or represent a reserved character.\n\nBoth iri_to_uri() and uri_to_iri() functions are idempotent, which means the following is always true:\n\nSo you can safely call it multiple times on the same URI/IRI without risking double-quoting problems.\n\nBecause all strings are returned from the database as str objects, model fields that are character based (CharField, TextField, URLField, etc.) will contain Unicode values when Django retrieves data from the database. This is always the case, even if the data could fit into an ASCII bytestring.\n\nYou can pass in bytestrings when creating a model or populating a field, and Django will convert it to strings when it needs to.\n\nURLs can only contain ASCII characters. If you’re constructing a URL from pieces of data that might be non-ASCII, be careful to encode the results in a way that is suitable for a URL. The reverse() function handles this for you automatically.\n\nIf you’re constructing a URL manually (i.e., not using the reverse() function), you’ll need to take care of the encoding yourself. In this case, use the iri_to_uri() and quote() functions that were documented above. For example:\n\nThis function returns a correctly encoded URL even if self.location is something like “Jack visited Paris & Orléans”. (In fact, the iri_to_uri() call isn’t strictly necessary in the above example, because all the non-ASCII characters would have been removed in quoting in the first line.)\n\nUse strings when creating templates manually:\n\nBut the common case is to read templates from the filesystem. If your template files are not stored with a UTF-8 encoding, adjust the TEMPLATES setting. The built-in django backend provides the 'file_charset' option to change the encoding used to read files from disk.\n\nThe DEFAULT_CHARSET setting controls the encoding of rendered templates. This is set to UTF-8 by default.\n\nA couple of tips to remember when writing your own template tags and filters:\n\nAlways return strings from a template tag’s render() method and from template filters.\n\nUse force_str() in preference to smart_str() in these places. Tag rendering and filter calls occur as the template is being rendered, so there is no advantage to postponing the conversion of lazy translation objects into strings. It’s easier to work solely with strings at that point.\n\nIf you intend to allow users to upload files, you must ensure that the environment used to run Django is configured to work with non-ASCII file names. If your environment isn’t configured correctly, you’ll encounter UnicodeEncodeError exceptions when saving files with file names or content that contains non-ASCII characters.\n\nFilesystem support for UTF-8 file names varies and might depend on the environment. Check your current configuration in an interactive Python shell by running:\n\nThis should output “UTF-8”.\n\nThe LANG environment variable is responsible for setting the expected encoding on Unix platforms. Consult the documentation for your operating system and application server for the appropriate syntax and location to set this variable. See the How to use Django with Apache and mod_wsgi for examples.\n\nIn your development environment, you might need to add a setting to your ~.bashrc analogous to:\n\nHTML form submission is a tricky area. There’s no guarantee that the submission will include encoding information, which means the framework might have to guess at the encoding of submitted data.\n\nDjango adopts a “lazy” approach to decoding form data. The data in an HttpRequest object is only decoded when you access it. In fact, most of the data is not decoded at all. Only the HttpRequest.GET and HttpRequest.POST data structures have any decoding applied to them. Those two fields will return their members as Unicode data. All other attributes and methods of HttpRequest return data exactly as it was submitted by the client.\n\nBy default, the DEFAULT_CHARSET setting is used as the assumed encoding for form data. If you need to change this for a particular form, you can set the encoding attribute on an HttpRequest instance. For example:\n\nYou can even change the encoding after having accessed request.GET or request.POST, and all subsequent accesses will use the new encoding.\n\nMost developers won’t need to worry about changing form encoding, but this is a useful feature for applications that talk to legacy systems whose encoding you cannot control.\n\nDjango does not decode the data of file uploads, because that data is normally treated as collections of bytes, rather than strings. Any automatic decoding there would alter the meaning of the stream of bytes.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Unicode data¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating the database¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "General string handling¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Translated strings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Useful utility functions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Conversion functions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "URI and IRI handling¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Taking care in get_absolute_url()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Templates¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Template tags and filters¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Files¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Form submission¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "If you’re constructing a URL manually (i.e., not using the reverse() function), you’ll need to take care of the encoding yourself. In this case, use the iri_to_uri() and quote() functions that were documented above. For example:",
+      "code": "from urllib.parse import quote\nfrom django.utils.encoding import iri_to_uri\n\n\ndef get_absolute_url(self):\n    url = \"/person/%s/?x=0&y=0\" % quote(self.location)\n    return iri_to_uri(url)"
+    },
+    {
+      "description": "By default, the DEFAULT_CHARSET setting is used as the assumed encoding for form data. If you need to change this for a particular form, you can set the encoding attribute on an HttpRequest instance. For example:",
+      "code": "def some_view(request):\n    # We know that the data must be encoded as KOI8-R (for some reason).\n    request.encoding = \"koi8-r\"\n    ..."
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/unicode/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/ref/template-response/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

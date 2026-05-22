@@ -1,0 +1,83 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/models/indexes",
+  "title": "Model index reference | Django documentation | Django",
+  "content": "Index classes ease creating database indexes. They can be added using the Meta.indexes option. This document explains the API references of Index which includes the index options.\n\nReferencing built-in indexes\n\nIndexes are defined in django.db.models.indexes, but for convenience they’re imported into django.db.models. The standard convention is to use from django.db import models and refer to the indexes as models.<IndexClass>.\n\nCreates an index (B-Tree) in the database.\n\nPositional argument *expressions allows creating functional indexes on expressions and database functions.\n\ncreates an index on the lowercased value of the title field in descending order and the pub_date field in the default ascending order.\n\ncreates an index on the result of multiplying fields height and weight and the weight rounded to the nearest integer.\n\nIndex.name is required when using *expressions.\n\nRestrictions on Oracle\n\nOracle requires functions referenced in an index to be marked as DETERMINISTIC. Django doesn’t validate this but Oracle will error. This means that functions such as Random() aren’t accepted.\n\nRestrictions on PostgreSQL\n\nPostgreSQL requires functions and operators referenced in an index to be marked as IMMUTABLE. Django doesn’t validate this but PostgreSQL will error. This means that functions such as Concat() aren’t accepted.\n\nFunctional indexes are ignored with MySQL < 8.0.13 and MariaDB as neither supports them.\n\nA list or tuple of the name of the fields on which the index is desired.\n\nBy default, indexes are created with an ascending order for each column. To define an index with a descending order for a column, add a hyphen before the field’s name.\n\nFor example Index(fields=['headline', '-pub_date']) would create SQL with (headline, pub_date DESC).\n\nIndex ordering isn’t supported on MariaDB < 10.8. In that case, a descending index is created as a normal index.\n\nThe name of the index. If name isn’t provided Django will auto-generate a name. For compatibility with different databases, index names cannot be longer than 30 characters and shouldn’t start with a number (0-9) or underscore (_).\n\nPartial indexes in abstract base classes\n\nYou must always specify a unique name for an index. As such, you cannot normally specify a partial index on an abstract base class, since the Meta.indexes option is inherited by subclasses, with exactly the same values for the attributes (including name) each time. To work around name collisions, part of the name may contain '%(app_label)s' and '%(class)s', which are replaced, respectively, by the lowercased app label and class name of the concrete model. For example Index(fields=['title'], name='%(app_label)s_%(class)s_title_index').\n\nThe name of the database tablespace to use for this index. For single field indexes, if db_tablespace isn’t provided, the index is created in the db_tablespace of the field.\n\nIf Field.db_tablespace isn’t specified (or if the index uses multiple fields), the index is created in tablespace specified in the db_tablespace option inside the model’s class Meta. If neither of those tablespaces are set, the index is created in the same tablespace as the table.\n\nFor a list of PostgreSQL-specific indexes, see django.contrib.postgres.indexes.\n\nThe names of the PostgreSQL operator classes to use for this index. If you require a custom operator class, you must provide one for each field in the index.\n\nFor example, GinIndex(name='json_index', fields=['jsonfield'], opclasses=['jsonb_path_ops']) creates a gin index on jsonfield using jsonb_path_ops.\n\nopclasses are ignored for databases besides PostgreSQL.\n\nIndex.name is required when using opclasses.\n\nIf the table is very large and your queries mostly target a subset of rows, it may be useful to restrict an index to that subset. Specify a condition as a Q. For example, condition=Q(pages__gt=400) indexes records with more than 400 pages.\n\nIndex.name is required when using condition.\n\nRestrictions on PostgreSQL\n\nPostgreSQL requires functions referenced in the condition to be marked as IMMUTABLE. Django doesn’t validate this but PostgreSQL will error. This means that functions such as Date functions and Concat aren’t accepted. If you store dates in DateTimeField, comparison to datetime objects may require the tzinfo argument to be provided because otherwise the comparison could result in a mutable function due to the casting Django does for lookups.\n\nRestrictions on SQLite\n\nSQLite imposes restrictions on how a partial index can be constructed.\n\nOracle does not support partial indexes. Instead, partial indexes can be emulated by using functional indexes together with Case expressions.\n\nThe condition argument is ignored with MySQL and MariaDB as neither supports conditional indexes.\n\nA list or tuple of the names of the fields to be included in the covering index as non-key columns. This allows index-only scans to be used for queries that select only included fields (include) and filter only by indexed fields (fields).\n\nwill allow filtering on headline, also selecting pub_date, while fetching data only from the index.\n\nUsing include will produce a smaller index than using a multiple column index but with the drawback that non-key columns can not be used for sorting or filtering.\n\ninclude is ignored for databases besides PostgreSQL.\n\nIndex.name is required when using include.\n\nSee the PostgreSQL documentation for more details about covering indexes.\n\nRestrictions on PostgreSQL\n\nPostgreSQL supports covering B-Tree and GiST indexes. PostgreSQL 14+ also supports covering SP-GiST indexes.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Model index reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Index options¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "name¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "db_tablespace¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "opclasses¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "condition¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "include¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "Index(Lower(\"title\").desc(), \"pub_date\", name=\"lower_title_date_idx\")"
+    },
+    {
+      "description": "Another example:",
+      "code": "Index(F(\"height\") * F(\"weight\"), Round(\"weight\"), name=\"calc_idx\")"
+    },
+    {
+      "description": "For example:",
+      "code": "Index(name=\"covering_index\", fields=[\"headline\"], include=[\"pub_date\"])"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes",
+    "https://docs.djangoproject.com/en/stable/ref/options/",
+    "https://docs.djangoproject.com/en/stable/ref/database-functions/",
+    "https://docs.djangoproject.com/en/stable/ref/fields/",
+    "https://docs.djangoproject.com/en/stable/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/conditional-expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/constraints/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

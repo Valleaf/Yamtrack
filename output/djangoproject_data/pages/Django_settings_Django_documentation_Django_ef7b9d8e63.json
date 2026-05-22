@@ -1,0 +1,124 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/settings/",
+  "title": "Django settings | Django documentation | Django",
+  "content": "A Django settings file contains all the configuration of your Django installation. This document explains how settings work and which settings are available.\n\nA settings file is just a Python module with module-level variables.\n\nHere are a couple of example settings:\n\nIf you set DEBUG to False, you also need to properly set the ALLOWED_HOSTS setting.\n\nBecause a settings file is a Python module, the following apply:\n\nIt doesn’t allow for Python syntax errors.\n\nIt can assign settings dynamically using normal Python syntax. For example:\n\nIt can import values from other settings files.\n\nWhen you use Django, you have to tell it which settings you’re using. Do this by using an environment variable, DJANGO_SETTINGS_MODULE.\n\nThe value of DJANGO_SETTINGS_MODULE should be in Python path syntax, e.g. mysite.settings. Note that the settings module should be on the Python sys.path.\n\nWhen using django-admin, you can either set the environment variable once, or explicitly pass in the settings module each time you run the utility.\n\nExample (Unix Bash shell):\n\nExample (Windows shell):\n\nUse the --settings command-line argument to specify the settings manually:\n\nIn your live server environment, you’ll need to tell your WSGI application what settings file to use. Do that with os.environ:\n\nRead the Django mod_wsgi documentation for more information and other common elements to a Django WSGI application.\n\nA Django settings file doesn’t have to define any settings if it doesn’t need to. Each setting has a sensible default value. These defaults live in the module django/conf/global_settings.py.\n\nHere’s the algorithm Django uses in compiling settings:\n\nLoad settings from global_settings.py.\n\nLoad settings from the specified settings file, overriding the global settings as necessary.\n\nNote that a settings file should not import from global_settings, because that’s redundant.\n\nThe command python manage.py diffsettings displays differences between the current settings file and Django’s default settings.\n\nFor more, see the diffsettings documentation.\n\nIn your Django apps, use settings by importing the object django.conf.settings. Example:\n\nNote that django.conf.settings isn’t a module – it’s an object. So importing individual settings is not possible:\n\nAlso note that your code should not import from either global_settings or your own settings file. django.conf.settings abstracts the concepts of default settings and site-specific settings; it presents a single interface. It also decouples the code that uses settings from the location of your settings.\n\nYou shouldn’t alter settings in your applications at runtime. For example, don’t do this in a view:\n\nThe only place you should assign to settings is in a settings file.\n\nBecause a settings file contains sensitive information, such as the database password, you should make every attempt to limit access to it. For example, change its file permissions so that only you and your web server’s user can read it. This is especially important in a shared-hosting environment.\n\nFor a full list of available settings, see the settings reference.\n\nThere’s nothing stopping you from creating your own settings, for your own Django apps, but follow these guidelines:\n\nSetting names must be all uppercase.\n\nDon’t reinvent an already-existing setting.\n\nFor settings that are sequences, Django itself uses lists, but this is only a convention.\n\nIn some cases, you might want to bypass the DJANGO_SETTINGS_MODULE environment variable. For example, if you’re using the template system by itself, you likely don’t want to have to set up an environment variable pointing to a settings module.\n\nIn these cases, you can configure Django’s settings manually. Do this by calling:\n\nPass configure() as many keyword arguments as you’d like, with each keyword argument representing a setting and its value. Each argument name should be all uppercase, with the same name as the settings described above. If a particular setting is not passed to configure() and is needed at some later point, Django will use the default setting value.\n\nConfiguring Django in this fashion is mostly necessary – and, indeed, recommended – when you’re using a piece of the framework inside a larger application.\n\nConsequently, when configured via settings.configure(), Django will not make any modifications to the process environment variables (see the documentation of TIME_ZONE for why this would normally occur). It’s assumed that you’re already in full control of your environment in these cases.\n\nIf you’d like default values to come from somewhere other than django.conf.global_settings, you can pass in a module or class that provides the default settings as the default_settings argument (or as the first positional argument) in the call to configure().\n\nIn this example, default settings are taken from myapp_defaults, and the DEBUG setting is set to True, regardless of its value in myapp_defaults:\n\nThe following example, which uses myapp_defaults as a positional argument, is equivalent:\n\nNormally, you will not need to override the defaults in this fashion. The Django defaults are sufficiently tame that you can safely use them. Be aware that if you do pass in a new default module, it entirely replaces the Django defaults, so you must specify a value for every possible setting that might be used in the code you are importing. Check in django.conf.settings.global_settings for the full list.\n\nIf you’re not setting the DJANGO_SETTINGS_MODULE environment variable, you must call configure() at some point before using any code that reads settings.\n\nIf you don’t set DJANGO_SETTINGS_MODULE and don’t call configure(), Django will raise an ImportError exception the first time a setting is accessed.\n\nIf you set DJANGO_SETTINGS_MODULE, access settings values somehow, then call configure(), Django will raise a RuntimeError indicating that settings have already been configured. There is a property for this purpose:\n\nAlso, it’s an error to call configure() more than once, or to call configure() after any setting has been accessed.\n\nIt boils down to this: Use exactly one of either configure() or DJANGO_SETTINGS_MODULE. Not both, and not neither.\n\nIf you’re using components of Django “standalone” – for example, writing a Python script which loads some Django templates and renders them, or uses the ORM to fetch some data – there’s one more step you’ll need in addition to configuring settings.\n\nAfter you’ve either set DJANGO_SETTINGS_MODULE or called configure(), you’ll need to call django.setup() to load your settings and populate Django’s application registry. For example:\n\nNote that calling django.setup() is only necessary if your code is truly standalone. When invoked by your web server, or through django-admin, Django will handle this for you.\n\ndjango.setup() may only be called once.\n\nTherefore, avoid putting reusable application logic in standalone scripts so that you have to import from the script elsewhere in your application. If you can’t avoid that, put the call to django.setup() inside an if block:\n\nContains the complete list of core and contrib app settings.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django settings¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The basics¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Designating the settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The django-admin utility¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "On the server (mod_wsgi)¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Default settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Seeing which settings you’ve changed¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using settings in Python code¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Altering settings at runtime¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Security¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Available settings¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Creating your own settings¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using settings without setting DJANGO_SETTINGS_MODULE¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Custom default settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Either configure() or DJANGO_SETTINGS_MODULE is required¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Calling django.setup() is required for “standalone” Django usage¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "It can assign settings dynamically using normal Python syntax. For example:",
+      "code": "MY_SETTING = [str(i) for i in range(30)]"
+    },
+    {
+      "description": "In your Django apps, use settings by importing the object django.conf.settings. Example:",
+      "code": "from django.conf import settings\n\nif settings.DEBUG:\n    # Do something\n    ..."
+    },
+    {
+      "description": "Example:",
+      "code": "from django.conf import settings\n\nsettings.configure(DEBUG=True)"
+    },
+    {
+      "description": "For example:",
+      "code": "from django.conf import settings\n\nif not settings.configured:\n    settings.configure(myapp_defaults, DEBUG=True)"
+    },
+    {
+      "description": "After you’ve either set DJANGO_SETTINGS_MODULE or called configure(), you’ll need to call django.setup() to load your settings and populate Django’s application registry. For example:",
+      "code": "import django\nfrom django.conf import settings\nfrom myapp import myapp_defaults\n\nsettings.configure(default_settings=myapp_defaults, DEBUG=True)\ndjango.setup()\n\n# Now this script or any imported module can use any part of Django it needs.\nfrom myapp import models"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/topics/signals/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

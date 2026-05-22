@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.13/",
+  "title": "Django 1.11.13 release notes | Django documentation | Django",
+  "content": "Django 1.11.13 fixes several bugs in 1.11.12.\n\nFixed a regression in Django 1.11.8 where altering a field with a unique constraint may drop and rebuild more foreign keys than necessary (#29193).\n\nFixed crashes in django.contrib.admindocs when a view is a callable object, such as django.contrib.syndication.views.Feed (#29296).\n\nFixed a regression in Django 1.11.12 where QuerySet.values() or values_list() after combining an annotated and unannotated queryset with union(), difference(), or intersection() crashed due to mismatching columns (#29286).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.13 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.13/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.14/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.12/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

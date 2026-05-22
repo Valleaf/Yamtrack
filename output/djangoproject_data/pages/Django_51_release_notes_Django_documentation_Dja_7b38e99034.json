@@ -1,0 +1,201 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.1/",
+  "title": "Django 5.1 release notes | Django documentation | Django",
+  "content": "Welcome to Django 5.1!\n\nThese release notes cover the new features, as well as some backwards incompatible changes you should be aware of when upgrading from Django 5.0 or earlier. We’ve begun the deprecation process for some features.\n\nSee the How to upgrade Django to a newer version guide if you’re updating an existing project.\n\nDjango 5.1 supports Python 3.10, 3.11, 3.12, and 3.13 (as of 5.1.3). We highly recommend and only officially support the latest release of each series.\n\nDjango 5.1 introduces the {% querystring %} template tag, simplifying the modification of query parameters in URLs, making it easier to generate links that maintain existing query parameters while adding or changing specific ones.\n\nFor instance, navigating pagination and query strings in templates can be cumbersome. Consider this template fragment that dynamically generates a URL for navigating to the next page within a paginated view:\n\nWhen switching to using this new template tag, the above magically becomes:\n\nDjango 5.1 also introduces connection pool support for PostgreSQL. As the time to establish a new connection can be relatively long, keeping connections open can reduce latency.\n\nTo use a connection pool with psycopg, you can set the \"pool\" option inside OPTIONS to be a dict to be passed to ConnectionPool, or to True to use the ConnectionPool defaults:\n\nThe new LoginRequiredMiddleware redirects all unauthenticated requests to a login page. Views can allow unauthenticated requests by using the new login_not_required() decorator.\n\nLoginRequiredMiddleware respects the login_url and redirect_field_name values set via the login_required() decorator, but does not support setting login_url or redirect_field_name via the LoginRequiredMixin.\n\nTo enable this, add \"django.contrib.auth.middleware.LoginRequiredMiddleware\" to your MIDDLEWARE setting.\n\nModelAdmin.list_display now supports using __ lookups to list fields from related models.\n\nThe default iteration count for the PBKDF2 password hasher is increased from 720,000 to 870,000.\n\nThe default parallelism of the ScryptPasswordHasher is increased from 1 to 5, to follow OWASP recommendations.\n\nThe new AdminUserCreationForm and the existing AdminPasswordChangeForm now support disabling password-based authentication by setting an unusable password on form save. This is now available in the admin when visiting the user creation and password change pages.\n\nlogin_required(), permission_required(), and user_passes_test() decorators now support wrapping asynchronous view functions.\n\nReadOnlyPasswordHashWidget now includes a button to reset the user’s password, which replaces the link previously embedded in the ReadOnlyPasswordHashField’s help text, improving the overall accessibility of the UserChangeForm.\n\nBoundingCircle is now supported on SpatiaLite 5.1+.\n\nCollect is now supported on MySQL 8.0.24+.\n\nGeoIP2 now allows querying using ipaddress.IPv4Address or ipaddress.IPv6Address objects.\n\nGeoIP2.country() now exposes the continent_code, continent_name, and is_in_european_union values.\n\nGeoIP2.city() now exposes the accuracy_radius and region_name values. In addition, the dma_code and region values are now exposed as metro_code and region_code, but the previous keys are also retained for backward compatibility.\n\nArea now supports the ha unit.\n\nThe new OGRGeometry.is_3d attribute allows checking if a geometry has a Z coordinate dimension.\n\nThe new OGRGeometry.set_3d() method allows addition and removal of the Z coordinate dimension.\n\nOGRGeometry, Point, LineString, Polygon, and GeometryCollection and its subclasses now support measured geometries via the new OGRGeometry.is_measured and m properties, and the OGRGeometry.set_measured() method.\n\nOGRGeometry.centroid is now available on all supported geometry types.\n\nFromWKB() and FromWKT() functions now support the optional srid argument (except for Oracle where it is ignored).\n\nBTreeIndex now supports the deduplicate_items parameter.\n\ndjango.contrib.sessions.backends.cached_db.SessionStore now handles exceptions when storing session information in the cache, logging proper error messages with their traceback via the newly added sessions logger.\n\ndjango.contrib.sessions.backends.base.SessionBase and all built-in session engines now provide async API. The new asynchronous methods all have a prefixed names, e.g. aget(), akeys(), or acycle_key().\n\n\"init_command\" option is now supported in OPTIONS on SQLite to allow specifying pragma options to set upon connection.\n\n\"transaction_mode\" option is now supported in OPTIONS on SQLite to allow specifying the Transactions behavior.\n\n\"pool\" option is now supported in OPTIONS on PostgreSQL to allow using connection pools.\n\nIn order to improve accessibility, the technical 404 and 500 error pages now use HTML landmark elements for the header, footer, and main content areas.\n\nThe allow_overwrite parameter of FileSystemStorage now allows saving new files over existing ones.\n\nIn order to improve accessibility and enable screen readers to associate fieldsets with their help text, the form fieldset now includes the aria-describedby HTML attribute.\n\nThe makemigrations command now displays meaningful symbols for each operation to highlight operation categories.\n\nThe new Operation.category attribute allows specifying an operation category used by the makemigrations to display a meaningful symbol for the operation.\n\nQuerySet.explain() now supports the generic_plan option on PostgreSQL 16+.\n\nRowRange now accepts positive integers for the start argument and negative integers for the end argument.\n\nThe new exclusion argument of RowRange and ValueRange allows excluding rows, groups, and ties from the window frames.\n\nQuerySet.order_by() now supports ordering by annotation transforms such as JSONObject keys and ArrayAgg indices.\n\nF() and OuterRef() expressions that output CharField, EmailField, SlugField, URLField, TextField, or ArrayField can now be sliced.\n\nThe new from_queryset argument of Model.refresh_from_db() and Model.arefresh_from_db() allows customizing the queryset used to reload a model’s value. This can be used to lock the row before reloading or to select related objects.\n\nThe new Expression.constraint_validation_compatible attribute allows specifying that the expression should be ignored during a constraint validation.\n\nCustom tags may now set extra data on the Parser object that will later be made available on the Template instance. Such data may be used, for example, by the template loader, or other template clients.\n\nTemplate engines now implement a check() method that is already registered with the check framework.\n\nassertContains(), assertNotContains(), and assertInHTML() assertions now add haystacks to assertion error messages.\n\nThe RequestFactory, AsyncRequestFactory, Client, and AsyncClient classes now support the query_params parameter, which accepts a dictionary of query string keys and values. This allows setting query strings on any HTTP methods more easily.\n\nThe new SimpleTestCase.assertNotInHTML() assertion allows testing that an HTML fragment is not contained in the given HTML haystack.\n\nIn order to enforce test isolation, database connections inside threads are no longer allowed in SimpleTestCase.\n\nThe new DomainNameValidator validates domain names, including internationalized domain names. The new validate_domain_name() function returns an instance of DomainNameValidator.\n\nSupport for PostGIS 2.5 is removed.\n\nSupport for PROJ < 6 is removed.\n\nSupport for GDAL 2.4 is removed.\n\nGeoIP2 no longer opens both city and country databases when a directory path is provided, preferring the city database, if it is available. The country database is a subset of the city database and both are not typically needed. If you require use of the country database when in the same directory as the city database, explicitly pass the country database path to the constructor.\n\nUpstream support for MariaDB 10.4 ends in June 2024. Django 5.1 supports MariaDB 10.5 and higher.\n\nUpstream support for PostgreSQL 12 ends in November 2024. Django 5.1 supports PostgreSQL 13 and higher.\n\nIn order to improve accessibility, the admin’s changelist filter is now rendered in a <nav> tag instead of a <div>.\n\nIn order to improve accessibility, the admin’s footer is now rendered in a <footer> tag instead of a <div>, and also moved below the <div id=\"main\"> element.\n\nIn order to improve accessibility, the expandable widget used for ModelAdmin.fieldsets and InlineModelAdmin.fieldsets, when the fieldset has a name and use the collapse class, now includes <details> and <summary> elements.\n\nThe JavaScript file collapse.js is removed since it is no longer needed in the Django admin site.\n\nSimpleTestCase.assertURLEqual() and assertInHTML() now add \": \" to the msg_prefix. This is consistent with the behavior of other assertions.\n\ndjango.utils.text.Truncator used by truncatechars_html and truncatewords_html template filters now uses html.parser.HTMLParser subclasses. This results in a more robust and faster operation, but there may be small differences in the output.\n\nThe undocumented django.urls.converters.get_converter() function is removed.\n\nThe minimum supported version of SQLite is increased from 3.27.0 to 3.31.0.\n\nFileField now raises a FieldError when saving a file without a name.\n\nImageField.update_dimension_fields(force=True) is no longer called after saving the image to storage. If your storage backend resizes images, the width_field and height_field will not match the width and height of the image.\n\nThe minimum supported version of asgiref is increased from 3.7.0 to 3.8.1.\n\nTo improve performance, the delete_selected admin action now uses QuerySet.bulk_create() when creating multiple LogEntry objects. As a result, pre_save and post_save signals for LogEntry are not sent when multiple objects are deleted via this admin action.\n\nThe ModelAdmin.log_deletion() and LogEntryManager.log_action() methods are deprecated. Subclasses should implement ModelAdmin.log_deletions() and LogEntryManager.log_actions() instead.\n\nThe undocumented django.utils.itercompat.is_iterable() function and the django.utils.itercompat module are deprecated. Use isinstance(..., collections.abc.Iterable) instead.\n\nThe django.contrib.gis.geoip2.GeoIP2.coords() method is deprecated. Use django.contrib.gis.geoip2.GeoIP2.lon_lat() instead.\n\nThe django.contrib.gis.geoip2.GeoIP2.open() method is deprecated. Use the GeoIP2 constructor instead.\n\nPassing positional arguments to Model.save() and Model.asave() is deprecated in favor of keyword-only arguments.\n\nSetting django.contrib.gis.gdal.OGRGeometry.coord_dim is deprecated. Use set_3d() instead.\n\nOverriding existing converters with django.urls.register_converter() is deprecated.\n\nThe check keyword argument of CheckConstraint is deprecated in favor of condition.\n\nThe undocumented OS_OPEN_FLAGS property of FileSystemStorage is deprecated. To allow overwriting files in storage, set the new allow_overwrite option to True instead.\n\nThe get_cache_name() method of FieldCacheMixin is deprecated in favor of the cache_name cached property.\n\nThese features have reached the end of their deprecation cycle and are removed in Django 5.1.\n\nSee Features deprecated in 4.2 for details on these changes, including how to remove usage of these features.\n\nThe BaseUserManager.make_random_password() method is removed.\n\nThe model’s Meta.index_together option is removed.\n\nThe length_is template filter is removed.\n\nThe django.contrib.auth.hashers.SHA1PasswordHasher, django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher, and django.contrib.auth.hashers.UnsaltedMD5PasswordHasher are removed.\n\nThe model django.contrib.postgres.fields.CICharField, django.contrib.postgres.fields.CIEmailField, and django.contrib.postgres.fields.CITextField are removed, except for support in historical migrations.\n\nThe django.contrib.postgres.fields.CIText mixin is removed.\n\nThe map_width and map_height attributes of BaseGeometryWidget are removed.\n\nThe SimpleTestCase.assertFormsetError() method is removed.\n\nThe TransactionTestCase.assertQuerysetEqual() method is removed.\n\nSupport for passing encoded JSON string literals to JSONField and associated lookups and expressions is removed.\n\nSupport for passing positional arguments to Signer and TimestampSigner is removed.\n\nThe DEFAULT_FILE_STORAGE and STATICFILES_STORAGE settings is removed.\n\nThe django.core.files.storage.get_storage_class() function is removed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 5.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "{% querystring %} template tag¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PostgreSQL Connection Pools¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Middleware to require authentication by default¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Minor features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Database backends¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Error Reporting¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "File Storage¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Forms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Management Commands¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Templates¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Validators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes in 5.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for MariaDB 10.4¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for PostgreSQL 12¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 5.1¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features removed in 5.1¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.1/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/logging/",
+    "https://docs.djangoproject.com/en/stable/ref/files/storage/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/topics/checks/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2/",
+    "https://docs.djangoproject.com/en/stable/releases/5.1.1/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.14/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

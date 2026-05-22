@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.11/",
+  "title": "Django 2.0.11 release notes | Django documentation | Django",
+  "content": "Django 2.0.11 fixes a security issue in 2.0.10.\n\nIf django.utils.numberformat.format() – used by contrib.admin as well as the floatformat, filesizeformat, and intcomma templates filters – received a Decimal with a large number of digits or a large exponent, it could lead to significant memory usage due to a call to '{:f}'.format().\n\nTo avoid this, decimals with more than 200 digits are now formatted using scientific notation.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.11 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2019-6975: Memory exhaustion in django.utils.numberformat.format()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.11/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.12/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

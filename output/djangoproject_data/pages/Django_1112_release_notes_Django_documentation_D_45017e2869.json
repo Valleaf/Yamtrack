@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.2/",
+  "title": "Django 1.11.2 release notes | Django documentation | Django",
+  "content": "Django 1.11.2 adds a minor feature and fixes several bugs in 1.11.1. Also, the latest string translations from Transifex are incorporated.\n\nThe new LiveServerTestCase.port attribute reallows the use case of binding to a specific port following the bind to port zero change in Django 1.11.\n\nAdded detection for GDAL 2.1 and 2.0, and removed detection for unsupported versions 1.7 and 1.8 (#28181).\n\nChanged contrib.gis to raise ImproperlyConfigured rather than GDALException if gdal isn’t installed, to allow third-party apps to catch that exception (#28178).\n\nFixed django.utils.http.is_safe_url() crash on invalid IPv6 URLs (#28142).\n\nFixed regression causing pickling of model fields to crash (#28188).\n\nFixed django.contrib.auth.authenticate() when multiple authentication backends don’t accept a positional request argument (#28207).\n\nFixed introspection of index field ordering on PostgreSQL (#28197).\n\nFixed a regression where Model._state.adding wasn’t set correctly on multi-table inheritance parent models after saving a child model (#28210).\n\nAllowed DjangoJSONEncoder to serialize django.utils.deprecation.CallableBool (#28230).\n\nRelaxed the validation added in Django 1.11 of the fields in the defaults argument of QuerySet.get_or_create() and update_or_create() to reallow settable model properties (#28222).\n\nFixed MultipleObjectMixin.paginate_queryset() crash on Python 2 if the InvalidPage message contains non-ASCII (#28204).\n\nPrevented Subquery from adding an unnecessary CAST which resulted in invalid SQL (#28199).\n\nCorrected detection of GDAL 2.1 on Windows (#28181).\n\nMade date-based generic views return a 404 rather than crash when given an out of range date (#28209).\n\nFixed a regression where file_move_safe() crashed when moving files to a CIFS mount (#28170).\n\nMoved the ImageField file extension validation added in Django 1.11 from the model field to the form field to reallow the use case of storing images without an extension (#28242).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Minor feature¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.3/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

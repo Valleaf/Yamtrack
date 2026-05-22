@@ -1,0 +1,26 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/testing/",
+  "title": "Testing in Django | Django documentation | Django",
+  "content": "Automated testing is an extremely useful bug-killing tool for the modern web developer. You can use a collection of tests – a test suite – to solve, or avoid, a number of problems:\n\nWhen you’re writing new code, you can use tests to validate your code works as expected.\n\nWhen you’re refactoring or modifying old code, you can use tests to ensure your changes haven’t affected your application’s behavior unexpectedly.\n\nTesting a web application is a complex task, because a web application is made of several layers of logic – from HTTP-level request handling, to form validation and processing, to template rendering. With Django’s test-execution framework and assorted utilities, you can simulate requests, insert test data, inspect your application’s output and generally verify your code is doing what it should be doing.\n\nThe preferred way to write tests in Django is using the unittest module built-in to the Python standard library. This is covered in detail in the Writing and running tests document.\n\nYou can also use any other Python test framework; Django provides an API and tools for that kind of integration. They are described in the Using different testing frameworks section of Advanced testing topics.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Testing in Django¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/testing/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/overview/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/files/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

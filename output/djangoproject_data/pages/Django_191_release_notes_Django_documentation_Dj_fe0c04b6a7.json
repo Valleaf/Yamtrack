@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.1/",
+  "title": "Django 1.9.1 release notes | Django documentation | Django",
+  "content": "Django 1.9.1 fixes several bugs in 1.9.\n\nFixed BaseCache.get_or_set() with the DummyCache backend (#25840).\n\nFixed a regression in FormMixin causing forms to be validated twice (#25548, #26018).\n\nFixed a system check crash with nested ArrayFields (#25867).\n\nFixed a state bug when migrating a SeparateDatabaseAndState operation backwards (#25896).\n\nFixed a regression in CommonMiddleware causing If-None-Match checks to always return HTTP 200 (#25900).\n\nFixed missing varchar/text_pattern_ops index on CharField and TextField respectively when using AlterField on PostgreSQL (#25412).\n\nFixed admin’s delete confirmation page’s summary counts of related objects (#25883).\n\nAdded from __future__ import unicode_literals to the default apps.py created by startapp on Python 2 (#25909). Add this line to your own apps.py files created using Django 1.9 if you want your migrations to work on both Python 2 and Python 3.\n\nPrevented QuerySet.delete() from crashing on MySQL when querying across relations (#25882).\n\nFixed evaluation of zero-length slices of QuerySet.values() (#25894).\n\nFixed a state bug when using an AlterModelManagers operation (#25852).\n\nFixed TypedChoiceField change detection with nullable fields (#25942).\n\nFixed incorrect timezone warnings in custom admin templates that don’t have a data-admin-utc-offset attribute in the body tag. (#25845).\n\nFixed a regression which prevented using a language not in Django’s default language list (LANGUAGES) (#25915).\n\nAvoided hiding some exceptions, like an invalid INSTALLED_APPS setting, behind AppRegistryNotReady when starting runserver (#25510). This regression appeared in 1.8.5 as a side effect of fixing #24704 and by mistake the fix wasn’t applied to the stable/1.9.x branch.\n\nFixed migrate --fake-initial detection of many-to-many tables (#25922).\n\nRestored the functionality of the admin’s list_editable add and change buttons (#25903).\n\nFixed isnull query lookup for ForeignObject (#25972).\n\nFixed a regression in the admin which ignored line breaks in read-only fields instead of converting them to <br> (#25465).\n\nFixed incorrect object reference in SingleObjectMixin.get_context_object_name() (#26006).\n\nMade loaddata skip disabling and enabling database constraints when it doesn’t load any fixtures (#23372).\n\nRestored contrib.auth hashers compatibility with py-bcrypt (#26016).\n\nFixed a crash in QuerySet.values()/values_list() after an annotate() and order_by() when values()/values_list() includes a field not in the order_by() (#25316).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.1/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

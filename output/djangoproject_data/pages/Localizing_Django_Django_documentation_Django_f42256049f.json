@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/localizing/",
+  "title": "Localizing Django | Django documentation | Django",
+  "content": "Various parts of Django, such as the admin site and validation error messages, are internationalized. This means they display differently depending on each user’s language or country. For this, Django uses the same internationalization and localization infrastructure available to Django applications, described in the i18n documentation.\n\nTranslations are contributed by Django users worldwide. The translation work is coordinated at Transifex.\n\nIf you find an incorrect translation or want to discuss specific translations, go to the Django project page. If you would like to help out with translating or adding a language that isn’t yet translated, here’s what to do:\n\nIntroduce yourself on the Django internationalization forum.\n\nMake sure you read the notes about Specialties of Django translation.\n\nSign up at Transifex and visit the Django project page.\n\nOn the Django project page, choose the language you want to work on, or – in case the language doesn’t exist yet – request a new language team by clicking on the “Request language” link and selecting the appropriate language.\n\nThen, click the “Join this Team” button to become a member of this team. Every team has at least one coordinator who is responsible to review your membership request. You can also contact the team coordinator to clarify procedural problems and handle the actual translation process.\n\nOnce you are a member of a team choose the translation resource you want to update on the team page. For example, the “core” resource refers to the translation catalog that contains all non-contrib translations. Each of the contrib apps also has a resource (prefixed with “contrib”).\n\nFor more information about how to use Transifex, read the Transifex User Guide.\n\nTranslations from Transifex are only integrated into the Django repository at the time of a new feature release. We try to update them a second time during one of the following patch releases, but that depends on the translation manager’s availability. So don’t miss the string freeze period (between the release candidate and the feature release) to take the opportunity to complete and fix the translations for your language!\n\nYou can also review conf/locale/<locale>/formats.py. This file describes the date, time and numbers formatting particularities of your locale. See Format localization for details.\n\nThe format files aren’t managed by the use of Transifex. To change them, you must:\n\nCreate a pull request against the Django Git main branch, as for any code change.\n\nOpen a ticket in Django’s ticket system, set its Component field to Translations, set the “has patch” flag, and include the link to the pull request.\n\nThere is also an opportunity to translate the documentation, though this is a huge undertaking to complete entirely (you have been warned!). We use the same Transifex tool. The translations will appear at https://docs.djangoproject.com/<language_code>/ when at least the docs/intro/* files are fully translated in your language.\n\nOnce translations are published, updated versions from Transifex will be irregularly ported to the django/django-docs-translations repository and to the documentation website. Only translations for the latest stable Django release are updated.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Localizing Django¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Translations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Formats¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Documentation¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/localizing/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/internals/release-process/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/formatting/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/submitting-patches/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-documentation/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/bugs-and-features/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

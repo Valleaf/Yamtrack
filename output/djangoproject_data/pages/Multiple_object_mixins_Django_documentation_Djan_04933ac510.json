@@ -1,0 +1,41 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+  "title": "Multiple object mixins | Django documentation | Django",
+  "content": "A mixin that can be used to display a list of objects.\n\nIf paginate_by is specified, Django will paginate the results returned by this. You can specify the page number in the URL in one of two ways:\n\nUse the page parameter in the URLconf. For example, this is what your URLconf might look like:\n\nPass the page number via the page query-string parameter. For example, a URL would look like this:\n\nThese values and lists are 1-based, not 0-based, so the first page would be represented as page 1.\n\nFor more on pagination, read the pagination documentation.\n\nAs a special case, you are also permitted to use last as a value for page:\n\nThis allows you to access the final page of results without first having to determine how many pages there are.\n\nNote that page must be either a valid page number or the value last; any other value for page will result in a 404 error.\n\ndjango.views.generic.base.ContextMixin\n\nMethods and Attributes\n\nA boolean specifying whether to display the page if no objects are available. If this is False and no objects are available, the view will raise a 404 instead of displaying an empty page. By default, this is True.\n\nThe model that this view will display data for. Specifying model = Foo is effectively the same as specifying queryset = Foo.objects.all(), where objects stands for Foo’s default manager.\n\nA QuerySet that represents the objects. If provided, the value of queryset supersedes the value provided for model.\n\nqueryset is a class attribute with a mutable value so care must be taken when using it directly. Before using it, either call its all() method or retrieve it with get_queryset() which takes care of the cloning behind the scenes.\n\nA string or list of strings specifying the ordering to apply to the queryset. Valid values are the same as those for order_by().\n\nAn integer specifying how many objects should be displayed per page. If this is given, the view will paginate objects with paginate_by objects per page. The view will expect either a page query string parameter (via request.GET) or a page variable specified in the URLconf.\n\nAn integer specifying the number of “overflow” objects the last page can contain. This extends the paginate_by limit on the last page by up to paginate_orphans, in order to keep the last page from having a very small number of objects.\n\nA string specifying the name to use for the page parameter. The view will expect this parameter to be available either as a query string parameter (via request.GET) or as a kwarg variable specified in the URLconf. Defaults to page.\n\nThe paginator class to be used for pagination. By default, django.core.paginator.Paginator is used. If the custom paginator class doesn’t have the same constructor interface as django.core.paginator.Paginator, you will also need to provide an implementation for get_paginator().\n\nDesignates the name of the variable to use in the context.\n\nGet the list of items for this view. This must be an iterable and may be a queryset (in which queryset-specific behavior will be enabled).\n\nReturns a string (or iterable of strings) that defines the ordering that will be applied to the queryset.\n\nReturns ordering by default.\n\nReturns a 4-tuple containing (paginator, page, object_list, is_paginated).\n\nConstructed by paginating queryset into pages of size page_size. If the request contains a page argument, either as a captured URL argument or as a GET argument, object_list will correspond to the objects from that page.\n\nReturns the number of items to paginate by, or None for no pagination. By default this returns the value of paginate_by.\n\nReturns an instance of the paginator to use for this view. By default, instantiates an instance of paginator_class.\n\nAn integer specifying the number of “overflow” objects the last page can contain. By default this returns the value of paginate_orphans.\n\nReturn a boolean specifying whether to display the page if no objects are available. If this method returns False and no objects are available, the view will raise a 404 instead of displaying an empty page. By default, this is True.\n\nReturn the context variable name that will be used to contain the list of data that this view is manipulating. If object_list is a queryset of Django objects and context_object_name is not set, the context name will be the model_name of the model that the queryset is composed from, with postfix '_list' appended. For example, the model Article would have a context object named article_list.\n\nReturns context data for displaying the list of objects.\n\nobject_list: The list of objects that this view is displaying. If context_object_name is specified, that variable will also be set in the context, with the same value as object_list.\n\nis_paginated: A boolean representing whether the results are paginated. Specifically, this is set to False if no page size has been specified, or if the available objects do not span multiple pages.\n\npaginator: An instance of django.core.paginator.Paginator. If the page is not paginated, this context variable will be None.\n\npage_obj: An instance of django.core.paginator.Page. If the page is not paginated, this context variable will be None.\n\nA mixin class that performs template-based response rendering for views that operate upon a list of object instances. Requires that the view it is mixed with provides self.object_list, the list of object instances that the view is operating on. self.object_list may be, but is not required to be, a QuerySet.\n\nTemplateResponseMixin\n\nMethods and Attributes\n\nThe suffix to append to the auto-generated candidate template name. Default suffix is _list.\n\nReturns a list of candidate template names. Returns the following list:\n\nthe value of template_name on the view (if provided)\n\n<app_label>/<model_name><template_name_suffix>.html",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Multiple object mixins¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "MultipleObjectMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "MultipleObjectTemplateResponseMixin¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/topics/pagination/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/paginator/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

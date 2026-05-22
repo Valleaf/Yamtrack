@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.20/",
+  "title": "Django 1.4.20 release notes | Django documentation | Django",
+  "content": "Django 1.4.20 fixes one security issue in 1.4.19.\n\nDjango relies on user input in some cases (e.g. django.contrib.auth.views.login() and i18n) to redirect the user to an “on success” URL. The security checks for these redirects (namely django.utils.http.is_safe_url()) accepted URLs with leading control characters and so considered URLs like \\x08javascript:... safe. This issue doesn’t affect Django currently, since we only put this URL into the Location response header and browsers seem to ignore JavaScript there. Browsers we tested also treat URLs prefixed with control characters such as %08//example.com as relative paths so redirection to an unsafe target isn’t a problem either.\n\nHowever, if a developer relies on is_safe_url() to provide safe redirect targets and puts such a URL into a link, they could suffer from an XSS attack as some browsers such as Google Chrome ignore control characters at the start of a URL in an anchor href.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.20 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Mitigated possible XSS attack via user-supplied redirect URLs¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.20/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.21/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.19/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

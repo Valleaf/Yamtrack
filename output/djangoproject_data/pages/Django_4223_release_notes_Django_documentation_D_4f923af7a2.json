@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.23/",
+  "title": "Django 4.2.23 release notes | Django documentation | Django",
+  "content": "Django 4.2.23 fixes a potential log injection issue in 4.2.22.\n\nFixed a log injection possibility by migrating remaining response logging to django.utils.log.log_response(), which safely escapes arguments such as the request path to prevent unsafe log output (CVE 2025-48432).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.23 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.23/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.24/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.22/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

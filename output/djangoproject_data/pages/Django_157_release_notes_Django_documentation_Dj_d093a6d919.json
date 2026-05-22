@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.5.7/",
+  "title": "Django 1.5.7 release notes | Django documentation | Django",
+  "content": "Django 1.5.7 fixes a regression in the 1.5.6 security release.\n\nRestored the ability to reverse() views created using functools.partial() (#22486).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.5.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.5.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

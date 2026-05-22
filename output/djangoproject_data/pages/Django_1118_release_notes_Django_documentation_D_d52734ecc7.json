@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.8/",
+  "title": "Django 1.11.8 release notes | Django documentation | Django",
+  "content": "Django 1.11.8 fixes several bugs in 1.11.7.\n\nReallowed, following a regression in Django 1.10, AuthenticationForm to raise the inactive user error when using ModelBackend (#28645).\n\nAdded support for QuerySet.values() and values_list() for union(), difference(), and intersection() queries (#28781).\n\nFixed incorrect index name truncation when using a namespaced db_table (#28792).\n\nMade QuerySet.iterator() use server-side cursors on PostgreSQL after values() and values_list() (#28817).\n\nFixed crash on SQLite and MySQL when ordering by a filtered subquery that uses nulls_first or nulls_last (#28848).\n\nMade query lookups for CICharField, CIEmailField, and CITextField use a citext cast (#28702).\n\nFixed a regression in caching of a GenericForeignKey when the referenced model instance uses multi-table inheritance (#28856).\n\nFixed “Cannot change column ‘x’: used in a foreign key constraint” crash on MySQL with a sequence of AlterField and/or RenameField operations in a migration (#28305).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.9/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

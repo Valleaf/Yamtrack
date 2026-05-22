@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/outputting-pdf/",
+  "title": "How to create PDF files | Django documentation | Django",
+  "content": "This document explains how to output PDF files dynamically using Django views. This is made possible by the excellent, open-source ReportLab Python PDF library.\n\nThe advantage of generating PDF files dynamically is that you can create customized PDFs for different purposes – say, for different users or different pieces of content.\n\nFor example, Django was used at kusports.com to generate customized, printer-friendly NCAA tournament brackets, as PDF files, for people participating in a March Madness contest.\n\nThe ReportLab library is available on PyPI. A user guide (not coincidentally, a PDF file) is also available for download. You can install ReportLab with pip:\n\nTest your installation by importing it in the Python interactive interpreter:\n\nIf that command doesn’t raise any errors, the installation worked.\n\nThe key to generating PDFs dynamically with Django is that the ReportLab API acts on file-like objects, and Django’s FileResponse objects accept file-like objects.\n\nHere’s a “Hello World” example:\n\nThe code and comments should be self-explanatory, but a few things deserve a mention:\n\nThe response will automatically set the MIME type application/pdf based on the filename extension. This tells browsers that the document is a PDF file, rather than an HTML file or a generic application/octet-stream binary content.\n\nWhen as_attachment=True is passed to FileResponse, it sets the appropriate Content-Disposition header and that tells web browsers to pop-up a dialog box prompting/confirming how to handle the document even if a default is set on the machine. If the as_attachment parameter is omitted, browsers will handle the PDF using whatever program/plugin they’ve been configured to use for PDFs.\n\nYou can provide an arbitrary filename parameter. It’ll be used by browsers in the “Save as…” dialog.\n\nYou can hook into the ReportLab API: The same buffer passed as the first argument to canvas.Canvas can be fed to the FileResponse class.\n\nNote that all subsequent PDF-generation methods are called on the PDF object (in this case, p) – not on buffer.\n\nFinally, it’s important to call showPage() and save() on the PDF file.\n\nReportLab is not thread-safe. Some of our users have reported odd issues with building PDF-generating Django views that are accessed by many people at the same time.\n\nNotice that there isn’t a lot in these examples that’s PDF-specific – just the bits using reportlab. You can use a similar technique to generate any arbitrary format that you can find a Python library for. Also see How to create CSV output for another example and some techniques you can use when generated text-based formats.\n\nDjango Packages provides a comparison of packages that help generate PDF files from Django.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to create PDF files¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Install ReportLab¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Write your view¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Other formats¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Here’s a “Hello World” example:",
+      "code": "import io\nfrom django.http import FileResponse\nfrom reportlab.pdfgen import canvas\n\n\ndef some_view(request):\n    # Create a file-like buffer to receive PDF data.\n    buffer = io.BytesIO()\n\n    # Create the PDF object, using the buffer as its \"file.\"\n    p = canvas.Canvas(buffer)\n\n    # Draw things on the PDF. Here's where the PDF generation happens.\n    # See the ReportLab documentation for the full list of functionality.\n    p.drawString(100, 100, \"Hello world.\")\n\n    # Close the PDF object cleanly, and we're done.\n    p.showPage()\n    p.save()\n\n    # FileResponse sets the Content-Disposition header so that browsers\n    # present the option to save the file.\n    buffer.seek(0)\n    return FileResponse(buffer, as_attachment=True, filename=\"hello.pdf\")"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/outputting-pdf/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/howto/outputting-csv/",
+    "https://docs.djangoproject.com/en/stable/howto/overriding-templates/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

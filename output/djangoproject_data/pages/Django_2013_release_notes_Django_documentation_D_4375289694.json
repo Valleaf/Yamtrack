@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.0.13/",
+  "title": "Django 2.0.13 release notes | Django documentation | Django",
+  "content": "Django 2.0.13 fixes a regression in 2.0.12/2.0.11.\n\nFixed crash in django.utils.numberformat.format_number() when the number has over 200 digits (#30177).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.0.13 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.0.13/",
+    "https://docs.djangoproject.com/en/stable/releases/2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/2.0.12/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

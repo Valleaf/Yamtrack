@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.0.5/",
+  "title": "Django 3.0.5 release notes | Django documentation | Django",
+  "content": "Django 3.0.5 fixes several bugs in 3.0.4.\n\nAdded the ability to handle .po files containing different plural equations for the same language (#30439).\n\nFixed a regression in Django 3.0 where QuerySet.values() and values_list() crashed if a queryset contained an aggregation and Subquery() annotation that collides with a field name (#31377).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.0.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.0.5/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

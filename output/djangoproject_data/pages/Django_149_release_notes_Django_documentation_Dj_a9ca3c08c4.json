@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.9/",
+  "title": "Django 1.4.9 release notes | Django documentation | Django",
+  "content": "Django 1.4.9 fixes a security-related bug in the 1.4 series and one other data corruption bug.\n\nDjango 1.4.8 imposes a 4096-byte limit on passwords in order to mitigate a denial-of-service attack through submission of bogus but extremely large passwords. In Django 1.4.9, we’ve reverted this change and instead improved the speed of our PBKDF2 algorithm by not rehashing the key on every iteration.\n\nFixed a data corruption bug with datetime_safe.datetime.combine (#21256).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Readdressed denial-of-service via password hashers¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.9/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

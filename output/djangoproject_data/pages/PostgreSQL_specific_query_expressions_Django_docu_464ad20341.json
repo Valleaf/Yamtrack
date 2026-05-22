@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/",
+  "title": "PostgreSQL specific query expressions | Django documentation | Django",
+  "content": "These expressions are available from the django.contrib.postgres.expressions module.\n\nArraySubquery is a Subquery that uses the PostgreSQL ARRAY constructor to build a list of values from the queryset, which must use QuerySet.values() to return only a single column.\n\nThis class differs from ArrayAgg in the way that it does not act as an aggregate function and does not require an SQL GROUP BY clause to build the list of values.\n\nFor example, if you want to annotate all related books to an author as JSON objects:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific query expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ArraySubquery() expressions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

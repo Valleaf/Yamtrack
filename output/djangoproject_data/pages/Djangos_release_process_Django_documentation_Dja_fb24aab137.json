@@ -1,0 +1,85 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/release-process/",
+  "title": "Django’s release process | Django documentation | Django",
+  "content": "Since version 1.0, Django’s release numbering works as follows:\n\nVersions are numbered in the form A.B or A.B.C.\n\nA.B is the feature release version number. Each version will be mostly backwards compatible with the previous release. Exceptions to this rule will be listed in the release notes.\n\nC is the patch release version number, which is incremented for bugfix and security releases. These releases will be 100% backwards-compatible with the previous patch release. The only exception is when a security or data loss issue can’t be fixed without breaking backwards-compatibility. If this happens, the release notes will provide detailed upgrade instructions.\n\nBefore a new feature release, we’ll make alpha, beta, and release candidate releases. These are of the form A.B alpha/beta/rc N, which means the Nth alpha/beta/release candidate of version A.B.\n\nIn git, each Django release will have a tag indicating its version number, signed with the Django release key. Additionally, each release series has its own branch, called stable/A.B.x, and bugfix/security releases will be issued from those branches.\n\nFor more information about how the Django project issues new releases for security purposes, please see our security policies.\n\nFeature releases (A.B, A.B+1, etc.) will happen roughly every eight months – see release process for details. These releases will contain new features, improvements to existing features, and such.\n\nPatch releases (A.B.C, A.B.C+1, etc.) will be issued as needed, to fix bugs and/or security issues.\n\nThese releases will be 100% compatible with the associated feature release, unless this is impossible for security reasons or to prevent data loss. So the answer to “should I upgrade to the latest patch release?” will always be “yes.”\n\nCertain feature releases will be designated as long-term support (LTS) releases. These releases will get security and data loss fixes applied for a guaranteed period of time, typically three years.\n\nSee the download page for the releases that have been designated for long-term support.\n\nStarting with Django 2.0, version numbers will use a loose form of semantic versioning such that each version following an LTS will bump to the next “dot zero” version. For example: 2.0, 2.1, 2.2 (LTS), 3.0, 3.1, 3.2 (LTS), etc.\n\nSemVer makes it easier to see at a glance how compatible releases are with each other. It also helps to anticipate when compatibility shims will be removed. It’s not a pure form of SemVer as each feature release will continue to have a few documented backwards incompatibilities where a deprecation path isn’t possible or not worth the cost. Also, deprecations started in an LTS release (X.2) will be dropped in a non-dot-zero release (Y.1) to accommodate our policy of keeping deprecation shims for at least two feature releases. Read on to the next section for an example.\n\nA feature release may deprecate certain features from previous releases. If a feature is deprecated in feature release A.x, it will continue to work in all A.x versions (for all versions of x) but raise warnings. Deprecated features will be removed in the B.0 release, or B.1 for features deprecated in the last A.x feature release to ensure deprecations are done over at least 2 feature releases.\n\nSo, for example, if we decided to start the deprecation of a function in Django 4.2:\n\nDjango 4.2 will contain a backwards-compatible replica of the function which will raise a RemovedInDjango51Warning.\n\nDjango 5.0 (the version that follows 4.2) will still contain the backwards-compatible replica.\n\nDjango 5.1 will remove the feature outright.\n\nThe warnings are silent by default. You can turn on display of these warnings with the python -Wd option.\n\nA more generic example:\n\nY.0: Drop deprecation shims added in X.0 and X.1.\n\nY.1: Drop deprecation shims added in X.2.\n\nY.2 LTS: No deprecation shims dropped (while Y.0 is no longer supported, third-party apps need to maintain compatibility back to X.2 LTS to ease LTS to LTS upgrades).\n\nZ.0: Drop deprecation shims added in Y.0 and Y.1.\n\nSee also the Deprecating a feature guide.\n\nAt any moment in time, Django’s developer team will support a set of releases to varying levels. See the supported versions section of the download page for the current state of support for each version.\n\nThe current development branch main will get new features and bug fixes requiring non-trivial refactoring.\n\nPatches applied to the main branch must also be applied to the last feature release branch, to be released in the next patch release of that feature series, when they fix critical problems:\n\nMajor functionality bugs in new features of the latest stable release.\n\nRegressions from older versions of Django introduced in the current release series.\n\nThe rule of thumb is that fixes will be backported to the last feature release for bugs that would have prevented a release in the first place (release blockers).\n\nSecurity fixes and data loss bugs will be applied to the current main branch, the last two feature release branches, and any other supported long-term support release branches.\n\nDocumentation fixes generally will be more freely backported to the last release branch. That’s because it’s highly advantageous to have the docs for the last release be up-to-date and correct, and the risk of introducing regressions is much less of a concern.\n\nAs a concrete example, consider a moment in time halfway between the release of Django 5.1 and 5.2. At this point in time:\n\nFeatures will be added to the development main branch, to be released as Django 5.2.\n\nCritical bug fixes will be applied to the stable/5.1.x branch, and released as 5.1.1, 5.1.2, etc.\n\nSecurity fixes and bug fixes for data loss issues will be applied to main and to the stable/5.1.x, stable/5.0.x, and stable/4.2.x (LTS) branches. They will trigger the release of 5.1.1, 5.0.5, 4.2.8, etc.\n\nDocumentation fixes will be applied to main, and, if easily backported, to the latest stable branch, 5.1.x.\n\nDjango uses a time-based release schedule, with feature releases every eight months or so.\n\nAfter each feature release, the release manager will publish a timeline for the next feature release. The timeline for an upcoming feature release can be found in the corresponding wiki roadmap page, e.g. https://code.djangoproject.com/wiki/Version6.0Roadmap.\n\nWork begins on the feature release A.B after the feature freeze of the previous release, i.e. when the stable/A.B-1.x branch is forked.\n\nYou can find the current branch under active development in the Django release process on Trac.\n\nAll major and minor features, including deprecations and breaking changes, must be merged by the feature freeze. Any features not done by this point will be deferred to the next feature release.\n\nAt this point, the stable/A.B.x branch will be forked from main.\n\nAfter the alpha, all bug fixes merged in main are also backported to stable/A.B.x. Refactors are backported at the discretion of the merger. Mergers will be more and more conservative with backports, to avoid introducing regressions.\n\nIn parallel to this phase, main can continue to receive new features, to be released in the A.B+1 cycle.\n\nIf there is still a consistent stream of release blockers coming in at the planned release candidate date, a beta 2 will be released to encourage further testing and the release candidate date will be pushed out ~1 month.\n\nThe release candidate marks the string freeze, and it happens at least two weeks before the final release. Translators can then submit updated translations for inclusion in the final release. After this point, new translatable strings must not be added.\n\nAfter the release candidate, only release blockers and documentation fixes are backported.\n\nIdeally, the final release will ship two weeks after the last release candidate.\n\nIf there are major bugs still being found 2 weeks after the release candidate, there will be a decision on how to proceed (likely another release candidate would be issued and the final release date will be pushed out).\n\nAfter a feature release (e.g. A.B), the previous release will go into bugfix mode.\n\nThe branch for the previous feature release (e.g. stable/A.B-1.x) will include bugfixes. Critical bugs fixed on main must also be fixed on the bugfix branch; this means that commits need to cleanly separate bug fixes from feature additions. The developer who commits a fix to main will be responsible for also applying the fix to the current bugfix branch.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django’s release process¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Official releases¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Release cadence¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Deprecation policy¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Supported versions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Release process¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Feature release schedule and stages¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Active development / Pre-feature freeze¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Feature freeze / Alpha release¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Non-release blocking bug fix freeze / Beta release¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Translation string freeze / Release candidate release¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Final release¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Bug-fix releases¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/release-process/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/submitting-patches/",
+    "https://docs.djangoproject.com/en/stable/internals/deprecation/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/",
+  "title": "Date-based mixins | Django documentation | Django",
+  "content": "All the date formatting attributes in these mixins use strftime() format characters. Do not try to use the format characters from the now template tag as they are not compatible.\n\nA mixin that can be used to retrieve and provide parsing information for a year component of a date.\n\nMethods and Attributes\n\nThe strftime() format to use when parsing the year. By default, this is '%Y'.\n\nOptional The value for the year, as a string. By default, set to None, which means the year will be determined using other means.\n\nReturns the strftime() format to use when parsing the year. Returns year_format by default.\n\nReturns the year for which this view will display data, as a string. Tries the following sources, in order:\n\nThe value of the YearMixin.year attribute.\n\nThe value of the year argument captured in the URL pattern.\n\nThe value of the year GET query argument.\n\nRaises a 404 if no valid year specification can be found.\n\nReturns a date object containing the first day of the year after the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nReturns a date object containing the first day of the year before the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nA mixin that can be used to retrieve and provide parsing information for a month component of a date.\n\nMethods and Attributes\n\nThe strftime() format to use when parsing the month. By default, this is '%b'.\n\nOptional The value for the month, as a string. By default, set to None, which means the month will be determined using other means.\n\nReturns the strftime() format to use when parsing the month. Returns month_format by default.\n\nReturns the month for which this view will display data, as a string. Tries the following sources, in order:\n\nThe value of the MonthMixin.month attribute.\n\nThe value of the month argument captured in the URL pattern.\n\nThe value of the month GET query argument.\n\nRaises a 404 if no valid month specification can be found.\n\nReturns a date object containing the first day of the month after the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nReturns a date object containing the first day of the month before the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nA mixin that can be used to retrieve and provide parsing information for a day component of a date.\n\nMethods and Attributes\n\nThe strftime() format to use when parsing the day. By default, this is '%d'.\n\nOptional The value for the day, as a string. By default, set to None, which means the day will be determined using other means.\n\nReturns the strftime() format to use when parsing the day. Returns day_format by default.\n\nReturns the day for which this view will display data, as a string. Tries the following sources, in order:\n\nThe value of the DayMixin.day attribute.\n\nThe value of the day argument captured in the URL pattern.\n\nThe value of the day GET query argument.\n\nRaises a 404 if no valid day specification can be found.\n\nReturns a date object containing the next valid day after the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nReturns a date object containing the previous valid day. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nA mixin that can be used to retrieve and provide parsing information for a week component of a date.\n\nMethods and Attributes\n\nThe strftime() format to use when parsing the week. By default, this is '%U', which means the week starts on Sunday. Set it to '%W' or '%V' (ISO 8601 week) if your week starts on Monday.\n\nOptional The value for the week, as a string. By default, set to None, which means the week will be determined using other means.\n\nReturns the strftime() format to use when parsing the week. Returns week_format by default.\n\nReturns the week for which this view will display data, as a string. Tries the following sources, in order:\n\nThe value of the WeekMixin.week attribute.\n\nThe value of the week argument captured in the URL pattern\n\nThe value of the week GET query argument.\n\nRaises a 404 if no valid week specification can be found.\n\nReturns a date object containing the first day of the week after the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nReturns a date object containing the first day of the week before the date provided. This function can also return None or raise an Http404 exception, depending on the values of allow_empty and allow_future.\n\nA mixin class providing common behavior for all date-based views.\n\nMethods and Attributes\n\nThe name of the DateField or DateTimeField in the QuerySet’s model that the date-based archive should use to determine the list of objects to display on the page.\n\nWhen time zone support is enabled and date_field is a DateTimeField, dates are assumed to be in the current time zone. Otherwise, the queryset could include objects from the previous or the next day in the end user’s time zone.\n\nIn this situation, if you have implemented per-user time zone selection, the same URL may show a different set of objects, depending on the end user’s time zone. To avoid this, you should use a DateField as the date_field attribute.\n\nA boolean specifying whether to include “future” objects on this page, where “future” means objects in which the field specified in date_field is greater than the current date/time. By default, this is False.\n\nReturns the name of the field that contains the date data that this view will operate on. Returns date_field by default.\n\nDetermine whether to include “future” objects on this page, where “future” means objects in which the field specified in date_field is greater than the current date/time. Returns allow_future by default.\n\nA base class that provides common behavior for all date-based views. There won’t normally be a reason to instantiate BaseDateListView; instantiate one of the subclasses instead.\n\nWhile this view (and its subclasses) are executing, self.object_list will contain the list of objects that the view is operating upon, and self.date_list will contain the list of dates for which data is available.\n\nMethods and Attributes\n\nA boolean specifying whether to display the page if no objects are available. If this is True and no objects are available, the view will display an empty page instead of raising a 404.\n\nThis is identical to django.views.generic.list.MultipleObjectMixin.allow_empty, except for the default value, which is False.\n\nOptional A string defining the aggregation period for date_list. It must be one of 'year' (default), 'month', or 'day'.\n\nReturns a 3-tuple containing (date_list, object_list, extra_context).\n\ndate_list is the list of dates for which data is available. object_list is the list of objects. extra_context is a dictionary of context data that will be added to any context data provided by the MultipleObjectMixin.\n\nReturns a queryset, filtered using the query arguments defined by lookup. Enforces any restrictions on the queryset, such as allow_empty and allow_future.\n\nReturns the aggregation period for date_list. Returns date_list_period by default.\n\nReturns the list of dates of type date_type for which queryset contains entries. For example, get_date_list(qs, 'year') will return the list of years for which qs has entries. If date_type isn’t provided, the result of get_date_list_period() is used. date_type and ordering are passed to QuerySet.dates().",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Date-based mixins¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "YearMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "MonthMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DayMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "WeekMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DateMixin¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BaseDateListView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-date-based/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/timezones/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

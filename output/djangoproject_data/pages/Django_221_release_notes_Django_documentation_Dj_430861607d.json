@@ -1,0 +1,36 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.1/",
+  "title": "Django 2.2.1 release notes | Django documentation | Django",
+  "content": "Django 2.2.1 fixes several bugs in 2.2.\n\nFixed a regression in Django 2.1 that caused the incorrect quoting of database user password when using dbshell on Oracle (#30307).\n\nAdded compatibility for psycopg2 2.8 (#30331).\n\nFixed a regression in Django 2.2 that caused a crash when loading the template for the technical 500 debug page (#30324).\n\nFixed crash of ordering argument in ArrayAgg and StringAgg when it contains an expression with params (#30332).\n\nFixed a regression in Django 2.2 that caused a single instance fast-delete to not set the primary key to None (#30330).\n\nPrevented makemigrations from generating infinite migrations for check constraints and partial indexes when condition contains a range object (#30350).\n\nReverted an optimization in Django 2.2 (#29725) that caused the inconsistent behavior of count() and exists() on a reverse many-to-many relationship with a custom manager (#30325).\n\nFixed a regression in Django 2.2 where Paginator crashes if object_list is a queryset ordered or aggregated over a nested JSONField key transform (#30335).\n\nFixed a regression in Django 2.2 where IntegerField validation of database limits crashes if limit_value attribute in a custom validator is callable (#30328).\n\nFixed a regression in Django 2.2 where SearchVector generates SQL that is not indexable (#30385).\n\nFixed a regression in Django 2.2 that caused an exception to be raised when a custom error handler could not be imported (#30318).\n\nRelaxed the system check added in Django 2.2 for the admin app’s dependencies to reallow use of SessionMiddleware subclasses, rather than requiring django.contrib.sessions to be in INSTALLED_APPS (#30312).\n\nIncreased the default timeout when using Watchman to 5 seconds to prevent falling back to StatReloader on larger projects and made it customizable via the DJANGO_WATCHMAN_TIMEOUT environment variable (#30361).\n\nFixed a regression in Django 2.2 that caused a crash when migrating permissions for proxy models if the target permissions already existed. For example, when a permission had been created manually or a model had been migrated from concrete to proxy (#30351).\n\nFixed a regression in Django 2.2 that caused a crash of runserver when URLConf modules raised exceptions (#30323).\n\nFixed a regression in Django 2.2 where changes were not reliably detected by auto-reloader when using StatReloader (#30323).\n\nFixed a migration crash on Oracle and PostgreSQL when adding a check constraint with a contains, startswith, or endswith lookup (or their case-insensitive variant) (#30408).\n\nFixed a migration crash on Oracle and SQLite when adding a check constraint with condition contains | (OR) operator (#30412).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.1/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/paginator/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.2/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

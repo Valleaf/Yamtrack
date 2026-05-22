@@ -1,0 +1,98 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/forms/renderers/",
+  "title": "The form rendering API | Django documentation | Django",
+  "content": "Django’s form widgets are rendered using Django’s template engines system.\n\nThe form rendering process can be customized at several levels:\n\nWidgets can specify custom template names.\n\nForms and widgets can specify custom renderer classes.\n\nA widget’s template can be overridden by a project. (Reusable applications typically shouldn’t override built-in templates because they might conflict with a project’s custom templates.)\n\nThe rendering of form templates is controlled by a customizable renderer class. A custom renderer can be specified by updating the FORM_RENDERER setting. It defaults to 'django.forms.renderers.DjangoTemplates'.\n\nBy specifying a custom form renderer and overriding form_template_name you can adjust the default form markup across your project from a single place.\n\nYou can also provide a custom renderer per-form or per-widget by setting the Form.default_renderer attribute or by using the renderer argument of Form.render(), or Widget.render().\n\nMatching points apply to formset rendering. See Using a formset in views and templates for discussion.\n\nUse one of the built-in template form renderers or implement your own. Custom renderers must implement a render(template_name, context, request=None) method. It should return a rendered template (as a string) or raise TemplateDoesNotExist.\n\nThe base class for the built-in form renderers.\n\nThe default name of the template to use to render a form.\n\nDefaults to \"django/forms/div.html\" template.\n\nThe default name of the template to use to render a formset.\n\nDefaults to \"django/forms/formsets/div.html\" template.\n\nThe default name of the template used to render a BoundField.\n\nDefaults to \"django/forms/field.html\"\n\nThe default class used to represent form fields across the project.\n\nDefaults to BoundField class.\n\nThis can be customized further using Form.bound_field_class for per-form overrides, or Field.bound_field_class for per-field overrides.\n\nSubclasses must implement this method with the appropriate template finding logic.\n\nRenders the given template, or raises TemplateDoesNotExist.\n\nThis renderer uses a standalone DjangoTemplates engine (unconnected to what you might have configured in the TEMPLATES setting). It loads templates first from the built-in form templates directory in django/forms/templates and then from the installed apps’ templates directories using the app_directories loader.\n\nIf you want to render templates with customizations from your TEMPLATES setting, such as context processors for example, use the TemplatesSetting renderer.\n\nThis renderer is the same as the DjangoTemplates renderer except that it uses a Jinja2 backend. Templates for the built-in widgets are located in django/forms/jinja2 and installed apps can provide templates in a jinja2 directory.\n\nTo use this backend, all the forms and widgets in your project and its third-party apps must have Jinja2 templates. Unless you provide your own Jinja2 templates for widgets that don’t have any, you can’t use this renderer. For example, django.contrib.admin doesn’t include Jinja2 templates for its widgets due to their usage of Django template tags.\n\nThis renderer gives you complete control of how form and widget templates are sourced. It uses get_template() to find templates based on what’s configured in the TEMPLATES setting.\n\nUsing this renderer along with the built-in templates requires either:\n\n'django.forms' in INSTALLED_APPS and at least one engine with APP_DIRS=True.\n\nAdding the built-in templates directory in DIRS of one of your template engines. To generate that path:\n\nUsing this renderer requires you to make sure the form templates your project needs can be located.\n\nFormset templates receive a context from BaseFormSet.get_context(). By default, formsets receive a dictionary with the following values:\n\nformset: The formset instance.\n\nForm templates receive a context from Form.get_context(). By default, forms receive a dictionary with the following values:\n\nform: The bound form.\n\nfields: All bound fields, except the hidden fields.\n\nhidden_fields: All hidden bound fields.\n\nerrors: All non field related or hidden field related form errors.\n\nField templates receive a context from BoundField.get_context(). By default, fields receive a dictionary with the following values:\n\nfield: The BoundField.\n\nWidget templates receive a context from Widget.get_context(). By default, widgets receive a single value in the context, widget. This is a dictionary that contains values like:\n\nSome widgets add further information to the context. For instance, all widgets that subclass Input defines widget['type'] and MultiWidget defines widget['subwidgets'] for looping purposes.\n\nBaseFormSet.template_name\n\nTo override formset templates, you must use the TemplatesSetting renderer. Then overriding formset templates works the same as overriding any other template in your project.\n\nTo override form templates, you must use the TemplatesSetting renderer. Then overriding form templates works the same as overriding any other template in your project.\n\nTo override field templates, you must use the TemplatesSetting renderer. Then overriding field templates works the same as overriding any other template in your project.\n\nEach widget has a template_name attribute with a value such as input.html. Built-in widget templates are stored in the django/forms/widgets path. You can provide a custom template for input.html by defining django/forms/widgets/input.html, for example. See Built-in widgets for the name of each widget’s template.\n\nTo override widget templates, you must use the TemplatesSetting renderer. Then overriding widget templates works the same as overriding any other template in your project.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "The form rendering API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The low-level render API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Built-in-template form renderers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DjangoTemplates¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Jinja2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TemplatesSetting¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Context available in formset templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Context available in form templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Context available in field templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Context available in widget templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overriding built-in formset templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overriding built-in form templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overriding built-in field templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overriding built-in widget templates¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/forms/renderers/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/howto/overriding-templates/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

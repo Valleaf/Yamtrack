@@ -1,0 +1,54 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+  "title": "PostgreSQL specific lookups | Django documentation | Django",
+  "content": "The trigram_similar lookup allows you to perform trigram lookups, measuring the number of trigrams (three consecutive characters) shared, using a dedicated PostgreSQL extension. A trigram lookup is given an expression and returns results that have a similarity measurement greater than the current similarity threshold.\n\nTo use it, add 'django.contrib.postgres' in your INSTALLED_APPS and activate the pg_trgm extension on PostgreSQL. You can install the extension using the TrigramExtension migration operation.\n\nThe trigram_similar lookup can be used on CharField and TextField:\n\nThe trigram_word_similar lookup allows you to perform trigram word similarity lookups using a dedicated PostgreSQL extension. It can be approximately understood as measuring the greatest number of trigrams shared between the parameter and any substring of the field. A trigram word lookup is given an expression and returns results that have a word similarity measurement greater than the current similarity threshold.\n\nTo use it, add 'django.contrib.postgres' in your INSTALLED_APPS and activate the pg_trgm extension on PostgreSQL. You can install the extension using the TrigramExtension migration operation.\n\nThe trigram_word_similar lookup can be used on CharField and TextField:\n\nSimilar to trigram_word_similar, except that it forces extent boundaries to match word boundaries.\n\nTo use it, add 'django.contrib.postgres' in your INSTALLED_APPS and activate the pg_trgm extension on PostgreSQL. You can install the extension using the TrigramExtension migration operation.\n\nThe trigram_strict_word_similar lookup can be used on CharField and TextField.\n\nThe unaccent lookup allows you to perform accent-insensitive lookups using a dedicated PostgreSQL extension.\n\nThis lookup is implemented using Transform, so it can be chained with other lookup functions. To use it, you need to add 'django.contrib.postgres' in your INSTALLED_APPS and activate the unaccent extension on PostgreSQL. The UnaccentExtension migration operation is available if you want to perform this activation using migrations).\n\nThe unaccent lookup can be used on CharField and TextField:\n\nunaccent lookups should perform fine in most use cases. However, queries using this filter will generally perform full table scans, which can be slow on large tables. In those cases, using dedicated full text indexing tools might be appropriate.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific lookups¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Trigram similarity¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "trigram_similar¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "trigram_word_similar¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "trigram_strict_word_similar¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Unaccent¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

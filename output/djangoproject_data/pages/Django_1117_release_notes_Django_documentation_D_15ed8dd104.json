@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.7/",
+  "title": "Django 1.11.7 release notes | Django documentation | Django",
+  "content": "Django 1.11.7 fixes several bugs in 1.11.6.\n\nPrevented cache.get_or_set() from caching None if the default argument is a callable that returns None (#28601).\n\nFixed the Basque DATE_FORMAT string (#28710).\n\nMade QuerySet.reverse() affect nulls_first and nulls_last (#28722).\n\nFixed unquoted table names in Subquery SQL when using OuterRef (#28689).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.7 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.7/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/",
+  "title": "JavaScript code | Django documentation | Django",
+  "content": "While most of Django core is Python, the admin and gis contrib apps contain JavaScript code.\n\nPlease follow these coding standards when writing JavaScript code for inclusion in Django.\n\nPlease conform to the indentation style dictated in the .editorconfig file. We recommend using a text editor with EditorConfig support to avoid indentation and whitespace issues. Most of the JavaScript files use 4 spaces for indentation, but there are some exceptions.\n\nWhen naming variables, use camelCase instead of underscore_case. Different JavaScript files sometimes use a different code style. Please try to conform to the code style of each file.\n\nUse the ESLint code linter to check your code for bugs and style errors. ESLint will be run when you run the JavaScript tests. We also recommended installing a ESLint plugin in your text editor.\n\nWhere possible, write code that will work even if the page structure is later changed with JavaScript. For instance, when binding a click handler, use $('body').on('click', selector, func) instead of $(selector).click(func). This makes it easier for projects to extend Django’s default behavior with JavaScript.\n\nDjango’s admin system leverages the jQuery framework to increase the capabilities of the admin interface. In conjunction, there is an emphasis on admin JavaScript performance and minimizing overall admin media file size.\n\nDjango’s JavaScript tests can be run in a browser or from the command line. The tests are located in a top level js_tests directory.\n\nDjango’s JavaScript tests use QUnit. Here is an example test module:\n\nPlease consult the QUnit documentation for information on the types of assertions supported by QUnit.\n\nThe JavaScript tests may be run from a web browser or from the command line.\n\nTo run the tests from a web browser, open up js_tests/tests.html in your browser.\n\nTo measure code coverage when running the tests, you need to view that file over HTTP. To view code coverage:\n\nExecute python -m http.server from the root directory (not from inside js_tests).\n\nOpen http://localhost:8000/js_tests/tests.html in your web browser.\n\nTo run the tests from the command line, you need to have Node.js installed.\n\nAfter installing Node.js, install the JavaScript test dependencies by running the following from the root of your Django checkout:\n\nThen run the tests with:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "JavaScript code¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Code style¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "JavaScript patches¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "JavaScript tests¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Writing tests¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Running tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Testing from a web browser¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Testing from the command line¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/javascript/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/coding-style/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/accessibility/",
+    "https://docs.djangoproject.com/en/stable/internals/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/",
+    "https://docs.djangoproject.com/en/stable/internals/contributing/writing-code/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

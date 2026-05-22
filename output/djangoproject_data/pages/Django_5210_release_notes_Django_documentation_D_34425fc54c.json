@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.2.10/",
+  "title": "Django 5.2.10 release notes | Django documentation | Django",
+  "content": "Django 5.2.10 fixes a data loss bug introduced in Django 5.2 and one bug related to support for Python 3.14.\n\nFixed a bug in Django 5.2 where data exceeding max_length was silently truncated by QuerySet.bulk_create() on PostgreSQL (#33647).\n\nFixed a bug where management command colorized help (introduced in Python 3.14) ignored the --no-color option and the DJANGO_COLORS setting (#36376).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.2.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.2.10/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.11/",
+    "https://docs.djangoproject.com/en/stable/releases/5.2.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

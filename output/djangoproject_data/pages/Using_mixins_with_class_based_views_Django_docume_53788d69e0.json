@@ -1,0 +1,106 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/class-based-views/mixins/",
+  "title": "Using mixins with class-based views | Django documentation | Django",
+  "content": "This is an advanced topic. A working knowledge of Django’s class-based views is advised before exploring these techniques.\n\nDjango’s built-in class-based views provide a lot of functionality, but some of it you may want to use separately. For instance, you may want to write a view that renders a template to make the HTTP response, but you can’t use TemplateView; perhaps you need to render a template only on POST, with GET doing something else entirely. While you could use TemplateResponse directly, this will likely result in duplicate code.\n\nFor this reason, Django also provides a number of mixins that provide more discrete functionality. Template rendering, for instance, is encapsulated in the TemplateResponseMixin. The Django reference documentation contains full documentation of all the mixins.\n\nTwo central mixins are provided that help in providing a consistent interface to working with templates in class-based views.\n\nEvery built in view which returns a TemplateResponse will call the render_to_response() method that TemplateResponseMixin provides. Most of the time this will be called for you (for instance, it is called by the get() method implemented by both TemplateView and DetailView); similarly, it’s unlikely that you’ll need to override it, although if you want your response to return something not rendered via a Django template then you’ll want to do it. For an example of this, see the JSONResponseMixin example.\n\nrender_to_response() itself calls get_template_names(), which by default will look up template_name on the class-based view; two other mixins (SingleObjectTemplateResponseMixin and MultipleObjectTemplateResponseMixin) override this to provide more flexible defaults when dealing with actual objects.\n\nEvery built in view which needs context data, such as for rendering a template (including TemplateResponseMixin above), should call get_context_data() passing any data they want to ensure is in there as keyword arguments. get_context_data() returns a dictionary; in ContextMixin it returns its keyword arguments, but it is common to override this to add more members to the dictionary. You can also use the extra_context attribute.\n\nLet’s look at how two of Django’s generic class-based views are built out of mixins providing discrete functionality. We’ll consider DetailView, which renders a “detail” view of an object, and ListView, which will render a list of objects, typically from a queryset, and optionally paginate them. This will introduce us to four mixins which between them provide useful functionality when working with either a single Django object, or multiple objects.\n\nThere are also mixins involved in the generic edit views (FormView, and the model-specific views CreateView, UpdateView and DeleteView), and in the date-based generic views. These are covered in the mixin reference documentation.\n\nTo show the detail of an object, we basically need to do two things: we need to look up the object and then we need to make a TemplateResponse with a suitable template, and that object as context.\n\nTo get the object, DetailView relies on SingleObjectMixin, which provides a get_object() method that figures out the object based on the URL of the request (it looks for pk and slug keyword arguments as declared in the URLConf, and looks the object up either from the model attribute on the view, or the queryset attribute if that’s provided). SingleObjectMixin also overrides get_context_data(), which is used across all Django’s built in class-based views to supply context data for template renders.\n\nTo then make a TemplateResponse, DetailView uses SingleObjectTemplateResponseMixin, which extends TemplateResponseMixin, overriding get_template_names() as discussed above. It actually provides a fairly sophisticated set of options, but the main one that most people are going to use is <app_label>/<model_name>_detail.html. The _detail part can be changed by setting template_name_suffix on a subclass to something else. (For instance, the generic edit views use _form for create and update views, and _confirm_delete for delete views.)\n\nLists of objects follow roughly the same pattern: we need a (possibly paginated) list of objects, typically a QuerySet, and then we need to make a TemplateResponse with a suitable template using that list of objects.\n\nTo get the objects, ListView uses MultipleObjectMixin, which provides both get_queryset() and paginate_queryset(). Unlike with SingleObjectMixin, there’s no need to key off parts of the URL to figure out the queryset to work with, so the default uses the queryset or model attribute on the view class. A common reason to override get_queryset() here would be to dynamically vary the objects, such as depending on the current user or to exclude posts in the future for a blog.\n\nMultipleObjectMixin also overrides get_context_data() to include appropriate context variables for pagination (providing dummies if pagination is disabled). It relies on object_list being passed in as a keyword argument, which ListView arranges for it.\n\nTo make a TemplateResponse, ListView then uses MultipleObjectTemplateResponseMixin; as with SingleObjectTemplateResponseMixin above, this overrides get_template_names() to provide a range of options, with the most commonly-used being <app_label>/<model_name>_list.html, with the _list part again being taken from the template_name_suffix attribute. (The date based generic views use suffixes such as _archive, _archive_year and so on to use different templates for the various specialized date-based list views.)\n\nNow we’ve seen how Django’s generic class-based views use the provided mixins, let’s look at other ways we can combine them. We’re still going to be combining them with either built-in class-based views, or other generic class-based views, but there are a range of rarer problems you can solve than are provided for by Django out of the box.\n\nNot all mixins can be used together, and not all generic class based views can be used with all other mixins. Here we present a few examples that do work; if you want to bring together other functionality then you’ll have to consider interactions between attributes and methods that overlap between the different classes you’re using, and how method resolution order will affect which versions of the methods will be called in what order.\n\nThe reference documentation for Django’s class-based views and class-based view mixins will help you in understanding which attributes and methods are likely to cause conflict between different classes and mixins.\n\nIf in doubt, it’s often better to back off and base your work on View or TemplateView, perhaps with SingleObjectMixin and MultipleObjectMixin. Although you will probably end up writing more code, it is more likely to be clearly understandable to someone else coming to it later, and with fewer interactions to worry about you will save yourself some thinking. (Of course, you can always dip into Django’s implementation of the generic class-based views for inspiration on how to tackle problems.)\n\nIf we want to write a class-based view that responds only to POST, we’ll subclass View and write a post() method in the subclass. However if we want our processing to work on a particular object, identified from the URL, we’ll want the functionality provided by SingleObjectMixin.\n\nWe’ll demonstrate this with the Author model we used in the generic class-based views introduction.\n\nIn practice you’d probably want to record the interest in a key-value store rather than in a relational database, so we’ve left that bit out. The only bit of the view that needs to worry about using SingleObjectMixin is where we want to look up the author we’re interested in, which it does with a call to self.get_object(). Everything else is taken care of for us by the mixin.\n\nWe can hook this into our URLs easily enough:\n\nNote the pk named group, which get_object() uses to look up the Author instance. You could also use a slug, or any of the other features of SingleObjectMixin.\n\nListView provides built-in pagination, but you might want to paginate a list of objects that are all linked (by a foreign key) to another object. In our publishing example, you might want to paginate through all the books by a particular publisher.\n\nOne way to do this is to combine ListView with SingleObjectMixin, so that the queryset for the paginated list of books can hang off the publisher found as the single object. In order to do this, we need to have two different querysets:\n\nSince we have access to the Publisher whose books we want to list, we override get_queryset() and use the Publisher’s reverse foreign key manager.\n\nWe’ll rely on the default implementation of get_object() to fetch the correct Publisher object. However, we need to explicitly pass a queryset argument because otherwise the default implementation of get_object() would call get_queryset() which we have overridden to return Book objects instead of Publisher ones.\n\nWe have to think carefully about get_context_data(). Since both SingleObjectMixin and ListView will put things in the context data under the value of context_object_name if it’s set, we’ll instead explicitly ensure the Publisher is in the context data. ListView will add in the suitable page_obj and paginator for us providing we remember to call super().\n\nNow we can write a new PublisherDetailView:\n\nNotice how we set self.object within get() so we can use it again later in get_context_data() and get_queryset(). If you don’t set template_name, the template will default to the normal ListView choice, which in this case would be \"books/book_list.html\" because it’s a list of books; ListView knows nothing about SingleObjectMixin, so it doesn’t have any clue this view is anything to do with a Publisher.\n\nThe paginate_by is deliberately small in the example so you don’t have to create lots of books to see the pagination working! Here’s the template you’d want to use:\n\nGenerally you can use TemplateResponseMixin and SingleObjectMixin when you need their functionality. As shown above, with a bit of care you can even combine SingleObjectMixin with ListView. However things get increasingly complex as you try to do so, and a good rule of thumb is:\n\nEach of your views should use only mixins or views from one of the groups of generic class-based views: detail, list, editing and date. For example it’s fine to combine TemplateView (built in view) with MultipleObjectMixin (generic list), but you’re likely to have problems combining SingleObjectMixin (generic detail) with MultipleObjectMixin (generic list).\n\nTo show what happens when you try to get more sophisticated, we show an example that sacrifices readability and maintainability when there is a simpler solution. First, let’s look at a naive attempt to combine DetailView with FormMixin to enable us to POST a Django Form to the same URL as we’re displaying an object using DetailView.\n\nThink back to our earlier example of using View and SingleObjectMixin together. We were recording a user’s interest in a particular author; say now that we want to let them leave a message saying why they like them. Again, let’s assume we’re not going to store this in a relational database but instead in something more esoteric that we won’t worry about here.\n\nAt this point it’s natural to reach for a Form to encapsulate the information sent from the user’s browser to Django. Say also that we’re heavily invested in REST, so we want to use the same URL for displaying the author as for capturing the message from the user. Let’s rewrite our AuthorDetailView to do that.\n\nWe’ll keep the GET handling from DetailView, although we’ll have to add a Form into the context data so we can render it in the template. We’ll also want to pull in form processing from FormMixin, and write a bit of code so that on POST the form gets called appropriately.\n\nWe use FormMixin and implement post() ourselves rather than try to mix DetailView with FormView (which provides a suitable post() already) because both of the views implement get(), and things would get much more confusing.\n\nOur new AuthorDetailView looks like this:\n\nget_success_url() provides somewhere to redirect to, which gets used in the default implementation of form_valid(). We have to provide our own post() as noted earlier.\n\nThe number of subtle interactions between FormMixin and DetailView is already testing our ability to manage things. It’s unlikely you’d want to write this kind of class yourself.\n\nIn this case, you could write the post() method yourself, keeping DetailView as the only generic functionality, although writing Form handling code involves a lot of duplication.\n\nAlternatively, it would still be less work than the above approach to have a separate view for processing the form, which could use FormView distinct from DetailView without concerns.\n\nWhat we’re really trying to do here is to use two different class based views from the same URL. So why not do just that? We have a very clear division here: GET requests should get the DetailView (with the Form added to the context data), and POST requests should get the FormView. Let’s set up those views first.\n\nThe AuthorDetailView view is almost the same as when we first introduced AuthorDetailView; we have to write our own get_context_data() to make the AuthorInterestForm available to the template. We’ll skip the get_object() override from before for clarity:\n\nThen the AuthorInterestFormView is a FormView, but we have to bring in SingleObjectMixin so we can find the author we’re talking about, and we have to remember to set template_name to ensure that form errors will render the same template as AuthorDetailView is using on GET:\n\nFinally we bring this together in a new AuthorView view. We already know that calling as_view() on a class-based view gives us something that behaves exactly like a function based view, so we can do that at the point we choose between the two subviews.\n\nYou can pass through keyword arguments to as_view() in the same way you would in your URLconf, such as if you wanted the AuthorInterestFormView behavior to also appear at another URL but using a different template:\n\nThis approach can also be used with any other generic class-based views or your own class-based views inheriting directly from View or TemplateView, as it keeps the different views as separate as possible.\n\nWhere class-based views shine is when you want to do the same thing many times. Suppose you’re writing an API, and every view should return JSON instead of rendered HTML.\n\nWe can create a mixin class to use in all of our views, handling the conversion to JSON once.\n\nFor example, a JSON mixin might look something like this:\n\nCheck out the Serializing Django objects documentation for more information on how to correctly transform Django models and querysets into JSON.\n\nThis mixin provides a render_to_json_response() method with the same signature as render_to_response(). To use it, we need to mix it into a TemplateView for example, and override render_to_response() to call render_to_json_response() instead:\n\nEqually we could use our mixin with one of the generic views. We can make our own version of DetailView by mixing JSONResponseMixin with the BaseDetailView – (the DetailView before template rendering behavior has been mixed in):\n\nThis view can then be deployed in the same way as any other DetailView, with exactly the same behavior – except for the format of the response.\n\nIf you want to be really adventurous, you could even mix a DetailView subclass that is able to return both HTML and JSON content, depending on some property of the HTTP request, such as a query argument or an HTTP header. Mix in both the JSONResponseMixin and a SingleObjectTemplateResponseMixin, and override the implementation of render_to_response() to defer to the appropriate rendering method depending on the type of response that the user requested:\n\nBecause of the way that Python resolves method overloading, the call to super().render_to_response(context) ends up calling the render_to_response() implementation of TemplateResponseMixin.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Using mixins with class-based views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Context and template responses¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Building up Django’s generic class-based views¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DetailView: working with a single Django object¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ListView: working with many Django objects¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Using Django’s class-based view mixins¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using SingleObjectMixin with View¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using SingleObjectMixin with ListView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Avoid anything more complex¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using FormMixin with DetailView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "A better solution¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "An alternative better solution¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "More than just HTML¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Lists of objects follow roughly the same pattern: we need a (possibly paginated) list of objects, typically a QuerySet, and then we need to make a TemplateResponse with a suitable template using that list of objects.",
+      "code": "from django.http import HttpResponseForbidden, HttpResponseRedirect\nfrom django.urls import reverse\nfrom django.views import View\nfrom django.views.generic.detail import SingleObjectMixin\nfrom books.models import Author\n\n\nclass RecordInterestView(SingleObjectMixin, View):\n    \"\"\"Records the current user's interest in an author.\"\"\"\n\n    model = Author\n\n    def post(self, request, *args, **kwargs):\n        if not request.user.is_authenticated:\n            return HttpResponseForbidden()\n\n        # Look up the author we're interested in.\n        self.object = self.get_object()\n        # Actually record interest somehow here!\n\n        return HttpResponseRedirect(\n            reverse(\"author-detail\", kwargs={\"pk\": self.object.pk})\n        )"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/template-response/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/flattened-index/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/topics/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/topics/serialization/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

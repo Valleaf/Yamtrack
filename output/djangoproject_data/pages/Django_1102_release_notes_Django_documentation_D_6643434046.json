@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.10.2/",
+  "title": "Django 1.10.2 release notes | Django documentation | Django",
+  "content": "Django 1.10.2 fixes several bugs in 1.10.1.\n\nFixed a crash in MySQL database validation where SELECT @@sql_mode doesn’t return a result (#27180).\n\nAllowed combining contrib.postgres.search.SearchQuery with more than one & or | operators (#27143).\n\nDisabled system check for URL patterns beginning with a ‘/’ when APPEND_SLASH=False (#27238).\n\nFixed model form default fallback for CheckboxSelectMultiple, MultiWidget, FileInput, SplitDateTimeWidget, SelectDateWidget, and SplitArrayWidget (#27186). Custom widgets affected by this issue should implement value_omitted_from_data().\n\nFixed a crash in runserver logging during a “Broken pipe” error (#27271).\n\nFixed a regression where unchanged localized date/time fields were listed as changed in the admin’s model history messages (#27302).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.10.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.10.2/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.3/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.1/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

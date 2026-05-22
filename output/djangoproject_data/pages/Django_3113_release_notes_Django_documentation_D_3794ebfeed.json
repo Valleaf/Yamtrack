@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.13/",
+  "title": "Django 3.1.13 release notes | Django documentation | Django",
+  "content": "Django 3.1.13 fixes a security issue with severity “high” in 3.1.12.\n\nUnsanitized user input passed to QuerySet.order_by() could bypass intended column reference validation in path marked for deprecation resulting in a potential SQL injection even if a deprecation warning is emitted.\n\nAs a mitigation the strict column reference validation was restored for the duration of the deprecation period. This regression appeared in 3.1 as a side effect of fixing #31426.\n\nThe issue is not present in the main branch as the deprecated path has been removed.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.13 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-35042: Potential SQL injection via unsanitized QuerySet.order_by() input¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.13/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.14/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.12/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

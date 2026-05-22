@@ -1,0 +1,84 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/intro/overview/",
+  "title": "Django at a glance | Django documentation | Django",
+  "content": "Because Django was developed in a fast-paced newsroom environment, it was designed to make common web development tasks fast and easy. Here’s an informal overview of how to write a database-driven web app with Django.\n\nThe goal of this document is to give you enough technical specifics to understand how Django works, but this isn’t intended to be a tutorial or reference – but we’ve got both! When you’re ready to start a project, you can start with the tutorial or dive right into more detailed documentation.\n\nAlthough you can use Django without a database, it comes with an object-relational mapper in which you describe your database layout in Python code.\n\nThe data-model syntax offers many rich ways of representing your models – so far, it’s been solving many years’ worth of database-schema problems. Here’s a quick example:\n\nNext, run the Django command-line utilities to create the database tables automatically:\n\nThe makemigrations command looks at all your available models and creates migrations for whichever tables don’t already exist. migrate runs the migrations and creates tables in your database, as well as optionally providing much richer schema control.\n\nWith that, you’ve got a free, and rich, Python API to access your data. The API is created on the fly, no code generation necessary:\n\nOnce your models are defined, Django can automatically create a professional, production ready administrative interface – a website that lets authenticated users add, change and delete objects. The only step required is to register your model in the admin site:\n\nThe philosophy here is that your site is edited by a staff, or a client, or maybe just you – and you don’t want to have to deal with creating backend interfaces only to manage content.\n\nOne typical workflow in creating Django apps is to create models and get the admin sites up and running as fast as possible, so your staff (or clients) can start populating data. Then, develop the way data is presented to the public.\n\nA clean, elegant URL scheme is an important detail in a high-quality web application. Django encourages beautiful URL design and doesn’t put any cruft in URLs, like .php or .asp.\n\nTo design URLs for an app, you create a Python module called a URLconf. A table of contents for your app, it contains a mapping between URL patterns and Python callback functions. URLconfs also serve to decouple URLs from Python code.\n\nHere’s what a URLconf might look like for the Reporter/Article example above:\n\nThe code above maps URL paths to Python callback functions (“views”). The path strings use parameter tags to “capture” values from the URLs. When a user requests a page, Django runs through each path, in order, and stops at the first one that matches the requested URL. (If none of them matches, Django calls a special-case 404 view.) This is blazingly fast, because the paths are compiled into regular expressions at load time.\n\nOnce one of the URL patterns matches, Django calls the given view, which is a Python function. Each view gets passed a request object – which contains request metadata – and the values captured in the pattern.\n\nFor example, if a user requested the URL “/articles/2005/05/39323/”, Django would call the function news.views.article_detail(request, year=2005, month=5, pk=39323).\n\nEach view is responsible for doing one of two things: Returning an HttpResponse object containing the content for the requested page, or raising an exception such as Http404. The rest is up to you.\n\nGenerally, a view retrieves data according to the parameters, loads a template and renders the template with the retrieved data. Here’s an example view for year_archive from above:\n\nThis example uses Django’s template system, which has several powerful features but strives to stay simple enough for non-programmers to use.\n\nThe code above loads the news/year_archive.html template.\n\nDjango has a template search path, which allows you to minimize redundancy among templates. In your Django settings, you specify a list of directories to check for templates with DIRS. If a template doesn’t exist in the first directory, it checks the second, and so on.\n\nLet’s say the news/year_archive.html template was found. Here’s what that might look like:\n\nVariables are surrounded by double-curly braces. {{ article.headline }} means “Output the value of the article’s headline attribute.” But dots aren’t used only for attribute lookup. They also can do dictionary-key lookup, index lookup and function calls.\n\nNote {{ article.pub_date|date:\"F j, Y\" }} uses a Unix-style “pipe” (the “|” character). This is called a template filter, and it’s a way to filter the value of a variable. In this case, the date filter formats a Python datetime object in the given format (as found in PHP’s date function).\n\nYou can chain together as many filters as you’d like. You can write custom template filters. You can write custom template tags, which run custom Python code behind the scenes.\n\nFinally, Django uses the concept of “template inheritance”. That’s what the {% extends \"base.html\" %} does. It means “First load the template called ‘base’, which has defined a bunch of blocks, and fill the blocks with the following blocks.” In short, that lets you dramatically cut down on redundancy in templates: each template has to define only what’s unique to that template.\n\nHere’s what the “base.html” template, including the use of static files, might look like:\n\nSimplistically, it defines the look-and-feel of the site (with the site’s logo), and provides “holes” for child templates to fill. This means that a site redesign can be done by changing a single file – the base template.\n\nIt also lets you create multiple versions of a site, with different base templates, while reusing child templates. Django’s creators have used this technique to create strikingly different mobile versions of sites by only creating a new base template.\n\nNote that you don’t have to use Django’s template system if you prefer another system. While Django’s template system is particularly well-integrated with Django’s model layer, nothing forces you to use it. For that matter, you don’t have to use Django’s database API, either. You can use another database abstraction layer, you can read XML files, you can read files off disk, or anything you want. Each piece of Django – models, views, templates – is decoupled from the next.\n\nThis has been only a quick overview of Django’s functionality. Some more useful features:\n\nA caching framework that integrates with memcached or other backends.\n\nA syndication framework that lets you create RSS and Atom feeds by writing a small Python class.\n\nMore attractive automatically-generated admin features – this overview barely scratched the surface.\n\nThe next steps are for you to download Django, read the tutorial and join the community. Thanks for your interest!",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django at a glance¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Design your model¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Install it¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Enjoy the free API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "A dynamic admin interface: it’s not just scaffolding – it’s the whole house¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Design your URLs¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Write your views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Design your templates¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "This is just the surface¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The data-model syntax offers many rich ways of representing your models – so far, it’s been solving many years’ worth of database-schema problems. Here’s a quick example:",
+      "code": "from django.db import models\n\n\nclass Reporter(models.Model):\n    full_name = models.CharField(max_length=70)\n\n    def __str__(self):\n        return self.full_name\n\n\nclass Article(models.Model):\n    pub_date = models.DateField()\n    headline = models.CharField(max_length=200)\n    content = models.TextField()\n    reporter = models.ForeignKey(Reporter, on_delete=models.CASCADE)\n\n    def __str__(self):\n        return self.headline"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/intro/overview/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial01/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/migrations/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/topics/templates/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/howto/custom-template-tags/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/syndication/",
+    "https://docs.djangoproject.com/en/stable/intro/",
+    "https://docs.djangoproject.com/en/stable/intro/install/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

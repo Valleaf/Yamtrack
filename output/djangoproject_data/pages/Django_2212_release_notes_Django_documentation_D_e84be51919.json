@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/2.2.12/",
+  "title": "Django 2.2.12 release notes | Django documentation | Django",
+  "content": "Django 2.2.12 fixes a bug in 2.2.11.\n\nAdded the ability to handle .po files containing different plural equations for the same language (#30439).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 2.2.12 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/2.2.12/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.13/",
+    "https://docs.djangoproject.com/en/stable/releases/2.2.11/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.4.10/",
+  "title": "Django 1.4.10 release notes | Django documentation | Django",
+  "content": "Django 1.4.10 fixes a Python-compatibility bug in the 1.4 series.\n\nDjango 1.4.9 inadvertently introduced issues with Python 2.5 compatibility. Django 1.4.10 restores Python 2.5 compatibility. This was issue #21362 in Django’s Trac.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.4.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.4.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.4.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

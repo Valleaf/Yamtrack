@@ -1,0 +1,210 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+  "title": "GEOS API | Django documentation | Django",
+  "content": "GEOS stands for Geometry Engine - Open Source, and is a C++ library, ported from the Java Topology Suite. GEOS implements the OpenGIS Simple Features for SQL spatial predicate functions and spatial operators. GEOS, now an OSGeo project, was initially developed and maintained by Refractions Research of Victoria, Canada.\n\nGeoDjango implements a high-level Python wrapper for the GEOS library, its features include:\n\nA BSD-licensed interface to the GEOS geometry routines, implemented purely in Python using ctypes.\n\nLoosely-coupled to GeoDjango. For example, GEOSGeometry objects may be used outside of a Django project/application. In other words, no need to have DJANGO_SETTINGS_MODULE set or use a database, etc.\n\nMutability: GEOSGeometry objects may be modified.\n\nCross-platform tested.\n\nThis section contains a brief introduction and tutorial to using GEOSGeometry objects.\n\nGEOSGeometry objects may be created in a few ways. The first is to simply instantiate the object on some spatial input – the following are examples of creating the same geometry from WKT, HEX, WKB, and GeoJSON:\n\nAnother option is to use the constructor for the specific geometry type that you wish to create. For example, a Point object may be created by passing in the X and Y coordinates into its constructor:\n\nAll these constructors take the keyword argument srid. For example:\n\nFinally, there is the fromfile() factory method which returns a GEOSGeometry object from a file:\n\nMy logs are filled with GEOS-related errors\n\nYou find many TypeError or AttributeError exceptions filling your web server’s log files. This generally means that you are creating GEOS objects at the top level of some of your Python modules. Then, due to a race condition in the garbage collector, your module is garbage collected before the GEOS object. To prevent this, create GEOSGeometry objects inside the local scope of your functions/methods.\n\nGEOSGeometry objects are ‘Pythonic’, in other words components may be accessed, modified, and iterated over using standard Python conventions. For example, you can iterate over the coordinates in a Point:\n\nWith any geometry object, the GEOSGeometry.coords property may be used to get the geometry coordinates as a Python tuple:\n\nYou can get/set geometry components using standard Python indexing techniques. However, what is returned depends on the geometry type of the object. For example, indexing on a LineString returns a coordinate tuple:\n\nWhereas indexing on a Polygon will return the ring (a LinearRing object) corresponding to the index:\n\nIn addition, coordinates/components of the geometry may added or modified, just like a Python list:\n\nGeometries support set-like operators:\n\nEquality operator doesn’t check spatial equality\n\nThe GEOSGeometry equality operator uses equals_exact(), not equals(), i.e. it requires the compared geometries to have the same coordinates in the same positions with the same SRIDs:\n\ngeo_input – Geometry input value (string or memoryview)\n\nsrid (int) – spatial reference identifier\n\nThis is the base class for all GEOS geometry objects. It initializes on the given geo_input argument, and then assumes the proper geometry subclass (e.g., GEOSGeometry('POINT(1 1)') will create a Point object).\n\nThe srid parameter, if given, is set as the SRID of the created geometry if geo_input doesn’t have an SRID. If different SRIDs are provided through the geo_input and srid parameters, ValueError is raised:\n\nThe following input formats, along with their corresponding Python types, are accepted:\n\nFor the GeoJSON format, the SRID is set based on the crs member. If crs isn’t provided, the SRID defaults to 4326.\n\nConstructs a GEOSGeometry from the given GML string.\n\nReturns the coordinates of the geometry as a tuple.\n\nReturns the dimension of the geometry:\n\n0 for Points and MultiPoints\n\n1 for LineStrings and MultiLineStrings\n\n2 for Polygons and MultiPolygons\n\n-1 for empty GeometryCollections\n\nthe maximum dimension of its elements for non-empty GeometryCollections\n\nReturns whether or not the set of points in the geometry is empty.\n\nReturns a string corresponding to the type of geometry. For example:\n\nReturns the GEOS geometry type identification number. The following table shows the value for each geometry type:\n\nReturns the number of coordinates in the geometry.\n\nReturns the number of geometries in this geometry. In other words, will return 1 on anything but geometry collections.\n\nReturns a boolean indicating whether the geometry has the Z dimension.\n\nReturns a boolean indicating whether the geometry has the M dimension. Requires GEOS 3.12.\n\nReturns a boolean indicating whether the geometry is a LinearRing.\n\nReturns a boolean indicating whether the geometry is ‘simple’. A geometry is simple if and only if it does not intersect itself (except at boundary points). For example, a LineString object is not simple if it intersects itself. Thus, LinearRing and Polygon objects are always simple because they cannot intersect themselves, by definition.\n\nReturns a boolean indicating whether the geometry is valid.\n\nReturns a string describing the reason why a geometry is invalid.\n\nProperty that may be used to retrieve or set the SRID associated with the geometry. For example:\n\nThe properties in this section export the GEOSGeometry object into a different. This output may be in the form of a string, buffer, or even another object.\n\nReturns the “extended” Well-Known Text of the geometry. This representation is specific to PostGIS and is a superset of the OGC WKT standard. [1] Essentially the SRID is prepended to the WKT representation, for example SRID=4326;POINT(5 23).\n\nThe output from this property does not include the 3dm, 3dz, and 4d information that PostGIS supports in its EWKT representations.\n\nReturns the WKB of this Geometry in hexadecimal form. Please note that the SRID value is not included in this representation because it is not a part of the OGC specification (use the GEOSGeometry.hexewkb property instead).\n\nReturns the EWKB of this Geometry in hexadecimal form. This is an extension of the WKB specification that includes the SRID value that are a part of this geometry.\n\nReturns the GeoJSON representation of the geometry. Note that the result is not a complete GeoJSON structure but only the geometry key content of a GeoJSON structure. See also GeoJSON Serializer.\n\nAlias for GEOSGeometry.json.\n\nReturns a KML (Keyhole Markup Language) representation of the geometry. This should only be used for geometries with an SRID of 4326 (WGS84), but this restriction is not enforced.\n\nReturns an OGRGeometry object corresponding to the GEOS geometry.\n\nReturns the WKB (Well-Known Binary) representation of this Geometry as a Python buffer. SRID value is not included, use the GEOSGeometry.ewkb property instead.\n\nReturn the EWKB representation of this Geometry as a Python buffer. This is an extension of the WKB specification that includes any SRID value that are a part of this geometry.\n\nReturns the Well-Known Text of the geometry (an OGC standard).\n\nAll of the following spatial predicate methods take another GEOSGeometry instance (other) as a parameter, and return a boolean.\n\nReturns True if other.within(this) returns True.\n\nReturns True if this geometry covers the specified geometry.\n\nThe covers predicate has the following equivalent definitions:\n\nEvery point of the other geometry is a point of this geometry.\n\nThe DE-9IM Intersection Matrix for the two geometries is T*****FF*, *T****FF*, ***T**FF*, or ****T*FF*.\n\nIf either geometry is empty, returns False.\n\nThis predicate is similar to GEOSGeometry.contains(), but is more inclusive (i.e. returns True for more cases). In particular, unlike contains() it does not distinguish between points in the boundary and in the interior of geometries. For most situations, covers() should be preferred to contains(). As an added benefit, covers() is more amenable to optimization and hence should outperform contains().\n\nReturns True if the DE-9IM intersection matrix for the two Geometries is T*T****** (for a point and a curve,a point and an area or a line and an area) 0******** (for two curves).\n\nReturns True if the DE-9IM intersection matrix for the two geometries is FF*FF****.\n\nReturns True if the DE-9IM intersection matrix for the two geometries is T*F**FFF*.\n\nReturns true if the two geometries are exactly equal, up to a specified tolerance. The tolerance value should be a floating point number representing the error tolerance in the comparison, e.g., poly1.equals_exact(poly2, 0.001) will compare equality to within one thousandth of a unit.\n\nReturns True if the two geometries are point-wise equivalent by checking that the structure, ordering, and values of all vertices are identical in all dimensions. NaN values are considered to be equal to other NaN values. Requires GEOS 3.12.\n\nReturns True if GEOSGeometry.disjoint() is False.\n\nReturns true if the DE-9IM intersection matrix for the two geometries is T*T***T** (for two points or two surfaces) 1*T***T** (for two curves).\n\nReturns True if the elements in the DE-9IM intersection matrix for this geometry and the other matches the given pattern – a string of nine characters from the alphabet: {T, F, *, 0}.\n\nReturns True if the DE-9IM intersection matrix for the two geometries is FT*******, F**T***** or F***T****.\n\nReturns True if the DE-9IM intersection matrix for the two geometries is T*F**F***.\n\nReturns a GEOSGeometry that represents all points whose distance from this geometry is less than or equal to the given width. The optional quadsegs keyword sets the number of segments used to approximate a quarter circle (defaults is 8).\n\nSame as buffer(), but allows customizing the style of the buffer.\n\nend_cap_style can be round (1), flat (2), or square (3).\n\njoin_style can be round (1), mitre (2), or bevel (3).\n\nMitre ratio limit (mitre_limit) only affects mitered join style.\n\nReturns a GEOSGeometry representing the points making up this geometry that do not make up other.\n\nGiven a distance (float), returns the point (or closest point) within the geometry (LineString or MultiLineString) at that distance. The normalized version takes the distance as a float between 0 (origin) and 1 (endpoint).\n\nReverse of GEOSGeometry.project().\n\nReturns a GEOSGeometry representing the points shared by this geometry and other.\n\nReturns the distance (float) from the origin of the geometry (LineString or MultiLineString) to the point projected on the geometry (that is to a point of the line the closest to the given point). The normalized version returns the distance as a float between 0 (origin) and 1 (endpoint).\n\nReverse of GEOSGeometry.interpolate().\n\nReturns the DE-9IM intersection matrix (a string) representing the topological relationship between this geometry and the other.\n\nReturns a new GEOSGeometry, simplified to the specified tolerance using the Douglas-Peucker algorithm. A higher tolerance value implies fewer points in the output. If no tolerance is provided, it defaults to 0.\n\nBy default, this function does not preserve topology. For example, Polygon objects can be split, be collapsed into lines, or disappear. Polygon holes can be created or disappear, and lines may cross. By specifying preserve_topology=True, the result will have the same dimension and number of components as the input; this is significantly slower, however.\n\nReturns a GEOSGeometry combining the points in this geometry not in other, and the points in other not in this geometry.\n\nReturns a GEOSGeometry representing all the points in this geometry and the other.\n\nReturns the boundary as a newly allocated Geometry object.\n\nReturns a Point object representing the geometric center of the geometry. The point is not guaranteed to be on the interior of the geometry.\n\nReturns the smallest Polygon that contains all the points in the geometry.\n\nReturns a Polygon that represents the bounding envelope of this geometry. Note that it can also return a Point if the input geometry is a point.\n\nComputes and returns a Point guaranteed to be on the interior of this geometry.\n\nComputes the union of all the elements of this geometry.\n\nThe result obeys the following contract:\n\nUnioning a set of LineStrings has the effect of fully noding and dissolving the linework.\n\nUnioning a set of Polygons will always return a Polygon or MultiPolygon geometry (unlike GEOSGeometry.union(), which may return geometries of lower dimension if a topology collapse occurs).\n\nThis property returns the area of the Geometry.\n\nThis property returns the extent of this geometry as a 4-tuple, consisting of (xmin, ymin, xmax, ymax).\n\nThis method returns a GEOSGeometry that is a clone of the original.\n\nReturns the distance between the closest points on this geometry and the given geom (another GEOSGeometry object).\n\nGEOS distance calculations are linear – in other words, GEOS does not perform a spherical calculation even if the SRID specifies a geographic coordinate system.\n\nReturns the length of this geometry (e.g., 0 for a Point, the length of a LineString, or the circumference of a Polygon).\n\nReturns a GEOS PreparedGeometry for the contents of this geometry. PreparedGeometry objects are optimized for the contains, intersects, covers, crosses, disjoint, overlaps, touches and within operations. Refer to the Prepared Geometries documentation for more information.\n\nReturns a SpatialReference object corresponding to the SRID of the geometry or None.\n\nTransforms the geometry according to the given coordinate transformation parameter (ct), which may be an integer SRID, spatial reference WKT string, a PROJ string, a SpatialReference object, or a CoordTransform object. By default, the geometry is transformed in-place and nothing is returned. However if the clone keyword is set, then the geometry is not modified and a transformed clone of the geometry is returned instead.\n\nRaises GEOSException if GDAL is not available or if the geometry’s SRID is None or less than 0. It doesn’t impose any constraints on the geometry’s SRID if called with a CoordTransform object.\n\nReturns a valid GEOSGeometry equivalent, trying not to lose any of the input vertices. If the geometry is already valid, it is returned untouched. This is similar to the MakeValid database function. Requires GEOS 3.8.\n\nConverts this geometry to canonical form. If the clone keyword is set, then the geometry is not modified and a normalized clone of the geometry is returned instead:\n\nPoint objects are instantiated using arguments that represent the component coordinates of the point or with a single sequence coordinates. For example, the following are equivalent:\n\nEmpty Point objects may be instantiated by passing no arguments or an empty sequence. The following are equivalent:\n\nLineString objects are instantiated using arguments that are either a sequence of coordinates or Point objects. For example, the following are equivalent:\n\nIn addition, LineString objects may also be created by passing in a single sequence of coordinate or Point objects:\n\nEmpty LineString objects may be instantiated by passing no arguments or an empty sequence. The following are equivalent:\n\nReturns whether or not this LineString is closed.\n\nLinearRing objects are constructed in the exact same way as LineString objects, however the coordinates must be closed, in other words, the first coordinates must be the same as the last coordinates. For example:\n\nNotice that (0, 0) is the first and last coordinate – if they were not equal, an error would be raised.\n\nReturns whether this LinearRing is counterclockwise.\n\nPolygon objects may be instantiated by passing in parameters that represent the rings of the polygon. The parameters must either be LinearRing instances, or a sequence that may be used to construct a LinearRing:\n\nReturns a polygon object from the given bounding-box, a 4-tuple comprising (xmin, ymin, xmax, ymax).\n\nReturns the number of interior rings in this geometry.\n\nNote that it is possible to compare Polygon objects directly with < or >, but as the comparison is made through Polygon’s LineString, it does not mean much (but is consistent and quick). You can always force the comparison with the area property:\n\nMultiPoint objects may be instantiated by passing in Point objects as arguments, or a single sequence of Point objects:\n\nMultiLineString objects may be instantiated by passing in LineString objects as arguments, or a single sequence of LineString objects:\n\nReturns a LineString representing the line merge of all the components in this MultiLineString.\n\nReturns True if and only if all elements are closed.\n\nMultiPolygon objects may be instantiated by passing Polygon objects as arguments, or a single sequence of Polygon objects:\n\nGeometryCollection objects may be instantiated by passing in other GEOSGeometry as arguments, or a single sequence of GEOSGeometry objects:\n\nIn order to obtain a prepared geometry, access the GEOSGeometry.prepared property. Once you have a PreparedGeometry instance its spatial predicate methods, listed below, may be used with other GEOSGeometry objects. An operation with a prepared geometry can be orders of magnitude faster – the more complex the geometry that is prepared, the larger the speedup in the operation. For more information, please consult the GEOS wiki page on prepared geometries.\n\nAll methods on PreparedGeometry take an other argument, which must be a GEOSGeometry instance.\n\nfile_h (a Python file object or a string path to the file) – input file that contains spatial data\n\na GEOSGeometry corresponding to the spatial data in the file\n\nstring (str) – string that contains spatial data\n\nsrid (int) – spatial reference identifier\n\na GEOSGeometry corresponding to the spatial data in the string\n\nfromstr(string, srid) is equivalent to GEOSGeometry(string, srid).\n\nThe reader I/O classes return a GEOSGeometry instance from the WKB and/or WKT input given to their read(geom) method.\n\nAll writer objects have a write(geom) method that returns either the WKB or WKT of the given geometry. In addition, WKBWriter objects also have properties that may be used to change the byte order, and or include the SRID value (in other words, EWKB).\n\nWKBWriter provides the most control over its output. By default it returns OGC-compliant WKB when its write method is called. However, it has properties that allow for the creation of EWKB, a superset of the WKB standard that includes additional information. See the WKBWriter.outdim documentation for more details about the dim argument.\n\nReturns the WKB of the given geometry as a Python buffer object. Example:\n\nReturns WKB of the geometry in hexadecimal. Example:\n\nThis property may be set to change the byte-order of the geometry representation.\n\nBig Endian (e.g., compatible with RISC systems)\n\nLittle Endian (e.g., compatible with x86 systems)\n\nThis property may be set to change the output dimension of the geometry representation. In other words, if you have a 3D geometry then set to 3 so that the Z value is included in the WKB.\n\nThe default, output 2D WKB.\n\nSet this property with a boolean to indicate whether the SRID of the geometry should be included with the WKB representation. Example:\n\nThis class allows outputting the WKT representation of a geometry. See the WKBWriter.outdim, trim, and precision attributes for details about the constructor arguments.\n\nReturns the WKT of the given geometry. Example:\n\nSee WKBWriter.outdim.\n\nThis property is used to enable or disable trimming of unnecessary decimals.\n\nThis property controls the rounding precision of coordinates; if set to None rounding is disabled.\n\nSee PostGIS EWKB, EWKT and Canonical Forms, PostGIS documentation at Ch. 4.1.2.\n\nA string specifying the location of the GEOS C library. Typically, this setting is only used if the GEOS C library is in a non-standard location (e.g., /home/bob/lib/libgeos_c.so).\n\nThe setting must be the full path to the C shared library; in other words you want to use libgeos_c.so, not libgeos.so.\n\nThe base GEOS exception, indicates a GEOS-related error.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GEOS API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Background¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "What is GEOS?¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Features¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Tutorial¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Creating a Geometry¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Geometries are Pythonic¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Geometry Objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOSGeometry¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Properties¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Output Properties¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Spatial Predicate Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Topological Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Topological Properties¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Other Properties & Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Point¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LineString¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LinearRing¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Polygon¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Geometry Collections¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiPoint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiLineString¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiPolygon¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeometryCollection¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Prepared Geometries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PreparedGeometry¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Geometry Factories¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "I/O Objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reader Objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Writer Objects¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOS_LIBRARY_PATH¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Exceptions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "All these constructors take the keyword argument srid. For example:",
+      "code": ">>> from django.contrib.gis.geos import GEOSGeometry, LineString, Point\n>>> print(GEOSGeometry(\"POINT (0 0)\", srid=4326))\nSRID=4326;POINT (0 0)\n>>> print(LineString((0, 0), (1, 1), srid=4326))\nSRID=4326;LINESTRING (0 0, 1 1)\n>>> print(Point(0, 0, srid=32140))\nSRID=32140;POINT (0 0)"
+    },
+    {
+      "description": "Returns a string corresponding to the type of geometry. For example:",
+      "code": ">>> pnt = GEOSGeometry(\"POINT(5 23)\")\n>>> pnt.geom_type\n'Point'"
+    },
+    {
+      "description": "Property that may be used to retrieve or set the SRID associated with the geometry. For example:",
+      "code": ">>> pnt = Point(5, 23)\n>>> print(pnt.srid)\nNone\n>>> pnt.srid = 4326\n>>> pnt.srid\n4326"
+    },
+    {
+      "description": "LinearRing objects are constructed in the exact same way as LineString objects, however the coordinates must be closed, in other words, the first coordinates must be the same as the last coordinates. For example:",
+      "code": ">>> ls = LinearRing((0, 0), (0, 1), (1, 1), (0, 0))"
+    },
+    {
+      "description": "For example:",
+      "code": ">>> from django.contrib.gis.geos import Point, Polygon\n>>> poly = Polygon.from_bbox((0, 0, 5, 5))\n>>> prep_poly = poly.prepared\n>>> prep_poly.contains(Point(2.5, 2.5))\nTrue"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.28/",
+  "title": "Django 1.11.28 release notes | Django documentation | Django",
+  "content": "Django 1.11.28 fixes a security issue in 1.11.27.\n\nStringAgg aggregation function was subject to SQL injection, using a suitably crafted delimiter.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.28 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2020-7471: Potential SQL injection via StringAgg(delimiter)¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.28/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.29/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.27/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

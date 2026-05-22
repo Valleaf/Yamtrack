@@ -1,0 +1,269 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2/",
+  "title": "Django 4.2 release notes | Django documentation | Django",
+  "content": "Welcome to Django 4.2!\n\nThese release notes cover the new features, as well as some backwards incompatible changes you’ll want to be aware of when upgrading from Django 4.1 or earlier. We’ve begun the deprecation process for some features.\n\nSee the How to upgrade Django to a newer version guide if you’re updating an existing project.\n\nDjango 4.2 is designated as a long-term support release. It will receive security updates for at least three years after its release. Support for the previous LTS, Django 3.2, will end in April 2024.\n\nDjango 4.2 supports Python 3.8, 3.9, 3.10, 3.11, and 3.12 (as of 4.2.8). We highly recommend and only officially support the latest release of each series.\n\nDjango now supports psycopg version 3.1.8 or higher. To update your code, install the psycopg library, you don’t need to change the ENGINE as django.db.backends.postgresql supports both libraries.\n\nSupport for psycopg2 is likely to be deprecated and removed at some point in the future.\n\nBe aware that psycopg 3 introduces some breaking changes over psycopg2. As a consequence, you may need to make some changes to account for differences from psycopg2.\n\nThe new Field.db_comment and Meta.db_table_comment options allow creating comments on columns and tables, respectively. For example:\n\nAlso, the new AlterModelTableComment operation allows changing table comments defined in the Meta.db_table_comment.\n\nGZipMiddleware now includes a mitigation for the BREACH attack. It will add up to 100 random bytes to gzip responses to make BREACH attacks harder. Read more about the mitigation technique in the Heal The Breach (HTB) paper.\n\nThe new django.core.files.storage.InMemoryStorage class provides a non-persistent storage useful for speeding up tests by avoiding disk access.\n\nThe new STORAGES setting allows configuring multiple custom file storage backends. It also controls storage engines for managing files (the \"default\" key) and static files (the \"staticfiles\" key).\n\nThe old DEFAULT_FILE_STORAGE and STATICFILES_STORAGE settings are deprecated as of this release.\n\nThe light or dark color theme of the admin can now be toggled in the UI, as well as being set to follow the system setting.\n\nThe admin’s font stack now prefers system UI fonts and no longer requires downloading fonts. Additionally, CSS variables are available to more easily override the default font families.\n\nThe admin/delete_confirmation.html template now has some additional blocks and scripting hooks to ease customization.\n\nThe chosen options of filter_horizontal and filter_vertical widgets are now filterable.\n\nThe admin/base.html template now has a new block nav-breadcrumbs which contains the navigation landmark and the breadcrumbs block.\n\nModelAdmin.list_editable now uses atomic transactions when making edits.\n\njQuery is upgraded from version 3.6.0 to 3.6.4.\n\nThe default iteration count for the PBKDF2 password hasher is increased from 390,000 to 600,000.\n\nUserCreationForm now saves many-to-many form fields for a custom user model.\n\nThe new BaseUserCreationForm is now the recommended base class for customizing the user creation form.\n\nThe GeoJSON serializer now outputs the id key for serialized features, which defaults to the primary key of objects.\n\nThe GDALRaster class now supports pathlib.Path.\n\nThe GeoIP2 class now supports .mmdb files downloaded from DB-IP.\n\nThe OpenLayers template widget no longer includes inline CSS (which also removes the former map_css block) to better comply with a strict Content Security Policy.\n\nOpenLayersWidget is now based on OpenLayers 7.2.2 (previously 4.6.5).\n\nThe new isempty lookup and IsEmpty() expression allow filtering empty geometries on PostGIS.\n\nThe new FromWKB() and FromWKT() functions allow creating geometries from Well-known binary (WKB) and Well-known text (WKT) representations.\n\nThe new trigram_strict_word_similar lookup, and the TrigramStrictWordSimilarity() and TrigramStrictWordDistance() expressions allow using trigram strict word similarity.\n\nThe arrayfield.overlap lookup now supports QuerySet.values() and values_list() as a right-hand side.\n\nThe new Sitemap.get_languages_for_item() method allows customizing the list of languages for which the item is displayed.\n\nManifestStaticFilesStorage now has experimental support for replacing paths to JavaScript modules in import and export statements with their hashed counterparts. If you want to try it, subclass ManifestStaticFilesStorage and set the support_js_module_import_aggregation attribute to True.\n\nThe new ManifestStaticFilesStorage.manifest_hash attribute provides a hash over all files in the manifest and changes whenever one of the files changes.\n\nThe new \"assume_role\" option is now supported in OPTIONS on PostgreSQL to allow specifying the session role.\n\nThe new \"server_side_binding\" option is now supported in OPTIONS on PostgreSQL with psycopg 3.1.8+ to allow using server-side binding cursors.\n\nThe debug page now shows exception notes and fine-grained error locations on Python 3.11+.\n\nSession cookies are now treated as credentials and therefore hidden and replaced with stars (**********) in error reports.\n\nModelForm now accepts the new Meta option formfield_callback to customize form fields.\n\nmodelform_factory() now respects the formfield_callback attribute of the form’s Meta.\n\nAdded support and translations for the Central Kurdish (Sorani) language.\n\nThe django.db.backends logger now logs transaction management queries (BEGIN, COMMIT, and ROLLBACK) at the DEBUG level.\n\nmakemessages command now supports locales with private sub-tags such as nl_NL-x-informal.\n\nThe new makemigrations --update option merges model changes into the latest migration and optimizes the resulting operations.\n\nMigrations now support serialization of enum.Flag objects.\n\nQuerySet now extensively supports filtering against Window functions with the exception of disjunctive filter lookups against window functions when performing aggregation.\n\nprefetch_related() now supports Prefetch objects with sliced querysets.\n\nRegistering lookups on Field instances is now supported.\n\nThe new robust argument for on_commit() allows performing actions that can fail after a database transaction is successfully committed.\n\nThe new KT() expression represents the text value of a key, index, or path transform of JSONField.\n\nNow now supports microsecond precision on MySQL and millisecond precision on SQLite.\n\nF() expressions that output BooleanField can now be negated using ~F() (inversion operator).\n\nModel now provides asynchronous versions of some methods that use the database, using an a prefix: adelete(), arefresh_from_db(), and asave().\n\nRelated managers now provide asynchronous versions of methods that change a set of related objects, using an a prefix: aadd(), aclear(), aremove(), and aset().\n\nCharField.max_length is no longer required to be set on PostgreSQL, which supports unlimited VARCHAR columns.\n\nStreamingHttpResponse now supports async iterators when Django is served via ASGI.\n\nThe test --debug-sql option now formats SQL queries with sqlparse.\n\nThe RequestFactory, AsyncRequestFactory, Client, and AsyncClient classes now support the headers parameter, which accepts a dictionary of header names and values. This allows a more natural syntax for declaring headers.\n\nThe new encoder parameter for django.utils.html.json_script() function allows customizing a JSON encoder class.\n\nThe private internal vendored copy of urllib.parse.urlsplit() now strips '\\r', '\\n', and '\\t' (see CVE 2022-0391 and bpo-43882). This is to protect projects that may be incorrectly using the internal url_has_allowed_host_and_scheme() function, instead of using one of the documented functions for handling URL redirects. The Django functions were not affected.\n\nThe new django.utils.http.content_disposition_header() function returns a Content-Disposition HTTP header value as specified by RFC 6266.\n\nThe list of common passwords used by CommonPasswordValidator is updated to the most recent version.\n\nThis section describes changes that may be needed in third-party database backends.\n\nDatabaseFeatures.allows_group_by_pk is removed as it only remained to accommodate a MySQL extension that has been supplanted by proper functional dependency detection in MySQL 5.7.15. Note that DatabaseFeatures.allows_group_by_selected_pks is still supported and should be enabled if your backend supports functional dependency detection in GROUP BY clauses as specified by the SQL:1999 standard.\n\ninspectdb now uses display_size from DatabaseIntrospection.get_table_description() rather than internal_size for CharField.\n\nUpstream support for MariaDB 10.3 ends in May 2023. Django 4.2 supports MariaDB 10.4 and higher.\n\nUpstream support for MySQL 5.7 ends in October 2023. Django 4.2 supports MySQL 8 and higher.\n\nUpstream support for PostgreSQL 11 ends in November 2023. Django 4.2 supports PostgreSQL 12 and higher.\n\nIn order to avoid updating unnecessary columns, QuerySet.update_or_create() now passes update_fields to the Model.save() calls. As a consequence, any fields modified in the custom save() methods should be added to the update_fields keyword argument before calling super(). See Overriding predefined model methods for more details.\n\nMySQL 8+ allows functional dependencies on GROUP BY columns, so the pre-Django 4.2 workaround of grouping by primary keys of the main table is removed. As a consequence, using RawSQL() aggregations is no longer supported on MySQL as there is no way to determine if such aggregations are needed or valid in the GROUP BY clause. Use Aggregation functions instead.\n\nThe undocumented django.http.multipartparser.parse_header() function is removed. Use django.utils.http.parse_header_parameters() instead.\n\n{% blocktranslate asvar … %} result is now marked as safe for (HTML) output purposes.\n\nThe autofocus HTML attribute in the admin search box is removed as it can be confusing for screen readers.\n\nThe makemigrations --check option no longer creates missing migration files.\n\nThe alias argument for Expression.get_group_by_cols() is removed.\n\nThe minimum supported version of sqlparse is increased from 0.2.2 to 0.3.1.\n\nThe undocumented negated parameter of the Exists expression is removed.\n\nThe is_summary argument of the undocumented Query.add_annotation() method is removed.\n\nThe minimum supported version of SQLite is increased from 3.9.0 to 3.21.0.\n\nThe minimum supported version of asgiref is increased from 3.5.2 to 3.6.0.\n\nUserCreationForm now rejects usernames that differ only in case. If you need the previous behavior, use BaseUserCreationForm instead.\n\nThe minimum supported version of mysqlclient is increased from 1.4.0 to 1.4.3.\n\nThe minimum supported version of argon2-cffi is increased from 19.1.0 to 19.2.0.\n\nThe minimum supported version of Pillow is increased from 6.2.0 to 6.2.1.\n\nThe minimum supported version of jinja2 is increased from 2.9.2 to 2.11.0.\n\nThe minimum supported version of redis-py is increased from 3.0.0 to 3.4.0.\n\nManually instantiated WSGIRequest objects must be provided a file-like object for wsgi.input. Previously, Django was more lax than the expected behavior as specified by the WSGI specification.\n\nSupport for PROJ < 5 is removed.\n\nEmailBackend now verifies a hostname and certificates. If you need the previous behavior that is less restrictive and not recommended, subclass EmailBackend and override the ssl_context property.\n\nThe Meta.index_together option is deprecated in favor of the indexes option.\n\nMigrating existing index_together should be handled as a migration. For example:\n\nRunning the makemigrations command will generate a migration containing a RenameIndex operation which will rename the existing index. Next, consider squashing migrations to remove index_together from historical migrations.\n\nThe AlterIndexTogether migration operation is now officially supported only for pre-Django 4.2 migration files. For backward compatibility reasons, it’s still part of the public API, and there’s no plan to deprecate or remove it, but it should not be used for new migrations. Use AddIndex and RemoveIndex operations instead.\n\nJSONField and its associated lookups and aggregates used to allow passing JSON encoded string literals which caused ambiguity on whether string literals were already encoded from database backend’s perspective.\n\nDuring the deprecation period string literals will be attempted to be JSON decoded and a warning will be emitted on success that points at passing non-encoded forms instead.\n\nCode that used to pass JSON encoded string literals:\n\nFrom Django 5.1+ string literals will be implicitly interpreted as JSON string literals.\n\nThe BaseUserManager.make_random_password() method is deprecated. See recipes and best practices for using Python’s secrets module to generate passwords.\n\nThe length_is template filter is deprecated in favor of length and the == operator within an {% if %} tag. For example\n\ndjango.contrib.auth.hashers.SHA1PasswordHasher, django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher, and django.contrib.auth.hashers.UnsaltedMD5PasswordHasher are deprecated.\n\ndjango.contrib.postgres.fields.CICharField is deprecated in favor of CharField(db_collation=\"…\") with a case-insensitive non-deterministic collation.\n\ndjango.contrib.postgres.fields.CIEmailField is deprecated in favor of EmailField(db_collation=\"…\") with a case-insensitive non-deterministic collation.\n\ndjango.contrib.postgres.fields.CITextField is deprecated in favor of TextField(db_collation=\"…\") with a case-insensitive non-deterministic collation.\n\ndjango.contrib.postgres.fields.CIText mixin is deprecated.\n\nThe map_height and map_width attributes of BaseGeometryWidget are deprecated, use CSS to size map widgets instead.\n\nSimpleTestCase.assertFormsetError() is deprecated in favor of assertFormSetError().\n\nTransactionTestCase.assertQuerysetEqual() is deprecated in favor of assertQuerySetEqual().\n\nPassing positional arguments to Signer and TimestampSigner is deprecated in favor of keyword-only arguments.\n\nThe DEFAULT_FILE_STORAGE setting is deprecated in favor of STORAGES[\"default\"].\n\nThe STATICFILES_STORAGE setting is deprecated in favor of STORAGES[\"staticfiles\"].\n\nThe django.core.files.storage.get_storage_class() function is deprecated.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python compatibility¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s new in Django 4.2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Psycopg 3 support¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Comments on columns and tables¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Mitigation for the BREACH attack¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "In-memory file storage¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Custom file storages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Minor features¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.admin¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.auth¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.gis¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.postgres¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.sitemaps¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "django.contrib.staticfiles¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Database backends¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Error Reporting¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Forms¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Internationalization¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Logging¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Management Commands¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Migrations¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Models¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Requests and Responses¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Utilities¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Validators¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Backwards incompatible changes in 4.2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Database backend API¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for MariaDB 10.3¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for MySQL 5.7¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for PostgreSQL 11¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Setting update_fields in Model.save() may now be required¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Dropped support for raw aggregations on MySQL¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Features deprecated in 4.2¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "index_together option is deprecated in favor of indexes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Passing encoded JSON string literals to JSONField is deprecated¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Miscellaneous¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "The new Field.db_comment and Meta.db_table_comment options allow creating comments on columns and tables, respectively. For example:",
+      "code": "from django.db import models\n\n\nclass Question(models.Model):\n    text = models.TextField(db_comment=\"Poll question\")\n    pub_date = models.DateTimeField(\n        db_comment=\"Date and time when the question was published\",\n    )\n\n    class Meta:\n        db_table_comment = \"Poll questions\"\n\n\nclass Answer(models.Model):\n    question = models.ForeignKey(\n        Question,\n        on_delete=models.CASCADE,\n        db_comment=\"Reference to a question\",\n    )\n    answer = models.TextField(db_comment=\"Question answer\")\n\n    class Meta:\n        db_table_comment = \"Question answers\""
+    },
+    {
+      "description": "Migrating existing index_together should be handled as a migration. For example:",
+      "code": "class Author(models.Model):\n    rank = models.IntegerField()\n    name = models.CharField(max_length=30)\n\n    class Meta:\n        index_together = [[\"rank\", \"name\"]]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2/",
+    "https://docs.djangoproject.com/en/stable/howto/upgrade-version/",
+    "https://docs.djangoproject.com/en/stable/internals/release-process/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/files/storage/",
+    "https://docs.djangoproject.com/en/stable/topics/files/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/admin/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/models/",
+    "https://docs.djangoproject.com/en/stable/ref/logging/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/database-functions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/lookups/",
+    "https://docs.djangoproject.com/en/stable/topics/db/transactions/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/ref/utils/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.1/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

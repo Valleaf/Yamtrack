@@ -1,0 +1,72 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+  "title": "django.urls utility functions | Django documentation | Django",
+  "content": "The reverse() function can be used to return an absolute path reference for a given view and optional parameters, similar to the url tag:\n\nviewname can be a URL pattern name or the callable view object used in the URLconf. For example, given the following url:\n\nyou can use any of the following to reverse the URL:\n\nIf the URL accepts arguments, you may pass them in args. For example:\n\nYou can also pass kwargs instead of args. For example:\n\nargs and kwargs cannot be passed to reverse() at the same time.\n\nIf no match can be made, reverse() raises a NoReverseMatch exception.\n\nThe reverse() function can reverse a large variety of regular expression patterns for URLs, but not every possible one. The main restriction at the moment is that the pattern cannot contain alternative choices using the vertical bar (\"|\") character. You can quite happily use such patterns for matching against incoming URLs and sending them off to views, but you cannot reverse such patterns.\n\nThe current_app argument allows you to provide a hint to the resolver indicating the application to which the currently executing view belongs. This current_app argument is used as a hint to resolve application namespaces into URLs on specific application instances, according to the namespaced URL resolution strategy.\n\nThe urlconf argument is the URLconf module containing the URL patterns to use for reversing. By default, the root URLconf for the current thread is used.\n\nThe query keyword argument specifies parameters to be added to the returned URL. It can accept an instance of QueryDict (such as request.GET) or any value compatible with urllib.parse.urlencode(). The encoded query string is appended to the resolved URL, prefixed by a ?.\n\nThe fragment keyword argument specifies a fragment identifier to be appended to the returned URL (that is, after the path and query string, preceded by a #).\n\nThe query and fragment arguments were added.\n\nThe string returned by reverse() is already urlquoted. For example:\n\nApplying further encoding (such as urllib.parse.quote()) to the output of reverse() may produce undesirable results.\n\nReversing class-based views by view object\n\nThe view object can also be the result of calling as_view() if the same view object is used in the URLConf. Following the original example, the view object could be defined as:\n\nHowever, remember that namespaced views cannot be reversed by view object.\n\nA lazily evaluated version of reverse().\n\nIt is useful for when you need to use a URL reversal before your project’s URLConf is loaded. Some common cases where this function is necessary are:\n\nproviding a reversed URL as the url attribute of a generic class-based view.\n\nproviding a reversed URL to a decorator (such as the login_url argument for the django.contrib.auth.decorators.permission_required() decorator).\n\nproviding a reversed URL as a default value for a parameter in a function’s signature.\n\nThe query and fragment arguments were added.\n\nThe resolve() function can be used for resolving URL paths to the corresponding view functions. It has the following signature:\n\npath is the URL path you want to resolve. As with reverse(), you don’t need to worry about the urlconf parameter. The function returns a ResolverMatch object that allows you to access various metadata about the resolved URL.\n\nIf the URL does not resolve, the function raises a Resolver404 exception (a subclass of Http404) .\n\nThe view function that would be used to serve the URL\n\nThe arguments that would be passed to the view function, as parsed from the URL.\n\nAll keyword arguments that would be passed to the view function, i.e. captured_kwargs and extra_kwargs.\n\nThe captured keyword arguments that would be passed to the view function, as parsed from the URL.\n\nThe additional keyword arguments that would be passed to the view function.\n\nThe name of the URL pattern that matches the URL.\n\nThe route of the matching URL pattern.\n\nFor example, if path('users/<id>/', ...) is the matching pattern, route will contain 'users/<id>/'.\n\nThe list of URL patterns tried before the URL either matched one or exhausted available patterns.\n\nThe application namespace for the URL pattern that matches the URL.\n\nThe list of individual namespace components in the full application namespace for the URL pattern that matches the URL. For example, if the app_name is 'foo:bar', then app_names will be ['foo', 'bar'].\n\nThe instance namespace for the URL pattern that matches the URL.\n\nThe list of individual namespace components in the full instance namespace for the URL pattern that matches the URL. i.e., if the namespace is foo:bar, then namespaces will be ['foo', 'bar'].\n\nThe name of the view that matches the URL, including the namespace if there is one.\n\nA ResolverMatch object can then be interrogated to provide information about the URL pattern that matches a URL:\n\nA ResolverMatch object can also be assigned to a triple:\n\nOne possible use of resolve() would be to test whether a view would raise a Http404 error before redirecting to it:\n\nNormally, you should always use reverse() to define URLs within your application. However, if your application constructs part of the URL hierarchy itself, you may occasionally need to generate URLs. In that case, you need to be able to find the base URL of the Django project within its web server (normally, reverse() takes care of this for you). In that case, you can call get_script_prefix(), which will return the script prefix portion of the URL for your Django project. If your Django project is at the root of its web server, this is always \"/\".\n\nThis function cannot be used outside of the request-response cycle since it relies on values initialized during that cycle.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "django.urls utility functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "reverse()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "reverse_lazy()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "resolve()¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "get_script_prefix()¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "If the URL accepts arguments, you may pass them in args. For example:",
+      "code": "from django.urls import reverse\n\n\ndef myview(request):\n    return HttpResponseRedirect(reverse(\"arch-summary\", args=[1945]))"
+    },
+    {
+      "description": "You can also pass kwargs instead of args. For example:",
+      "code": ">>> reverse(\"admin:app_list\", kwargs={\"app_label\": \"auth\"})\n'/admin/auth/'"
+    },
+    {
+      "description": "For example:",
+      "code": ">>> from django.urls import reverse\n>>> reverse(\"admin:index\", query={\"q\": \"biscuits\", \"page\": 2}, fragment=\"results\")\n'/admin/?q=biscuits&page=2#results'\n>>> reverse(\"admin:index\", query=[(\"color\", \"blue\"), (\"color\", 1), (\"none\", None)])\n'/admin/?color=blue&color=1&none=None'\n>>> reverse(\"admin:index\", query={\"has empty spaces\": \"also has empty spaces!\"})\n'/admin/?has+empty+spaces=also+has+empty+spaces%21'\n>>> reverse(\"admin:index\", fragment=\"no encoding is done\")\n'/admin/#no encoding is done'"
+    },
+    {
+      "description": "Note The string returned by reverse() is already urlquoted. For example: >>> reverse(\"cities\", args=[\"Orléans\"]) '.../Orl%C3%A9ans/' Applying further encoding (such as urllib.parse.quote()) to the output of reverse() may produce undesirable results.",
+      "code": ">>> reverse(\"cities\", args=[\"Orléans\"])\n'.../Orl%C3%A9ans/'"
+    },
+    {
+      "description": "The string returned by reverse() is already urlquoted. For example:",
+      "code": ">>> reverse(\"cities\", args=[\"Orléans\"])\n'.../Orl%C3%A9ans/'"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/builtins/",
+    "https://docs.djangoproject.com/en/stable/topics/http/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/ref/unicode/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/ref/urls/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

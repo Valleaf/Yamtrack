@@ -1,0 +1,60 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/composite-primary-key/",
+  "title": "Composite primary keys | Django documentation | Django",
+  "content": "In Django, each model has a primary key. By default, this primary key consists of a single field.\n\nIn most cases, a single primary key should suffice. In database design, however, defining a primary key consisting of multiple fields is sometimes necessary.\n\nTo use a composite primary key, when defining a model set the pk attribute to be a CompositePrimaryKey:\n\nThis will instruct Django to create a composite primary key (PRIMARY KEY (product_id, order_id)) when creating the table.\n\nA composite primary key is represented by a tuple:\n\nYou can assign a tuple to the pk attribute. This sets the associated field values:\n\nA composite primary key can also be filtered by a tuple:\n\nWe’re still working on composite primary key support for relational fields, including GenericForeignKey fields, and the Django admin. Models with composite primary keys cannot be registered in the Django admin at this time. You can expect to see this in future releases.\n\nDjango doesn’t support migrating to, or from, a composite primary key after the table is created. It also doesn’t support adding or removing fields from the composite primary key.\n\nIf you would like to migrate an existing table from a single primary key to a composite primary key, follow your database backend’s instructions to do so.\n\nOnce the composite primary key is in place, add the CompositePrimaryKey field to your model. This allows Django to recognize and handle the composite primary key appropriately.\n\nWhile migration operations (e.g. AddField, AlterField) on primary key fields are not supported, makemigrations will still detect changes.\n\nIn order to avoid errors, it’s recommended to apply such migrations with --fake.\n\nAlternatively, SeparateDatabaseAndState may be used to execute the backend-specific migrations and Django-generated migrations in a single operation.\n\nRelationship fields, including generic relations do not support composite primary keys.\n\nFor example, given the OrderLineItem model, the following is not supported:\n\nBecause ForeignKey currently cannot reference models with composite primary keys.\n\nTo work around this limitation, ForeignObject can be used as an alternative:\n\nForeignObject is much like ForeignKey, except that it doesn’t create any columns (e.g. item_id), foreign key constraints or indexes in the database, and the on_delete argument is ignored.\n\nMany database functions only accept a single expression.\n\nIn these cases, providing a composite primary key reference raises a ValueError, since it is composed of multiple column expressions. An exception is made for Count.\n\nAs a composite primary key is a virtual field, a field which doesn’t represent a single database column, this field is excluded from ModelForms.\n\nFor example, take the following form:\n\nThis form does not have a form field pk for the composite primary key:\n\nSetting the primary composite field pk as a form field raises an unknown field FieldError.\n\nPrimary key fields are read only\n\nIf you change the value of a primary key on an existing object and then save it, a new object will be created alongside the old one (see Field.primary_key).\n\nThis is also true of composite primary keys. Hence, you may want to set Field.editable to False on all primary key fields to exclude them from ModelForms.\n\nSince pk is only a virtual field, including pk as a field name in the exclude argument of Model.clean_fields() has no effect. To exclude the composite primary key fields from model validation, specify each field individually. Model.validate_unique() can still be called with exclude={\"pk\"} to skip uniqueness checks.\n\nPrior to the introduction of composite primary keys, the single field composing the primary key of a model could be retrieved by introspecting the primary key attribute of its fields:\n\nNow that a primary key can be composed of multiple fields the primary key attribute can no longer be relied upon to identify members of the primary key as it will be set to False to maintain the invariant that at most one field per model will have this attribute set to True:\n\nIn order to build application code that properly handles composite primary keys the _meta.pk_fields attribute should be used instead:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Composite primary keys¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Migrating to a composite primary key¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Composite primary keys and relations¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Composite primary keys and database functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Composite primary keys in forms¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Composite primary keys in model validation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Building composite primary key ready applications¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/composite-primary-key/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/",
+    "https://docs.djangoproject.com/en/stable/ref/migration-operations/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/meta/",
+    "https://docs.djangoproject.com/en/stable/topics/conditional-view-processing/",
+    "https://docs.djangoproject.com/en/stable/topics/signing/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.11/",
+  "title": "Django 1.8.11 release notes | Django documentation | Django",
+  "content": "Django 1.8.11 fixes a regression on Python 2 in the 1.8.10 security release where utils.http.is_safe_url() crashes on bytestring URLs (#26308).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.11 release notes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.12/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.10/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

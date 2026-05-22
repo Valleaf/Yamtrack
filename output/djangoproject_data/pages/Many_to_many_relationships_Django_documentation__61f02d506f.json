@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_many/",
+  "title": "Many-to-many relationships | Django documentation | Django",
+  "content": "To define a many-to-many relationship, use ManyToManyField.\n\nIn this example, an Article can be published in multiple Publication objects, and a Publication has multiple Article objects:\n\nWhat follows are examples of operations that can be performed using the Python API facilities.\n\nCreate a few Publication instances:\n\nYou can’t associate it with a Publication until it’s been saved:\n\nAssociate the Article with a Publication:\n\nCreate another Article, and set it to appear in its publications:\n\nAdding a second time is OK, it will not duplicate the relation:\n\nAdding an object of the wrong type raises TypeError:\n\nCreate and add a Publication to an Article in one step using create():\n\nArticle objects have access to their related Publication objects:\n\nPublication objects have access to their related Article objects:\n\nMany-to-many relationships can be queried using lookups across relationships:\n\nThe count() function respects distinct() as well:\n\nReverse m2m queries are supported (i.e., starting at the table that doesn’t have a ManyToManyField):\n\nExcluding a related item works as you would expect, too (although the SQL involved is a little complex):\n\nIf we delete a Publication, its related Article instances won’t be able to access it:\n\nIf we delete an Article, its related Publication instances won’t be able to access it:\n\nAdding via the ‘other’ end of an m2m:\n\nAdding via the other end using keywords:\n\nRemoving Publication from an Article:\n\nAnd from the other end:\n\nRelation sets can be set:\n\nRelation sets can be cleared:\n\nAnd you can clear from the other end:\n\nRecreate the Article and Publication we have deleted:\n\nBulk delete some Publication instances, and the references to deleted publications will no longer be included in the related entries:\n\nBulk delete some articles - references to deleted objects should go:\n\nAfter the delete(), the QuerySet cache needs to be cleared, and the referenced objects should be gone:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Many-to-many relationships¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_many/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/models/relations/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

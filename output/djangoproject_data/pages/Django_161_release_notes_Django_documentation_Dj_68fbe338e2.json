@@ -1,0 +1,34 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.6.1/",
+  "title": "Django 1.6.1 release notes | Django documentation | Django",
+  "content": "This is Django 1.6.1, a bugfix release for Django 1.6. In addition to the bug fixes listed below, translations submitted since the 1.6 release are also included.\n\nFixed BCryptSHA256PasswordHasher with py-bcrypt and Python 3 (#21398).\n\nFixed a regression that prevented a ForeignKey with a hidden reverse manager (related_name ending with ‘+’) from being used as a lookup for prefetch_related (#21410).\n\nFixed Queryset.datetimes raising AttributeError in some situations (#21432).\n\nFixed ModelBackend raising UnboundLocalError if get_user_model() raised an error (#21439).\n\nFixed a regression that prevented editable GenericRelation subclasses from working in ModelForms (#21428).\n\nAdded missing to_python method for ModelMultipleChoiceField which is required in Django 1.6 to properly detect changes from initial values (#21568).\n\nFixed django.contrib.humanize translations where the Unicode sequence for the non-breaking space was returned verbatim (#21415).\n\nFixed loaddata error when fixture file name contained any dots not related to file extensions (#21457) or when fixture path was relative but located in a subdirectory (#21551).\n\nFixed display of inline instances in formsets when parent has 0 for primary key (#21472).\n\nFixed a regression where custom querysets for foreign keys were overwritten if ModelAdmin had ordering set (#21405).\n\nRemoved mention of a feature in the --locale/-l option of the makemessages and compilemessages commands that never worked as promised: Support of multiple locale names separated by commas. It’s still possible to specify multiple locales in one run by using the option multiple times (#21488, #17181).\n\nFixed a regression that unnecessarily triggered settings configuration when importing get_wsgi_application (#21486).\n\nFixed test client logout() method when using the cookie-based session backend (#21448).\n\nFixed a crash when a GeometryField uses a non-geometric widget (#21496).\n\nFixed password hash upgrade when changing the iteration count (#21535).\n\nFixed a bug in the debug view when the URLconf only contains one element (#21530).\n\nRe-added missing search result count and reset link in changelist admin view (#21510).\n\nThe current language is no longer saved to the session by LocaleMiddleware on every response, but rather only after a logout (#21473).\n\nFixed a crash when executing runserver on non-English systems and when the formatted date in its output contained non-ASCII characters (#21358).\n\nFixed a crash in the debug view after an exception occurred on Python ≥ 3.3 (#21443).\n\nFixed a crash in ImageField on some platforms (Homebrew and RHEL6 reported) (#21355).\n\nFixed a regression when using generic relations in ModelAdmin.list_filter (#21431).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.6.1 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bug fixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.6.1/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/auth/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/customizing/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6.2/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

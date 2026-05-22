@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/",
+  "title": "Many-to-one relationships | Django documentation | Django",
+  "content": "To define a many-to-one relationship, use ForeignKey.\n\nIn this example, a Reporter can be associated with many Article objects, but an Article can only have one Reporter object:\n\nWhat follows are examples of operations that can be performed using the Python API facilities.\n\nCreate a few Reporters:\n\nNote that you must save an object before it can be assigned to a foreign key relationship. For example, creating an Article with unsaved Reporter raises ValueError:\n\nArticle objects have access to their related Reporter objects:\n\nCreate an Article via the Reporter object:\n\nCreate a new article:\n\nAdd the same article to a different article set - check that it moves:\n\nAdding an object of the wrong type raises TypeError:\n\nNote that in the last example the article has moved from John to Paul.\n\nRelated managers support field lookups as well. The API automatically follows relationships as far as you need. Use double underscores to separate relationships. This works as many levels deep as you want. There’s no limit. For example:\n\nExact match is implied here:\n\nQuery twice over the related field. This translates to an AND condition in the WHERE clause:\n\nFor the related lookup you can supply a primary key value or pass the related object explicitly:\n\nYou can also use a queryset instead of a literal list of instances:\n\nQuerying in the opposite direction:\n\nCounting in the opposite direction works in conjunction with distinct():\n\nQueries can go round in circles:\n\nIf you delete a reporter, their articles will be deleted (assuming that the ForeignKey was defined with django.db.models.ForeignKey.on_delete set to CASCADE, which is the default):\n\nYou can delete using a JOIN in the query:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Many-to-one relationships¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Related managers support field lookups as well. The API automatically follows relationships as far as you need. Use double underscores to separate relationships. This works as many levels deep as you want. There’s no limit. For example:",
+      "code": ">>> r.article_set.filter(headline__startswith=\"This\")\n<QuerySet [<Article: This is a test>]>\n\n# Find all Articles for any Reporter whose first name is \"John\".\n>>> Article.objects.filter(reporter__first_name=\"John\")\n<QuerySet [<Article: John's second story>, <Article: This is a test>]>"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_one/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/many_to_many/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/one_to_one/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/topics/db/examples/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

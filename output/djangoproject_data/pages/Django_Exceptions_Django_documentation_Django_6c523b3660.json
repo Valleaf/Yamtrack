@@ -1,0 +1,196 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+  "title": "Django Exceptions | Django documentation | Django",
+  "content": "Django raises some of its own exceptions as well as standard Python exceptions.\n\nDjango core exception classes are defined in django.core.exceptions.\n\nThis exception is raised when attempting to use models before the app loading process, which initializes the ORM, is complete.\n\nThe base class for Model.DoesNotExist exceptions. A try/except for ObjectDoesNotExist will catch DoesNotExist exceptions for all models.\n\nThe base class for Model.NotUpdated exceptions. A try/except for ObjectNotUpdated will catch NotUpdated exceptions for all models.\n\nEmptyResultSet may be raised during query generation if a query won’t return any results. Most Django projects won’t encounter this exception, but it might be useful for implementing custom lookups and expressions.\n\nFullResultSet may be raised during query generation if a query will match everything. Most Django projects won’t encounter this exception, but it might be useful for implementing custom lookups and expressions.\n\nThe FieldDoesNotExist exception is raised by a model’s _meta.get_field() method when the requested field does not exist on the model or on the model’s parents.\n\nThe base class for Model.MultipleObjectsReturned exceptions. A try/except for MultipleObjectsReturned will catch MultipleObjectsReturned exceptions for all models.\n\nThe SuspiciousOperation exception is raised when a user has performed an operation that should be considered suspicious from a security perspective, such as tampering with a session cookie. Subclasses of SuspiciousOperation include:\n\nDisallowedModelAdminLookup\n\nDisallowedModelAdminToField\n\nSuspiciousFileOperation\n\nSuspiciousMultipartForm\n\nIf a SuspiciousOperation exception reaches the ASGI/WSGI handler level it is logged at the Error level and results in a HttpResponseBadRequest. See the logging documentation for more information.\n\nThe PermissionDenied exception is raised when a user does not have permission to perform the action requested.\n\nThe ViewDoesNotExist exception is raised by django.urls when a requested view does not exist.\n\nThe MiddlewareNotUsed exception is raised when a middleware is not used in the server configuration.\n\nThe ImproperlyConfigured exception is raised when Django is somehow improperly configured – for example, if a value in settings.py is incorrect or unparseable.\n\nThe FieldError exception is raised when there is a problem with a model field. This can happen for several reasons:\n\nA field in a model clashes with a field of the same name from an abstract base class\n\nAn infinite loop is caused by ordering\n\nA keyword cannot be parsed from the filter parameters\n\nA field cannot be determined from a keyword in the query parameters\n\nA join is not permitted on the specified field\n\nA field name is invalid\n\nA query contains invalid order_by arguments\n\nThe ValidationError exception is raised when data fails form or model field validation. For more information about validation, see Form and Field Validation, Model Field Validation and the Validator Reference.\n\nValidationErrors that don’t belong to a particular field in a form or model are classified as NON_FIELD_ERRORS. This constant is used as a key in dictionaries that otherwise map fields to their respective list of errors.\n\nThe BadRequest exception is raised when the request cannot be processed due to a client error. If a BadRequest exception reaches the ASGI/WSGI handler level it results in a HttpResponseBadRequest.\n\nThe RequestAborted exception is raised when an HTTP body being read in by the handler is cut off midstream and the client connection closes, or when the client does not send data and hits a timeout where the server closes the connection.\n\nIt is internal to the HTTP handler modules and you are unlikely to see it elsewhere. If you are modifying HTTP handling code, you should raise this when you encounter an aborted request to make sure the socket is closed cleanly.\n\nThe SynchronousOnlyOperation exception is raised when code that is only allowed in synchronous Python code is called from an asynchronous context (a thread with a running asynchronous event loop). These parts of Django are generally heavily reliant on thread-safety to function and don’t work correctly under coroutines sharing the same thread.\n\nIf you are trying to call code that is synchronous-only from an asynchronous thread, then create a synchronous thread and call it in that. You can accomplish this is with asgiref.sync.sync_to_async().\n\nURL Resolver exceptions are defined in django.urls.\n\nThe Resolver404 exception is raised by resolve() if the path passed to resolve() doesn’t map to a view. It’s a subclass of django.http.Http404.\n\nThe NoReverseMatch exception is raised by django.urls when a matching URL in your URLconf cannot be identified based on the parameters supplied.\n\nDatabase exceptions may be imported from django.db.\n\nDjango wraps the standard database exceptions so that your Django code has a guaranteed common implementation of these classes.\n\nThe Django wrappers for database exceptions behave exactly the same as the underlying database exceptions. See PEP 249, the Python Database API Specification v2.0, for further information.\n\nAs per PEP 3134, a __cause__ attribute is set with the original (underlying) database exception, allowing access to any additional information provided.\n\nRaised to prevent deletion of referenced objects when using django.db.models.PROTECT. models.ProtectedError is a subclass of IntegrityError.\n\nRaised to prevent deletion of referenced objects when using django.db.models.RESTRICT. models.RestrictedError is a subclass of IntegrityError.\n\nHTTP exceptions may be imported from django.http.\n\nUnreadablePostError is raised when a user cancels an upload.\n\nSessions exceptions are defined in django.contrib.sessions.exceptions.\n\nSessionInterrupted is raised when a session is destroyed in a concurrent request. It’s a subclass of BadRequest.\n\nTransaction exceptions are defined in django.db.transaction.\n\nTransactionManagementError is raised for any and all problems related to database transactions.\n\nExceptions provided by the django.test package.\n\nRedirectCycleError is raised when the test client detects a loop or an overly long chain of redirects.\n\nDjango raises built-in Python exceptions when appropriate as well. See the Python documentation for further information on the Built-in Exceptions.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Django Core Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AppRegistryNotReady¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ObjectDoesNotExist¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ObjectNotUpdated¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "EmptyResultSet¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FullResultSet¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FieldDoesNotExist¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultipleObjectsReturned¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SuspiciousOperation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PermissionDenied¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ViewDoesNotExist¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MiddlewareNotUsed¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ImproperlyConfigured¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FieldError¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ValidationError¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "NON_FIELD_ERRORS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BadRequest¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RequestAborted¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SynchronousOnlyOperation¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "URL Resolver exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Resolver404¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NoReverseMatch¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Database Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "HTTP Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "UnreadablePostError¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Sessions Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SessionInterrupted¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Transaction Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TransactionManagementError¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Testing Framework Exceptions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "RedirectCycleError¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Python Exceptions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/applications/",
+    "https://docs.djangoproject.com/en/stable/ref/models/class/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/request-response/",
+    "https://docs.djangoproject.com/en/stable/topics/logging/",
+    "https://docs.djangoproject.com/en/stable/ref/urlresolvers/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/validation/",
+    "https://docs.djangoproject.com/en/stable/ref/validators/",
+    "https://docs.djangoproject.com/en/stable/topics/async/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/files/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

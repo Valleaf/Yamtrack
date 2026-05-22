@@ -1,0 +1,87 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+  "title": "Geolocation with GeoIP2 | Django documentation | Django",
+  "content": "The GeoIP2 object is a wrapper for the MaxMind geoip2 Python library. [1]\n\nIn order to perform IP-based geolocation, the GeoIP2 object requires the geoip2 Python package and the GeoIP Country and/or City datasets in binary format (the CSV files will not work!), downloaded from e.g. MaxMind or DB-IP websites. Grab the GeoLite2-Country.mmdb.gz and GeoLite2-City.mmdb.gz files and unzip them in a directory corresponding to the GEOIP_PATH setting.\n\nAdditionally, it is recommended to install the libmaxminddb C library, so that geoip2 can leverage the C library’s faster speed.\n\nHere is an example of its usage:\n\nThe GeoIP object does not require any parameters to use the default settings. However, at the very least the GEOIP_PATH setting should be set with the path of the location of your GeoIP datasets. The following initialization keywords may be used to customize any of the defaults.\n\nBase directory to where GeoIP data is located or the full path to where the city or country data files (.mmdb) are located. Assumes that both the city and country datasets are located in this directory; overrides the GEOIP_PATH setting.\n\nThe cache settings when opening up the GeoIP datasets. May be an integer in (0, 1, 2, 4, 8) corresponding to the MODE_AUTO, MODE_MMAP_EXT, MODE_MMAP, and GEOIP_INDEX_CACHE MODE_MEMORY C API settings, respectively. Defaults to 0 (MODE_AUTO).\n\nThe name of the GeoIP country data file. Defaults to GeoLite2-Country.mmdb. Setting this keyword overrides the GEOIP_COUNTRY setting.\n\nThe name of the GeoIP city data file. Defaults to GeoLite2-City.mmdb. Setting this keyword overrides the GEOIP_CITY setting.\n\nAll the following querying routines may take an instance of IPv4Address or IPv6Address, a string IP address, or a fully qualified domain name (FQDN). For example, IPv4Address(\"205.186.163.125\"), \"205.186.163.125\", and \"djangoproject.com\" would all be valid query parameters.\n\nReturns a dictionary of city information for the given query. Some of the values in the dictionary may be undefined (None).\n\nReturns a dictionary with the country code and country for the given query.\n\nReturns the country code corresponding to the query.\n\nReturns the country name corresponding to the query.\n\nReturns a coordinate tuple of (longitude, latitude).\n\nReturns a coordinate tuple of (latitude, longitude),\n\nReturns a Point object corresponding to the query.\n\nA string or pathlib.Path specifying the directory where the GeoIP data files are located. This setting is required unless manually specified with path keyword when initializing the GeoIP2 object.\n\nThe basename to use for the GeoIP country data file. Defaults to 'GeoLite2-Country.mmdb'.\n\nThe basename to use for the GeoIP city data file. Defaults to 'GeoLite2-City.mmdb'.\n\nThe exception raised when an error occurs in the GeoIP2 wrapper. Exceptions from the underlying geoip2 library are passed through unchanged.\n\nGeoIP(R) is a registered trademark of MaxMind, Inc.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Geolocation with GeoIP2¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overview¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Example¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "API Reference¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Querying¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Coordinate Retrieval¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOIP_PATH¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOIP_COUNTRY¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GEOIP_CITY¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Exceptions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Here is an example of its usage:",
+      "code": ">>> from django.contrib.gis.geoip2 import GeoIP2\n>>> g = GeoIP2()\n>>> g.country(\"google.com\")\n{'continent_code': 'NA',\n 'continent_name': 'North America',\n 'country_code': 'US',\n 'country_name': 'United States',\n 'is_in_european_union': False}\n>>> g.city(\"72.14.207.99\")\n{'accuracy_radius': 1000,\n 'city': 'Mountain View',\n 'continent_code': 'NA',\n 'continent_name': 'North America',\n 'country_code': 'US',\n 'country_name': 'United States',\n 'is_in_european_union': False,\n 'latitude': 37.419200897216797,\n 'longitude': -122.05740356445312,\n 'metro_code': 807,\n 'postal_code': '94043',\n 'region_code': 'CA',\n 'region_name': 'California',\n 'time_zone': 'America/Los_Angeles',\n 'dma_code': 807,\n 'region': 'CA'}\n>>> g.lat_lon(\"salon.com\")\n(39.0437, -77.4875)\n>>> g.lon_lat(\"uh.edu\")\n(-95.4342, 29.834)\n>>> g.geos(\"24.124.1.80\").wkt\n'POINT (-97 38)'"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geos/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/gdal/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

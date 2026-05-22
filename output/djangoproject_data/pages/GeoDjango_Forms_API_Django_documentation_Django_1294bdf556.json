@@ -1,0 +1,119 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+  "title": "GeoDjango Forms API | Django documentation | Django",
+  "content": "GeoDjango provides some specialized form fields and widgets in order to visually display and edit geolocalized data on a map. By default, they use OpenLayers-powered maps, with a base WMS layer provided by NASA.\n\nIn addition to the regular form field arguments, GeoDjango form fields take the following optional arguments.\n\nThis is the SRID code that the field value should be transformed to. For example, if the map widget SRID is different from the SRID more generally used by your application or database, the field will automatically convert input values into that SRID.\n\nYou generally shouldn’t have to set or change that attribute which should be set up depending on the field class. It matches the OpenGIS standard geometry name.\n\nGeoDjango form widgets allow you to display and edit geographic data on a visual map. Note that none of the currently available widgets supports 3D geometries, hence geometry fields will fallback using a Textarea widget for such data.\n\nGeoDjango widgets are template-based, so their attributes are mostly different from other Django widget attributes.\n\nA string that specifies the identifier for the default base map layer to be used by the corresponding JavaScript map widget. It is passed as part of the widget options when rendering, allowing the MapWidget to determine which map tile provider or base layer to initialize (default is None).\n\nThe OpenGIS geometry type, generally set by the form field.\n\nSRID code used by the map (default is 4326).\n\nBoolean value specifying if a textarea input showing the serialized representation of the current geometry is visible, mainly for debugging purposes (default is False).\n\nIndicates if the widget supports edition of 3D data (default is False).\n\nThe template used to render the map widget.\n\nYou can pass widget attributes in the same manner that for any other Django widget. For example:\n\nThis is an abstract base widget containing the logic needed by subclasses. You cannot directly use this widget for a geometry field. Note that the rendering of GeoDjango widgets is based on a base layer name, identified by the base_layer class attribute.\n\nThis is the default widget used by all GeoDjango form fields. Attributes are:\n\nOpenLayersWidget and OSMWidget include the ol.js and ol.css files hosted on the cdn.jsdelivr.net content-delivery network. These files can be overridden by subclassing the widget and setting the js and css properties of the inner Media class (see Assets as a static definition).\n\nExternal assets with CSP\n\nWhen ContentSecurityPolicyMiddleware is enabled, the default OpenLayers CDN assets (ol.js and ol.css) will be blocked unless explicitly allowed. This can be addressed in one of two ways: serve assets locally by subclassing the widget and provide local copies of the JavaScript and CSS files, or allow the CDN in the CSP policy.\n\nFor example, to allow the default NASA Worldview base layer (replace x.y.z with the actual version):\n\nThis widget specialized OpenLayersWidget and uses an OpenStreetMap base layer to display geographic objects on. Attributes are:\n\nThe default center latitude and longitude are 47 and 5, respectively, which is a location in eastern France.\n\nThe default map zoom is 12.\n\nThe OpenLayersWidget note about using external assets also applies here. See also this FAQ answer about https access to map tiles.\n\nOpenStreetMap tiles with CSP\n\nThis widget uses OpenStreetMap tiles instead of NASA Worldview. If Content Security Policy enabled, both the OpenLayers CDN resources (as required by OpenLayersWidget) and the OpenStreetMap tile servers must be allowed:\n\nThe OSMWidget no longer uses a custom template. Consequently, the gis/openlayers-osm.html template was removed.\n\nTo customize the base layer displayed in OpenLayers-based geometry widgets, define a new layer builder in a custom JavaScript file. For example:\n\nThen, subclass a standard geometry widget and set the base_layer:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoDjango Forms API¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Field arguments¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "srid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "geom_type¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Form field classes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeometryField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PointField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LineStringField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PolygonField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiPointField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiLineStringField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MultiPolygonField¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeometryCollectionField¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Form widgets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Widget attributes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Widget classes¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Customizing the base layer used in OpenLayers-based widgets¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "You can pass widget attributes in the same manner that for any other Django widget. For example:",
+      "code": "from django.contrib.gis import forms\n\n\nclass MyGeoForm(forms.Form):\n    point = forms.PointField(widget=forms.OSMWidget(attrs={\"display_raw\": True}))"
+    },
+    {
+      "description": "To customize the base layer displayed in OpenLayers-based geometry widgets, define a new layer builder in a custom JavaScript file. For example:",
+      "code": "MapWidget.layerBuilder.custom_layer_name = function () {\n     // Return an OpenLayers layer instance.\n     return new ol.layer.Tile({source: new ol.source.<ChosenSource>()});\n };"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/forms-api/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/db-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

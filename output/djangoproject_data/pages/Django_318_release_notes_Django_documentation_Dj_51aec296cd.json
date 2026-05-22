@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.1.8/",
+  "title": "Django 3.1.8 release notes | Django documentation | Django",
+  "content": "Django 3.1.8 fixes a security issue with severity “low” and a bug in 3.1.7.\n\nMultiPartParser allowed directory-traversal via uploaded files with suitably crafted file names.\n\nBuilt-in upload handlers were not affected by this vulnerability.\n\nFixed a bug in Django 3.1 where the output was hidden on a test error or failure when using test --pdb with the --buffer option (#32560).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.1.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-28658: Potential directory-traversal via uploaded files¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.1.8/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.9/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

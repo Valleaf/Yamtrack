@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.10.5/",
+  "title": "Django 1.10.5 release notes | Django documentation | Django",
+  "content": "Django 1.10.5 fixes several bugs in 1.10.4.\n\nFixed a crash in the debug view if request.user can’t be retrieved, such as if the database is unavailable (#27567).\n\nFixed occasional missing plural forms in JavaScriptCatalog (#27418).\n\nFixed a regression in the timesince and timeuntil filters that caused incorrect results for dates in a leap year (#27637).\n\nFixed a regression where collectstatic overwrote newer files in remote storages (#27658).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.10.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.10.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.10.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

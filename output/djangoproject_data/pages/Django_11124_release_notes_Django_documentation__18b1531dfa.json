@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.24/",
+  "title": "Django 1.11.24 release notes | Django documentation | Django",
+  "content": "Django 1.11.24 fixes a regression in 1.11.23.\n\nFixed crash of KeyTransform() for django.contrib.postgres.fields.JSONField and HStoreField when using on expressions with params (#30672).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.24 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.24/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.25/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.23/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

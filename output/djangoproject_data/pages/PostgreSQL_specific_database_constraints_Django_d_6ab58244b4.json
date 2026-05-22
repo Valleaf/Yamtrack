@@ -1,0 +1,102 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+  "title": "PostgreSQL specific database constraints | Django documentation | Django",
+  "content": "PostgreSQL supports additional data integrity constraints available from the django.contrib.postgres.constraints module. They are added in the model Meta.constraints option.\n\nCreates an exclusion constraint in the database. Internally, PostgreSQL implements exclusion constraints using indexes. The default index type is GiST. To use them, you need to activate the btree_gist extension on PostgreSQL. You can install it using the BtreeGistExtension migration operation.\n\nIf you attempt to insert a new row that conflicts with an existing row, an IntegrityError is raised. Similarly, when update conflicts with an existing row.\n\nExclusion constraints are checked during the model validation.\n\nSee BaseConstraint.name.\n\nAn iterable of 2-tuples. The first element is an expression or string. The second element is an SQL operator represented as a string. To avoid typos, you may use RangeOperators which maps the operators with strings. For example:\n\nRestrictions on operators.\n\nOnly commutative operators can be used in exclusion constraints.\n\nThe OpClass() expression can be used to specify a custom operator class for the constraint expressions. For example:\n\ncreates an exclusion constraint on circle using circle_ops.\n\nThe index type of the constraint. Accepted values are GIST or SPGIST. Matching is case insensitive. If not provided, the default index type is GIST.\n\nA Q object that specifies the condition to restrict a constraint to a subset of rows. For example, condition=Q(cancelled=False).\n\nThese conditions have the same database restrictions as django.db.models.Index.condition.\n\nSet this parameter to create a deferrable exclusion constraint. Accepted values are Deferrable.DEFERRED or Deferrable.IMMEDIATE. For example:\n\nBy default constraints are not deferred. A deferred constraint will not be enforced until the end of the transaction. An immediate constraint will be enforced immediately after every command.\n\nDeferred exclusion constraints may lead to a performance penalty.\n\nA list or tuple of the names of the fields to be included in the covering exclusion constraint as non-key columns. This allows index-only scans to be used for queries that select only included fields (include) and filter only by indexed fields (expressions).\n\ninclude is supported for GiST indexes. PostgreSQL 14+ also supports include for SP-GiST indexes.\n\nThe error code used when ValidationError is raised during model validation. Defaults to None.\n\nThe error message used when ValidationError is raised during model validation. Defaults to BaseConstraint.violation_error_message.\n\nThe following example restricts overlapping reservations in the same room, not taking canceled reservations into account:\n\nIn case your model defines a range using two fields, instead of the native PostgreSQL range types, you should write an expression that uses the equivalent function (e.g. TsTzRange()), and use the delimiters for the field. Most often, the delimiters will be '[)', meaning that the lower bound is inclusive and the upper bound is exclusive. You may use the RangeBoundary that provides an expression mapping for the range boundaries. For example:",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific database constraints¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ExclusionConstraint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "name¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "expressions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "index_type¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "condition¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "deferrable¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "include¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "violation_error_code¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "violation_error_message¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Examples¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "An iterable of 2-tuples. The first element is an expression or string. The second element is an SQL operator represented as a string. To avoid typos, you may use RangeOperators which maps the operators with strings. For example:",
+      "code": "expressions = [\n    (\"timespan\", RangeOperators.ADJACENT_TO),\n    (F(\"room\"), RangeOperators.EQUAL),\n]"
+    },
+    {
+      "description": "The OpClass() expression can be used to specify a custom operator class for the constraint expressions. For example:",
+      "code": "expressions = [\n    (OpClass(\"circle\", name=\"circle_ops\"), RangeOperators.OVERLAPS),\n]"
+    },
+    {
+      "description": "Set this parameter to create a deferrable exclusion constraint. Accepted values are Deferrable.DEFERRED or Deferrable.IMMEDIATE. For example:",
+      "code": "from django.contrib.postgres.constraints import ExclusionConstraint\nfrom django.contrib.postgres.fields import RangeOperators\nfrom django.db.models import Deferrable\n\nExclusionConstraint(\n    name=\"exclude_overlapping_deferred\",\n    expressions=[\n        (\"timespan\", RangeOperators.OVERLAPS),\n    ],\n    deferrable=Deferrable.DEFERRED,\n)"
+    },
+    {
+      "description": "In case your model defines a range using two fields, instead of the native PostgreSQL range types, you should write an expression that uses the equivalent function (e.g. TsTzRange()), and use the delimiters for the field. Most often, the delimiters will be '[)', meaning that the lower bound is inclusive and the upper bound is exclusive. You may use the RangeBoundary that provides an expression mapping for the range boundaries. For example:",
+      "code": "from django.contrib.postgres.constraints import ExclusionConstraint\nfrom django.contrib.postgres.fields import (\n    DateTimeRangeField,\n    RangeBoundary,\n    RangeOperators,\n)\nfrom django.db import models\nfrom django.db.models import Func, Q\n\n\nclass TsTzRange(Func):\n    function = \"TSTZRANGE\"\n    output_field = DateTimeRangeField()\n\n\nclass Reservation(models.Model):\n    room = models.ForeignKey(\"Room\", on_delete=models.CASCADE)\n    start = models.DateTimeField()\n    end = models.DateTimeField()\n    cancelled = models.BooleanField(default=False)\n\n    class Meta:\n        constraints = [\n            ExclusionConstraint(\n                name=\"exclude_overlapping_reservations\",\n                expressions=[\n                    (\n                        TsTzRange(\"start\", \"end\", RangeBoundary()),\n                        RangeOperators.OVERLAPS,\n                    ),\n                    (\"room\", RangeOperators.EQUAL),\n                ],\n                condition=Q(cancelled=False),\n            ),\n        ]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/models/constraints/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/aggregates/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/expressions/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

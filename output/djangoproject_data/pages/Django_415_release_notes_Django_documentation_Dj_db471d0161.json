@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.1.5/",
+  "title": "Django 4.1.5 release notes | Django documentation | Django",
+  "content": "Django 4.1.5 fixes a bug in 4.1.4. Also, the latest string translations from Transifex are incorporated.\n\nFixed a long standing bug in the __len lookup for ArrayField that caused a crash of model validation on Meta.constraints (#34205).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.1.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.1.5/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.6/",
+    "https://docs.djangoproject.com/en/stable/releases/4.1.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

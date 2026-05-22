@@ -1,0 +1,39 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+  "title": "Generic display views | Django documentation | Django",
+  "content": "The two following generic class-based views are designed to display data. On many projects they are typically the most commonly used views.\n\nWhile this view is executing, self.object will contain the object that the view is operating upon.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.detail.SingleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.detail.BaseDetailView\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.base.View\n\nhttp_method_not_allowed()\n\nget_context_object_name()\n\nExample myapp/views.py:\n\nExample myapp/urls.py:\n\nExample myapp/article_detail.html:\n\nA base view for displaying a single object. It is not intended to be used directly, but rather as a parent class of the django.views.generic.detail.DetailView or other views representing details of a single object.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.detail.SingleObjectMixin\n\ndjango.views.generic.base.View\n\nAdds object to the context.\n\nA page representing a list of objects.\n\nWhile this view is executing, self.object_list will contain the list of objects (usually, but not necessarily a queryset) that the view is operating upon.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.list.MultipleObjectTemplateResponseMixin\n\ndjango.views.generic.base.TemplateResponseMixin\n\ndjango.views.generic.list.BaseListView\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.base.View\n\nhttp_method_not_allowed()\n\nget_context_object_name()\n\nExample myapp/urls.py:\n\nExample myapp/article_list.html:\n\nIf you’re using pagination, you can adapt the example template from the pagination docs.\n\nA base view for displaying a list of objects. It is not intended to be used directly, but rather as a parent class of the django.views.generic.list.ListView or other views representing lists of objects.\n\nThis view inherits methods and attributes from the following views:\n\ndjango.views.generic.list.MultipleObjectMixin\n\ndjango.views.generic.base.View\n\nAdds object_list to the context. If allow_empty is True then display an empty list. If allow_empty is False then raise a 404 error.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Generic display views¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "DetailView¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ListView¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-single-object/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-simple/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/base/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/mixins-multiple-object/",
+    "https://docs.djangoproject.com/en/stable/topics/pagination/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-editing/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

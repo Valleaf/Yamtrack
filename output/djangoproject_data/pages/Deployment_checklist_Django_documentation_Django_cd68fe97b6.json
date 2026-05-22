@@ -1,0 +1,155 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/checklist/",
+  "title": "Deployment checklist | Django documentation | Django",
+  "content": "The internet is a hostile environment. Before deploying your Django project, you should take some time to review your settings, with security, performance, and operations in mind.\n\nDjango includes many security features. Some are built-in and always enabled. Others are optional because they aren’t always appropriate, or because they’re inconvenient for development. For example, forcing HTTPS may not be suitable for all websites, and it’s impractical for local development.\n\nPerformance optimizations are another category of trade-offs with convenience. For instance, caching is useful in production, less so for local development. Error reporting needs are also widely different.\n\nThe following checklist includes settings that:\n\nmust be set properly for Django to provide the expected level of security;\n\nare expected to be different in each environment;\n\nenable optional security features;\n\nenable performance optimizations;\n\nprovide error reporting.\n\nMany of these settings are sensitive and should be treated as confidential. If you’re releasing the source code for your project, a common practice is to publish suitable settings for development, and to use a private settings module for production.\n\nSome of the checks described below can be automated using the check --deploy option. Be sure to run it against your production settings file as described in the option’s documentation.\n\nThe runserver command is not designed for a production setting. Be sure to switch to a production-ready WSGI or ASGI server. For a few common options, see WSGI servers or ASGI servers.\n\nThe secret key must be a large random value and it must be kept secret.\n\nMake sure that the key used in production isn’t used anywhere else and avoid committing it to source control. This reduces the number of vectors from which an attacker may acquire the key.\n\nInstead of hardcoding the secret key in your settings module, consider loading it from an environment variable:\n\nIf rotating secret keys, you may use SECRET_KEY_FALLBACKS:\n\nEnsure that old secret keys are removed from SECRET_KEY_FALLBACKS in a timely manner.\n\nYou must never enable debug in production.\n\nYou’re certainly developing your project with DEBUG = True, since this enables handy features like full tracebacks in your browser.\n\nFor a production environment, though, this is a really bad idea, because it leaks lots of information about your project: excerpts of your source code, local variables, settings, libraries used, etc.\n\nWhen DEBUG = False, Django doesn’t work at all without a suitable value for ALLOWED_HOSTS.\n\nThis setting is required to protect your site against some CSRF attacks. If you use a wildcard, you must perform your own validation of the Host HTTP header, or otherwise ensure that you aren’t vulnerable to this category of attacks.\n\nYou should also configure the web server that sits in front of Django to validate the host. It should respond with a static error page or ignore requests for incorrect hosts instead of forwarding the request to Django. This way you’ll avoid spurious errors in your Django logs (or emails if you have error reporting configured that way). For example, on nginx you might set up a default server to return “444 No Response” on an unrecognized host:\n\nIf you’re using a cache, connection parameters may be different in development and in production. Django defaults to per-process local-memory caching which may not be desirable.\n\nCache servers often have weak authentication. Make sure they only accept connections from your application servers.\n\nDatabase connection parameters are probably different in development and in production.\n\nDatabase passwords are very sensitive. You should protect them exactly like SECRET_KEY.\n\nFor maximum security, make sure database servers only accept connections from your application servers.\n\nIf you haven’t set up backups for your database, do it right now!\n\nIf your site sends emails, these values need to be set correctly.\n\nBy default, Django sends email from webmaster@localhost and root@localhost. However, some mail providers reject email from these addresses. To use different sender addresses, modify the DEFAULT_FROM_EMAIL and SERVER_EMAIL settings.\n\nStatic files are automatically served by the development server. In production, you must define a STATIC_ROOT directory where collectstatic will copy them.\n\nSee How to manage static files (e.g. images, JavaScript, CSS) for more information.\n\nMedia files are uploaded by your users. They’re untrusted! Make sure your web server never attempts to interpret them. For instance, if a user uploads a .php file, the web server shouldn’t execute it.\n\nNow is a good time to check your backup strategy for these files.\n\nAny website which allows users to log in should enforce site-wide HTTPS to avoid transmitting access tokens in clear. In Django, access tokens include the login/password, the session cookie, and password reset tokens. (You can’t do much to protect password reset tokens if you’re sending them by email.)\n\nProtecting sensitive areas such as the user account or the admin isn’t sufficient, because the same session cookie is used for HTTP and HTTPS. Your web server must redirect all HTTP traffic to HTTPS, and only transmit HTTPS requests to Django.\n\nOnce you’ve set up HTTPS, enable the following settings.\n\nSet this to True to avoid transmitting the CSRF cookie over HTTP accidentally.\n\nSet this to True to avoid transmitting the session cookie over HTTP accidentally.\n\nSetting DEBUG = False disables several features that are only useful in development. In addition, you can tune the following settings.\n\nConsider using cached sessions to improve performance.\n\nIf using database-backed sessions, regularly clear old sessions to avoid storing unnecessary data.\n\nEnabling persistent database connections can result in a nice speed-up when connecting to the database accounts for a significant part of the request processing time.\n\nThis helps a lot on virtualized hosts with limited network performance.\n\nEnabling the cached template loader often improves performance drastically, as it avoids compiling each template every time it needs to be rendered. When DEBUG = False, the cached template loader is enabled automatically. See django.template.loaders.cached.Loader for more information.\n\nBy the time you push your code to production, it’s hopefully robust, but you can’t rule out unexpected errors. Thankfully, Django can capture errors and notify you accordingly.\n\nReview your logging configuration before putting your website in production, and check that it works as expected as soon as you have received some traffic.\n\nSee Logging for details on logging.\n\nADMINS will be notified of 500 errors by email.\n\nMANAGERS will be notified of 404 errors. IGNORABLE_404_URLS can help filter out spurious reports.\n\nSee How to manage error reporting for details on error reporting by email.\n\nError reporting by email doesn’t scale very well\n\nConsider using an error monitoring system such as Sentry before your inbox is flooded by reports. Sentry can also aggregate logs.\n\nDjango includes default views and templates for several HTTP error codes. You may want to override the default templates by creating the following templates in your root template directory: 404.html, 500.html, 403.html, and 400.html. The default error views that use these templates should suffice for 99% of web applications, but you can customize them as well.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Deployment checklist¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Run manage.py check --deploy¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Switch away from manage.py runserver¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Critical settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SECRET_KEY¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DEBUG¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Environment-specific settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ALLOWED_HOSTS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CACHES¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "DATABASES¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "EMAIL_BACKEND and related settings¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "STATIC_ROOT and STATIC_URL¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MEDIA_ROOT and MEDIA_URL¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "HTTPS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CSRF_COOKIE_SECURE¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SESSION_COOKIE_SECURE¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Performance optimizations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Sessions¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "CONN_MAX_AGE¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "TEMPLATES¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Error reporting¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LOGGING¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ADMINS and MANAGERS¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Customize the default error views¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/checklist/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/",
+    "https://docs.djangoproject.com/en/stable/topics/http/sessions/",
+    "https://docs.djangoproject.com/en/stable/ref/databases/",
+    "https://docs.djangoproject.com/en/stable/ref/templates/api/",
+    "https://docs.djangoproject.com/en/stable/topics/logging/",
+    "https://docs.djangoproject.com/en/stable/howto/error-reporting/",
+    "https://docs.djangoproject.com/en/stable/ref/views/",
+    "https://docs.djangoproject.com/en/stable/topics/http/views/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/asgi/uvicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/static-files/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

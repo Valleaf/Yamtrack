@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.7.4/",
+  "title": "Django 1.7.4 release notes | Django documentation | Django",
+  "content": "Django 1.7.4 fixes several bugs in 1.7.3.\n\nFixed a migration crash when unapplying contrib.contenttypes’s or contrib.auth’s first migration (#24075).\n\nMade the migration’s RenameModel operation rename ManyToManyField tables (#24135).\n\nFixed a migration crash on MySQL when migrating from a OneToOneField to a ForeignKey (#24163).\n\nPrevented the static.serve view from producing ResourceWarnings in certain circumstances (security fix regression, #24193).\n\nFixed schema check for ManyToManyField to look for internal type instead of checking class instance, so you can write custom m2m-like fields with the same behavior. (#24104).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.7.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.7.4/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.7.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.9/",
+  "title": "Django 1.9.9 release notes | Django documentation | Django",
+  "content": "Django 1.9.9 fixes several bugs in 1.9.8.\n\nFixed invalid HTML in template postmortem on the debug page (#26938).\n\nFixed some GIS database function crashes on MySQL 5.7 (#26657).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.9 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.9/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.10/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.8/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

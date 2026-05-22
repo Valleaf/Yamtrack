@@ -1,0 +1,280 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+  "title": "Geographic Database Functions | Django documentation | Django",
+  "content": "The functions documented on this page allow users to access geographic database functions to be used in annotations, aggregations, or filters in Django.\n\nNot all backends support all functions, so refer to the documentation of each function to see if your database backend supports the function you want to use. If you call a geographic function on a backend that doesn’t support it, you’ll get a NotImplementedError exception.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns the area of the field as an Area measure.\n\nMySQL and SpatiaLite without LWGEOM/RTTOPO don’t support area calculations on geographic SRSes.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the distance between them, as a Distance object. On MySQL, a raw float value is returned when the coordinates are geodetic.\n\nOn backends that support distance calculation on geodetic coordinates, the proper backend function is automatically chosen depending on the SRID value of the geometries (e.g. ST_DistanceSphere on PostGIS).\n\nWhen distances are calculated with geodetic (angular) coordinates, as is the case with the default WGS84 (4326) SRID, you can set the spheroid keyword argument to decide if the calculation should be based on a simple sphere (less accurate, less resource-intensive) or on a spheroid (more accurate, more resource-intensive).\n\nIn the following example, the distance from the city of Hobart to every other PointField in the AustraliaCity queryset is calculated:\n\nBecause the distance attribute is a Distance object, you can easily express the value in the units of your choice. For example, city.distance.mi is the distance value in miles and city.distance.km is the distance value in kilometers. See Measurement Objects for usage details and the list of Supported units.\n\nAvailability: PostGIS\n\nAccepts two geographic fields or expressions and returns the distance between them. When used in an order_by() clause, it provides index-assisted nearest-neighbor result sets.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic linestring or multilinestring field or expression and returns its length as a Distance measure.\n\nOn PostGIS and SpatiaLite, when the coordinates are geodetic (angular), you can specify if the calculation should be based on a simple sphere (less accurate, less resource-intensive) or on a spheroid (more accurate, more resource-intensive) with the spheroid keyword argument.\n\nMySQL doesn’t support length calculations on geographic SRSes.\n\nAvailability: PostGIS, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns the perimeter of the geometry field as a Distance object.\n\nAvailability: PostGIS, SpatiaLite (LWGEOM/RTTOPO)\n\nReturns the azimuth in radians of the segment defined by the given point geometries, or None if the two points are coincident. The azimuth is angle referenced from north and is positive clockwise: north = 0; east = π/2; south = π; west = 3π/2.\n\nAvailability: PostGIS, Oracle, SpatiaLite 5.1+\n\nAccepts a single geographic field or expression and returns the smallest circle polygon that can fully contain the geometry.\n\nThe num_seg parameter is used only on PostGIS.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns the centroid value of the geometry.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the 2-dimensional point on geometry A that is closest to geometry B.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns the geometry representing the bounding box of the geometry.\n\nAvailability: PostGIS, SpatiaLite\n\nReturns a float between 0 and 1 representing the location of the closest point on linestring to the given point, as a fraction of the 2D line length.\n\nAvailability: PostGIS, MariaDB, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Point geometry guaranteed to lie on the surface of the field; otherwise returns None.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the geometric difference, that is the part of geometry A that does not intersect with geometry B.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the geometric intersection between them.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the geometric symmetric difference (union without the intersection) between the given parameters.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts two geographic fields or expressions and returns the union of both geometries.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a modified version of the polygon/multipolygon in which all exterior rings are oriented clockwise and all interior rings are oriented counterclockwise. Non-polygonal geometries are returned unchanged.\n\nAvailability: PostGIS, SpatiaLite (LWGEOM/RTTOPO)\n\nAccepts a geographic field or expression and attempts to convert the value into a valid geometry without losing any of the input vertices. Geometries that are already valid are returned without changes. Simple polygons might become a multipolygon and the result might be of lower dimension than the input.\n\nAvailability: PostGIS, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns a geometry with reversed coordinates.\n\nAvailability: PostGIS\n\nRotates a geometry by a specified angle around the origin. Optionally, the rotation can be performed around a point, defined by the origin parameter.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a geometry with scaled coordinates by multiplying them with the x, y, and optionally z parameters.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a geometry with all points snapped to the given grid. How the geometry is snapped to the grid depends on how many numeric (either float, integer, or long) arguments are given.\n\nA single size to snap both the X and Y grids to.\n\nX and Y sizes to snap the grid to.\n\nX, Y sizes and the corresponding X, Y origins.\n\nAvailability: PostGIS, Oracle, SpatiaLite\n\nAccepts a geographic field or expression and a SRID integer code, and returns the transformed geometry to the spatial reference system specified by the srid parameter.\n\nWhat spatial reference system an integer SRID corresponds to may depend on the spatial database used. In other words, the SRID numbers used for Oracle are not necessarily the same as those used by PostGIS.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a geometry with its coordinates offset by the x, y, and optionally z numeric parameters.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nCreates geometry from Well-known binary (WKB) representation. The optional srid argument allows to specify the SRID of the resulting geometry. srid is ignored on Oracle.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nCreates geometry from Well-known text (WKT) representation. The optional srid argument allows to specify the SRID of the resulting geometry. srid is ignored on Oracle.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a GeoJSON representation of the geometry. Note that the result is not a complete GeoJSON structure but only the geometry key content of a GeoJSON structure. See also GeoJSON Serializer.\n\nSet this to True if you want the bounding box to be included in the returned GeoJSON. Ignored on Oracle.\n\nSet this to True if you want the coordinate reference system to be included in the returned GeoJSON. Ignored on MySQL and Oracle.\n\nIt may be used to specify the number of significant digits for the coordinates in the GeoJSON representation – the default value is 8. Ignored on Oracle.\n\nAvailability: Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Geographic Markup Language (GML) representation of the geometry.\n\nSpecifies the number of significant digits for the coordinates in the GML representation – the default value is 8. Ignored on Oracle.\n\nSpecifies the GML version to use: 2 (default) or 3.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Keyhole Markup Language (KML) representation of the geometry.\n\nThis keyword may be used to specify the number of significant digits for the coordinates in the KML representation – the default value is 8.\n\nAvailability: PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Scalable Vector Graphics (SVG) representation of the geometry.\n\nIf set to True, the path data will be implemented in terms of relative moves. Defaults to False, meaning that absolute moves are used instead.\n\nThis keyword may be used to specify the number of significant digits for the coordinates in the SVG representation – the default value is 8.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Well-known binary (WKB) representation of the geometry.\n\nAvailability: MariaDB, MySQL, Oracle, PostGIS, SpatiaLite\n\nAccepts a single geographic field or expression and returns a Well-known text (WKT) representation of the geometry.\n\nAvailability: MariaDB, MySQL, PostGIS, SpatiaLite (LWGEOM/RTTOPO)\n\nAccepts a single geographic field or expression and returns a GeoHash representation of the geometry.\n\nThe precision keyword argument controls the number of characters in the result.\n\nMariaDB 12.0.1+ support was added.\n\nAvailability: PostGIS\n\nAccepts a geographic field or expression and tests if the value is an empty geometry. Returns True if its value is empty and False otherwise.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts a geographic field or expression and tests if the value is well formed. Returns True if its value is a valid geometry and False otherwise.\n\nMariaDB 12.0.1+ support was added.\n\nAvailability: PostGIS, Oracle 23c+, MariaDB, MySQL, SpatiaLite\n\nAccepts a geographic field or expression and returns its geometry type.\n\nAvailability: PostGIS\n\nAccepts a single geographic field or expression and returns the memory size (number of bytes) that the geometry field takes.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns the number of geometries if the geometry field is a collection (e.g., a GEOMETRYCOLLECTION or MULTI* field). Returns 1 for single geometries.\n\nOn MySQL, returns None for single geometries.\n\nAvailability: MariaDB, MySQL, PostGIS, Oracle, SpatiaLite\n\nAccepts a single geographic field or expression and returns the number of points in a geometry.\n\nOn MySQL, returns None for any non-LINESTRING geometry.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Geographic Database Functions¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Measurements¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Area¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Distance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeometryDistance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Length¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Perimeter¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Relationships¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Azimuth¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "BoundingCircle¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Centroid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ClosestPoint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Envelope¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "LineLocatePoint¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "PointOnSurface¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Operations¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Difference¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Intersection¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SymDifference¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Union¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Editors¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ForcePolygonCW¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MakeValid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Reverse¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Rotate¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Scale¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "SnapToGrid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Transform¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Translate¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Input format¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FromWKB¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "FromWKT¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Output format¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsGeoJSON¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsGML¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsKML¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsSVG¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsWKB¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "AsWKT¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeoHash¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Miscellaneous¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "IsEmpty¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "IsValid¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "GeometryType¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "MemSize¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NumGeometries¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "NumPoints¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "Example:",
+      "code": ">>> from django.contrib.gis.db.models.functions import Length\n>>> Track.objects.annotate(length=Length(\"line\")).filter(length__gt=100)"
+    },
+    {
+      "description": "Example:",
+      "code": ">>> City.objects.annotate(json=AsGeoJSON(\"point\")).get(name=\"Chicago\").json\n{\"type\":\"Point\",\"coordinates\":[-87.65018,41.85039]}"
+    },
+    {
+      "description": "Example:",
+      "code": ">>> qs = Zipcode.objects.annotate(gml=AsGML(\"poly\"))\n>>> print(qs[0].gml)\n<gml:Polygon srsName=\"EPSG:4326\"><gml:OuterBoundaryIs>-147.78711,70.245363 ...\n-147.78711,70.245363</gml:OuterBoundaryIs></gml:Polygon>"
+    },
+    {
+      "description": "Example:",
+      "code": ">>> qs = Zipcode.objects.annotate(kml=AsKML(\"poly\"))\n>>> print(qs[0].kml)\n<Polygon><outerBoundaryIs><LinearRing><coordinates>-103.04135,36.217596,0 ...\n-103.04135,36.217596,0</coordinates></LinearRing></outerBoundaryIs></Polygon>"
+    },
+    {
+      "description": "Example:",
+      "code": ">>> bytes(City.objects.annotate(wkb=AsWKB(\"point\")).get(name=\"Chelyabinsk\").wkb)\nb'\\x01\\x01\\x00\\x00\\x00]3\\xf9f\\x9b\\x91K@\\x00X\\x1d9\\xd2\\xb9N@'"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/measure/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoquerysets/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

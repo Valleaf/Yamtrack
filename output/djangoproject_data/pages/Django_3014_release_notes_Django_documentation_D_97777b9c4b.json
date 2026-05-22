@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.0.14/",
+  "title": "Django 3.0.14 release notes | Django documentation | Django",
+  "content": "Django 3.0.14 fixes a security issue with severity “low” in 3.0.13.\n\nMultiPartParser allowed directory-traversal via uploaded files with suitably crafted file names.\n\nBuilt-in upload handlers were not affected by this vulnerability.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.0.14 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2021-28658: Potential directory-traversal via uploaded files¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.0.14/",
+    "https://docs.djangoproject.com/en/stable/releases/3.1/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

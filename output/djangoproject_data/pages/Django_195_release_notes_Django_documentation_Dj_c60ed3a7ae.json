@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.9.5/",
+  "title": "Django 1.9.5 release notes | Django documentation | Django",
+  "content": "Django 1.9.5 fixes several bugs in 1.9.4.\n\nMade MultiPartParser ignore filenames that normalize to an empty string to fix crash in MemoryFileUploadHandler on specially crafted user input (#26325).\n\nFixed a race condition in BaseCache.get_or_set() (#26332). It now returns the default value instead of False if there’s an error when trying to add the value to the cache.\n\nFixed data loss on SQLite where DurationField values with fractional seconds could be saved as None (#26324).\n\nThe forms in contrib.auth no longer strip trailing and leading whitespace from the password fields (#26334). The change requires users who set their password to something with such whitespace after a site updated to Django 1.9 to reset their password. It provides backwards-compatibility for earlier versions of Django.\n\nFixed a memory leak in the cached template loader (#26306).\n\nFixed a regression that caused collectstatic --clear to fail if the storage doesn’t implement path() (#26297).\n\nFixed a crash when using a reverse lookup with a subquery when a ForeignKey has a to_field set to something other than the primary key (#26373).\n\nFixed a regression in CommonMiddleware that caused spurious warnings in logs on requests missing a trailing slash (#26293).\n\nRestored the functionality of the admin’s raw_id_fields in list_editable (#26387).\n\nFixed a regression with abstract model inheritance and explicit parent links (#26413).\n\nFixed a migrations crash on SQLite when renaming the primary key of a model containing a ForeignKey to 'self' (#26384).\n\nFixed JSONField inadvertently escaping its contents when displaying values after failed form validation (#25532).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.9.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.9.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.9.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

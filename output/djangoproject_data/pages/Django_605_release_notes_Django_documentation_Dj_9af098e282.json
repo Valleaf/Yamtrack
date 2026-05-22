@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/6.0.5/",
+  "title": "Django 6.0.5 release notes | Django documentation | Django",
+  "content": "Django 6.0.5 fixes three security issues with severity “low” and several bugs in 6.0.4.\n\nASGI requests with a missing or understated Content-Length header could bypass the FILE_UPLOAD_MAX_MEMORY_SIZE limit, potentially loading large files into memory and causing service degradation.\n\nAs a reminder, Django expects a limit to be configured at the web server level rather than solely relying on FILE_UPLOAD_MAX_MEMORY_SIZE.\n\nThis issue has severity “low” according to the Django security policy.\n\nResponse headers did not vary on cookies if a session was not modified, but SESSION_SAVE_EVERY_REQUEST was True. A remote attacker could steal a user’s session after that user visits a cached public page.\n\nThis issue has severity “low” according to the Django security policy.\n\nPreviously, UpdateCacheMiddleware would erroneously cache requests where the Vary header contained an asterisk ('*'). This could lead to private data being stored and served.\n\nThis issue has severity “low” according to the Django security policy.\n\nFixed a misplaced </div> in the django/contrib/admin/templates/admin/change_list.html template added in Django 6.0 that could be problematic when overriding the pagination block (#37029).\n\nFixed a bug in Django 6.0 where deprecation warnings incorrectly skipped lines from third-party packages prefixed with “django” (#37067).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 6.0.5 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2026-5766: Potential denial-of-service vulnerability in ASGI requests via file upload limit bypass¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2026-35192: Session fixation via public cached pages and SESSION_SAVE_EVERY_REQUEST¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2026-6907: Potential exposure of private data due to incorrect handling of Vary: * in UpdateCacheMiddleware¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/6.0.5/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/security/",
+    "https://docs.djangoproject.com/en/stable/internals/security/",
+    "https://docs.djangoproject.com/en/stable/topics/cache/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/releases/6.0.6/",
+    "https://docs.djangoproject.com/en/stable/releases/6.0.4/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

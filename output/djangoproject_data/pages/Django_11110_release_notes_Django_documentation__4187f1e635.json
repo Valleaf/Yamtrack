@@ -1,0 +1,35 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.10/",
+  "title": "Django 1.11.10 release notes | Django documentation | Django",
+  "content": "Django 1.11.10 fixes a security issue and several bugs in 1.11.9.\n\nA regression in Django 1.11.8 made AuthenticationForm run its confirm_login_allowed() method even if an incorrect password is entered. This can leak information about a user, depending on what messages confirm_login_allowed() raises. If confirm_login_allowed() isn’t overridden, an attacker enter an arbitrary username and see if that user has been set to is_active=False. If confirm_login_allowed() is overridden, more sensitive details could be leaked.\n\nThis issue is fixed with the caveat that AuthenticationForm can no longer raise the “This account is inactive.” error if the authentication backend rejects inactive users (the default authentication backend, ModelBackend, has done that since Django 1.10). This issue will be revisited for Django 2.1 as a fix to address the caveat will likely be too invasive for inclusion in older versions.\n\nFixed incorrect foreign key nullification if a model has two foreign keys to the same model and a target model is deleted (#29016).\n\nFixed a regression where contrib.auth.authenticate() crashes if an authentication backend doesn’t accept request and a later one does (#29071).\n\nFixed crash when entering an invalid uuid in ModelAdmin.raw_id_fields (#29094).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.10 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "CVE-2018-6188: Information leakage in AuthenticationForm¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.10/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.11/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.9/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

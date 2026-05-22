@@ -1,0 +1,76 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+  "title": "PostgreSQL specific model indexes | Django documentation | Django",
+  "content": "The following are PostgreSQL specific indexes available from the django.contrib.postgres.indexes module.\n\nCreates a bloom index.\n\nTo use this index access you need to activate the bloom extension on PostgreSQL. You can install it using the BloomExtension migration operation.\n\nProvide an integer number of bits from 1 to 4096 to the length parameter to specify the length of each index entry. PostgreSQL’s default is 80.\n\nThe columns argument takes a tuple or list of up to 32 values that are integer number of bits from 1 to 4095.\n\nCreates a BRIN index.\n\nSet the autosummarize parameter to True to enable automatic summarization to be performed by autovacuum.\n\nThe pages_per_range argument takes a positive integer.\n\nCreates a B-Tree index.\n\nProvide an integer value from 10 to 100 to the fillfactor parameter to tune how packed the index pages will be. PostgreSQL’s default is 90.\n\nProvide a boolean value to the deduplicate_items parameter to control whether deduplication is enabled. PostgreSQL enables deduplication by default.\n\nTo use this index on data types not in the built-in operator classes, you need to activate the btree_gin extension on PostgreSQL. You can install it using the BtreeGinExtension migration operation.\n\nSet the fastupdate parameter to False to disable the GIN Fast Update Technique that’s enabled by default in PostgreSQL.\n\nProvide an integer number of kilobytes to the gin_pending_list_limit parameter to tune the maximum size of the GIN pending list which is used when fastupdate is enabled.\n\nCreates a GiST index. These indexes are automatically created on spatial fields with spatial_index=True. They’re also useful on other types, such as HStoreField or the range fields.\n\nTo use this index on data types not in the built-in gist operator classes, you need to activate the btree_gist extension on PostgreSQL. You can install it using the BtreeGistExtension migration operation.\n\nSet the buffering parameter to True or False to manually enable or disable buffering build of the index.\n\nProvide an integer value from 10 to 100 to the fillfactor parameter to tune how packed the index pages will be. PostgreSQL’s default is 90.\n\nCreates a hash index.\n\nProvide an integer value from 10 to 100 to the fillfactor parameter to tune how packed the index pages will be. PostgreSQL’s default is 90.\n\nCreates an SP-GiST index.\n\nProvide an integer value from 10 to 100 to the fillfactor parameter to tune how packed the index pages will be. PostgreSQL’s default is 90.\n\nAn OpClass() expression represents the expression with a custom operator class that can be used to define functional indexes, functional unique constraints, or exclusion constraints. To use it, you need to add 'django.contrib.postgres' in your INSTALLED_APPS. Set the name parameter to the name of the operator class.\n\ncreates an index on Lower('username') using varchar_pattern_ops.\n\ncreates a unique constraint on Upper('description') using text_pattern_ops.\n\ncreates an exclusion constraint on circle using circle_ops.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "PostgreSQL specific model indexes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BloomIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BrinIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "BTreeIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GinIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "GistIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "HashIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "SpGistIndex¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "OpClass() expressions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": "Index(\n    OpClass(Lower(\"username\"), name=\"varchar_pattern_ops\"),\n    name=\"lower_username_idx\",\n)"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/models/indexes/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/operations/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/model-api/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/functions/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/postgres/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

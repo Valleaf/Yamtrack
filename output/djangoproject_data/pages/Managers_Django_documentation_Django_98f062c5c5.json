@@ -1,0 +1,109 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+  "title": "Managers | Django documentation | Django",
+  "content": "A Manager is the interface through which database query operations are provided to Django models. At least one Manager exists for every model in a Django application.\n\nThe way Manager classes work is documented in Making queries; this document specifically touches on model options that customize Manager behavior.\n\nBy default, Django adds a Manager with the name objects to every Django model class. However, if you want to use objects as a field name, or if you want to use a name other than objects for the Manager, you can rename it on a per-model basis. To rename the Manager for a given class, define a class attribute of type models.Manager() on that model. For example:\n\nUsing this example model, Person.objects will generate an AttributeError exception, but Person.people.all() will provide a list of all Person objects.\n\nYou can use a custom Manager in a particular model by extending the base Manager class and instantiating your custom Manager in your model.\n\nThere are two reasons you might want to customize a Manager: to add extra Manager methods, and/or to modify the initial QuerySet the Manager returns.\n\nAdding extra Manager methods is the preferred way to add “table-level” functionality to your models. (For “row-level” functionality – i.e., functions that act on a single instance of a model object – use Model methods, not custom Manager methods.)\n\nFor example, this custom Manager adds a method with_counts():\n\nWith this example, you’d use OpinionPoll.objects.with_counts() to get a QuerySet of OpinionPoll objects with the extra num_responses attribute attached.\n\nA custom Manager method can return anything you want. It doesn’t have to return a QuerySet.\n\nAnother thing to note is that Manager methods can access self.model to get the model class to which they’re attached.\n\nA Manager’s base QuerySet returns all objects in the system. For example, using this model:\n\n…the statement Book.objects.all() will return all books in the database.\n\nYou can override a Manager’s base QuerySet by overriding the Manager.get_queryset() method. get_queryset() should return a QuerySet with the properties you require.\n\nFor example, the following model has two Managers – one that returns all objects, and one that returns only the books by Roald Dahl:\n\nWith this sample model, Book.objects.all() will return all books in the database, but Book.dahl_objects.all() will only return the ones written by Roald Dahl.\n\nBecause get_queryset() returns a QuerySet object, you can use filter(), exclude() and all the other QuerySet methods on it. So these statements are all legal:\n\nThis example also pointed out another interesting technique: using multiple managers on the same model. You can attach as many Manager() instances to a model as you’d like. This is a non-repetitive way to define common “filters” for your models.\n\nThis example allows you to request Person.authors.all(), Person.editors.all(), and Person.people.all(), yielding predictable results.\n\nIf you use custom Manager objects, take note that the first Manager Django encounters (in the order in which they’re defined in the model) has a special status. Django interprets the first Manager defined in a class as the “default” Manager, and several parts of Django (including dumpdata) will use that Manager exclusively for that model. As a result, it’s a good idea to be careful in your choice of default manager in order to avoid a situation where overriding get_queryset() results in an inability to retrieve objects you’d like to work with.\n\nYou can specify a custom default manager using Meta.default_manager_name.\n\nIf you’re writing some code that must handle an unknown model, for example, in a third-party app that implements a generic view, use this manager (or _base_manager) rather than assuming the model has an objects manager.\n\nBy default, Django uses an instance of the Model._base_manager manager class when accessing related objects (e.g. choice.question), not the _default_manager on the related object. This is because Django needs to be able to retrieve the related object, even if it would otherwise be filtered out (and hence be inaccessible) by the default manager.\n\nIf the normal base manager class (django.db.models.Manager) isn’t appropriate for your circumstances, you can tell Django which class to use by setting Meta.base_manager_name.\n\nBase managers aren’t used when querying on related models, or when accessing a one-to-many or many-to-many relationship. For example, if the Question model from the tutorial had a deleted field and a base manager that filters out instances with deleted=True, a queryset like Choice.objects.filter(question__name__startswith='What') would include choices related to deleted questions.\n\nThis manager is used to access objects that are related to from some other model. In those situations, Django has to be able to see all the objects for the model it is fetching, so that anything which is referred to can be retrieved.\n\nTherefore, you should not override get_queryset() to filter out any rows. If you do so, Django will return incomplete results.\n\nWhile most methods from the standard QuerySet are accessible directly from the Manager, this is only the case for the extra methods defined on a custom QuerySet if you also implement them on the Manager:\n\nThis example allows you to call both authors() and editors() directly from the manager Person.people.\n\nIn lieu of the above approach which requires duplicating methods on both the QuerySet and the Manager, QuerySet.as_manager() can be used to create an instance of Manager with a copy of a custom QuerySet’s methods:\n\nThe Manager instance created by QuerySet.as_manager() will be virtually identical to the PersonManager from the previous example.\n\nNot every QuerySet method makes sense at the Manager level; for instance we intentionally prevent the QuerySet.delete() method from being copied onto the Manager class.\n\nMethods are copied according to the following rules:\n\nPublic methods are copied by default.\n\nPrivate methods (starting with an underscore) are not copied by default.\n\nMethods with a queryset_only attribute set to False are always copied.\n\nMethods with a queryset_only attribute set to True are never copied.\n\nFor advanced usage you might want both a custom Manager and a custom QuerySet. You can do that by calling Manager.from_queryset() which returns a subclass of your base Manager with a copy of the custom QuerySet methods:\n\nYou may also store the generated class into a variable:\n\nHere’s how Django handles custom managers and model inheritance:\n\nManagers from base classes are always inherited by the child class, using Python’s normal name resolution order (names on the child class override all others; then come names on the first parent class, and so on).\n\nIf no managers are declared on a model and/or its parents, Django automatically creates the objects manager.\n\nThe default manager on a class is either the one chosen with Meta.default_manager_name, or the first manager declared on the model, or the default manager of the first parent model.\n\nThese rules provide the necessary flexibility if you want to install a collection of custom managers on a group of models, via an abstract base class, but still customize the default manager. For example, suppose you have this base class:\n\nIf you use this directly in a child class, objects will be the default manager if you declare no managers in the child class:\n\nIf you want to inherit from AbstractBase, but provide a different default manager, you can provide the default manager on the child class:\n\nHere, default_manager is the default. The objects manager is still available, since it’s inherited, but isn’t used as the default.\n\nFinally for this example, suppose you want to add extra managers to the child class, but still use the default from AbstractBase. You can’t add the new manager directly in the child class, as that would override the default and you would have to also explicitly include all the managers from the abstract base class. The solution is to put the extra managers in another base class and introduce it into the inheritance hierarchy after the defaults:\n\nNote that while you can define a custom manager on the abstract model, you can’t invoke any methods using the abstract model. That is:\n\nwill raise an exception. This is because managers are intended to encapsulate logic for managing collections of objects. Since you can’t have a collection of abstract objects, it doesn’t make sense to be managing them. If you have functionality that applies to the abstract model, you should put that functionality in a staticmethod or classmethod on the abstract model.\n\nWhatever features you add to your custom Manager, it must be possible to make a shallow copy of a Manager instance; i.e., the following code must work:\n\nDjango makes shallow copies of manager objects during certain queries; if your Manager cannot be copied, those queries will fail.\n\nThis won’t be an issue for most custom managers. If you are just adding simple methods to your Manager, it is unlikely that you will inadvertently make instances of your Manager uncopyable. However, if you’re overriding __getattr__ or some other private method of your Manager object that controls object state, you should ensure that you don’t affect the ability of your Manager to be copied.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Managers¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Manager names¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Custom managers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Adding extra manager methods¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Modifying a manager’s initial QuerySet¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Default managers¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Base managers¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Using managers for related object access¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Don’t filter away any results in this type of manager subclass¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Calling custom QuerySet methods from the manager¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Creating a manager with QuerySet methods¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "from_queryset()¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Custom managers and model inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Implementation concerns¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "By default, Django adds a Manager with the name objects to every Django model class. However, if you want to use objects as a field name, or if you want to use a name other than objects for the Manager, you can rename it on a per-model basis. To rename the Manager for a given class, define a class attribute of type models.Manager() on that model. For example:",
+      "code": "from django.db import models\n\n\nclass Person(models.Model):\n    # ...\n    people = models.Manager()"
+    },
+    {
+      "description": "For example:",
+      "code": "class AuthorManager(models.Manager):\n    def get_queryset(self):\n        return super().get_queryset().filter(role=\"A\")\n\n\nclass EditorManager(models.Manager):\n    def get_queryset(self):\n        return super().get_queryset().filter(role=\"E\")\n\n\nclass Person(models.Model):\n    first_name = models.CharField(max_length=50)\n    last_name = models.CharField(max_length=50)\n    role = models.CharField(max_length=1, choices={\"A\": _(\"Author\"), \"E\": _(\"Editor\")})\n    people = models.Manager()\n    authors = AuthorManager()\n    editors = EditorManager()"
+    },
+    {
+      "description": "For example:",
+      "code": "class CustomQuerySet(models.QuerySet):\n    # Available on both Manager and QuerySet.\n    def public_method(self):\n        return\n\n    # Available only on QuerySet.\n    def _private_method(self):\n        return\n\n    # Available only on QuerySet.\n    def opted_out_public_method(self):\n        return\n\n    opted_out_public_method.queryset_only = True\n\n    # Available on both Manager and QuerySet.\n    def _opted_in_private_method(self):\n        return\n\n    _opted_in_private_method.queryset_only = False"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/db/managers/",
+    "https://docs.djangoproject.com/en/stable/topics/db/queries/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/ref/models/options/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/ref/models/querysets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/search/",
+    "https://docs.djangoproject.com/en/stable/topics/db/sql/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/db/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

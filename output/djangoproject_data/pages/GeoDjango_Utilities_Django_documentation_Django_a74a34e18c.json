@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+  "title": "GeoDjango Utilities | Django documentation | Django",
+  "content": "The django.contrib.gis.utils module contains various utilities that are useful in creating geospatial web applications.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "GeoDjango Utilities¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/utils/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/layermapping/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/ogrinspect/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/serializers/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/geoip2/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

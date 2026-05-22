@@ -1,0 +1,39 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.8.4/",
+  "title": "Django 1.8.4 release notes | Django documentation | Django",
+  "content": "Django 1.8.4 fixes a security issue and several bugs in 1.8.3.\n\nPreviously, a session could be created when anonymously accessing the django.contrib.auth.views.logout() view (provided it wasn’t decorated with login_required() as done in the admin). This could allow an attacker to easily create many new session records by sending repeated requests, potentially filling up the session store or causing other users’ session records to be evicted.\n\nThe SessionMiddleware has been modified to no longer create empty session records, including when SESSION_SAVE_EVERY_REQUEST is active.\n\nAdded the ability to serialize values from the newly added UUIDField (#25019).\n\nAdded a system check warning if the old TEMPLATE_* settings are defined in addition to the new TEMPLATES setting.\n\nFixed QuerySet.raw() so InvalidQuery is not raised when using the db_column name of a ForeignKey field with primary_key=True (#12768).\n\nPrevented an exception in TestCase.setUpTestData() from leaking the transaction (#25176).\n\nFixed has_changed() method in contrib.postgres.forms.HStoreField (#25215, #25233).\n\nFixed the recording of squashed migrations when running the migrate command (#25231).\n\nMoved the unsaved model instance assignment data loss check to Model.save() to allow easier usage of in-memory models (#25160).\n\nPrevented varchar_patterns_ops and text_patterns_ops indexes for ArrayField (#25180).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.8.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Denial-of-service possibility in logout() view by filling session store¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.8.4/",
+    "https://docs.djangoproject.com/en/stable/topics/auth/default/",
+    "https://docs.djangoproject.com/en/stable/ref/middleware/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.5/",
+    "https://docs.djangoproject.com/en/stable/releases/1.8.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

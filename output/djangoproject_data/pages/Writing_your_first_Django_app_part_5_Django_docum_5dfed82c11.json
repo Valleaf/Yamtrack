@@ -1,0 +1,151 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/intro/tutorial05/",
+  "title": "Writing your first Django app, part 5 | Django documentation | Django",
+  "content": "This tutorial begins where Tutorial 4 left off. We’ve built a web-poll application, and we’ll now create some automated tests for it.\n\nIf you’re having trouble going through this tutorial, please head over to the Getting Help section of the FAQ.\n\nTests are routines that check the operation of your code.\n\nTesting operates at different levels. Some tests might apply to a tiny detail (does a particular model method return values as expected?) while others examine the overall operation of the software (does a sequence of user inputs on the site produce the desired result?). That’s no different from the kind of testing you did earlier in Tutorial 2, using the shell to examine the behavior of a method, or running the application and entering data to check how it behaves.\n\nWhat’s different in automated tests is that the testing work is done for you by the system. You create a set of tests once, and then as you make changes to your app, you can check that your code still works as you originally intended, without having to perform time consuming manual testing.\n\nSo why create tests, and why now?\n\nYou may feel that you have quite enough on your plate just learning Python/Django, and having yet another thing to learn and do may seem overwhelming and perhaps unnecessary. After all, our polls application is working quite happily now; going through the trouble of creating automated tests is not going to make it work any better. If creating the polls application is the last bit of Django programming you will ever do, then true, you don’t need to know how to create automated tests. But, if that’s not the case, now is an excellent time to learn.\n\nUp to a certain point, ‘checking that it seems to work’ will be a satisfactory test. In a more sophisticated application, you might have dozens of complex interactions between components.\n\nA change in any of those components could have unexpected consequences on the application’s behavior. Checking that it still ‘seems to work’ could mean running through your code’s functionality with twenty different variations of your test data to make sure you haven’t broken something - not a good use of your time.\n\nThat’s especially true when automated tests could do this for you in seconds. If something’s gone wrong, tests will also assist in identifying the code that’s causing the unexpected behavior.\n\nSometimes it may seem a chore to tear yourself away from your productive, creative programming work to face the unglamorous and unexciting business of writing tests, particularly when you know your code is working properly.\n\nHowever, the task of writing tests is a lot more fulfilling than spending hours testing your application manually or trying to identify the cause of a newly-introduced problem.\n\nIt’s a mistake to think of tests merely as a negative aspect of development.\n\nWithout tests, the purpose or intended behavior of an application might be rather opaque. Even when it’s your own code, you will sometimes find yourself poking around in it trying to find out what exactly it’s doing.\n\nTests change that; they light up your code from the inside, and when something goes wrong, they focus light on the part that has gone wrong - even if you hadn’t even realized it had gone wrong.\n\nYou might have created a brilliant piece of software, but you will find that many other developers will refuse to look at it because it lacks tests; without tests, they won’t trust it. Jacob Kaplan-Moss, one of Django’s original developers, says “Code without tests is broken by design.”\n\nThat other developers want to see tests in your software before they take it seriously is yet another reason for you to start writing tests.\n\nThe previous points are written from the point of view of a single developer maintaining an application. Complex applications will be maintained by teams. Tests guarantee that colleagues don’t inadvertently break your code (and that you don’t break theirs without knowing). If you want to make a living as a Django programmer, you must be good at writing tests!\n\nThere are many ways to approach writing tests.\n\nSome programmers follow a discipline called “test-driven development”; they actually write their tests before they write their code. This might seem counterintuitive, but in fact it’s similar to what most people will often do anyway: they describe a problem, then create some code to solve it. Test-driven development formalizes the problem in a Python test case.\n\nMore often, a newcomer to testing will create some code and later decide that it should have some tests. Perhaps it would have been better to write some tests earlier, but it’s never too late to get started.\n\nSometimes it’s difficult to figure out where to get started with writing tests. If you have written several thousand lines of Python, choosing something to test might not be easy. In such a case, it’s fruitful to write your first test the next time you make a change, either when you add a new feature or fix a bug.\n\nSo let’s do that right away.\n\nFortunately, there’s a little bug in the polls application for us to fix right away: the Question.was_published_recently() method returns True if the Question was published within the last day (which is correct) but also if the Question’s pub_date field is in the future (which certainly isn’t).\n\nConfirm the bug by using the shell to check the method on a question whose date lies in the future:\n\nSince things in the future are not ‘recent’, this is clearly wrong.\n\nWhat we’ve just done in the shell to test for the problem is exactly what we can do in an automated test, so let’s turn that into an automated test.\n\nA conventional place for an application’s tests is in the application’s tests.py file; the testing system will automatically find tests in any file whose name begins with test.\n\nPut the following in the tests.py file in the polls application:\n\nHere we have created a django.test.TestCase subclass with a method that creates a Question instance with a pub_date in the future. We then check the output of was_published_recently() - which ought to be False.\n\nIn the terminal, we can run our test:\n\nand you’ll see something like:\n\nIf instead you’re getting a NameError here, you may have missed a step in Part 2 where we added imports of datetime and timezone to polls/models.py. Copy the imports from that section, and try running your tests again.\n\nWhat happened is this:\n\nmanage.py test polls looked for tests in the polls application\n\nit found a subclass of the django.test.TestCase class\n\nit created a special database for the purpose of testing\n\nit looked for test methods - ones whose names begin with test\n\nin test_was_published_recently_with_future_question it created a Question instance whose pub_date field is 30 days in the future\n\n… and using the assertIs() method, it discovered that its was_published_recently() returns True, though we wanted it to return False\n\nThe test informs us which test failed and even the line on which the failure occurred.\n\nWe already know what the problem is: Question.was_published_recently() should return False if its pub_date is in the future. Amend the method in models.py, so that it will only return True if the date is also in the past:\n\nand run the test again:\n\nAfter identifying a bug, we wrote a test that exposes it and corrected the bug in the code so our test passes.\n\nMany other things might go wrong with our application in the future, but we can be sure that we won’t inadvertently reintroduce this bug, because running the test will warn us immediately. We can consider this little portion of the application pinned down safely forever.\n\nWhile we’re here, we can further pin down the was_published_recently() method; in fact, it would be positively embarrassing if in fixing one bug we had introduced another.\n\nAdd two more test methods to the same class, to test the behavior of the method more comprehensively:\n\nAnd now we have three tests that confirm that Question.was_published_recently() returns sensible values for past, recent, and future questions.\n\nAgain, polls is a minimal application, but however complex it grows in the future and whatever other code it interacts with, we now have some guarantee that the method we have written tests for will behave in expected ways.\n\nThe polls application is fairly undiscriminating: it will publish any question, including ones whose pub_date field lies in the future. We should improve this. Setting a pub_date in the future should mean that the Question is published at that moment, but invisible until then.\n\nWhen we fixed the bug above, we wrote the test first and then the code to fix it. In fact that was an example of test-driven development, but it doesn’t really matter in which order we do the work.\n\nIn our first test, we focused closely on the internal behavior of the code. For this test, we want to check its behavior as it would be experienced by a user through a web browser.\n\nBefore we try to fix anything, let’s have a look at the tools at our disposal.\n\nDjango provides a test Client to simulate a user interacting with the code at the view level. We can use it in tests.py or even in the shell.\n\nWe will start again with the shell, where we need to do a couple of things that won’t be necessary in tests.py. The first is to set up the test environment in the shell:\n\nsetup_test_environment() installs a template renderer which will allow us to examine some additional attributes on responses such as response.context that otherwise wouldn’t be available. Note that this method does not set up a test database, so the following will be run against the existing database and the output may differ slightly depending on what questions you already created. You might get unexpected results if your TIME_ZONE in settings.py isn’t correct. If you don’t remember setting it earlier, check it before continuing.\n\nNext we need to import the test client class (later in tests.py we will use the django.test.TestCase class, which comes with its own client, so this won’t be required):\n\nWith that ready, we can ask the client to do some work for us:\n\nThe list of polls shows polls that aren’t published yet (i.e. those that have a pub_date in the future). Let’s fix that.\n\nIn Tutorial 4 we introduced a class-based view, based on ListView:\n\nWe need to amend the get_queryset() method and change it so that it also checks the date by comparing it with timezone.now(). First we need to add an import:\n\nand then we must amend the get_queryset method like so:\n\nQuestion.objects.filter(pub_date__lte=timezone.now()) returns a queryset containing Questions whose pub_date is less than or equal to - that is, earlier than or equal to - timezone.now().\n\nNow you can satisfy yourself that this behaves as expected by firing up runserver, loading the site in your browser, creating a few Question entries with dates in the past and future, and checking that only those that have been published are listed. You don’t want to have to do that every single time you make any change that might affect this - so let’s also create a test, based on our shell session above.\n\nAdd the following to polls/tests.py:\n\nand we’ll create a shortcut function to create questions as well as a new test class:\n\nLet’s look at some of these more closely.\n\nFirst is a question shortcut function, create_question, to take some repetition out of the process of creating questions.\n\ntest_no_questions doesn’t create any questions, but checks the message: “No polls are available.” and verifies the latest_question_list is empty. Note that the django.test.TestCase class provides some additional assertion methods. In these examples, we use assertContains() and assertQuerySetEqual().\n\nIn test_past_question, we create a question and verify that it appears in the list.\n\nIn test_future_question, we create a question with a pub_date in the future. The database is reset for each test method, so the first question is no longer there, and so again the index shouldn’t have any questions in it.\n\nAnd so on. In effect, we are using the tests to tell a story of admin input and user experience on the site, and checking that at every state and for every new change in the state of the system, the expected results are published.\n\nWhat we have works well; however, even though future questions don’t appear in the index, users can still reach them if they know or guess the right URL. So we need to add a similar constraint to DetailView:\n\nWe should then add some tests, to check that a Question whose pub_date is in the past can be displayed, and that one with a pub_date in the future is not:\n\nWe ought to add a similar get_queryset method to ResultsView and create a new test class for that view. It’ll be very similar to what we have just created; in fact there will be a lot of repetition.\n\nWe could also improve our application in other ways, adding tests along the way. For example, it’s pointless that a Question with no related Choice can be published on the site. So, our views could check for this, and exclude such Question objects. Our tests would create a Question without a Choice, and then test that it’s not published, as well as create a similar Question with at least one Choice, and test that it is published.\n\nPerhaps logged-in admin users should be allowed to see unpublished Question entries, but not ordinary visitors. Again: whatever needs to be added to the software to accomplish this should be accompanied by a test, whether you write the test first and then make the code pass the test, or work out the logic in your code first and then write a test to prove it.\n\nAt a certain point you are bound to look at your tests and wonder whether your code is suffering from test bloat, which brings us to:\n\nIt might seem that our tests are growing out of control. At this rate there will soon be more code in our tests than in our application, and the repetition is unaesthetic, compared to the elegant conciseness of the rest of our code.\n\nIt doesn’t matter. Let them grow. For the most part, you can write a test once and then forget about it. It will continue performing its useful function as you continue to develop your program.\n\nSometimes tests will need to be updated. Suppose that we amend our views so that only Question entries with associated Choice instances are published. In that case, many of our existing tests will fail - telling us exactly which tests need to be amended to bring them up to date, so to that extent tests help look after themselves.\n\nAt worst, as you continue developing, you might find that you have some tests that are now redundant. Even that’s not a problem; in testing redundancy is a good thing.\n\nAs long as your tests are sensibly arranged, they won’t become unmanageable. Good rules-of-thumb include having:\n\na separate TestClass for each model or view\n\na separate test method for each set of conditions you want to test\n\ntest method names that describe their function\n\nThis tutorial only introduces some of the basics of testing. There’s a great deal more you can do, and a number of very useful tools at your disposal to achieve some very clever things.\n\nFor example, while our tests here have covered some of the internal logic of a model and the way our views publish information, you can use an “in-browser” framework such as Selenium to test the way your HTML actually renders in a browser. These tools allow you to check not just the behavior of your Django code, but also, for example, of your JavaScript. It’s quite something to see the tests launch a browser, and start interacting with your site, as if a human being were driving it! Django includes LiveServerTestCase to facilitate integration with tools like Selenium.\n\nIf you have a complex application, you may want to run tests automatically with every commit for the purposes of continuous integration, so that quality control is itself - at least partially - automated.\n\nA good way to spot untested parts of your application is to check code coverage. This also helps identify fragile or even dead code. If you can’t test a piece of code, it usually means that code should be refactored or removed. Coverage will help to identify dead code. See Integration with coverage.py for details.\n\nTesting in Django has comprehensive information about testing.\n\nFor full details on testing, see Testing in Django.\n\nWhen you’re comfortable with testing Django views, read part 6 of this tutorial to learn about static files management.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Writing your first Django app, part 5¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Introducing automated testing¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "What are automated tests?¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Why you need to create tests¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests will save you time¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests don’t just identify problems, they prevent them¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests make your code more attractive¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Tests help teams work together¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Basic testing strategies¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Writing our first test¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "We identify a bug¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Create a test to expose the bug¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Running tests¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Fixing the bug¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "More comprehensive tests¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Test a view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "A test for a view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The Django test client¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Improving our view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Testing our new view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Testing the DetailView¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Ideas for more tests¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "When testing, more is better¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Further testing¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "What’s next?¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/intro/tutorial05/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial04/",
+    "https://docs.djangoproject.com/en/stable/faq/help/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial02/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/tools/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/advanced/",
+    "https://docs.djangoproject.com/en/stable/ref/class-based-views/generic-display/",
+    "https://docs.djangoproject.com/en/stable/topics/testing/",
+    "https://docs.djangoproject.com/en/stable/intro/tutorial06/",
+    "https://docs.djangoproject.com/en/stable/intro/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

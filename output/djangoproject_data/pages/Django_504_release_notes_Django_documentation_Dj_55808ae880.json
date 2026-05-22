@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.4/",
+  "title": "Django 5.0.4 release notes | Django documentation | Django",
+  "content": "Django 5.0.4 fixes several bugs in 5.0.3.\n\nFixed a bug in Django 5.0 that caused a crash of Model.full_clean() on fields with expressions in db_default. As a consequence, Model.full_clean() no longer validates for empty values in fields with db_default (#35223).\n\nFixed a regression in Django 5.0 where the AdminFileWidget could be rendered with two id attributes on the “Clear” checkbox (#35273).\n\nFixed a bug in Django 5.0 that caused a migration crash on PostgreSQL 15+ when adding a partial UniqueConstraint with nulls_distinct (#35329).\n\nFixed a crash in Django 5.0 when performing queries involving table aliases and lookups on a GeneratedField of the aliased table (#35344).\n\nFixed a bug in Django 5.0 that caused a migration crash when adding a GeneratedField relying on the __contains or __icontains lookups or using a Value containing a \"%\" (#35336).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.4 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.4/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.5/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.3/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

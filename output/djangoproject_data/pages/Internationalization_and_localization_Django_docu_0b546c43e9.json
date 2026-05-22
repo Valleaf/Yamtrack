@@ -1,0 +1,37 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/i18n/",
+  "title": "Internationalization and localization | Django documentation | Django",
+  "content": "The goal of internationalization and localization is to allow a single web application to offer its content in languages and formats tailored to the audience.\n\nDjango has full support for translation of text, formatting of dates, times and numbers, and time zones.\n\nEssentially, Django does two things:\n\nIt allows developers and template authors to specify which parts of their apps should be translated or formatted for local languages and cultures.\n\nIt uses these hooks to localize web apps for particular users according to their preferences.\n\nTranslation depends on the target language, and formatting usually depends on the target country. This information is provided by browsers in the Accept-Language header. However, the time zone isn’t readily available.\n\nThe words “internationalization” and “localization” often cause confusion; here’s a simplified definition:\n\nPreparing the software for localization. Usually done by developers.\n\nWriting the translations and local formats. Usually done by translators.\n\nMore details can be found in the W3C Web Internationalization FAQ, the Wikipedia article or the GNU gettext documentation.\n\nTranslation is controlled by the USE_I18N setting. However, it involves internationalization and localization. The name of the setting is an unfortunate result of Django’s history.\n\nHere are some other terms that will help us to handle a common language:\n\nA locale name, either a language specification of the form ll or a combined language and country specification of the form ll_CC. Examples: it, de_AT, es, pt_BR, sr_Latn. The language part is always in lowercase. The country part is in titlecase if it has more than 2 characters, otherwise it’s in uppercase. The separator is an underscore.\n\nRepresents the name of a language. Browsers send the names of the languages they accept in the Accept-Language HTTP header using this format. Examples: it, de-at, es, pt-br. Language codes are generally represented in lowercase, but the HTTP Accept-Language header is case-insensitive. The separator is a dash.\n\nA message file is a plain-text file, representing a single language, that contains all available translation strings and how they should be represented in the given language. Message files have a .po file extension.\n\nA literal that can be translated.\n\nA format file is a Python module that defines the data formats for a given locale.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Internationalization and localization¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Overview¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Definitions¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/i18n/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/translation/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/formatting/",
+    "https://docs.djangoproject.com/en/stable/topics/i18n/timezones/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/email/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,2371 @@
+[
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\middleware.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\middleware.py",
+        "class_name": "ProviderAPIErrorMiddleware",
+        "method_name": null,
+        "line_number": 6,
+        "evidence": [
+          "Class name suggests handler chain: ProviderAPIErrorMiddleware"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\middleware.py",
+        "class_name": "AutoLoginMiddleware",
+        "method_name": null,
+        "line_number": 32,
+        "evidence": [
+          "Class name suggests handler chain: AutoLoginMiddleware"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 2
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "Item",
+        "method_name": "generate_manual_id",
+        "line_number": 176,
+        "evidence": [
+          "Method uses decorators: ['classmethod']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "UserMessage",
+        "method_name": "tags",
+        "line_number": 860,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "Media",
+        "method_name": "create_user_message",
+        "line_number": 931,
+        "evidence": [
+          "Factory method detected: create_user_message"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "Media",
+        "method_name": "formatted_score",
+        "line_number": 980,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "TV",
+        "method_name": "save",
+        "line_number": 1031,
+        "evidence": [
+          "Method uses decorators: ['tracker']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "Season",
+        "method_name": "save",
+        "line_number": 1413,
+        "evidence": [
+          "Method uses decorators: ['tracker']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\models.py",
+        "class_name": "Game",
+        "method_name": "formatted_progress",
+        "line_number": 1913,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 26,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 6,
+      "Factory": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_episode.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_episode.py",
+        "class_name": "EpisodeStatusTests",
+        "method_name": "test_first_episode_sets_season_in_progress",
+        "line_number": 118,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+        "class_name": "SeasonModel",
+        "method_name": "test_watch_method",
+        "line_number": 104,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.Season.get_episode_item')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+        "class_name": "SeasonStatusTests",
+        "method_name": "test_completed_status_creates_remaining_episodes",
+        "line_number": 282,
+        "evidence": [
+          "Factory method detected: test_completed_status_creates_remaining_episodes"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+        "class_name": "SeasonStatusTests",
+        "method_name": "test_completed_status_creates_remaining_episodes",
+        "line_number": 282,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+        "class_name": "SeasonStatusTests",
+        "method_name": "test_dropped_status_updates_tv_status",
+        "line_number": 524,
+        "evidence": [
+          "Observer method detected: test_dropped_status_updates_tv_status"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_season.py",
+        "class_name": "SeasonGetRemainingEpsQuickWatchDateTests",
+        "method_name": "test_get_remaining_eps_current_date",
+        "line_number": 671,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.Season.get_episode_item')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 3,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 3,
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_tv.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_tv.py",
+        "class_name": "TVStatusTests",
+        "method_name": "test_completed_status_creates_all_seasons",
+        "line_number": 208,
+        "evidence": [
+          "Factory method detected: test_completed_status_creates_all_seasons"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\models\\test_tv.py",
+        "class_name": "TVStatusTests",
+        "method_name": "test_completed_status_creates_all_seasons",
+        "line_number": 208,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_metadata.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_metadata.py",
+        "class_name": "Metadata",
+        "method_name": "test_anime_unknown",
+        "line_number": 38,
+        "evidence": [
+          "Method uses decorators: [\"patch('requests.Session.get')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_metadata.py",
+        "class_name": "Metadata",
+        "method_name": "test_mangaupdates",
+        "line_number": 61,
+        "evidence": [
+          "Observer method detected: test_mangaupdates"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_musicbrainz.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_musicbrainz.py",
+        "class_name": "TestSearchMusic",
+        "method_name": "test_returns_paginated_response",
+        "line_number": 118,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.musicbrainz._get')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_musicbrainz.py",
+        "class_name": "TestAlbum",
+        "method_name": "test_returns_required_fields",
+        "line_number": 206,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.musicbrainz._get_artist_albums')\", \"patch('app.providers.musicbrainz._get')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_musicbrainz.py",
+        "class_name": "TestGetArtistAlbums",
+        "method_name": "test_excludes_current_album",
+        "line_number": 301,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.musicbrainz._get')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 6,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 3
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_search.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_search.py",
+        "class_name": "Search",
+        "method_name": "test_mangaupdates",
+        "line_number": 41,
+        "evidence": [
+          "Observer method detected: test_mangaupdates"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_services.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_services.py",
+        "class_name": "ServicesTests",
+        "method_name": "test_api_request_get",
+        "line_number": 22,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.session.get')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_services.py",
+        "class_name": "ServicesTests",
+        "method_name": "test_get_media_metadata_manga_mangaupdates",
+        "line_number": 169,
+        "evidence": [
+          "Observer method detected: test_get_media_metadata_manga_mangaupdates"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_tvdb.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\providers\\test_tvdb.py",
+        "class_name": "TVDBProviderTests",
+        "method_name": "test_get_access_token_logs_in_and_caches_token",
+        "line_number": 14,
+        "evidence": [
+          "Method uses decorators: [\"override_settings(TVDB_API='test-tvdb-key', TVDB_PIN='')\", \"patch('app.providers.tvdb.cache')\", \"patch('app.providers.tvdb.services.api_request')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_helpers.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_helpers.py",
+        "class_name": "HelpersTest",
+        "method_name": "test_get_configured_app_url_from_urls",
+        "line_number": 38,
+        "evidence": [
+          "Method uses decorators: [\"override_settings(URLS=['https://yamtrack.example.com:8924'])\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 4,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_history_processor.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_history_processor.py",
+        "class_name": "HistoryProcessorTests",
+        "method_name": null,
+        "line_number": 8,
+        "evidence": [
+          "Class name suggests handler chain: HistoryProcessorTests"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_integration.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_integration.py",
+        "class_name": "IntegrationTest",
+        "method_name": "setUpClass",
+        "line_number": 14,
+        "evidence": [
+          "Method uses decorators: ['classmethod']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_statistics.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_statistics.py",
+        "class_name": "StatisticsDateFilteringTests",
+        "method_name": null,
+        "line_number": 23,
+        "evidence": [
+          "Class name suggests handler chain: StatisticsDateFilteringTests"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_statistics.py",
+        "class_name": "StatisticsTests",
+        "method_name": "test_get_activity_data",
+        "line_number": 825,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.statistics.get_filtered_historical_data')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1,
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_tasks.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_tasks.py",
+        "class_name": "CleanupUserMessagesTaskTests",
+        "method_name": "test_cleanup_user_messages_deletes_only_old_shown_messages",
+        "line_number": 21,
+        "evidence": [
+          "Method uses decorators: ['override_settings(USER_MESSAGE_RETENTION_DAYS=30)']"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Command",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_tasks.py",
+        "class_name": "CleanupUserMessagesTaskTests",
+        "method_name": null,
+        "line_number": 11,
+        "evidence": [
+          "Class name suggests Command: CleanupUserMessagesTaskTests"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Command": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\test_templatetags.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\test_templatetags.py",
+        "class_name": "AppTagsTests",
+        "method_name": "test_get_static_file_mtime",
+        "line_number": 67,
+        "evidence": [
+          "Method uses decorators: [\"patch('pathlib.Path.stat')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_crud.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_crud.py",
+        "class_name": "CreateMedia",
+        "method_name": "test_create_anime",
+        "line_number": 30,
+        "evidence": [
+          "Factory method detected: test_create_anime"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_crud.py",
+        "class_name": "CreateMedia",
+        "method_name": "test_create_anime",
+        "line_number": 30,
+        "evidence": [
+          "Method uses decorators: [\"override_settings(MEDIA_ROOT='create_media')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 3,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_entry.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_entry.py",
+        "class_name": "CreateEntryViewTests",
+        "method_name": "test_create_entry_get",
+        "line_number": 28,
+        "evidence": [
+          "Factory method detected: test_create_entry_get"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_home.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_home.py",
+        "class_name": "HomeViewTests",
+        "method_name": "test_home_view_htmx_load_more",
+        "line_number": 248,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_media_details.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_media_details.py",
+        "class_name": "MediaDetailsViewTests",
+        "method_name": "test_media_details_view",
+        "line_number": 23,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_media_search.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_media_search.py",
+        "class_name": "MediaSearchViewTests",
+        "method_name": "test_media_search_view",
+        "line_number": 23,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.search')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_progress.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_progress.py",
+        "class_name": "ProgressEditPersistentMessages",
+        "method_name": "test_progress_edit_htmx_appends_persistent_messages",
+        "line_number": 222,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.models.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 3,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_track_modal.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\app\\tests\\views\\test_track_modal.py",
+        "class_name": "TrackModalViewTests",
+        "method_name": "test_track_modal_view_new_media",
+        "line_number": 62,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\models.py",
+        "class_name": "Event",
+        "method_name": "readable_content_number",
+        "line_number": 212,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 4,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_anime.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_anime.py",
+        "class_name": "CalendarAnimeTests",
+        "method_name": "test_get_anime_schedule_bulk",
+        "line_number": 19,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.anime.services.api_request')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_comic.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_comic.py",
+        "class_name": "CalendarComicTests",
+        "method_name": "test_process_comic_with_store_date",
+        "line_number": 18,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.comic.services.get_media_metadata')\", \"patch('events.calendar.comic.comicvine.issue')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_main.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_main.py",
+        "class_name": "CalendarMainTests",
+        "method_name": "test_fetch_releases_all_types",
+        "line_number": 21,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.selectors.tmdb.movie_changes')\", \"patch('events.calendar.selectors.tmdb.tv_changes')\", \"patch('events.calendar.main.process_comic')\", \"patch('events.calendar.main.process_tv')\", \"patch('events.calendar.main.process_other')\", \"patch('events.calendar.main.process_anime_bulk')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_main.py",
+        "class_name": "CalendarMainTests",
+        "method_name": "test_save_events_updates_existing_unnumbered_event",
+        "line_number": 136,
+        "evidence": [
+          "Observer method detected: test_save_events_updates_existing_unnumbered_event"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_other.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_other.py",
+        "class_name": "CalendarOtherTests",
+        "method_name": "test_process_other_movie",
+        "line_number": 18,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.other.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_other.py",
+        "class_name": "CalendarOtherTests",
+        "method_name": "test_process_other_mangaupdates",
+        "line_number": 72,
+        "evidence": [
+          "Observer method detected: test_process_other_mangaupdates"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_selectors.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_selectors.py",
+        "class_name": "CalendarSelectorTests",
+        "method_name": "test_get_items_to_process",
+        "line_number": 23,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.selectors.tmdb.movie_changes')\", \"patch('events.calendar.selectors.tmdb.tv_changes')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_tv.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\calendar\\test_tv.py",
+        "class_name": "CalendarTVTests",
+        "method_name": "test_process_tv_season",
+        "line_number": 29,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.calendar.tv.tmdb.tv')\", \"patch('events.calendar.tv.tmdb.tv_with_seasons')\", \"patch('events.calendar.tv.get_tvmaze_episode_map')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\test_notification.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\test_notification.py",
+        "class_name": "NotificationTests",
+        "method_name": "test_end_to_end_notification",
+        "line_number": 198,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.notifications.send_notifications')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\test_notification.py",
+        "class_name": "NotificationTests",
+        "method_name": "test_exclude_then_notify",
+        "line_number": 232,
+        "evidence": [
+          "Observer method detected: test_exclude_then_notify"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\test_templatetags.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\test_templatetags.py",
+        "class_name": "TemplateFiltersTagsTests",
+        "method_name": null,
+        "line_number": 5,
+        "evidence": [
+          "Class name suggests handler chain: TemplateFiltersTagsTests"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\events\\tests\\test_views.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\test_views.py",
+        "class_name": "CalendarViewTests",
+        "method_name": "test_calendar_default_view",
+        "line_number": 26,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.models.Event.objects.get_user_events')\", \"patch.object(get_user_model(), 'update_preference')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\events\\tests\\test_views.py",
+        "class_name": "DownloadCalendarViewTests",
+        "method_name": "test_download_calendar_empty",
+        "line_number": 307,
+        "evidence": [
+          "Method uses decorators: [\"patch('events.models.Event.objects.get_user_events')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 2
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\goodreads.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\goodreads.py",
+        "class_name": "GoodReadsImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 151,
+        "evidence": [
+          "Factory method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\goodreads.py",
+        "class_name": "GoodReadsImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 151,
+        "evidence": [
+          "Observer method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\hltb.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\hltb.py",
+        "class_name": "HowLongToBeatImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 187,
+        "evidence": [
+          "Factory method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\hltb.py",
+        "class_name": "HowLongToBeatImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 187,
+        "evidence": [
+          "Observer method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\imdb.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\imdb.py",
+        "class_name": "IMDBImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 255,
+        "evidence": [
+          "Factory method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\imdb.py",
+        "class_name": "IMDBImporter",
+        "method_name": "_create_or_update_item",
+        "line_number": 255,
+        "evidence": [
+          "Observer method detected: _create_or_update_item"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\kitsu.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\kitsu.py",
+        "class_name": "KitsuImporter",
+        "method_name": "_create_or_get_item",
+        "line_number": 277,
+        "evidence": [
+          "Factory method detected: _create_or_get_item"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\senscritique.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\senscritique.py",
+        "class_name": "SensCritiqueCSVImporter",
+        "method_name": "_source_for",
+        "line_number": 156,
+        "evidence": [
+          "Method uses decorators: ['staticmethod']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\steam.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\steam.py",
+        "class_name": "SteamImporter",
+        "method_name": "_queue_existing_game_update",
+        "line_number": 256,
+        "evidence": [
+          "Observer method detected: _queue_existing_game_update"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\imports\\trakt.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\trakt.py",
+        "class_name": "TraktImporter",
+        "method_name": "_get_or_create_item",
+        "line_number": 355,
+        "evidence": [
+          "Factory method detected: _get_or_create_item"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\imports\\trakt.py",
+        "class_name": "TraktImporter",
+        "method_name": "_update_completion_status",
+        "line_number": 561,
+        "evidence": [
+          "Observer method detected: _update_completion_status"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 5,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_anilist.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_anilist.py",
+        "class_name": "ImportAniList",
+        "method_name": "test_import_anilist_public",
+        "line_number": 34,
+        "evidence": [
+          "Method uses decorators: [\"patch('requests.Session.post')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_filmaffinity.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_filmaffinity.py",
+        "class_name": "TestFilmAffinityRatingsImporter",
+        "method_name": "test_import_creates_movies",
+        "line_number": 163,
+        "evidence": [
+          "Factory method detected: test_import_creates_movies"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_filmaffinity.py",
+        "class_name": "TestFilmAffinityRatingsImporter",
+        "method_name": "test_import_creates_movies",
+        "line_number": 163,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.imports.filmaffinity.resolve_tmdb')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_filmaffinity.py",
+        "class_name": "TestFilmAffinityListImporter",
+        "method_name": "test_creates_custom_list",
+        "line_number": 250,
+        "evidence": [
+          "Factory method detected: test_creates_custom_list"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_filmaffinity.py",
+        "class_name": "TestFilmAffinityListImporter",
+        "method_name": "test_creates_custom_list",
+        "line_number": 250,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.imports.filmaffinity.resolve_tmdb')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 6,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 2,
+      "Decorator": 2
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_helpers.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_helpers.py",
+        "class_name": "HelpersTest",
+        "method_name": "test_create_import_schedule",
+        "line_number": 106,
+        "evidence": [
+          "Factory method detected: test_create_import_schedule"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_helpers.py",
+        "class_name": "HelpersTest",
+        "method_name": "test_create_import_schedule",
+        "line_number": 106,
+        "evidence": [
+          "Method uses decorators: [\"patch('django.contrib.messages.error')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_helpers.py",
+        "class_name": "HelpersTest",
+        "method_name": "test_update_season_references",
+        "line_number": 35,
+        "evidence": [
+          "Observer method detected: test_update_season_references"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Decorator": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_imdb.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_imdb.py",
+        "class_name": "ImportIMDB",
+        "method_name": "test_lookup_in_tmdb_not_found",
+        "line_number": 122,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.tmdb.find')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_kitsu.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_kitsu.py",
+        "class_name": "ImportKitsu",
+        "method_name": "test_get_kitsu_id",
+        "line_number": 42,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.api_request')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_mal.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_mal.py",
+        "class_name": "ImportMAL",
+        "method_name": "test_import_animelist",
+        "line_number": 35,
+        "evidence": [
+          "Method uses decorators: [\"patch('requests.Session.get')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_senscritique.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_senscritique.py",
+        "class_name": "TestSensCritiqueCSVImporter",
+        "method_name": "test_import_movie",
+        "line_number": 49,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.search')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_simkl.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_simkl.py",
+        "class_name": "ImportSimkl",
+        "method_name": "test_importer",
+        "line_number": 43,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.imports.simkl.SimklImporter._get_user_list')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_steam.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_steam.py",
+        "class_name": "ImportSteam",
+        "method_name": "test_import_steam_games",
+        "line_number": 38,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.imports.steam.services.api_request')\", \"patch('integrations.imports.steam.external_game')\", \"patch('integrations.imports.steam.services.get_media_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_trakt.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\imports\\test_trakt.py",
+        "class_name": "ImportTrakt",
+        "method_name": "test_process_watched_movie",
+        "line_number": 32,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.imports.trakt.TraktImporter._get_metadata')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_oauth_views.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_oauth_views.py",
+        "class_name": "TraktOAuthViewTests",
+        "method_name": "test_trakt_oauth_uses_configured_public_url",
+        "line_number": 19,
+        "evidence": [
+          "Method uses decorators: [\"override_settings(URLS=['https://yamtrack.example.com:8924'], TRAKT_API='client')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_steam_update.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_steam_update.py",
+        "class_name": "ImportSteamUpdate",
+        "method_name": "_create_game",
+        "line_number": 29,
+        "evidence": [
+          "Factory method detected: _create_game"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_steam_update.py",
+        "class_name": "ImportSteamUpdate",
+        "method_name": "test_overwrite_steam_game_updates_existing",
+        "line_number": 67,
+        "evidence": [
+          "Observer method detected: test_overwrite_steam_game_updates_existing"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_webhooks_jellyfin.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_webhooks_jellyfin.py",
+        "class_name": "JellyfinWebhookTests",
+        "method_name": "test_process_tv_uses_tvdb_absolute_order_for_cross_season_match",
+        "line_number": 466,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.webhooks.base.BaseWebhookProcessor._handle_anime')\", \"patch('integrations.webhooks.base.tvdb_provider.episode')\", \"patch('integrations.webhooks.base.BaseWebhookProcessor._find_tv_media_id')\", \"patch('integrations.webhooks.base.BaseWebhookProcessor._fetch_mapping_data')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_webhooks_plex.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\tests\\test_webhooks_plex.py",
+        "class_name": "PlexWebhookTests",
+        "method_name": "test_anime_episode_anidb_guid_mark_played",
+        "line_number": 384,
+        "evidence": [
+          "Method uses decorators: [\"patch('integrations.webhooks.base.BaseWebhookProcessor._handle_anime')\", \"patch('integrations.webhooks.base.BaseWebhookProcessor._fetch_mapping_data')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\base.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\base.py",
+        "class_name": "BaseWebhookProcessor",
+        "method_name": null,
+        "line_number": 13,
+        "evidence": [
+          "Class name suggests handler chain: BaseWebhookProcessor"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 2,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\emby.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\emby.py",
+        "class_name": "EmbyWebhookProcessor",
+        "method_name": null,
+        "line_number": 11,
+        "evidence": [
+          "Class name suggests handler chain: EmbyWebhookProcessor"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\jellyfin.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\jellyfin.py",
+        "class_name": "JellyfinWebhookProcessor",
+        "method_name": null,
+        "line_number": 11,
+        "evidence": [
+          "Class name suggests handler chain: JellyfinWebhookProcessor"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\plex.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "ChainOfResponsibility",
+        "category": "Behavioral",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\integrations\\webhooks\\plex.py",
+        "class_name": "PlexWebhookProcessor",
+        "method_name": null,
+        "line_number": 12,
+        "evidence": [
+          "Class name suggests handler chain: PlexWebhookProcessor"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 2,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "ChainOfResponsibility": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\lists\\admin.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\admin.py",
+        "class_name": "CustomListAdmin",
+        "method_name": "item_count",
+        "line_number": 18,
+        "evidence": [
+          "Method uses decorators: [\"admin.display(description='Number of items')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\lists\\admin.py",
+        "class_name": "CustomListAdmin",
+        "method_name": "get_last_update",
+        "line_number": 23,
+        "evidence": [
+          "Observer method detected: get_last_update"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\admin.py",
+        "class_name": "CustomListItemAdmin",
+        "method_name": "get_media_type",
+        "line_number": 41,
+        "evidence": [
+          "Method uses decorators: [\"admin.display(description='Media Type')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 2,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 2,
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\lists\\models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\models.py",
+        "class_name": "CustomList",
+        "method_name": "image",
+        "line_number": 90,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 6,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\lists\\tests\\test_integration.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\tests\\test_integration.py",
+        "class_name": "IntegrationTest",
+        "method_name": "setUpClass",
+        "line_number": 13,
+        "evidence": [
+          "Method uses decorators: ['classmethod']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\lists\\tests\\test_views.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\tests\\test_views.py",
+        "class_name": "ListsViewTests",
+        "method_name": "test_lists_view_search_filter",
+        "line_number": 86,
+        "evidence": [
+          "Method uses decorators: [\"patch.object(get_user_model(), 'update_preference')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\tests\\test_views.py",
+        "class_name": "ListDetailViewTests",
+        "method_name": "test_list_detail_view",
+        "line_number": 230,
+        "evidence": [
+          "Method uses decorators: [\"patch.object(get_user_model(), 'update_preference')\", \"patch.object(CustomList, 'user_can_view')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.6,
+        "location": "C:\\yamtrack-fork\\src\\lists\\tests\\test_views.py",
+        "class_name": "CreateListViewTest",
+        "method_name": "test_create_list",
+        "line_number": 513,
+        "evidence": [
+          "Factory method detected: test_create_list"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\lists\\tests\\test_views.py",
+        "class_name": "ListsModalViewTests",
+        "method_name": "test_lists_modal_view_with_existing_item",
+        "line_number": 643,
+        "evidence": [
+          "Method uses decorators: [\"patch('app.providers.services.get_media_metadata')\", \"patch('lists.models.CustomList.objects.get_user_lists_with_item')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 7,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 3,
+      "Factory": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\media_collections\\models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\media_collections\\models.py",
+        "class_name": "Collection",
+        "method_name": "image",
+        "line_number": 73,
+        "evidence": [
+          "Method uses decorators: ['property']"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 5,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\static\\js\\libraries\\chartjs-4.4.9.min.js",
+    "language": "JavaScript",
+    "patterns": [
+      {
+        "pattern_type": "Factory",
+        "category": "Creational",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\static\\js\\libraries\\chartjs-4.4.9.min.js",
+        "class_name": "en",
+        "method_name": "create",
+        "line_number": null,
+        "evidence": [
+          "Factory method detected: create"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 22,
+    "total_functions": 293,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Factory": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\account_adapter.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Adapter",
+        "category": "Structural",
+        "confidence": 0.7,
+        "location": "C:\\yamtrack-fork\\src\\users\\account_adapter.py",
+        "class_name": "NoNewUsersAccountAdapter",
+        "method_name": null,
+        "line_number": 4,
+        "evidence": [
+          "Class name suggests Adapter: NoNewUsersAccountAdapter"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Adapter": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\users\\models.py",
+        "class_name": "User",
+        "method_name": "update_preference",
+        "line_number": 539,
+        "evidence": [
+          "Observer method detected: update_preference"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 12,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\test_forms.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\test_forms.py",
+        "class_name": "NotificationSettingsFormTests",
+        "method_name": "test_valid_single_url",
+        "line_number": 40,
+        "evidence": [
+          "Method uses decorators: [\"patch('apprise.Apprise.add')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 1,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\test_helpers.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\test_helpers.py",
+        "class_name": "HelpersTest",
+        "method_name": "test_get_next_run_info_daily",
+        "line_number": 106,
+        "evidence": [
+          "Method uses decorators: [\"patch('django.utils.timezone.now')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\test_models.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\test_models.py",
+        "class_name": "UserUpdatePreferenceTests",
+        "method_name": "test_update_preference_no_new_value",
+        "line_number": 25,
+        "evidence": [
+          "Observer method detected: test_update_preference_no_new_value"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\test_models.py",
+        "class_name": "UserGetImportTasksTests",
+        "method_name": "test_get_import_tasks_results",
+        "line_number": 210,
+        "evidence": [
+          "Method uses decorators: [\"patch('users.helpers.process_task_result')\"]"
+        ],
+        "related_classes": []
+      },
+      {
+        "pattern_type": "Command",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\test_models.py",
+        "class_name": "UserGetImportTasksTests",
+        "method_name": null,
+        "line_number": 188,
+        "evidence": [
+          "Class name suggests Command: UserGetImportTasksTests"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 3,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1,
+      "Decorator": 1,
+      "Command": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_notifications.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_notifications.py",
+        "class_name": "NotificationTests",
+        "method_name": "test_notifications_post_invalid",
+        "line_number": 64,
+        "evidence": [
+          "Method uses decorators: [\"patch('apprise.Apprise.add')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_plex.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_plex.py",
+        "class_name": "PlexUsernamesUpdateTests",
+        "method_name": "test_update_plex_usernames_success",
+        "line_number": 16,
+        "evidence": [
+          "Observer method detected: test_update_plex_usernames_success"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_sidebar.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Observer",
+        "category": "Behavioral",
+        "confidence": 0.65,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_sidebar.py",
+        "class_name": "SidebarViewTests",
+        "method_name": "test_sidebar_post_update_preferences",
+        "line_number": 38,
+        "evidence": [
+          "Observer method detected: test_sidebar_post_update_preferences"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Observer": 1
+    }
+  },
+  {
+    "file_path": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_token.py",
+    "language": "Python",
+    "patterns": [
+      {
+        "pattern_type": "Decorator",
+        "category": "Structural",
+        "confidence": 0.3,
+        "location": "C:\\yamtrack-fork\\src\\users\\tests\\views\\test_token.py",
+        "class_name": "RegenerateTokenTests",
+        "method_name": "test_regenerate_token_integrity_error",
+        "line_number": 36,
+        "evidence": [
+          "Method uses decorators: [\"patch('django.db.models.Model.save')\"]"
+        ],
+        "related_classes": []
+      }
+    ],
+    "total_classes": 1,
+    "total_functions": 0,
+    "analysis_depth": "surface",
+    "pattern_summary": {
+      "Decorator": 1
+    }
+  }
+]

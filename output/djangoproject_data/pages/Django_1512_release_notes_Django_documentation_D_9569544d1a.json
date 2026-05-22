@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.5.12/",
+  "title": "Django 1.5.12 release notes | Django documentation | Django",
+  "content": "Django 1.5.12 fixes a regression in the 1.5.9 security release.\n\nFixed a regression with dynamically generated inlines and allowed field references in the admin (#23754).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.5.12 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.5.12/",
+    "https://docs.djangoproject.com/en/stable/releases/1.6/",
+    "https://docs.djangoproject.com/en/stable/releases/1.5.11/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

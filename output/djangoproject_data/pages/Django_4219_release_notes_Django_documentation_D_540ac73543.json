@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/4.2.19/",
+  "title": "Django 4.2.19 release notes | Django documentation | Django",
+  "content": "Django 4.2.19 fixes a regression in 4.2.18.\n\nFixed a regression in Django 4.2.18 that caused validate_ipv6_address() and validate_ipv46_address() to crash when handling non-string values (#36098).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 4.2.19 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/4.2.19/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.20/",
+    "https://docs.djangoproject.com/en/stable/releases/4.2.18/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/3.0.8/",
+  "title": "Django 3.0.8 release notes | Django documentation | Django",
+  "content": "Django 3.0.8 fixes several bugs in 3.0.7.\n\nFixed messages of InvalidCacheKey exceptions and CacheKeyWarning warnings raised by cache key validation (#31654).\n\nFixed a regression in Django 3.0.7 that caused a queryset crash when grouping by a many-to-one relationship (#31660).\n\nReallowed, following a regression in Django 3.0, non-expressions having a filterable attribute to be used as the right-hand side in queryset filters (#31664).\n\nFixed a regression in Django 3.0.2 that caused a migration crash on PostgreSQL when adding a foreign key to a model with a namespaced db_table (#31735).\n\nAdded compatibility for cx_Oracle 8 (#31751).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 3.0.8 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/3.0.8/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.9/",
+    "https://docs.djangoproject.com/en/stable/releases/3.0.7/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

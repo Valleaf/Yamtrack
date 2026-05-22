@@ -1,0 +1,27 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/",
+  "title": "Deploying GeoDjango | Django documentation | Django",
+  "content": "Basically, the deployment of a GeoDjango application is not different from the deployment of a normal Django application. Please consult Django’s deployment documentation.\n\nGeoDjango uses the GDAL geospatial library which is not thread safe at this time. Thus, it is highly recommended to not use threading when deploying – in other words, use an appropriate configuration of Apache.\n\nFor example, when configuring your application with mod_wsgi, set the WSGIDaemonProcess attribute threads to 1, unless Apache may crash when running your GeoDjango application. Increase the number of processes instead.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Deploying GeoDjango¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/testing/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/humanize/",
+    "https://docs.djangoproject.com/en/stable/ref/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/",
+    "https://docs.djangoproject.com/en/stable/ref/contrib/gis/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

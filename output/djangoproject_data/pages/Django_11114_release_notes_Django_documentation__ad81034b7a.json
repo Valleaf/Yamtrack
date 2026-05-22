@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/1.11.14/",
+  "title": "Django 1.11.14 release notes | Django documentation | Django",
+  "content": "Django 1.11.14 fixes several bugs in 1.11.13.\n\nFixed WKBWriter.write() and write_hex() for empty polygons on GEOS 3.6.1+ (#29460).\n\nFixed a regression in Django 1.10 that could result in large memory usage when making edits using ModelAdmin.list_editable (#28462).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 1.11.14 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/1.11.14/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.15/",
+    "https://docs.djangoproject.com/en/stable/releases/1.11.13/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+  "title": "How to deploy with WSGI | Django documentation | Django",
+  "content": "Django’s primary deployment platform is WSGI, the Python standard for web servers and applications.\n\nDjango’s startproject management command sets up a minimal default WSGI configuration for you, which you can tweak as needed for your project, and direct any WSGI-compliant application server to use.\n\nDjango includes getting-started documentation for the following WSGI servers:\n\nThe key concept of deploying with WSGI is the application callable which the application server uses to communicate with your code. It’s commonly provided as an object named application in a Python module accessible to the server.\n\nThe startproject command creates a file <project_name>/wsgi.py that contains such an application callable.\n\nIt’s used both by Django’s development server and in production WSGI deployments.\n\nWSGI servers obtain the path to the application callable from their configuration. Django’s built-in server, namely the runserver command, reads it from the WSGI_APPLICATION setting. By default, it’s set to <project_name>.wsgi.application, which points to the application callable in <project_name>/wsgi.py.\n\nWhen the WSGI server loads your application, Django needs to import the settings module — that’s where your entire application is defined.\n\nDjango uses the DJANGO_SETTINGS_MODULE environment variable to locate the appropriate settings module. It must contain the dotted path to the settings module. You can use a different value for development and production; it all depends on how you organize your settings.\n\nIf this variable isn’t set, the default wsgi.py sets it to mysite.settings, where mysite is the name of your project. That’s how runserver discovers the default settings file by default.\n\nSince environment variables are process-wide, this doesn’t work when you run multiple Django sites in the same process. This happens with mod_wsgi.\n\nTo avoid this problem, use mod_wsgi’s daemon mode with each site in its own daemon process, or override the value from the environment by enforcing os.environ[\"DJANGO_SETTINGS_MODULE\"] = \"mysite.settings\" in your wsgi.py.\n\nTo apply WSGI middleware you can wrap the application object. For instance you could add these lines at the bottom of wsgi.py:\n\nYou could also replace the Django WSGI application with a custom WSGI application that later delegates to the Django WSGI application, if you want to combine a Django application with a WSGI application of another framework.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "How to deploy with WSGI¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "The application object¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Configuring the settings module¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Applying WSGI middleware¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/",
+    "https://docs.djangoproject.com/en/stable/ref/django-admin/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/gunicorn/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/uwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/apache-auth/",
+    "https://docs.djangoproject.com/en/stable/ref/settings/",
+    "https://docs.djangoproject.com/en/stable/topics/settings/",
+    "https://docs.djangoproject.com/en/stable/howto/deployment/",
+    "https://docs.djangoproject.com/en/stable/howto/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+  "title": "Creating forms from models | Django documentation | Django",
+  "content": "If you’re building a database-driven app, chances are you’ll have forms that map closely to Django models. For instance, you might have a BlogComment model, and you want to create a form that lets people submit comments. In this case, it would be redundant to define the field types in your form, because you’ve already defined the fields in your model.\n\nFor this reason, Django provides a helper class that lets you create a Form class from a Django model.\n\nThe generated Form class will have a form field for every model field specified, in the order specified in the fields attribute.\n\nEach model field has a corresponding default form field. For example, a CharField on a model is represented as a CharField on a form. A model ManyToManyField is represented as a MultipleChoiceField. Here is the full list of conversions:\n\nNot represented in the form\n\nNot represented in the form\n\nIntegerField with min_value set to -9223372036854775808 and max_value set to 9223372036854775807.\n\nCharField, if editable is set to True on the model field, otherwise not represented in the form.\n\nBooleanField, or NullBooleanField if null=True.\n\nCharField with max_length set to the model field’s max_length and empty_value set to None if null=True.\n\nModelChoiceField (see below)\n\nGenericIPAddressField\n\nGenericIPAddressField\n\nModelMultipleChoiceField (see below)\n\nPositiveBigIntegerField\n\nPositiveSmallIntegerField\n\nNot represented in the form\n\nCharField with widget=forms.Textarea\n\nAs you might expect, the ForeignKey and ManyToManyField model field types are special cases:\n\nForeignKey is represented by django.forms.ModelChoiceField, which is a ChoiceField whose choices are a model QuerySet.\n\nManyToManyField is represented by django.forms.ModelMultipleChoiceField, which is a MultipleChoiceField whose choices are a model QuerySet.\n\nIn addition, each generated form field has attributes set as follows:\n\nIf the model field has blank=True, then required is set to False on the form field. Otherwise, required=True.\n\nThe form field’s label is set to the verbose_name of the model field, with the first character capitalized.\n\nThe form field’s help_text is set to the help_text of the model field.\n\nIf the model field has choices set, then the form field’s widget will be set to Select, with choices coming from the model field’s choices. The choices will normally include the blank choice which is selected by default. If the field is required, this forces the user to make a selection. The blank choice will not be included if the model field has blank=False and an explicit default value (the default value will be initially selected instead).\n\nFinally, note that you can override the form field used for a given model field. See Overriding the default fields below.\n\nConsider this set of models:\n\nWith these models, the ModelForm subclasses above would be roughly equivalent to this (the only difference being the save() method, which we’ll discuss in a moment.):\n\nThere are two main steps involved in validating a ModelForm:\n\nValidating the model instance\n\nJust like normal form validation, model form validation is triggered implicitly when calling is_valid() or accessing the errors attribute and explicitly when calling full_clean(), although you will typically not use the latter method in practice.\n\nModel validation is triggered from within the form validation step right after the form’s clean() method is called. First, the model’s full_clean() is called with validate_unique=False and validate_constraints=False, then the model’s validate_unique() and validate_constraints() methods are called in order.\n\nThe cleaning process modifies the model instance passed to the ModelForm constructor in various ways. For instance, any date fields on the model are converted into actual date objects. Failed validation may leave the underlying model instance in an inconsistent state and therefore it’s not recommended to reuse it.\n\nYou can override the clean() method on a model form to provide additional validation in the same way you can on a normal form.\n\nA model form instance attached to a model object will contain an instance attribute that gives its methods access to that specific model instance.\n\nThe ModelForm.clean() method sets flags that make the model validation step validate the uniqueness of model fields that are marked as unique, unique_together or unique_for_date|month|year, as well as constraints.\n\nIf you would like to override the clean() method and maintain this validation, you must call the parent class’s clean() method.\n\nAs part of the validation process, ModelForm will call the clean() method of each field on your model that has a corresponding field on your form. If you have excluded any model fields, validation will not be run on those fields. See the form validation documentation for more on how field cleaning and validation work.\n\nThe model’s clean() method will be called before any uniqueness or constraint checks are made. See Validating objects for more information on the model’s clean() hook.\n\nError messages defined at the form field level or at the form Meta level always take precedence over the error messages defined at the model field level.\n\nError messages defined on model fields are only used when the ValidationError is raised during the model validation step and no corresponding error messages are defined at the form level.\n\nYou can override the error messages from NON_FIELD_ERRORS raised by model validation by adding the NON_FIELD_ERRORS key to the error_messages dictionary of the ModelForm’s inner Meta class:\n\nEvery ModelForm also has a save() method. This method creates and saves a database object from the data bound to the form. A subclass of ModelForm can accept an existing model instance as the keyword argument instance; if this is supplied, save() will update that instance. If it’s not supplied, save() will create a new instance of the specified model:\n\nNote that if the form hasn’t been validated, calling save() will do so by checking form.errors. A ValueError will be raised if the data in the form doesn’t validate – i.e., if form.errors evaluates to True.\n\nIf an optional field doesn’t appear in the form’s data, the resulting model instance uses the model field default, if there is one, for that field. This behavior doesn’t apply to fields that use CheckboxInput, CheckboxSelectMultiple, or SelectMultiple (or any custom widget whose value_omitted_from_data() method always returns False) since an unchecked checkbox and unselected <select multiple> don’t appear in the data of an HTML form submission. Use a custom form field or widget if you’re designing an API and want the default fallback behavior for a field that uses one of these widgets.\n\nThis save() method accepts an optional commit keyword argument, which accepts either True or False. If you call save() with commit=False, then it will return an object that hasn’t yet been saved to the database. In this case, it’s up to you to call save() on the resulting model instance. This is useful if you want to do custom processing on the object before saving it, or if you want to use one of the specialized model saving options. commit is True by default.\n\nAnother side effect of using commit=False is seen when your model has a many-to-many relation with another model. If your model has a many-to-many relation and you specify commit=False when you save a form, Django cannot immediately save the form data for the many-to-many relation. This is because it isn’t possible to save many-to-many data for an instance until the instance exists in the database.\n\nTo work around this problem, every time you save a form using commit=False, Django adds a save_m2m() method to your ModelForm subclass. After you’ve manually saved the instance produced by the form, you can invoke save_m2m() to save the many-to-many form data. For example:\n\nCalling save_m2m() is only required if you use save(commit=False). When you use a save() on a form, all data – including many-to-many data – is saved without the need for any additional method calls. For example:\n\nOther than the save() and save_m2m() methods, a ModelForm works exactly the same way as any other forms form. For example, the is_valid() method is used to check for validity, the is_multipart() method is used to determine whether a form requires multipart file upload (and hence whether request.FILES must be passed to the form), etc. See Binding uploaded files to a form for more information.\n\nIt is strongly recommended that you explicitly set all fields that should be edited in the form using the fields attribute. Failure to do so can easily lead to security problems when a form unexpectedly allows a user to set certain fields, especially when new fields are added to a model. Depending on how the form is rendered, the problem may not even be visible on the web page.\n\nThe alternative approach would be to include all fields automatically, or remove only some. This fundamental approach is known to be much less secure and has led to serious exploits on major websites (e.g. GitHub ).\n\nThere are, however, two shortcuts available for cases where you can guarantee these security concerns do not apply to you:\n\nSet the fields attribute to the special value '__all__' to indicate that all fields in the model should be used. For example:\n\nSet the exclude attribute of the ModelForm’s inner Meta class to a list of fields to be excluded from the form.\n\nSince the Author model has the 3 fields name, title and birth_date, this will result in the fields name and birth_date being present on the form.\n\nIf either of these are used, the order the fields appear in the form will be the order the fields are defined in the model, with ManyToManyField instances appearing last.\n\nIn addition, Django applies the following rule: if you set editable=False on the model field, any form created from the model via ModelForm will not include that field.\n\nAny fields not included in a form by the above logic will not be set by the form’s save() method. Also, if you manually add the excluded fields back to the form, they will not be initialized from the model instance.\n\nDjango will prevent any attempt to save an incomplete model, so if the model does not allow the missing fields to be empty, and does not provide a default value for the missing fields, any attempt to save() a ModelForm with missing fields will fail. To avoid this failure, you must instantiate your model with initial values for the missing, but required fields:\n\nAlternatively, you can use save(commit=False) and manually set any extra required fields:\n\nSee the section on saving forms for more details on using save(commit=False).\n\nThe default field types, as described in the Field types table above, are sensible defaults. If you have a DateField in your model, chances are you’d want that to be represented as a DateField in your form. But ModelForm gives you the flexibility of changing the form field for a given model.\n\nTo specify a custom widget for a field, use the widgets attribute of the inner Meta class. This should be a dictionary mapping field names to widget classes or instances.\n\nFor example, if you want the CharField for the name attribute of Author to be represented by a <textarea> instead of its default <input type=\"text\">, you can override the field’s widget:\n\nThe widgets dictionary accepts either widget instances (e.g., Textarea(...)) or classes (e.g., Textarea). Note that the widgets dictionary is ignored for a model field with a non-empty choices attribute. In this case, you must override the form field to use a different widget.\n\nSimilarly, you can specify the labels, help_texts and error_messages attributes of the inner Meta class if you want to further customize a field.\n\nFor example if you wanted to customize the wording of all user facing strings for the name field:\n\nYou can also specify field_classes or formfield_callback to customize the type of fields instantiated by the form.\n\nFor example, if you wanted to use MySlugFormField for the slug field, you could do the following:\n\nFinally, if you want complete control over of a field – including its type, validators, required, etc. – you can do this by declaratively specifying fields like you would in a regular Form.\n\nIf you want to specify a field’s validators, you can do so by defining the field declaratively and setting its validators parameter:\n\nWhen you explicitly instantiate a form field like this, it is important to understand how ModelForm and regular Form are related.\n\nModelForm is a regular Form which can automatically generate certain fields. The fields that are automatically generated depend on the content of the Meta class and on which fields have already been defined declaratively. Basically, ModelForm will only generate fields that are missing from the form, or in other words, fields that weren’t defined declaratively.\n\nFields defined declaratively are left as-is, therefore any customizations made to Meta attributes such as widgets, labels, help_texts, or error_messages are ignored; these only apply to fields that are generated automatically.\n\nSimilarly, fields defined declaratively do not draw their attributes like max_length or required from the corresponding model. If you want to maintain the behavior specified in the model, you must set the relevant arguments explicitly when declaring the form field.\n\nFor example, if the Article model looks like this:\n\nand you want to do some custom validation for headline, while keeping the blank and help_text values as specified, you might define ArticleForm like this:\n\nYou must ensure that the type of the form field can be used to set the contents of the corresponding model field. When they are not compatible, you will get a ValueError as no implicit conversion takes place.\n\nSee the form field documentation for more information on fields and their arguments.\n\nBy default, the fields in a ModelForm will not localize their data. To enable localization for fields, you can use the localized_fields attribute on the Meta class.\n\nIf localized_fields is set to the special value '__all__', all fields will be localized.\n\nAs with basic forms, you can extend and reuse ModelForm classes by inheriting them. This is useful if you need to declare extra fields or extra methods on a parent class for use in a number of forms derived from models. For example, using the previous ArticleForm class:\n\nThis creates a form that behaves identically to ArticleForm, except there’s some extra validation and cleaning for the pub_date field.\n\nYou can also subclass the parent’s Meta inner class if you want to change the Meta.fields or Meta.exclude lists:\n\nThis adds the extra method from the EnhancedArticleForm and modifies the original ArticleForm.Meta to remove one field.\n\nThere are a couple of things to note, however.\n\nNormal Python name resolution rules apply. If you have multiple base classes that declare a Meta inner class, only the first one will be used. This means the child’s Meta, if it exists, otherwise the Meta of the first parent, etc.\n\nIt’s possible to inherit from both Form and ModelForm simultaneously, however, you must ensure that ModelForm appears first in the MRO. This is because these classes rely on different metaclasses and a class can only have one metaclass.\n\nIt’s possible to declaratively remove a Field inherited from a parent class by setting the name to be None on the subclass.\n\nYou can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the ModelForm metaclass from generating a default field. To opt-out from default fields, see Selecting the fields to use.\n\nAs with regular forms, it’s possible to specify initial data for forms by specifying an initial parameter when instantiating the form. Initial values provided this way will override both initial values from the form field and values from an attached model instance. For example:\n\nYou can create forms from a given model using the standalone function modelform_factory(), instead of using a class definition. This may be more convenient if you do not have many customizations to make:\n\nThis can also be used to make modifications to existing forms, for example by specifying the widgets to be used for a given field:\n\nThe fields to include can be specified using the fields and exclude keyword arguments, or the corresponding attributes on the ModelForm inner Meta class. Please see the ModelForm Selecting the fields to use documentation.\n\n… or enable localization for specific fields:\n\nLike regular formsets, Django provides a couple of enhanced formset classes to make working with Django models more convenient. Let’s reuse the Author model from above:\n\nUsing fields restricts the formset to use only the given fields. Alternatively, you can take an “opt-out” approach, specifying which fields to exclude:\n\nThis will create a formset that is capable of working with the data associated with the Author model. It works just like a regular formset:\n\nmodelformset_factory() uses formset_factory() to generate formsets. This means that a model formset is an extension of a basic formset that knows how to interact with a particular model.\n\nWhen using multi-table inheritance, forms generated by a formset factory will contain a parent link field (by default <parent_model_name>_ptr) instead of an id field.\n\nBy default, when you create a formset from a model, the formset will use a queryset that includes all objects in the model (e.g., Author.objects.all()). You can override this behavior by using the queryset argument:\n\nAlternatively, you can create a subclass that sets self.queryset in __init__:\n\nThen, pass your BaseAuthorFormSet class to the factory function:\n\nIf you want to return a formset that doesn’t include any preexisting instances of the model, you can specify an empty QuerySet:\n\nBy default, when you use modelformset_factory, a model form will be created using modelform_factory(). Often, it can be useful to specify a custom model form. For example, you can create a custom model form that has custom validation:\n\nThen, pass your model form to the factory function:\n\nIt is not always necessary to define a custom model form. The modelformset_factory function has several arguments which are passed through to modelform_factory, which are described below.\n\nUsing the widgets parameter, you can specify a dictionary of values to customize the ModelForm’s widget class for a particular field. This works the same way as the widgets dictionary on the inner Meta class of a ModelForm works:\n\nUsing the localized_fields parameter, you can enable localization for fields in the form.\n\nIf localized_fields is set to the special value '__all__', all fields will be localized.\n\nAs with regular formsets, it’s possible to specify initial data for forms in the formset by specifying an initial parameter when instantiating the model formset class returned by modelformset_factory(). However, with model formsets, the initial values only apply to extra forms, those that aren’t attached to an existing model instance. If the length of initial exceeds the number of extra forms, the excess initial data is ignored. If the extra forms with initial data aren’t changed by the user, they won’t be validated or saved.\n\nAs with a ModelForm, you can save the data as a model object. This is done with the formset’s save() method:\n\nThe save() method returns the instances that have been saved to the database. If a given instance’s data didn’t change in the bound data, the instance won’t be saved to the database and won’t be included in the return value (instances, in the above example).\n\nWhen fields are missing from the form (for example because they have been excluded), these fields will not be set by the save() method. You can find more information about this restriction, which also holds for regular model forms, in Selecting the fields to use.\n\nPass commit=False to return the unsaved model instances:\n\nThis gives you the ability to attach data to the instances before saving them to the database. If your formset contains a ManyToManyField, you’ll also need to call formset.save_m2m() to ensure the many-to-many relationships are saved properly.\n\nAfter calling save(), your model formset will have three new attributes containing the formset’s changes:\n\nAs with regular formsets, you can use the max_num and extra parameters to modelformset_factory() to limit the number of extra forms displayed.\n\nmax_num does not prevent existing objects from being displayed:\n\nAlso, extra=0 doesn’t prevent creation of new model instances as you can add additional forms with JavaScript or send additional POST data. See Preventing new objects creation on how to do this.\n\nIf the value of max_num is greater than the number of existing related objects, up to extra additional blank forms will be added to the formset, so long as the total number of forms does not exceed max_num:\n\nA max_num value of None (the default) puts a high limit on the number of forms displayed (1000). In practice this is equivalent to no limit.\n\nUsing the edit_only parameter, you can prevent creation of any new objects:\n\nHere, the formset will only edit existing Author instances. No other objects will be created or edited.\n\nModel formsets are very similar to formsets. Let’s say we want to present a formset to edit Author model instances:\n\nAs you can see, the view logic of a model formset isn’t drastically different than that of a “normal” formset. The only difference is that we call formset.save() to save the data into the database. (This was described above, in Saving objects in the formset.)\n\nJust like with a ModelForm, by default the clean() method of a ModelFormSet will validate that none of the items in the formset violate the unique constraints on your model (either unique, unique_together or unique_for_date|month|year). If you want to override the clean() method on a ModelFormSet and maintain this validation, you must call the parent class’s clean method:\n\nAlso note that by the time you reach this step, individual model instances have already been created for each Form. Modifying a value in form.cleaned_data is not sufficient to affect the saved value. If you wish to modify a value in ModelFormSet.clean() you must modify form.instance:\n\nAs stated earlier, you can override the default queryset used by the model formset:\n\nNote that we pass the queryset argument in both the POST and GET cases in this example.\n\nThere are three ways to render a formset in a Django template.\n\nFirst, you can let the formset do most of the work:\n\nSecond, you can manually render the formset, but let the form deal with itself:\n\nWhen you manually render the forms yourself, be sure to render the management form as shown above. See the management form documentation.\n\nThird, you can manually render each field:\n\nIf you opt to use this third method and you don’t iterate over the fields with a {% for %} loop, you’ll need to render the primary key field. For example, if you were rendering the name and age fields of a model:\n\nNotice how we need to explicitly render {{ form.id }}. This ensures that the model formset, in the POST case, will work correctly. (This example assumes a primary key named id. If you’ve explicitly defined your own primary key that isn’t called id, make sure it gets rendered.)\n\nInline formsets is a small abstraction layer on top of model formsets. These simplify the case of working with related objects via a foreign key. Suppose you have these two models:\n\nIf you want to create a formset that allows you to edit books belonging to a particular author, you could do this:\n\nBookFormSet’s prefix is 'book_set' (<model name>_set ). If Book’s ForeignKey to Author has a related_name, that’s used instead.\n\ninlineformset_factory() uses modelformset_factory() and marks can_delete=True.\n\nManually rendered can_delete and can_order.\n\nWhen overriding methods on InlineFormSet, you should subclass BaseInlineFormSet rather than BaseModelFormSet.\n\nFor example, if you want to override clean():\n\nSee also Overriding clean() on a ModelFormSet.\n\nThen when you create your inline formset, pass in the optional argument formset:\n\nIf your model contains more than one foreign key to the same model, you’ll need to resolve the ambiguity manually using fk_name. For example, consider the following model:\n\nTo resolve this, you can use fk_name to inlineformset_factory():\n\nYou may want to provide a view that allows a user to edit the related objects of a model. Here’s how you can do that:\n\nNotice how we pass instance in both the POST and GET cases.\n\ninlineformset_factory uses modelformset_factory and passes most of its arguments to modelformset_factory. This means you can use the widgets parameter in much the same way as passing it to modelformset_factory. See Specifying widgets to use in the form with widgets above.",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Creating forms from models¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "ModelForm¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Field types¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "A full example¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Validation on a ModelForm¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Overriding the clean() method¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Interaction with model validation¶",
+      "id": ""
+    },
+    {
+      "level": "h4",
+      "text": "Considerations regarding model’s error_messages¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "The save() method¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Selecting the fields to use¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Overriding the default fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Enabling localization of fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Form inheritance¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Providing initial values¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "ModelForm factory function¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Model formsets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changing the queryset¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Changing the form¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Specifying widgets to use in the form with widgets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Enabling localization for fields with localized_fields¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Providing initial values¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Saving objects in the formset¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Limiting the number of editable objects¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Preventing new objects creation¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using a model formset in a view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Overriding clean() on a ModelFormSet¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using a custom queryset¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using the formset in the template¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Inline formsets¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Overriding methods on an InlineFormSet¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "More than one foreign key to the same model¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Using an inline formset in a view¶",
+      "id": ""
+    },
+    {
+      "level": "h3",
+      "text": "Specifying widgets to use in the inline form¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [
+    {
+      "description": "For example:",
+      "code": ">>> from django.forms import ModelForm\n>>> from myapp.models import Article\n\n# Create the form class.\n>>> class ArticleForm(ModelForm):\n...     class Meta:\n...         model = Article\n...         fields = [\"pub_date\", \"headline\", \"content\", \"reporter\"]\n...\n\n# Creating a form to add an article.\n>>> form = ArticleForm()\n\n# Creating a form to change an existing article.\n>>> article = Article.objects.get(pk=1)\n>>> form = ArticleForm(instance=article)"
+    },
+    {
+      "description": "To work around this problem, every time you save a form using commit=False, Django adds a save_m2m() method to your ModelForm subclass. After you’ve manually saved the instance produced by the form, you can invoke save_m2m() to save the many-to-many form data. For example:",
+      "code": "# Create a form instance with POST data.\n>>> f = AuthorForm(request.POST)\n\n# Create, but don't save the new author instance.\n>>> new_author = f.save(commit=False)\n\n# Modify the author in some way.\n>>> new_author.some_field = \"some_value\"\n\n# Save the new instance.\n>>> new_author.save()\n\n# Now, save the many-to-many data for the form.\n>>> f.save_m2m()"
+    },
+    {
+      "description": "Calling save_m2m() is only required if you use save(commit=False). When you use a save() on a form, all data – including many-to-many data – is saved without the need for any additional method calls. For example:",
+      "code": "# Create a form instance with POST data.\n>>> a = Author()\n>>> f = AuthorForm(request.POST, instance=a)\n\n# Create and save the new author instance. There's no need to do anything else.\n>>> new_author = f.save()"
+    },
+    {
+      "description": "Set the fields attribute to the special value '__all__' to indicate that all fields in the model should be used. For example:",
+      "code": "from django.forms import ModelForm\n\n\nclass AuthorForm(ModelForm):\n    class Meta:\n        model = Author\n        fields = \"__all__\""
+    },
+    {
+      "description": "For example:",
+      "code": "class PartialAuthorForm(ModelForm):\n    class Meta:\n        model = Author\n        exclude = [\"title\"]"
+    }
+  ],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/topics/forms/modelforms/",
+    "https://docs.djangoproject.com/en/stable/ref/models/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/fields/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/validation/",
+    "https://docs.djangoproject.com/en/stable/ref/models/instances/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/api/",
+    "https://docs.djangoproject.com/en/stable/ref/exceptions/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/widgets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/models/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/ref/forms/formsets/",
+    "https://docs.djangoproject.com/en/stable/topics/db/models/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/media/",
+    "https://docs.djangoproject.com/en/stable/topics/",
+    "https://docs.djangoproject.com/en/stable/topics/forms/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}

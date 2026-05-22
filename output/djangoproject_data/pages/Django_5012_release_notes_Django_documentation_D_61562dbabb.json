@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.djangoproject.com/en/stable/releases/5.0.12/",
+  "title": "Django 5.0.12 release notes | Django documentation | Django",
+  "content": "Django 5.0.12 fixes a regression in 5.0.11.\n\nFixed a regression in Django 5.0.11 that caused validate_ipv6_address() and validate_ipv46_address() to crash when handling non-string values (#36098).",
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Django 5.0.12 release notes¶",
+      "id": ""
+    },
+    {
+      "level": "h2",
+      "text": "Bugfixes¶",
+      "id": ""
+    }
+  ],
+  "code_samples": [],
+  "patterns": [],
+  "links": [
+    "https://docs.djangoproject.com/en/stable/releases/5.0.12/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.13/",
+    "https://docs.djangoproject.com/en/stable/releases/5.0.11/",
+    "https://docs.djangoproject.com/en/stable/releases/",
+    "https://docs.djangoproject.com/en/stable/genindex/",
+    "https://docs.djangoproject.com/en/stable/py-modindex/",
+    "https://docs.djangoproject.com/en/stable/contents/",
+    "https://docs.djangoproject.com/en/stable/faq/"
+  ]
+}
