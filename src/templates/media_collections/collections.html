@@ -1,111 +1,77 @@
 {% extends "base.html" %}
-{% load app_tags %}
+{% load static %}
 
-{% block title %}Collections - Yamtrack{% endblock %}
+{% block title %}Collections - Yamtrack{% endblock title %}
 
 {% block content %}
-<div x-data="{ showModal: false }" class="space-y-6">
-  <div class="flex items-center justify-between">
+<div x-data="{ showModal: false }">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <div>
-      <h1 class="text-3xl font-bold mb-1">Collections</h1>
-      <p class="text-gray-400 text-sm">Franchise universes, series, and cross-media groups</p>
+      <h1 class="text-3xl font-bold mb-2">Collections</h1>
+      <p class="text-gray-400">Cross-media universes, franchises, and groups</p>
     </div>
-    <button @click="showModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition-colors cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    <a href="{% url 'collection_create' %}"
+       class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+      {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
       New Collection
-    </button>
+    </a>
   </div>
 
-  {% include "media_collections/components/collection_form.html" with source_choices=sources %}
-
-  {% with all_collections=owned_collections|add_qs:collab_collections %}
   {% if owned_collections or collab_collections %}
-    {% if collab_collections %}
-      <h2 class="text-lg font-semibold text-gray-300">My Collections</h2>
-    {% endif %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {% for col in owned_collections %}
-        {% with items=col.collectionitem_set.all %}
-        <a href="{% url 'collection_detail' col.id %}"
-           class="group bg-[#2a2f35] rounded-lg overflow-hidden hover:bg-[#313840] transition-colors border border-transparent hover:border-indigo-500/30">
-          <div class="aspect-[3/2] bg-[#1a1d20] overflow-hidden">
-            {% if items %}
-              <div class="grid {% if items|length >= 4 %}grid-cols-2{% else %}grid-cols-1{% endif %} h-full">
-                {% for ci in items|slice:":4" %}
-                  <img src="{{ ci.item.image }}" alt="{{ ci.item.title }}"
-                       class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="w-full h-full flex items-center justify-center text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
-              </div>
-            {% endif %}
-          </div>
-          <div class="p-4">
-            <h3 class="font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">{{ col.name }}</h3>
-            {% if col.description %}
-              <p class="text-gray-400 text-xs mt-1 line-clamp-2">{{ col.description }}</p>
-            {% endif %}
-            <div class="flex items-center gap-3 mt-3 text-xs text-gray-500">
-              <span>{{ items|length }} item{{ items|length|pluralize }}</span>
-            </div>
-          </div>
-        </a>
-        {% endwith %}
+
+    {% if owned_collections %}
+    <h2 class="text-xl font-semibold mb-4 text-gray-200">My Collections</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+      {% for collection in owned_collections %}
+      <a href="{% url 'collection_detail' collection.id %}"
+         class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
+        <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
+          <img src="{{ collection.image }}"
+               alt="{{ collection.name }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+               onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
+        </div>
+        <div class="p-3">
+          <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
+          <p class="text-xs text-gray-400 mt-1">{{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }}</p>
+        </div>
+      </a>
       {% endfor %}
     </div>
+    {% endif %}
 
     {% if collab_collections %}
-      <h2 class="text-lg font-semibold text-gray-300 mt-4">Shared with Me</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {% for col in collab_collections %}
-          {% with items=col.collectionitem_set.all %}
-          <a href="{% url 'collection_detail' col.id %}"
-             class="group bg-[#2a2f35] rounded-lg overflow-hidden hover:bg-[#313840] transition-colors border border-transparent hover:border-indigo-500/30">
-            <div class="aspect-[3/2] bg-[#1a1d20] overflow-hidden">
-              {% if items %}
-                <div class="grid {% if items|length >= 4 %}grid-cols-2{% else %}grid-cols-1{% endif %} h-full">
-                  {% for ci in items|slice:":4" %}
-                    <img src="{{ ci.item.image }}" alt="{{ ci.item.title }}"
-                         class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                  {% endfor %}
-                </div>
-              {% else %}
-                <div class="w-full h-full flex items-center justify-center text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
-                </div>
-              {% endif %}
-            </div>
-            <div class="p-4">
-              <h3 class="font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">{{ col.name }}</h3>
-              <p class="text-xs text-gray-500 mt-0.5">by {{ col.owner.username }}</p>
-              {% if col.description %}
-                <p class="text-gray-400 text-xs mt-1 line-clamp-2">{{ col.description }}</p>
-              {% endif %}
-              <div class="flex items-center gap-3 mt-3 text-xs text-gray-500">
-                <span>{{ items|length }} item{{ items|length|pluralize }}</span>
-              </div>
-            </div>
-          </a>
-          {% endwith %}
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% else %}
-    <div class="flex flex-col items-center justify-center py-24 bg-[#2a2f35] rounded-lg">
-      <div class="bg-[#39404b] rounded-full p-5 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
-      </div>
-      <h3 class="text-xl font-semibold mb-2">No collections yet</h3>
-      <p class="text-gray-400 mb-6">Group your MCU movies, Game of Thrones books and shows, or any franchise across media types.</p>
-      <button @click="showModal = true"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition-colors cursor-pointer">
-        Create your first collection
-      </button>
+    <h2 class="text-xl font-semibold mb-4 text-gray-200">Shared with Me</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {% for collection in collab_collections %}
+      <a href="{% url 'collection_detail' collection.id %}"
+         class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
+        <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
+          <img src="{{ collection.image }}"
+               alt="{{ collection.name }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+               onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
+        </div>
+        <div class="p-3">
+          <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
+          <p class="text-xs text-gray-400 mt-1">{{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }} · {{ collection.owner.username }}</p>
+        </div>
+      </a>
+      {% endfor %}
     </div>
+    {% endif %}
+
+  {% else %}
+  <div class="flex flex-col items-center justify-center py-24 text-center">
+    {% include "app/icons/cube.svg" with classes="w-16 h-16 text-gray-600 mb-6" %}
+    <h2 class="text-xl font-semibold text-gray-300 mb-2">No collections yet</h2>
+    <p class="text-gray-400 mb-6 max-w-sm">Group related media across types — an MCU collection, a book series, a director's filmography.</p>
+    <a href="{% url 'collection_create' %}"
+       class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+      {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
+      Create your first collection
+    </a>
+  </div>
   {% endif %}
-  {% endwith %}
 </div>
-{% endblock %}
+{% endblock content %}
