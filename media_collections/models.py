@@ -29,6 +29,26 @@ class Collection(models.Model):
         }
         return stats
 
+    def items_by_type(self):
+        """
+        Returns a dictionary containing counts of items grouped by type.
+        {
+            "Action": count_of_action,
+            "Source": count_of_source,
+            ...
+        }
+        """
+        from collections import Counter
+        from django.db.models import Count
+        
+        # Aggregates the counts of associated items based on their 'type' field.
+        # We use a two-step approach: a queryset count aggregation, followed by list transformation.
+        queryset = self.collectionitem_set.all()
+        type_counts = queryset.values('type').annotate(count=Count('type'))
+        
+        # Convert the queryset results into a dictionary format {type: count}
+        return {item['type']: item['count'] for item in type_counts}
+
 class Item(models.Model):
     """
     A canonical representation of a single media item, regardless of its source.

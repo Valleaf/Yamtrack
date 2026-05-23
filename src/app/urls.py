@@ -1,4 +1,4 @@
-from django.urls import path, register_converter
+from django.urls import path, register_converter, include
 
 from app import converters, views
 
@@ -51,6 +51,8 @@ urlpatterns = [
         views.progress_edit,
         name="progress_edit",
     ),
+    # Include URLs from other modules here (e.g., api_urls)
+    # path("api/v1/", include("rest_framework.routers.DefaultRouter")),
     path("media_save", views.media_save, name="media_save"),
     path("media_delete", views.media_delete, name="media_delete"),
     path(
