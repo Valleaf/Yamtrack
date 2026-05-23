@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}New Collection - Yamtrack{% endblock title %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">New Collection</h1>
+    <p class="text-gray-400">Group related media across types — a franchise, universe, or series.</p>
+  </div>
+
+  <div class="bg-[#1e2329] rounded-lg p-6">
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-300 mb-2" for="id_name">Name *</label>
+        <input type="text" name="name" id="id_name"
+               value="{{ post.name|default:'' }}"
+               placeholder="e.g. MCU, Game of Thrones, Nolan Films"
+               class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               required>
+      </div>
+
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-300 mb-2" for="id_description">Description</label>
+        <textarea name="description" id="id_description" rows="3"
+                  placeholder="Optional description…"
+                  class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none">{{ post.description|default:'' }}</textarea>
+      </div>
+
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-300 mb-2" for="id_source">Import from source <span class="text-gray-500 font-normal">(optional)</span></label>
+        <select name="source" id="id_source"
+                class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                x-data x-on:change="$refs.sourceId.closest('div').style.display = $event.target.value !== 'manual' ? '' : 'none'">
+          {% for value, label in sources %}
+          <option value="{{ value }}" {% if post.source == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-6" id="source-id-row" {% if not post.source or post.source == 'manual' %}style="display:none"{% endif %}>
+        <label class="block text-sm font-medium text-gray-300 mb-2" for="id_source_id">Source ID</label>
+        <div class="flex gap-2">
+          <input type="text" name="source_id" id="id_source_id"
+                 value="{{ post.source_id|default:'' }}"
+                 placeholder="e.g. TMDB collection ID"
+                 class="flex-1 px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Or search below ↓</p>
+      </div>
+
+      <!-- Source search (HTMX) -->
+      <div id="source-search-section" {% if not post.source or post.source == 'manual' %}style="display:none"{% endif %} class="mb-6">
+        <label class="block text-sm font-medium text-gray-300 mb-2">Search by name</label>
+        <input type="text"
+               placeholder="Search…"
+               class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               hx-get="{% url 'collection_search_source' %}"
+               hx-trigger="keyup changed delay:400ms"
+               hx-include="[name='source']"
+               hx-target="#source-search-results"
+               name="q">
+        <div id="source-search-results" class="mt-2"></div>
+      </div>
+
+      <script>
+        document.getElementById('id_source').addEventListener('change', function() {
+          var show = this.value !== 'manual';
+          document.getElementById('source-id-row').style.display = show ? '' : 'none';
+          document.getElementById('source-search-section').style.display = show ? '' : 'none';
+        });
+      </script>
+
+      <div class="flex gap-3">
+        <button type="submit"
+                class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium">
+          Create Collection
+        </button>
+        <a href="{% url 'media_collections' %}"
+           class="px-6 py-2 bg-[#2c3136] text-gray-300 rounded-md hover:bg-[#39404b] transition-colors">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

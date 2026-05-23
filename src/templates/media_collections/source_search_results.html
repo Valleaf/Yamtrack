@@ -1,0 +1,23 @@
+{% if error %}
+  <p class="text-red-400 text-sm mt-2">{{ error }}</p>
+{% elif results %}
+  <ul class="space-y-2 mt-2">
+    {% for result in results %}
+    <li>
+      <button type="button"
+              class="w-full flex items-center gap-3 px-3 py-2 bg-[#2c3136] hover:bg-[#39404b] rounded-md text-left transition-colors"
+              onclick="document.getElementById('id_source_id').value='{{ result.id }}'">
+        {% if result.image %}
+        <img src="{{ result.image }}" alt="{{ result.name }}" class="w-10 h-10 object-cover rounded">
+        {% endif %}
+        <div>
+          <p class="text-sm font-medium text-white">{{ result.name }}</p>
+          {% if result.year %}<p class="text-xs text-gray-400">{{ result.year }}</p>{% endif %}
+        </div>
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+{% elif source and query %}
+  <p class="text-gray-500 text-sm mt-2">No results found.</p>
+{% endif %}
