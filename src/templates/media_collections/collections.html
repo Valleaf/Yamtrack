@@ -4,72 +4,59 @@
 {% block title %}Collections - Yamtrack{% endblock title %}
 
 {% block content %}
-<div x-data="{ showModal: false }">
+<div>
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <div>
       <h1 class="text-3xl font-bold mb-2">Collections</h1>
-      <p class="text-gray-400">Cross-media universes, franchises, and groups</p>
+      <p class="text-gray-400">Franchises and universes auto-detected from your tracked media</p>
     </div>
     <a href="{% url 'collection_create' %}"
-       class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
-      {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
-      New Collection
+       class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm">
+      {% include "app/icons/plus.svg" with classes="w-4 h-4 mr-2" %}
+      Import Collection
     </a>
   </div>
 
-  {% if owned_collections or collab_collections %}
+  {% if auto_collections %}
+  <h2 class="text-lg font-semibold mb-4 text-gray-200 flex items-center gap-2">
+    {% include "app/icons/star.svg" with classes="w-4 h-4 text-indigo-400" %}
+    Auto-detected
+  </h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+    {% for collection in auto_collections %}
+    {% include "media_collections/components/collection_card.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    {% if owned_collections %}
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">My Collections</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
-      {% for collection in owned_collections %}
-      <a href="{% url 'collection_detail' collection.id %}"
-         class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
-        <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
-          <img src="{{ collection.image }}"
-               alt="{{ collection.name }}"
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-               onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
-        </div>
-        <div class="p-3">
-          <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
-          <p class="text-xs text-gray-400 mt-1">{{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }}</p>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-    {% endif %}
+  {% if manual_collections %}
+  <h2 class="text-lg font-semibold mb-4 text-gray-200">Imported</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+    {% for collection in manual_collections %}
+    {% include "media_collections/components/collection_card.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    {% if collab_collections %}
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">Shared with Me</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-      {% for collection in collab_collections %}
-      <a href="{% url 'collection_detail' collection.id %}"
-         class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
-        <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
-          <img src="{{ collection.image }}"
-               alt="{{ collection.name }}"
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-               onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
-        </div>
-        <div class="p-3">
-          <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
-          <p class="text-xs text-gray-400 mt-1">{{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }} · {{ collection.owner.username }}</p>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-    {% endif %}
+  {% if collab_collections %}
+  <h2 class="text-lg font-semibold mb-4 text-gray-200">Shared with Me</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    {% for collection in collab_collections %}
+    {% include "media_collections/components/collection_card.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
-  {% else %}
+  {% if not auto_collections and not manual_collections and not collab_collections %}
   <div class="flex flex-col items-center justify-center py-24 text-center">
     {% include "app/icons/cube.svg" with classes="w-16 h-16 text-gray-600 mb-6" %}
     <h2 class="text-xl font-semibold text-gray-300 mb-2">No collections yet</h2>
-    <p class="text-gray-400 mb-6 max-w-sm">Group related media across types — an MCU collection, a book series, a director's filmography.</p>
+    <p class="text-gray-400 mb-2 max-w-sm">Collections are created automatically when you track movies that belong to a franchise (e.g. The Godfather trilogy, MCU films).</p>
+    <p class="text-gray-500 text-sm mb-6">You can also import any TMDB collection by name.</p>
     <a href="{% url 'collection_create' %}"
        class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
       {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
-      Create your first collection
+      Import a Collection
     </a>
   </div>
   {% endif %}

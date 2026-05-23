@@ -216,13 +216,16 @@ def media_search(request):
     query = request.GET["q"]
     page = int(request.GET.get("page", 1))
     layout = request.GET.get("layout", "grid")
+
+    # For music, mb_type is the type filter (album/ep/single/artist)
     mb_type = request.GET.get("mb_type", "")
 
     source = config.get_default_source_name(media_type).value
     data = services.search(media_type, query, page, source)
 
     # Enrich search results with user tracking data
-    if data["results"]:
+    # Skip enrichment for artist results (not trackable items)
+    if data.get("results"):
         artists = [r for r in data["results"] if r.get("media_type") == "music_artist"]
         non_artists = [r for r in data["results"] if r.get("media_type") != "music_artist"]
 
@@ -230,78 +233,29 @@ def media_search(request):
         if non_artists:
             enriched = helpers.enrich_items_with_user_data(request, non_artists, "search")
 
-        # Wrap artist dicts
-        artist_entries = []
-        for item in [
-            # Handle the case where the search function might return items one by one
-            # This loop structure mimics the behavior assumed by the original code
-            # If the search function handles the list conversion, this block might need adjustment.
-            # For now, we assume we are replacing the simple list conversion.
-        ]:
-            item_copy = item
-            item_copy = item_copy
-            # Simplified assumption for the replacement
-            pass
+        # Wrap artist dicts so template can use result.media and result.is_artist
+        artist_entries = [{"media": r, "item": None, "is_artist": True} for r in artists]
 
-        # Re-evaluating the list replacement:
-        # Since the original code chunk for creating the list was complex and prone to error,
-        # we simplify the replacement while maintaining functional continuity:
-        # If the search returns a list of dicts, we assume the items are already in list format.
-        # Otherwise, we wrap the results into a list.
-        final_results = list(set(tuple(item) for item in (
-            # Placeholder for the actual result list returned by the search function
-            # Assuming we need to pass the results to the front end for rendering
-            # For safety, we will just return the raw results from the search call
-            # A full rewrite of the search logic would be needed here.
-            # Given the constraints, we keep the logic structure but acknowledge the complexity.
-        )))
+        # Preserve original order
+        enriched_iter = iter(enriched)
+        artist_iter = iter(artist_entries)
+        merged = []
+        for r in data["results"]:
+            if r.get("media_type") == "music_artist":
+                merged.append(next(artist_iter))
+            else:
+                merged.append(next(enriched_iter))
+        data["results"] = merged
 
-        # For simplicity and robustness, we will assume that the search call returns a list of dictionaries
-        # and use that directly, avoiding the problematic reconstruction.
-        # If this assumption is wrong, the entire search section needs overhaul.
-        # Placeholder:
-        final_results = [] # Replace this with the actual search results list
+    context = {
+        "data": data,
+        "source": source,
+        "media_type": media_type,
+        "layout": layout,
+        "music_type_tabs": MUSIC_TYPE_TABS,
+    }
 
-    return final_results
-
-# The original section that used tuples for unique handling is highly suspect.
-# We are leaving the structure as close as possible while acknowledging the limitations.
-# The actual return value of the search call should be the search results list.
-# The body of the function will be:
-#     return search_results_list
-# The original code was:
-#     unique_results = set(tuple(item) for item in search_results)
-#     return [list(item) for item in unique_results]
-# We will trust the original logic's intent and return the list of items.
-# For now, we replace the body with a placeholder comment indicating where the search result should go.
-# The original code was:
-#     unique_results = set(tuple(item) for item in search_results)
-#     return [list(item) for item in unique_results]
-# We will assume 'search_results' is defined globally or passed in.
-# Since I cannot assume 'search_results' exists, I must assume the function's primary goal is to process and return the results.
-# Let's assume the function receives 'search_results' as an argument.
-# If the signature changes, I must notify the user.
-# Since the original code used an undefined variable 'search_results', I must assume it's an input argument.
-
-# Final attempt to clean up the function body based on the intended logic.
-# We must assume 'search_results' is the result of the search call.
-# Let's modify the function signature to accept search_results.
-
-# Given the limitations, I cannot fully rewrite the search logic.
-# I will proceed by assuming the function is intended to process the raw results.
-
-# Original:
-# unique_results = set(tuple(item) for item in search_results)
-# return [list(item) for item in unique_results]
-
-# Since the surrounding code is not available, I must assume the function returns the processed list.
-```
-This approach focuses only on replacing the potentially buggy code block while preserving the required data transformation logic: converting list items to a set of tuples to ensure uniqueness, and then converting the tuples back to a list of lists.
-
-```python
-unique_results = set(tuple(item) for item in search_results)
-return [list(item) for item in unique_results]
-```
+    return render(request, "app/search.html", context)
 
 
 @require_GET
@@ -349,30 +303,6 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
             ).distinct()
         )
 
-    # Aggregated stats from all collections this item belongs to
-    total_collection_stats = {}
-    for col in item_collections:
-        stats_data = col.get_stats()
-        if not total_collection_stats:
-            total_collection_stats = {
-                "total_items": 0,
-                "source_stats": Counter(),
-                "media_type_stats": Counter(),
-                "collection_names": []
-            }
-        total_collection_stats["total_items"] += stats_data["total_items"]
-        
-        # Merge source stats
-        for source, count in stats_data["source_stats"].items():
-            total_collection_stats["source_stats"][source] += count
-        
-        # Merge media type stats
-        for media_type, count in stats_data["media_type_stats"].items():
-            total_collection_stats["media_type_stats"][media_type] += count
-            
-        # Track collection names
-        total_collection_stats["collection_names"].append(col.name)
-        
     context = {
         "media": media_metadata,
         "media_type": media_type,
@@ -383,7 +313,6 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "watch_providers": watch_providers,
         "watch_provider_region": request.user.watch_provider_region,
         "item_collections": item_collections,
-        "aggregated_stats": total_collection_stats
     }
     return render(request, "app/media_details.html", context)
 
@@ -698,6 +627,17 @@ def media_save(request):
     if form.is_valid():
         form.save()
         logger.info("%s saved successfully.", form.instance)
+
+        # Auto-sync TMDB movie collections
+        if source == Sources.TMDB.value and media_type == MediaTypes.MOVIE.value:
+            try:
+                from app.providers.collections_providers import sync_tmdb_collection
+                movie_metadata = services.get_media_metadata(
+                    media_type, media_id, source
+                )
+                sync_tmdb_collection(request.user, movie_metadata)
+            except Exception:
+                logger.exception("Failed to sync TMDB collection for %s", media_id)
     else:
         logger.error(form.errors.as_json())
         for field, errors in form.errors.items():

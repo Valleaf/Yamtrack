@@ -1,19 +1,30 @@
-<div class="bg-[#1e2227] rounded-xl shadow-xl w-full max-w-sm mx-4 p-4">
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-white">Add to Collection</h3>
-    <a href="{% url 'collection_create' %}" class="text-xs text-indigo-400 hover:text-indigo-300">+ New</a>
-  </div>
-
+<div class="p-4" id="collections-{{ media_type }}-{{ media_id }}">
+  <h3 class="text-sm font-semibold text-gray-300 mb-3">Add to Collection</h3>
   {% if user_collections %}
-    <div class="space-y-1 max-h-72 overflow-y-auto">
-      {% for col in user_collections %}
-        {% include "media_collections/components/collection_item_button.html" with collection=col source=source media_type=media_type media_id=media_id has_item=col.has_item %}
+    <ul class="space-y-2">
+      {% for collection in user_collections %}
+      <li class="flex items-center justify-between"
+          hx-post="{% url 'collection_item_toggle' %}"
+          hx-target="#collections-{{ media_type }}-{{ media_id }}"
+          hx-swap="outerHTML"
+          hx-include="[name='csrfmiddlewaretoken'], [name='collection_id_{{ collection.id }}'], [name='source'], [name='media_type'], [name='media_id']">
+        <span class="text-sm text-gray-200 truncate mr-3">{{ collection.name }}</span>
+        <form method="post" action="{% url 'collection_item_toggle' %}">
+          {% csrf_token %}
+          <input type="hidden" name="collection_id" value="{{ collection.id }}">
+          <input type="hidden" name="source" value="{{ source }}">
+          <input type="hidden" name="media_type" value="{{ media_type }}">
+          <input type="hidden" name="media_id" value="{{ media_id }}">
+          <button type="submit"
+                  class="px-3 py-1 text-xs rounded transition-colors {% if collection.has_item %}bg-indigo-600 text-white hover:bg-indigo-700{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
+            {% if collection.has_item %}Remove{% else %}Add{% endif %}
+          </button>
+        </form>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
   {% else %}
-    <p class="text-sm text-gray-500 py-2">
-      No collections yet.
-      <a href="{% url 'collection_create' %}" class="text-indigo-400 hover:underline">Create one</a>.
-    </p>
+    <p class="text-sm text-gray-400">No collections yet.</p>
+    <a href="{% url 'collection_create' %}" class="text-sm text-indigo-400 hover:underline mt-1 inline-block">Create one →</a>
   {% endif %}
 </div>

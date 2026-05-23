@@ -1,21 +1,29 @@
-{% if results %}
-  <div class="mt-2 bg-[#1e2227] rounded-lg border border-gray-700 overflow-hidden max-h-64 overflow-y-auto">
-    {% for r in results %}
+{% if error %}
+  <p class="text-red-400 text-sm mt-2">{{ error }}</p>
+{% elif results %}
+  <ul class="space-y-2 mt-2 border border-[#39404b] rounded-md overflow-hidden">
+    {% for result in results %}
+    <li>
       <button type="button"
-              class="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#2a2f35] transition-colors cursor-pointer text-left border-b border-gray-800 last:border-0"
-              @click="selectSource('{{ r.id }}', '{{ r.name|escapejs }}', '{{ r.overview|default:''|escapejs|truncatechars:120 }}')">
-        <img src="{{ r.image }}" alt="{{ r.name }}"
-             class="w-10 h-14 object-cover rounded flex-shrink-0 bg-[#39404b]"
-             onerror="this.src=''">
-        <div class="min-w-0">
-          <p class="font-medium text-white text-sm truncate">{{ r.name }}</p>
-          {% if r.overview %}
-            <p class="text-gray-400 text-xs mt-0.5 line-clamp-2">{{ r.overview }}</p>
-          {% endif %}
-        </div>
+              class="w-full flex items-center gap-3 px-3 py-2 bg-[#2c3136] hover:bg-[#39404b] text-left transition-colors"
+              onclick="
+                document.getElementById('id_source_id').value = '{{ result.id }}';
+                document.getElementById('id_name').value = '{{ result.name|escapejs }}';
+                document.getElementById('selected-name').textContent = '{{ result.name|escapejs }}';
+                document.getElementById('selected-collection').classList.remove('hidden');
+                document.getElementById('search-results').innerHTML = '';
+                document.getElementById('collection-search').value = '{{ result.name|escapejs }}';
+              ">
+        {% if result.image %}
+        <img src="{{ result.image }}" alt="{{ result.name }}"
+             class="w-12 h-12 object-cover rounded shrink-0"
+             onerror="this.style.display='none'">
+        {% endif %}
+        <span class="text-sm text-white">{{ result.name }}</span>
       </button>
+    </li>
     {% endfor %}
-  </div>
-{% elif request.GET.q %}
-  <p class="text-sm text-gray-500 mt-2 px-1">No results found for "{{ request.GET.q }}".</p>
+  </ul>
+{% elif source and query|length >= 2 %}
+  <p class="text-gray-500 text-sm mt-2">No results found for "{{ query }}".</p>
 {% endif %}

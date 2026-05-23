@@ -1,0 +1,18 @@
+<a href="{% url 'collection_detail' collection.id %}"
+   class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
+  <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
+    <img src="{{ collection.image }}"
+         alt="{{ collection.name }}"
+         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+         onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
+  </div>
+  <div class="p-3">
+    <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
+    <p class="text-xs text-gray-400 mt-1">
+      {{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }}
+      {% if collection.source and collection.source != "manual" %}
+      · <span class="text-indigo-400">TMDB</span>
+      {% endif %}
+    </p>
+  </div>
+</a>

@@ -243,6 +243,12 @@ def movie(media_id):
                 response.get("external_ids", {}), media_id
             ),
             "providers": response.get("watch/providers", {}).get("results", {}),
+            "tmdb_collection": {
+                "id": collection_response.get("id"),
+                "name": collection_response.get("name"),
+                "image": get_image_url(collection_response.get("poster_path")),
+                "parts": get_collection(collection_response),
+            } if collection_response.get("id") else None,
         }
 
         cache.set(cache_key, data)

@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -7,6 +9,8 @@ from django.views.decorators.http import require_POST
 from app.providers import collections_providers as col_providers
 
 from .models import Collection, CollectionItem
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -27,10 +31,25 @@ def _user_can_edit(user, collection):
 
 @login_required
 def collections(request):
-    owned = Collection.objects.filter(owner=request.user).prefetch_related("collectionitem_set__item")
-    collab = Collection.objects.filter(collaborators=request.user).prefetch_related("collectionitem_set__item")
+    """Show all collections for the user — auto-sourced and manual."""
+    owned = (
+        Collection.objects.filter(owner=request.user)
+        .prefetch_related("collectionitem_set__item")
+        .order_by("name")
+    )
+    collab = (
+        Collection.objects.filter(collaborators=request.user)
+        .prefetch_related("collectionitem_set__item")
+        .order_by("name")
+    )
+
+    # Split owned into auto-sourced vs manual
+    auto_collections = [c for c in owned if c.source and c.source != "manual"]
+    manual_collections = [c for c in owned if not c.source or c.source == "manual"]
+
     return render(request, "media_collections/collections.html", {
-        "owned_collections": owned,
+        "auto_collections": auto_collections,
+        "manual_collections": manual_collections,
         "collab_collections": collab,
     })
 
@@ -76,19 +95,27 @@ def collection_detail(request, collection_id):
 
 
 # ---------------------------------------------------------------------------
-# Create
+# Create (import from source — no manual entry)
 # ---------------------------------------------------------------------------
 
 @login_required
 def create(request):
+    """Import a collection from TMDB or another source."""
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         description = request.POST.get("description", "").strip()
-        source = request.POST.get("source", "manual")
+        source = request.POST.get("source", "tmdb_collection")
         source_id = request.POST.get("source_id", "").strip()
 
         if not name:
             messages.error(request, "A collection name is required.")
+            return render(request, "media_collections/create.html", {
+                "sources": col_providers.SOURCE_CHOICES,
+                "post": request.POST,
+            })
+
+        if not source_id:
+            messages.error(request, "Please search for and select a collection.")
             return render(request, "media_collections/create.html", {
                 "sources": col_providers.SOURCE_CHOICES,
                 "post": request.POST,
@@ -102,18 +129,21 @@ def create(request):
             owner=request.user,
         )
 
-        if source != "manual" and source_id:
-            try:
-                data = col_providers.fetch(source, source_id)
-                if data:
-                    added = _sync_items(collection, data["items"])
-                    messages.success(request, f'Collection "{name}" created and synced ({added} items added).')
-                else:
-                    messages.warning(request, f'Collection created but no data returned from source.')
-            except Exception as exc:
-                messages.warning(request, f'Collection created but sync failed: {exc}')
-        else:
-            messages.success(request, f'Collection "{name}" created.')
+        try:
+            data = col_providers.fetch(source, source_id)
+            if data:
+                added = _sync_items(collection, data["items"])
+                # Use the official name from the source
+                if data.get("name"):
+                    collection.name = data["name"]
+                    collection.description = data.get("description", description)
+                    collection.save(update_fields=["name", "description"])
+                messages.success(request, f'"{collection.name}" imported with {added} items.')
+            else:
+                messages.warning(request, "Collection created but no data returned from source.")
+        except Exception as exc:
+            logger.exception("Collection sync failed")
+            messages.warning(request, f"Collection created but sync failed: {exc}")
 
         return redirect("collection_detail", collection_id=collection.pk)
 
@@ -142,7 +172,6 @@ def edit(request, collection_id):
 
     return render(request, "media_collections/edit.html", {
         "collection": collection,
-        "sources": col_providers.SOURCE_CHOICES,
     })
 
 
@@ -168,12 +197,12 @@ def delete(request, collection_id):
 # ---------------------------------------------------------------------------
 
 def _sync_items(collection, items):
-    """Create Item stubs + CollectionItems for fetched provider items. Returns count added."""
+    """Create Item stubs + CollectionItems for fetched provider items."""
     from app.models import Item
     added = 0
     for entry in items:
         item, _ = Item.objects.get_or_create(
-            media_id=entry["media_id"],
+            media_id=str(entry["media_id"]),
             source=entry["source"],
             media_type=entry["media_type"],
             defaults={"title": entry["title"], "image": entry.get("image", "")},
@@ -210,8 +239,12 @@ def sync_from_source(request, collection_id):
             messages.error(request, "Source returned no data.")
         else:
             added = _sync_items(collection, data["items"])
+            if data.get("name"):
+                collection.name = data["name"]
+                collection.save(update_fields=["name"])
             messages.success(request, f"Sync complete: {added} new items added.")
     except Exception as exc:
+        logger.exception("Sync failed")
         messages.error(request, f"Sync failed: {exc}")
 
     return redirect("collection_detail", collection_id=collection_id)
@@ -223,17 +256,14 @@ def sync_from_source(request, collection_id):
 
 @login_required
 def search_source(request):
-    """
-    HTMX endpoint: GET /collection/search_source?source=tmdb_collection&q=marvel
-    Returns a partial with result rows the user can pick from.
-    """
+    """HTMX: search collections by name on a given source."""
     source = request.GET.get("source", "").strip()
     query = request.GET.get("q", "").strip()
 
     results = []
     error = None
 
-    if source and query:
+    if source and query and len(query) >= 2:
         try:
             results = col_providers.search(source, query)
         except Exception as exc:
@@ -249,7 +279,6 @@ def search_source(request):
 
 # ---------------------------------------------------------------------------
 # Collections modal (HTMX — shown from item detail pages)
-# Signature matches urls.py: source / media_type / media_id [/ season_number]
 # ---------------------------------------------------------------------------
 
 @login_required
@@ -257,7 +286,9 @@ def collections_modal(request, source, media_type, media_id, season_number=None)
     from app.models import Item
     from django.db.models import Exists, OuterRef
 
-    item = Item.objects.filter(source=source, media_type=media_type, media_id=media_id).first()
+    item = Item.objects.filter(
+        source=source, media_type=media_type, media_id=media_id
+    ).first()
 
     user_collections = Collection.objects.filter(
         owner=request.user
