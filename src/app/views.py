@@ -303,6 +303,27 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
             ).distinct()
         )
 
+    # Find the Collection record for the collection/series this media belongs to
+    tmdb_collection_obj = None
+    collection_banner = None
+    try:
+        from app.providers.collections_providers import get_collection_for_media
+        source_key_map = {
+            (Sources.TMDB.value, MediaTypes.MOVIE.value): "tmdb_collection",
+            (Sources.IGDB.value, MediaTypes.GAME.value): "igdb_collection",
+            (Sources.HARDCOVER.value, MediaTypes.BOOK.value): "hardcover_series",
+        }
+        source_key = source_key_map.get((source, media_type))
+        if source_key:
+            col_data = media_metadata.get(source_key)
+            if col_data and col_data.get("name"):
+                collection_banner = col_data["name"]
+                tmdb_collection_obj = get_collection_for_media(
+                    request.user, media_metadata, source_key
+                )
+    except Exception:
+        logger.exception("Failed to look up collection for %s/%s", source, media_id)
+
     context = {
         "media": media_metadata,
         "media_type": media_type,
@@ -313,6 +334,8 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "watch_providers": watch_providers,
         "watch_provider_region": request.user.watch_provider_region,
         "item_collections": item_collections,
+        "tmdb_collection_obj": tmdb_collection_obj,
+        "collection_banner": collection_banner,
     }
     return render(request, "app/media_details.html", context)
 
@@ -638,6 +661,28 @@ def media_save(request):
                 sync_tmdb_collection(request.user, movie_metadata)
             except Exception:
                 logger.exception("Failed to sync TMDB collection for %s", media_id)
+
+        # Auto-sync IGDB game series
+        if source == Sources.IGDB.value and media_type == MediaTypes.GAME.value:
+            try:
+                from app.providers.collections_providers import sync_igdb_collection
+                game_metadata = services.get_media_metadata(
+                    media_type, media_id, source
+                )
+                sync_igdb_collection(request.user, game_metadata)
+            except Exception:
+                logger.exception("Failed to sync IGDB collection for %s", media_id)
+
+        # Auto-sync Hardcover book series
+        if source == Sources.HARDCOVER.value and media_type == MediaTypes.BOOK.value:
+            try:
+                from app.providers.collections_providers import sync_hardcover_series
+                book_metadata = services.get_media_metadata(
+                    media_type, media_id, source
+                )
+                sync_hardcover_series(request.user, book_metadata)
+            except Exception:
+                logger.exception("Failed to sync Hardcover series for %s", media_id)
     else:
         logger.error(form.errors.as_json())
         for field, errors in form.errors.items():

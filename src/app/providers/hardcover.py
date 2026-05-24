@@ -114,6 +114,22 @@ def book(media_id):
             release_date
             slug
             cached_contributors(path: "[0]['author']['name']")
+            book_series {
+              position
+              series {
+                id
+                name
+                books {
+                  book {
+                    id
+                    title
+                    cached_image(path: "url")
+                    slug
+                  }
+                  position
+                }
+              }
+            }
             default_cover_edition {
               edition_format
               isbn_13
@@ -174,6 +190,7 @@ def book(media_id):
                 "publisher": edition_details.get("publisher"),
                 "isbn": edition_details.get("isbn"),
             },
+            "hardcover_series": get_book_series(book_data.get("book_series")),
         }
 
         cache.set(cache_key, data)
@@ -223,3 +240,35 @@ def get_image_url(response):
     if response.get("image") and response["image"].get("url"):
         return response["image"]["url"]
     return settings.IMG_NONE
+
+
+def get_book_series(book_series_data):
+    """Return the primary series this book belongs to, or None."""
+    if not book_series_data:
+        return None
+    # Take the first series (books can technically be in multiple)
+    entry = book_series_data[0]
+    series = entry.get("series", {})
+    if not series or not series.get("id"):
+        return None
+    parts = sorted(
+        [
+            {
+                "source": Sources.HARDCOVER.value,
+                "media_id": b["book"]["id"],
+                "media_type": MediaTypes.BOOK.value,
+                "title": b["book"]["title"],
+                "image": b["book"].get("cached_image") or settings.IMG_NONE,
+                "position": b.get("position") or 0,
+            }
+            for b in series.get("books", [])
+            if b.get("book")
+        ],
+        key=lambda x: x["position"],
+    )
+    return {
+        "id": str(series["id"]),
+        "name": series["name"],
+        "image": parts[0]["image"] if parts else settings.IMG_NONE,
+        "parts": parts,
+    }

@@ -276,6 +276,7 @@ def game(media_id):
             "fields name,cover.image_id,artworks.image_id,"
             "url,summary,game_type,first_release_date,total_rating,total_rating_count,"
             "genres.name,themes.name,platforms.name,involved_companies.company.name,"
+            "collection.id,collection.name,collection.games.id,collection.games.name,collection.games.cover.image_id,"
             "parent_game.name,parent_game.cover.image_id,"
             "remasters.name,remasters.cover.image_id,"
             "remakes.name,remakes.cover.image_id,"
@@ -352,6 +353,7 @@ def game(media_id):
                 "expanded_games": get_related(response.get("expanded_games")),
                 "recommendations": get_related(response.get("similar_games")),
             },
+            "igdb_collection": get_igdb_collection(response.get("collection")),
         }
         cache.set(cache_key, data)
     return data
@@ -463,3 +465,25 @@ def get_related(related_medias):
             for game in related_medias
         ]
     return []
+
+
+def get_igdb_collection(collection):
+    """Return normalised IGDB collection data, or None."""
+    if not collection or not collection.get("id"):
+        return None
+    parts = [
+        {
+            "source": Sources.IGDB.value,
+            "media_id": g["id"],
+            "media_type": MediaTypes.GAME.value,
+            "title": g["name"],
+            "image": get_image_url(g),
+        }
+        for g in collection.get("games", [])
+    ]
+    return {
+        "id": str(collection["id"]),
+        "name": collection["name"],
+        "image": parts[0]["image"] if parts else settings.IMG_NONE,
+        "parts": parts,
+    }

@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 SOURCE_CHOICES = [
     ("manual", "Manual"),
     ("tmdb_collection", "TMDB Collection"),
+    ("igdb_collection", "IGDB Game Series"),
+    ("hardcover_series", "Hardcover Book Series"),
 ]
 
 
@@ -19,11 +21,7 @@ def get_source_label(source):
 
 
 def fetch(source, source_id):
-    """Fetch collection data from the given source.
-
-    Returns dict with keys: name, description, image, source_id, items[]
-    Each item: media_id, source, media_type, title, image
-    """
+    """Fetch collection data from the given source."""
     if source == "tmdb_collection":
         return _fetch_tmdb_collection(source_id)
     msg = f"Unknown collection source: {source}"
@@ -31,69 +29,45 @@ def fetch(source, source_id):
 
 
 def search(source, query):
-    """Search for collections by name on the given source.
-
-    Returns list of dicts: id, name, image, year
-    """
+    """Search for collections by name on the given source."""
     if source == "tmdb_collection":
         return _search_tmdb_collection(query)
     return []
 
 
-def sync_tmdb_collection(user, movie_metadata):
-    """Auto-create or update a Collection from TMDB collection data.
-
-    Called after a TMDB movie is saved. Creates a shared Collection owned
-    by the user (or updates it) with all parts from the TMDB collection.
-    Idempotent - safe to call multiple times.
-    """
+def _sync_collection(user, col_data, source_key):
+    """Generic helper: create/update a Collection and sync its parts."""
     from media_collections.models import Collection, CollectionItem
 
-    tmdb_col = movie_metadata.get("tmdb_collection")
-    if not tmdb_col or not tmdb_col.get("id"):
+    if not col_data or not col_data.get("id"):
         return None
 
-    collection_id = str(tmdb_col["id"])
-    collection_name = tmdb_col["name"]
-    collection_image = tmdb_col.get("image", "")
-
-    # Find or create the Collection record for this TMDB collection
     collection, created = Collection.objects.get_or_create(
-        source="tmdb_collection",
-        source_id=collection_id,
+        source=source_key,
+        source_id=str(col_data["id"]),
         owner=user,
-        defaults={
-            "name": collection_name,
-            "description": "",
-        },
+        defaults={"name": col_data["name"], "description": ""},
     )
 
-    if not created:
-        # Update name in case it changed on TMDB
-        if collection.name != collection_name:
-            collection.name = collection_name
-            collection.save(update_fields=["name"])
+    if not created and collection.name != col_data["name"]:
+        collection.name = col_data["name"]
+        collection.save(update_fields=["name"])
 
     logger.info(
-        "%s TMDB collection '%s' for user %s",
-        "Created" if created else "Found existing",
-        collection_name,
+        "%s %s collection '%s' for user %s",
+        "Created" if created else "Found",
+        source_key,
+        col_data["name"],
         user,
     )
 
-    # Sync all parts into CollectionItems
-    parts = tmdb_col.get("parts", [])
     added = 0
-    for part in parts:
-        media_id = str(part["media_id"])
+    for part in col_data.get("parts", []):
         item, _ = Item.objects.get_or_create(
-            media_id=media_id,
-            source=Sources.TMDB.value,
-            media_type=MediaTypes.MOVIE.value,
-            defaults={
-                "title": part["title"],
-                "image": part.get("image", ""),
-            },
+            media_id=str(part["media_id"]),
+            source=part["source"],
+            media_type=part["media_type"],
+            defaults={"title": part["title"], "image": part.get("image", "")},
         )
         _, item_created = CollectionItem.objects.get_or_create(
             collection=collection,
@@ -104,9 +78,46 @@ def sync_tmdb_collection(user, movie_metadata):
             added += 1
 
     if added:
-        logger.info("Added %d new items to collection '%s'", added, collection_name)
+        logger.info("Added %d new items to '%s'", added, col_data["name"])
 
     return collection
+
+
+def sync_tmdb_collection(user, movie_metadata):
+    """Auto-create/update a Collection from a TMDB movie's collection data."""
+    return _sync_collection(user, movie_metadata.get("tmdb_collection"), "tmdb_collection")
+
+
+def sync_igdb_collection(user, game_metadata):
+    """Auto-create/update a Collection from an IGDB game's collection data."""
+    return _sync_collection(user, game_metadata.get("igdb_collection"), "igdb_collection")
+
+
+def sync_hardcover_series(user, book_metadata):
+    """Auto-create/update a Collection from a Hardcover book's series data."""
+    return _sync_collection(user, book_metadata.get("hardcover_series"), "hardcover_series")
+
+
+def get_collection_for_media(user, media_metadata, source_key):
+    """Return the Collection DB object for this media's collection, if it exists."""
+    from media_collections.models import Collection
+
+    field_map = {
+        "tmdb_collection": "tmdb_collection",
+        "igdb_collection": "igdb_collection",
+        "hardcover_series": "hardcover_series",
+    }
+    field = field_map.get(source_key)
+    if not field:
+        return None
+    col_data = media_metadata.get(field)
+    if not col_data or not col_data.get("id"):
+        return None
+    return Collection.objects.filter(
+        owner=user,
+        source=source_key,
+        source_id=str(col_data["id"]),
+    ).first()
 
 
 def _fetch_tmdb_collection(source_id):
@@ -118,7 +129,6 @@ def _fetch_tmdb_collection(source_id):
         f"{base_url}/collection/{source_id}",
         params={"language": "en-US"},
     )
-
     parts = tmdb.get_collection(response)
     return {
         "name": response.get("name", ""),
@@ -138,7 +148,6 @@ def _search_tmdb_collection(query):
         f"{base_url}/search/collection",
         params={"query": query, "language": "en-US"},
     )
-
     results = []
     for item in response.get("results", [])[:10]:
         results.append({

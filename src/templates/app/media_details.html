@@ -101,6 +101,24 @@
         <h1 class="text-3xl font-bold mb-4 text-center md:text-start">{{ media.title }}</h1>
       {% endif %}
 
+      {# Collection/series banner #}
+      {% if collection_banner %}
+        {% if tmdb_collection_obj %}
+          <a href="{% url 'collection_detail' tmdb_collection_obj.id %}"
+             class="flex items-center gap-2 mb-4 px-3 py-2 bg-indigo-900/40 border border-indigo-700/50 rounded-md hover:bg-indigo-900/60 transition-colors group">
+            {% include "app/icons/cube.svg" with classes="w-4 h-4 text-indigo-400 shrink-0" %}
+            <span class="text-sm text-indigo-300 group-hover:text-white transition-colors">{{ collection_banner }}</span>
+            {% include "app/icons/right-arrow.svg" with classes="w-3 h-3 text-indigo-400 ml-auto" %}
+          </a>
+        {% else %}
+          <div class="flex items-center gap-2 mb-4 px-3 py-2 bg-[#2a2f35] border border-gray-700 rounded-md">
+            {% include "app/icons/cube.svg" with classes="w-4 h-4 text-gray-400 shrink-0" %}
+            <span class="text-sm text-gray-400">{{ collection_banner }}</span>
+            <span class="text-xs text-gray-500 ml-auto">Track a title to unlock</span>
+          </div>
+        {% endif %}
+      {% endif %}
+
       {# Genres #}
       <div class="flex flex-wrap gap-2 mb-4">
         {% for genre in media.genres %}
