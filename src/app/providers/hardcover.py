@@ -114,6 +114,26 @@ def book(media_id):
             release_date
             slug
             cached_contributors(path: "[0]['author']['name']")
+            book_series {
+              position
+              series {
+                id
+                name
+                book_series(
+                  where: {book: {compilation: {_eq: false}}}
+                  order_by: [{position: asc}, {book: {users_read_count: desc}}]
+                ) {
+                  position
+                  book {
+                    id
+                    title
+                    cached_image(path: "url")
+                    slug
+                    users_read_count
+                  }
+                }
+              }
+            }
             default_cover_edition {
               edition_format
               isbn_13
@@ -174,7 +194,7 @@ def book(media_id):
                 "publisher": edition_details.get("publisher"),
                 "isbn": edition_details.get("isbn"),
             },
-            "hardcover_series": None,
+            "hardcover_series": get_book_series(book_data.get("book_series")),
         }
 
         cache.set(cache_key, data)
@@ -234,21 +254,29 @@ def get_book_series(book_series_data):
     series = entry.get("series", {})
     if not series or not series.get("id"):
         return None
-    parts = sorted(
-        [
-            {
-                "source": Sources.HARDCOVER.value,
-                "media_id": b["book"]["id"],
-                "media_type": MediaTypes.BOOK.value,
-                "title": b["book"]["title"],
-                "image": b["book"].get("cached_image") or settings.IMG_NONE,
-                "position": b.get("position") or 0,
-            }
-            for b in series.get("series_books", [])
-            if b.get("book")
-        ],
-        key=lambda x: x["position"],
-    )
+
+    # Hardcover returns multiple books per position (alternate titles/editions).
+    # The query orders by users_read_count desc so the first occurrence per
+    # position is the canonical/most-read book. Deduplicate by position.
+    seen_positions = set()
+    parts = []
+    for b in series.get("book_series", []):
+        book = b.get("book")
+        if not book:
+            continue
+        position = b.get("position") or 0
+        if position in seen_positions:
+            continue
+        seen_positions.add(position)
+        parts.append({
+            "source": Sources.HARDCOVER.value,
+            "media_id": book["id"],
+            "media_type": MediaTypes.BOOK.value,
+            "title": book["title"],
+            "image": book.get("cached_image") or settings.IMG_NONE,
+            "position": position,
+        })
+
     return {
         "id": str(series["id"]),
         "name": series["name"],

@@ -321,6 +321,30 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
                 tmdb_collection_obj = get_collection_for_media(
                     request.user, media_metadata, source_key
                 )
+                # Lazy sync: user is tracking but collection wasn't created yet
+                if tmdb_collection_obj is None and current_instance is not None:
+                    from app.providers.collections_providers import (
+                        sync_tmdb_collection,
+                        sync_igdb_collection,
+                        sync_hardcover_series,
+                    )
+                    sync_map = {
+                        "tmdb_collection": sync_tmdb_collection,
+                        "igdb_collection": sync_igdb_collection,
+                        "hardcover_series": sync_hardcover_series,
+                    }
+                    sync_fn = sync_map.get(source_key)
+                    if sync_fn:
+                        # If metadata has no collection data, the cache is stale — bust it
+                        if not col_data or not col_data.get("id"):
+                            cache_key = f"{source}_{media_type}_{media_id}"
+                            cache.delete(cache_key)
+                            media_metadata = services.get_media_metadata(
+                                media_type, media_id, source
+                            )
+                            col_data = media_metadata.get(source_key)
+                            collection_banner = (col_data or {}).get("name")
+                        tmdb_collection_obj = sync_fn(request.user, media_metadata)
     except Exception:
         logger.exception("Failed to look up collection for %s/%s", source, media_id)
 
@@ -655,6 +679,8 @@ def media_save(request):
         if source == Sources.TMDB.value and media_type == MediaTypes.MOVIE.value:
             try:
                 from app.providers.collections_providers import sync_tmdb_collection
+                # Bust cache so we always get fresh collection data
+                cache.delete(f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{media_id}")
                 movie_metadata = services.get_media_metadata(
                     media_type, media_id, source
                 )
@@ -666,6 +692,8 @@ def media_save(request):
         if source == Sources.IGDB.value and media_type == MediaTypes.GAME.value:
             try:
                 from app.providers.collections_providers import sync_igdb_collection
+                # Bust the cache first so we always get fresh collection data
+                cache.delete(f"{Sources.IGDB.value}_{MediaTypes.GAME.value}_{media_id}")
                 game_metadata = services.get_media_metadata(
                     media_type, media_id, source
                 )

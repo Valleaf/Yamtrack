@@ -76,10 +76,11 @@ def collection_detail(request, collection_id):
     if media_type_filter != "all":
         collection_items = collection_items.filter(item__media_type=media_type_filter)
 
-    all_types = (
+    all_types = list(
         CollectionItem.objects.filter(collection=collection)
         .values_list("item__media_type", flat=True)
         .distinct()
+        .order_by("item__media_type")
     )
 
     return render(request, "media_collections/collection_detail.html", {
@@ -87,7 +88,8 @@ def collection_detail(request, collection_id):
         "collection_items": collection_items,
         "stats": stats,
         "media_type_filter": media_type_filter,
-        "all_types": sorted(all_types),
+        "all_types": all_types,
+        "show_type_tabs": len(all_types) > 1,
         "can_edit": _user_can_edit(request.user, collection),
         "source_label": col_providers.get_source_label(collection.source) if collection.source else "",
         "sources": col_providers.SOURCE_CHOICES,
@@ -197,16 +199,45 @@ def delete(request, collection_id):
 # ---------------------------------------------------------------------------
 
 def _sync_items(collection, items):
-    """Create Item stubs + CollectionItems for fetched provider items."""
+    """Replace CollectionItems with the given list, deduplicating by item."""
     from app.models import Item
-    added = 0
+
+    # Deduplicate incoming items by media_id to avoid creating duplicate rows
+    seen_ids = set()
+    unique_items = []
     for entry in items:
-        item, _ = Item.objects.get_or_create(
+        key = (str(entry["media_id"]), entry["source"], entry["media_type"])
+        if key not in seen_ids:
+            seen_ids.add(key)
+            unique_items.append(entry)
+
+    # Get existing CollectionItem ids for this collection
+    existing_item_ids = set(
+        CollectionItem.objects.filter(collection=collection)
+        .values_list("item__media_id", flat=True)
+    )
+
+    added = 0
+    for entry in unique_items:
+        title = (entry["title"] or "").strip()
+        image = entry.get("image", "")
+        item, item_new = Item.objects.get_or_create(
             media_id=str(entry["media_id"]),
             source=entry["source"],
             media_type=entry["media_type"],
-            defaults={"title": entry["title"], "image": entry.get("image", "")},
+            defaults={"title": title, "image": image},
         )
+        if not item_new and (not item.title or not item.image):
+            update_fields = []
+            if not item.title and title:
+                item.title = title
+                update_fields.append("title")
+            if not item.image and image:
+                item.image = image
+                update_fields.append("image")
+            if update_fields:
+                item.save(update_fields=update_fields)
+
         _, created = CollectionItem.objects.get_or_create(
             collection=collection,
             item=item,
@@ -214,6 +245,17 @@ def _sync_items(collection, items):
         )
         if created:
             added += 1
+
+    # Remove any CollectionItems that are no longer in the source
+    valid_item_ids = {str(e["media_id"]) for e in unique_items}
+    stale = CollectionItem.objects.filter(collection=collection).exclude(
+        item__media_id__in=valid_item_ids
+    )
+    removed = stale.count()
+    stale.delete()
+    if removed:
+        logger.info("Removed %d stale items from '%s'", removed, collection.name)
+
     return added
 
 

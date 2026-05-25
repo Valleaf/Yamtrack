@@ -1,4 +1,5 @@
 from django.urls import path
+
 from media_collections import views
 
 urlpatterns = [
@@ -10,8 +11,14 @@ urlpatterns = [
     path("collection/<int:collection_id>/edit", views.edit, name="collection_edit"),
     path("collection/<int:collection_id>/delete", views.delete, name="collection_delete"),
     path("collection/<int:collection_id>/sync", views.sync_from_source, name="collection_sync"),
-    path("collections_modal/<str:source>/<str:media_type>/<str:media_id>",
-         views.collections_modal, name="collections_modal"),
-    path("collections_modal/<str:source>/<str:media_type>/<str:media_id>/<int:season_number>",
-         views.collections_modal, name="collections_modal_season"),
+    path(
+        "collections_modal/<source:source>/<media_type:media_type>/<str:media_id>",
+        views.collections_modal,
+        name="collections_modal",
+    ),
+    path(
+        "collections_modal/<source:source>/<media_type:media_type>/<str:media_id>/<int:season_number>",
+        views.collections_modal,
+        name="collections_modal_season",
+    ),
 ]

@@ -283,6 +283,7 @@ def media_url(media):
     source = media["source"] if is_dict else media.source
     media_id = media["media_id"] if is_dict else media.media_id
     title = media["title"] if is_dict else media.title
+    title_slug = slug(title) or "untitled"
 
     if media_type in [MediaTypes.SEASON.value, MediaTypes.EPISODE.value]:
         season_number = media["season_number"] if is_dict else media.season_number
@@ -291,7 +292,7 @@ def media_url(media):
             kwargs={
                 "source": source,
                 "media_id": media_id,
-                "title": slug(title),
+                "title": title_slug,
                 "season_number": season_number,
             },
         )
@@ -302,7 +303,7 @@ def media_url(media):
             "source": source,
             "media_type": media_type,
             "media_id": media_id,
-            "title": slug(title),
+            "title": title_slug,
         },
     )
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static app_tags %}
 
 {% block title %}{{ collection.name }} - Yamtrack{% endblock title %}
 
@@ -76,7 +76,7 @@
   {% endwith %}
 
   <!-- Type filter tabs -->
-  {% if all_types %}
+  {% if show_type_tabs %}
   <div class="flex gap-2 mb-6 flex-wrap">
     <a href="?type=all"
        class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == 'all' %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white{% endif %}">
@@ -97,7 +97,7 @@
     {% for ci in collection_items %}
     {% with item=ci.item %}
     <div class="group bg-[#1e2329] rounded-lg overflow-hidden">
-      <a href="{% url 'media_details' source=item.source media_type=item.media_type media_id=item.media_id title=item.title|slugify %}"
+      <a href="{{ item|media_url }}"
          class="block">
         <div class="aspect-[2/3] relative overflow-hidden bg-[#2c3136]">
           <img src="{{ item.image }}"

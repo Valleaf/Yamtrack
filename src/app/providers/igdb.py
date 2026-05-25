@@ -272,11 +272,14 @@ def game(media_id):
     if data is None:
         access_token = get_access_token()
         url = f"{base_url}/games"
+        # Fetch both `collection` (legacy singular) and `collections` (new plural).
+        # IGDB migrated to `collections` for most games; we use whichever has data.
         data = (
             "fields name,cover.image_id,artworks.image_id,"
             "url,summary,game_type,first_release_date,total_rating,total_rating_count,"
             "genres.name,themes.name,platforms.name,involved_companies.company.name,"
             "collection.id,collection.name,collection.games.id,collection.games.name,collection.games.cover.image_id,"
+            "collections.id,collections.name,collections.games.id,collections.games.name,collections.games.cover.image_id,"
             "parent_game.name,parent_game.cover.image_id,"
             "remasters.name,remasters.cover.image_id,"
             "remakes.name,remakes.cover.image_id,"
@@ -322,6 +325,13 @@ def game(media_id):
             )
 
         response = response[0]  # response is a list with a single element
+
+        # Resolve collection: prefer `collection` (singular/legacy), fall back to
+        # first entry of `collections` (plural/new API field).
+        collection_data = response.get("collection") or _pick_main_collection(
+            response.get("collections")
+        )
+
         data = {
             "media_id": response["id"],
             "source": Sources.IGDB.value,
@@ -353,10 +363,28 @@ def game(media_id):
                 "expanded_games": get_related(response.get("expanded_games")),
                 "recommendations": get_related(response.get("similar_games")),
             },
-            "igdb_collection": get_igdb_collection(response.get("collection")),
+            "igdb_collection": get_igdb_collection(collection_data),
         }
         cache.set(cache_key, data)
     return data
+
+
+def _pick_main_collection(collections):
+    """Pick the best collection from a list returned by the `collections` field.
+
+    IGDB `collections` is an array.  We prefer the entry whose games list is
+    largest (i.e. the main franchise series rather than a sub-series).
+    Returns a single collection dict compatible with get_igdb_collection(), or None.
+    """
+    if not collections:
+        return None
+    # Sort by number of games descending so we pick the biggest series
+    sorted_cols = sorted(
+        collections,
+        key=lambda c: len(c.get("games") or []),
+        reverse=True,
+    )
+    return sorted_cols[0]
 
 
 def get_image_url(response):

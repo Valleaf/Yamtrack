@@ -24,6 +24,8 @@ def fetch(source, source_id):
     """Fetch collection data from the given source."""
     if source == "tmdb_collection":
         return _fetch_tmdb_collection(source_id)
+    if source == "igdb_collection":
+        return _fetch_igdb_collection(source_id)
     msg = f"Unknown collection source: {source}"
     raise ValueError(msg)
 
@@ -32,6 +34,8 @@ def search(source, query):
     """Search for collections by name on the given source."""
     if source == "tmdb_collection":
         return _search_tmdb_collection(query)
+    if source == "igdb_collection":
+        return _search_igdb_collection(query)
     return []
 
 
@@ -62,13 +66,31 @@ def _sync_collection(user, col_data, source_key):
     )
 
     added = 0
+    seen_ids = set()
     for part in col_data.get("parts", []):
-        item, _ = Item.objects.get_or_create(
+        key = (str(part["media_id"]), part["source"], part["media_type"])
+        if key in seen_ids:
+            continue
+        seen_ids.add(key)
+        title = (part["title"] or "").strip()
+        image = part.get("image", "")
+        item, item_new = Item.objects.get_or_create(
             media_id=str(part["media_id"]),
             source=part["source"],
             media_type=part["media_type"],
-            defaults={"title": part["title"], "image": part.get("image", "")},
+            defaults={"title": title, "image": image},
         )
+        # Backfill title/image if the stub was created with empty values
+        if not item_new and (not item.title or not item.image):
+            update_fields = []
+            if not item.title and title:
+                item.title = title
+                update_fields.append("title")
+            if not item.image and image:
+                item.image = image
+                update_fields.append("image")
+            if update_fields:
+                item.save(update_fields=update_fields)
         _, item_created = CollectionItem.objects.get_or_create(
             collection=collection,
             item=item,
@@ -157,3 +179,83 @@ def _search_tmdb_collection(query):
             "year": None,
         })
     return results
+
+
+def _fetch_igdb_collection(source_id):
+    """Fetch an IGDB game series/collection by ID and return normalised data."""
+    from django.conf import settings as django_settings
+    from app.providers import igdb as igdb_provider
+
+    access_token = igdb_provider.get_access_token()
+    url = f"{igdb_provider.base_url}/collections"
+    query = (
+        f"fields name,games.id,games.name,games.cover.image_id;"
+        f"where id = {source_id};"
+    )
+    headers = {
+        "Client-ID": django_settings.IGDB_ID,
+        "Authorization": f"Bearer {access_token}",
+    }
+    response = services.api_request(
+        Sources.IGDB.value,
+        "POST",
+        url,
+        data=query,
+        headers=headers,
+    )
+    if not response:
+        return None
+    col = response[0]
+    parts = [
+        {
+            "source": Sources.IGDB.value,
+            "media_id": str(g["id"]),
+            "media_type": MediaTypes.GAME.value,
+            "title": g["name"],
+            "image": igdb_provider.get_image_url(g),
+        }
+        for g in col.get("games", [])
+    ]
+    return {
+        "name": col.get("name", ""),
+        "description": "",
+        "image": parts[0]["image"] if parts else "",
+        "source_id": str(source_id),
+        "items": parts,
+    }
+
+
+def _search_igdb_collection(query):
+    """Search IGDB for game series/collections matching query."""
+    from django.conf import settings as django_settings
+    from app.providers import igdb as igdb_provider
+
+    access_token = igdb_provider.get_access_token()
+    url = f"{igdb_provider.base_url}/collections"
+    body = (
+        f'fields id,name; search "{query}"; limit 10;'
+    )
+    headers = {
+        "Client-ID": django_settings.IGDB_ID,
+        "Authorization": f"Bearer {access_token}",
+    }
+    try:
+        response = services.api_request(
+            Sources.IGDB.value,
+            "POST",
+            url,
+            data=body,
+            headers=headers,
+        )
+    except Exception:
+        logger.exception("IGDB collection search failed")
+        return []
+    return [
+        {
+            "id": str(item["id"]),
+            "name": item.get("name", ""),
+            "image": "",
+            "year": None,
+        }
+        for item in (response or [])
+    ]
