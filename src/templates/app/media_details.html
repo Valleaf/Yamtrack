@@ -583,6 +583,24 @@
         {% endfor %}
       {% endif %}
 
+      {# Tracklist (music albums) #}
+      {% if media.tracklist %}
+        <div class="w-full mb-8">
+          <h2 class="text-xl font-bold mb-4">Tracklist</h2>
+          <div class="bg-[#2a2f35] rounded-lg overflow-hidden">
+            {% for track in media.tracklist %}
+              <div class="flex items-center px-4 py-2 {% if not forloop.last %}border-b border-gray-700{% endif %} hover:bg-[#343a40] transition-colors">
+                <span class="text-gray-500 text-sm w-8 shrink-0">{{ track.number }}</span>
+                <span class="text-gray-200 flex-1">{{ track.title }}</span>
+                {% if track.duration %}
+                  <span class="text-gray-400 text-sm ml-4">{{ track.duration }}</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
       {# Episodes List #}
       {% if media.episodes %}
         <div class="w-full">

@@ -619,7 +619,13 @@ def track_modal(
         if media_type == MediaTypes.SEASON.value:
             title += f" S{season_number}"
 
-    form = get_form_class(media_type)(instance=media, initial=initial_data)
+    form_class = get_form_class(media_type)
+    if form_class is None:
+        return HttpResponseBadRequest(
+            f"Media type '{media_type}' cannot be tracked directly. "
+            "Please use a specific subtype (album, ep, or single)."
+        )
+    form = form_class(instance=media, initial=initial_data)
 
     return render(
         request,

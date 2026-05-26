@@ -16,6 +16,7 @@ from app.models import (
     Manga,
     MediaTypes,
     Movie,
+    Music,
     Season,
     Sources,
 )
@@ -353,6 +354,22 @@ class SeasonForm(MediaForm):
         fields = [
             "score",
             "status",
+            "notes",
+        ]
+
+
+class MusicForm(MediaForm):
+    """Form for music albums."""
+
+    class Meta(MediaForm.Meta):
+        """Bind form to model."""
+
+        model = Music
+        fields = [
+            "score",
+            "status",
+            "start_date",
+            "end_date",
             "notes",
         ]
 
