@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static app_tags %}
 
 {% block title %}Collections - Yamtrack{% endblock title %}
 
@@ -17,34 +17,153 @@
     </a>
   </div>
 
+  {% if auto_collections.paginator.count or manual_collections.paginator.count or collab_collections.paginator.count %}
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
+      <p class="text-sm text-gray-400">
+        Showing up to {{ items_per_page }} collection{{ items_per_page|pluralize }} per section
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-400">Per page</span>
+          <div class="flex rounded-md overflow-hidden border border-gray-700">
+            {% for choice in items_per_page_choices %}
+              <a href="?per_page={{ choice }}&columns={{ columns }}"
+                 class="px-3 py-1.5 text-sm transition-colors {% if items_per_page == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
+                {{ choice }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-400">Per line</span>
+          <div class="flex rounded-md overflow-hidden border border-gray-700">
+            {% for choice in columns_choices %}
+              <a href="?per_page={{ items_per_page }}&columns={{ choice }}"
+                 class="px-3 py-1.5 text-sm transition-colors {% if columns == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
+                {{ choice }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   {% if auto_collections %}
   <h2 class="text-lg font-semibold mb-4 text-gray-200 flex items-center gap-2">
     {% include "app/icons/star.svg" with classes="w-4 h-4 text-indigo-400" %}
     Auto-detected
   </h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+  <div class="collection-grid mb-10" style="--collection-columns: {{ columns }};">
     {% for collection in auto_collections %}
     {% include "media_collections/components/collection_card.html" %}
     {% endfor %}
   </div>
+  {% if auto_collections.paginator.num_pages > 1 %}
+    <div class="flex flex-wrap justify-center items-center -mt-4 mb-10 gap-x-2 gap-y-3">
+      {% if auto_collections.has_previous %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&auto_page={{ auto_collections.previous_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+      {% get_pagination_range auto_collections.number auto_collections.paginator.num_pages 2 as pages %}
+      {% for page_num in pages %}
+        {% if page_num %}
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&auto_page={{ page_num }}"
+             class="w-10 h-10 rounded-md {% if auto_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span class="flex items-center justify-center w-10 h-10 text-gray-400">
+            {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
+          </span>
+        {% endif %}
+      {% endfor %}
+      {% if auto_collections.has_next %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&auto_page={{ auto_collections.next_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
   {% endif %}
 
   {% if manual_collections %}
   <h2 class="text-lg font-semibold mb-4 text-gray-200">Imported</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+  <div class="collection-grid mb-10" style="--collection-columns: {{ columns }};">
     {% for collection in manual_collections %}
     {% include "media_collections/components/collection_card.html" %}
     {% endfor %}
   </div>
+  {% if manual_collections.paginator.num_pages > 1 %}
+    <div class="flex flex-wrap justify-center items-center -mt-4 mb-10 gap-x-2 gap-y-3">
+      {% if manual_collections.has_previous %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&manual_page={{ manual_collections.previous_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+      {% get_pagination_range manual_collections.number manual_collections.paginator.num_pages 2 as pages %}
+      {% for page_num in pages %}
+        {% if page_num %}
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&manual_page={{ page_num }}"
+             class="w-10 h-10 rounded-md {% if manual_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span class="flex items-center justify-center w-10 h-10 text-gray-400">
+            {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
+          </span>
+        {% endif %}
+      {% endfor %}
+      {% if manual_collections.has_next %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&manual_page={{ manual_collections.next_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
   {% endif %}
 
   {% if collab_collections %}
   <h2 class="text-lg font-semibold mb-4 text-gray-200">Shared with Me</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+  <div class="collection-grid" style="--collection-columns: {{ columns }};">
     {% for collection in collab_collections %}
     {% include "media_collections/components/collection_card.html" %}
     {% endfor %}
   </div>
+  {% if collab_collections.paginator.num_pages > 1 %}
+    <div class="flex flex-wrap justify-center items-center mt-6 gap-x-2 gap-y-3">
+      {% if collab_collections.has_previous %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&collab_page={{ collab_collections.previous_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+      {% get_pagination_range collab_collections.number collab_collections.paginator.num_pages 2 as pages %}
+      {% for page_num in pages %}
+        {% if page_num %}
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&collab_page={{ page_num }}"
+             class="w-10 h-10 rounded-md {% if collab_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span class="flex items-center justify-center w-10 h-10 text-gray-400">
+            {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
+          </span>
+        {% endif %}
+      {% endfor %}
+      {% if collab_collections.has_next %}
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&collab_page={{ collab_collections.next_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
   {% endif %}
 
   {% if not auto_collections and not manual_collections and not collab_collections %}

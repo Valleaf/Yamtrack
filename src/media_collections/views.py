@@ -26,8 +26,10 @@ def _user_can_edit(user, collection):
     return collection.owner == user
 
 
-COLLECTION_ITEMS_PER_PAGE_CHOICES = (24, 48, 96)
-DEFAULT_COLLECTION_ITEMS_PER_PAGE = 48
+COLLECTION_ITEMS_PER_PAGE_CHOICES = (6, 12, 24)
+DEFAULT_COLLECTION_ITEMS_PER_PAGE = 6
+COLLECTION_COLUMNS_CHOICES = (3, 4, 5, 6)
+DEFAULT_COLLECTION_COLUMNS = 6
 
 
 def _get_items_per_page(request):
@@ -39,6 +41,22 @@ def _get_items_per_page(request):
     if per_page not in COLLECTION_ITEMS_PER_PAGE_CHOICES:
         return DEFAULT_COLLECTION_ITEMS_PER_PAGE
     return per_page
+
+
+def _get_columns(request):
+    try:
+        columns = int(request.GET.get("columns", DEFAULT_COLLECTION_COLUMNS))
+    except (TypeError, ValueError):
+        return DEFAULT_COLLECTION_COLUMNS
+
+    if columns not in COLLECTION_COLUMNS_CHOICES:
+        return DEFAULT_COLLECTION_COLUMNS
+    return columns
+
+
+def _paginate(items, request, page_param):
+    paginator = Paginator(items, _get_items_per_page(request))
+    return paginator.get_page(request.GET.get(page_param, 1))
 
 
 # ---------------------------------------------------------------------------
@@ -62,11 +80,16 @@ def collections(request):
     # Split owned into auto-sourced vs manual
     auto_collections = [c for c in owned if c.source and c.source != "manual"]
     manual_collections = [c for c in owned if not c.source or c.source == "manual"]
+    per_page = _get_items_per_page(request)
 
     return render(request, "media_collections/collections.html", {
-        "auto_collections": auto_collections,
-        "manual_collections": manual_collections,
-        "collab_collections": collab,
+        "auto_collections": _paginate(auto_collections, request, "auto_page"),
+        "manual_collections": _paginate(manual_collections, request, "manual_page"),
+        "collab_collections": _paginate(collab, request, "collab_page"),
+        "items_per_page": per_page,
+        "items_per_page_choices": COLLECTION_ITEMS_PER_PAGE_CHOICES,
+        "columns": _get_columns(request),
+        "columns_choices": COLLECTION_COLUMNS_CHOICES,
     })
 
 
@@ -108,6 +131,8 @@ def collection_detail(request, collection_id):
         "collection_items": collection_items_page,
         "items_per_page": per_page,
         "items_per_page_choices": COLLECTION_ITEMS_PER_PAGE_CHOICES,
+        "columns": _get_columns(request),
+        "columns_choices": COLLECTION_COLUMNS_CHOICES,
         "stats": stats,
         "media_type_filter": media_type_filter,
         "all_types": all_types,

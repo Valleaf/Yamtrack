@@ -2942,6 +2942,16 @@
     grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
   }
 }
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 4);
+}
+@media (width >= 64rem) {
+  .collection-grid {
+    grid-template-columns: repeat(var(--collection-columns, 6), minmax(0, 1fr));
+  }
+}
 .toast-error {
   border-color: var(--color-red-600);
   background-color: color-mix(in srgb, oklch(50.5% 0.213 27.518) 95%, transparent);
