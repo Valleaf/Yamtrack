@@ -86,5 +86,27 @@ class MediaSearchViewTests(TestCase):
             MediaTypes.MUSIC.value,
             "Beatles",
             1,
-            Sources.MUSICBRAINZ.value,
+            "",
+        )
+
+    @patch("app.providers.services.search")
+    def test_music_search_view_passes_musicbrainz_type_filter(self, mock_search):
+        """Music search should pass the selected MusicBrainz type tab."""
+        mock_search.return_value = {
+            "page": 1,
+            "total_results": 0,
+            "total_pages": 1,
+            "results": [],
+        }
+
+        response = self.client.get(
+            reverse("search") + "?media_type=music&q=Beatles&mb_type=album",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        mock_search.assert_called_once_with(
+            MediaTypes.MUSIC.value,
+            "Beatles",
+            1,
+            "album",
         )

@@ -111,16 +111,6 @@ class Migration(migrations.Migration):
                 help_text='Country of origin/production',
             ),
         ),
-        migrations.AddField(
-            model_name='music',
-            name='country',
-            field=models.CharField(
-                max_length=100,
-                null=True,
-                blank=True,
-                help_text='Country of origin/production',
-            ),
-        ),
         # Add country field to all historical models
         migrations.AddField(
             model_name='historicalanime',
@@ -214,16 +204,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='historicalboardgame',
-            name='country',
-            field=models.CharField(
-                max_length=100,
-                null=True,
-                blank=True,
-                help_text='Country of origin/production',
-            ),
-        ),
-        migrations.AddField(
-            model_name='historicalmusic',
             name='country',
             field=models.CharField(
                 max_length=100,

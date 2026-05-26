@@ -215,14 +215,23 @@
                   <span>Settings</span>
                 </a>
 
-                <form method="post" action="{% url 'account_logout' %}" class="w-full">
+                <form method="post" action="{% url 'switch_user' %}" class="w-full">
                   {% csrf_token %}
-                  <button type="submit"
-                          class="w-full flex items-center space-x-3 px-4 py-2 rounded-md text-gray-400 hover:bg-[#23272b] hover:text-white transition-colors duration-200 text-sm cursor-pointer">
-                    {% include "app/icons/logout.svg" with classes="w-5 h-5" %}
-
-                    <span>Logout</span>
-                  </button>
+                  <div class="grid grid-cols-2 overflow-hidden rounded-md border border-[#2c3136] bg-[#23272b] text-sm">
+                    {% if request.user.username|lower == "val" %}
+                      <span class="px-3 py-2 text-center bg-indigo-600 text-white font-medium">Val</span>
+                      <button type="submit"
+                              class="px-3 py-2 text-center text-gray-300 hover:bg-[#2c3136] hover:text-white transition-colors duration-200 cursor-pointer">
+                        Imane
+                      </button>
+                    {% else %}
+                      <button type="submit"
+                              class="px-3 py-2 text-center text-gray-300 hover:bg-[#2c3136] hover:text-white transition-colors duration-200 cursor-pointer">
+                        Val
+                      </button>
+                      <span class="px-3 py-2 text-center bg-indigo-600 text-white font-medium">Imane</span>
+                    {% endif %}
+                  </div>
                 </form>
               </div>
             </div>

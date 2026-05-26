@@ -2,7 +2,7 @@ import datetime
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 
 from app import statistics
 from app.models import (
@@ -18,6 +18,17 @@ from app.models import (
 )
 
 User = get_user_model()
+
+
+class StatisticsDateCoercionTests(SimpleTestCase):
+    def test_add_year_stat_accepts_plain_date(self):
+        """Plain date values should not be passed to timezone.localdate."""
+        media = MagicMock(end_date=datetime.date(2025, 5, 26))
+        year_stats = {}
+
+        statistics.add_year_stat(year_stats, media, "end_date", "completed")
+
+        self.assertEqual(year_stats[2025]["completed"], 1)
 
 
 class StatisticsDateFilteringTests(TestCase):

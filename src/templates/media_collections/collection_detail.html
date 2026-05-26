@@ -78,17 +78,36 @@
   <!-- Type filter tabs -->
   {% if show_type_tabs %}
   <div class="flex gap-2 mb-6 flex-wrap">
-    <a href="?type=all"
+    <a href="?type=all&per_page={{ items_per_page }}"
        class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == 'all' %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white{% endif %}">
       All
     </a>
     {% for mt in all_types %}
-    <a href="?type={{ mt }}"
+    <a href="?type={{ mt }}&per_page={{ items_per_page }}"
        class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == mt %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white{% endif %}">
       {{ mt|title }}
     </a>
     {% endfor %}
   </div>
+  {% endif %}
+
+  {% if collection_items.paginator.count %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+      <p class="text-sm text-gray-400">
+        Showing {{ collection_items.start_index }}-{{ collection_items.end_index }} of {{ collection_items.paginator.count }} item{{ collection_items.paginator.count|pluralize }}
+      </p>
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-400">Per page</span>
+        <div class="flex rounded-md overflow-hidden border border-gray-700">
+          {% for choice in items_per_page_choices %}
+            <a href="?type={{ media_type_filter }}&per_page={{ choice }}"
+               class="px-3 py-1.5 text-sm transition-colors {% if items_per_page == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
+              {{ choice }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
   {% endif %}
 
   <!-- Items grid -->
@@ -132,6 +151,45 @@
     {% endwith %}
     {% endfor %}
   </div>
+  {% if collection_items.paginator.num_pages > 1 %}
+    <div class="flex flex-wrap justify-center items-center mt-8 gap-x-2 gap-y-3">
+      {% if collection_items.has_previous %}
+        <a href="?type={{ media_type_filter }}&per_page={{ items_per_page }}&page={{ collection_items.previous_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+        </a>
+      {% else %}
+        <button class="p-2 rounded-md bg-gray-700 text-gray-500 cursor-not-allowed" disabled>
+          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+        </button>
+      {% endif %}
+
+      {% get_pagination_range collection_items.number collection_items.paginator.num_pages 2 as pages %}
+      {% for page_num in pages %}
+        {% if page_num %}
+          <a href="?type={{ media_type_filter }}&per_page={{ items_per_page }}&page={{ page_num }}"
+             class="w-10 h-10 rounded-md {% if collection_items.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span class="flex items-center justify-center w-10 h-10 text-gray-400">
+            {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
+          </span>
+        {% endif %}
+      {% endfor %}
+
+      {% if collection_items.has_next %}
+        <a href="?type={{ media_type_filter }}&per_page={{ items_per_page }}&page={{ collection_items.next_page_number }}"
+           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
+          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+        </a>
+      {% else %}
+        <button class="p-2 rounded-md bg-gray-700 text-gray-500 cursor-not-allowed" disabled>
+          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+        </button>
+      {% endif %}
+    </div>
+  {% endif %}
   {% else %}
   <div class="flex flex-col items-center justify-center py-20 text-center">
     {% include "app/icons/cube.svg" with classes="w-12 h-12 text-gray-600 mb-4" %}

@@ -282,6 +282,15 @@ class AppTagsTests(TestCase):
                 "2025-04-10 15:00",
             )
 
+    def test_date_format_accepts_plain_date(self):
+        """The date_format filter should support DateField values."""
+        mock_user = MagicMock()
+        mock_user.date_format = "Y-m-d"
+
+        value = timezone.datetime(2025, 5, 26).date()
+
+        self.assertEqual(app_tags.date_format(value, mock_user), "2025-05-26")
+
     def test_media_url(self):
         """Test the media_url filter."""
         # Test with object for TV

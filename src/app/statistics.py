@@ -327,9 +327,16 @@ def add_year_stat(year_stats, media, date_attr, counter_key):
     media_date = getattr(media, date_attr, None)
     if not media_date:
         return
-    year = timezone.localdate(media_date).year
+    year = local_date(media_date).year
     year_stats.setdefault(year, {"year": year, "started": 0, "completed": 0})
     year_stats[year][counter_key] += 1
+
+
+def local_date(value):
+    """Return a local date for date or datetime values."""
+    if isinstance(value, datetime.datetime):
+        return timezone.localdate(value)
+    return value
 
 
 def get_median(values):
@@ -438,8 +445,8 @@ def get_timeline(user_media):
         if media_type == MediaTypes.TV.value:
             continue
         for media in queryset:
-            local_start_date = timezone.localdate(media.start_date)
-            local_end_date = timezone.localdate(media.end_date)
+            local_start_date = local_date(media.start_date) if media.start_date else None
+            local_end_date = local_date(media.end_date) if media.end_date else None
 
             if media.start_date and media.end_date:
                 current_date = local_start_date
@@ -480,8 +487,8 @@ def get_timeline(user_media):
 def time_line_sort_key(media):
     """Sort media items in the timeline."""
     if media.end_date is not None:
-        return timezone.localdate(media.end_date)
-    return timezone.localdate(media.start_date)
+        return local_date(media.end_date)
+    return local_date(media.start_date)
 
 
 def get_activity_data(user, start_date, end_date):

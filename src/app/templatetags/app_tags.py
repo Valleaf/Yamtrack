@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 from django import template
@@ -63,17 +63,26 @@ def slug(arg1):
 
 
 @register.filter
-def date_format(datetime, user):
+def date_format(value, user):
     """Format a datetime using user's preferred date format (date only, no time).
 
     Args:
-        datetime: The datetime object to format
+        value: The date or datetime object to format
         user: User object to get preferred date format
     """
-    if not datetime:
+    if not value:
         return None
-    local_dt = timezone.localtime(datetime)
-    return formats.date_format(local_dt, user.date_format)
+    local_value = local_datetime(value)
+    return formats.date_format(local_value, user.date_format)
+
+
+def local_datetime(value):
+    """Return a local datetime for date or datetime values."""
+    if isinstance(value, datetime):
+        return timezone.localtime(value)
+    if isinstance(value, date):
+        return datetime.combine(value, time.min)
+    return value
 
 
 @register.filter
@@ -91,27 +100,27 @@ def iso_date_format(value, user):
 
 
 @register.filter
-def time_format(datetime, user):
+def time_format(value, user):
     """Format a datetime using user's preferred time format (time only, no date)."""
-    if not datetime:
+    if not value:
         return None
-    local_dt = timezone.localtime(datetime)
+    local_dt = local_datetime(value)
     return formats.time_format(local_dt, user.time_format)
 
 
 @register.filter
-def datetime_format(datetime, user):
+def datetime_format(value, user):
     """Format a datetime using user's preferred formats.
 
     Includes time only if TRACK_TIME setting is enabled.
 
     Args:
-        datetime: The datetime object to format
+        value: The date or datetime object to format
         user: User object to get preferred date/time format
     """
-    if not datetime:
+    if not value:
         return None
-    local_dt = timezone.localtime(datetime)
+    local_dt = local_datetime(value)
     formatted_date = formats.date_format(local_dt, user.date_format)
 
     if settings.TRACK_TIME:
@@ -252,14 +261,14 @@ def status_background_color(status):
 
 
 @register.filter
-def natural_day(datetime, user):
+def natural_day(value, user):
     """Format date with natural language (Today, Tomorrow, etc.)."""
-    if not datetime:
+    if not value:
         return None
 
     today = timezone.localdate()
 
-    local_dt = timezone.localtime(datetime)
+    local_dt = local_datetime(value)
     datetime_date = local_dt.date()
     formatted_date = formats.date_format(local_dt, user.date_format)
     formatted_time = formats.time_format(local_dt, user.time_format)

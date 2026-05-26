@@ -2,6 +2,7 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -23,6 +24,21 @@ def _user_can_access(user, collection):
 
 def _user_can_edit(user, collection):
     return collection.owner == user
+
+
+COLLECTION_ITEMS_PER_PAGE_CHOICES = (24, 48, 96)
+DEFAULT_COLLECTION_ITEMS_PER_PAGE = 48
+
+
+def _get_items_per_page(request):
+    try:
+        per_page = int(request.GET.get("per_page", DEFAULT_COLLECTION_ITEMS_PER_PAGE))
+    except (TypeError, ValueError):
+        return DEFAULT_COLLECTION_ITEMS_PER_PAGE
+
+    if per_page not in COLLECTION_ITEMS_PER_PAGE_CHOICES:
+        return DEFAULT_COLLECTION_ITEMS_PER_PAGE
+    return per_page
 
 
 # ---------------------------------------------------------------------------
@@ -76,6 +92,10 @@ def collection_detail(request, collection_id):
     if media_type_filter != "all":
         collection_items = collection_items.filter(item__media_type=media_type_filter)
 
+    per_page = _get_items_per_page(request)
+    paginator = Paginator(collection_items, per_page)
+    collection_items_page = paginator.get_page(request.GET.get("page", 1))
+
     all_types = list(
         CollectionItem.objects.filter(collection=collection)
         .values_list("item__media_type", flat=True)
@@ -85,7 +105,9 @@ def collection_detail(request, collection_id):
 
     return render(request, "media_collections/collection_detail.html", {
         "collection": collection,
-        "collection_items": collection_items,
+        "collection_items": collection_items_page,
+        "items_per_page": per_page,
+        "items_per_page_choices": COLLECTION_ITEMS_PER_PAGE_CHOICES,
         "stats": stats,
         "media_type_filter": media_type_filter,
         "all_types": all_types,

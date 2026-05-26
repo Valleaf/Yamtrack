@@ -220,8 +220,9 @@ def media_search(request):
     # For music, mb_type is the type filter (album/ep/single/artist)
     mb_type = request.GET.get("mb_type", "")
 
-    source = config.get_default_source_name(media_type).value
-    data = services.search(media_type, query, page, source)
+    source = request.GET.get("source") or config.get_default_source_name(media_type).value
+    search_source = mb_type if media_type == MediaTypes.MUSIC.value else source
+    data = services.search(media_type, query, page, search_source)
 
     # Enrich search results with user tracking data
     # Skip enrichment for artist results (not trackable items)
