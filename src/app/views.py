@@ -422,6 +422,9 @@ def season_details(request, source, media_id, title, season_number):  # noqa: AR
         "media": season_metadata,
         "tv": tv_with_seasons_metadata,
         "media_type": MediaTypes.SEASON.value,
+        "media_source": source,
+        "media_id": media_id,
+        "season_number": season_number,
         "user_medias": user_medias,
         "current_instance": current_instance,
         "watch_providers": tmdb.filter_providers(

@@ -418,7 +418,11 @@
         <div x-data="{ collectionsOpen: false }">
           <button class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition duration-300 cursor-pointer"
                   title="Add to collections"
+                  {% if media_type == 'season' and season_number %}
+                  hx-get="{% url 'collections_modal_season' source=media_source media_type=media_type media_id=media_id season_number=season_number %}"
+                  {% else %}
                   hx-get="{% url 'collections_modal' source=media_source media_type=media_type media_id=media_id %}"
+                  {% endif %}
                   hx-target="#collections-modal-content-{{ media_type }}-{{ media_id }}"
                   hx-trigger="click once"
                   @click="collectionsOpen = true">{% include "app/icons/cube.svg" with classes="w-4 h-4" %}</button>
