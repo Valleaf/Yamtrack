@@ -132,6 +132,37 @@ class CalendarSelectorTests(CalendarFixturesMixin, TestCase):
 
         self.assertNotIn(self.tv_item, items)
 
+    @patch("events.calendar.selectors.tmdb.tv")
+    @patch("events.calendar.selectors.tmdb.movie_changes")
+    @patch("events.calendar.selectors.tmdb.tv_changes")
+    def test_get_items_to_process_includes_tv_with_new_seasons_even_if_unchanged(
+        self,
+        mock_tv_changes,
+        mock_movie_changes,
+        mock_tmdb_tv,
+    ):
+        """Tracked TV should be refreshed when TMDB has new seasons."""
+        mock_tv_changes.return_value = set()
+        mock_movie_changes.return_value = set()
+        mock_tmdb_tv.return_value = {
+            "related": {
+                "seasons": [
+                    {"season_number": 1},
+                    {"season_number": 2},
+                ],
+            },
+        }
+
+        Event.objects.create(
+            item=self.season_item,
+            content_number=1,
+            datetime=timezone.now() - timezone.timedelta(days=30),
+        )
+
+        items = get_items_to_process(self.user)
+
+        self.assertIn(self.tv_item, items)
+
     @patch("events.calendar.selectors.tmdb.movie_changes")
     @patch("events.calendar.selectors.tmdb.tv_changes")
     def test_get_items_to_process_includes_tv_without_season_events(

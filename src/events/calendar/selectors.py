@@ -96,27 +96,55 @@ def get_tv_items_to_include(tv_items):
         item__media_type=MediaTypes.SEASON.value,
     )
 
+    tv_items_with_events = tv_items.annotate(
+        has_season_events=Exists(season_events),
+    )
+
     included_tv_rows = list(
-        tv_items.annotate(
-            has_season_events=Exists(season_events),
-        )
-        .filter(
+        tv_items_with_events.filter(
             Q(media_id__in=changed_tv_ids) | Q(has_season_events=False),
         )
         .values("id", "media_id", "title", "has_season_events"),
     )
 
+    unchanged_tv_items_with_events = tv_items_with_events.filter(
+        ~Q(media_id__in=changed_tv_ids),
+        has_season_events=True,
+    )
+
+    additional_tv_rows = []
+    additional_tv_ids = set()
+    for tv_item in unchanged_tv_items_with_events:
+        if _tv_item_has_missing_seasons(tv_item):
+            additional_tv_rows.append(
+                {
+                    "id": tv_item.id,
+                    "media_id": tv_item.media_id,
+                    "title": tv_item.title,
+                    "has_season_events": True,
+                },
+            )
+            additional_tv_ids.add(tv_item.id)
+
+    selected_rows = included_tv_rows + additional_tv_rows
+
     logger.info(
         "TV selection: %d tracked TMDB shows, %d changed ids, %d selected",
         tracked_count,
         len(changed_tv_ids),
-        len(included_tv_rows),
+        len(selected_rows),
     )
 
-    for item in included_tv_rows:
+    for item in selected_rows:
         if item["media_id"] in changed_tv_ids:
             logger.info(
                 "TV selection: including %s (%s) because TMDB reported changes",
+                item["title"],
+                item["media_id"],
+            )
+        elif item["id"] in additional_tv_ids:
+            logger.info(
+                "TV selection: including %s (%s) because it has new seasons available",
                 item["title"],
                 item["media_id"],
             )
@@ -127,7 +155,41 @@ def get_tv_items_to_include(tv_items):
                 item["media_id"],
             )
 
-    return [item["id"] for item in included_tv_rows]
+    return [item["id"] for item in selected_rows]
+
+
+def _tv_item_has_missing_seasons(tv_item):
+    """Return True if TMDB knows of seasons not yet represented by season events."""
+    try:
+        tv_metadata = tmdb.tv(tv_item.media_id)
+    except services.ProviderAPIError:
+        logger.warning(
+            "Failed to fetch TMDB metadata for %s while selecting TV items to refresh",
+            tv_item,
+        )
+        return False
+
+    season_numbers = {
+        season["season_number"]
+        for season in tv_metadata.get("related", {}).get("seasons", [])
+        if season.get("season_number") is not None
+    }
+
+    if not season_numbers:
+        return False
+
+    existing_season_numbers = set(
+        Event.objects.filter(
+            item__media_id=tv_item.media_id,
+            item__source=tv_item.source,
+            item__media_type=MediaTypes.SEASON.value,
+        ).values_list("item__season_number", flat=True),
+    )
+
+    return any(
+        season_number not in existing_season_numbers
+        for season_number in season_numbers
+    )
 
 
 def get_movie_items_to_include(movie_items):

@@ -75,6 +75,7 @@ MEDIA_TYPE_CONFIG = {
         "svg_icon": """
             <rect width="20" height="15" x="2" y="7" rx="2" ry="2"/>
             <polyline points="17 2 12 7 7 2"/>""",
+        "unit": ("E", "Episode"),
     },
     MediaTypes.SEASON.value: {
         "sources": [Sources.TMDB],
@@ -98,6 +99,7 @@ MEDIA_TYPE_CONFIG = {
         "text_color": COLORS["indigo"]["text"],
         "stats_color": COLORS["indigo"]["hex"],
         "svg_icon": """<polygon points="6 3 20 12 6 21 6 3"/>""",
+        "unit": ("E", "Episode"),
     },
     MediaTypes.MOVIE.value: {
         "sources": [Sources.TMDB],
