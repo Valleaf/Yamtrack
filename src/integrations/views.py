@@ -568,32 +568,25 @@ def emby_webhook(request, token):
 
 
 
+@require_POST
 def import_senscritique_csv(request):
-    """Handle SC CSV file upload and queue import."""
-    if request.method != "POST":
+    """View for importing data from SensCritique CSV export."""
+    file = request.FILES.get("sc_csv")
+
+    if not file:
+        messages.error(request, "SensCritique CSV file is required.")
         return redirect("import_data")
 
-    csv_file = request.FILES.get("sc_csv")
-    if not csv_file:
-        messages.error(request, "No CSV file provided.")
-        return redirect("import_data")
-
-    mode = request.POST.get("mode", "new")
-    overwrite = mode == "overwrite"
-
-    try:
-        csv_content = csv_file.read().decode("utf-8-sig")
-    except Exception:
-        messages.error(request, "Could not read CSV file. Please upload a valid UTF-8 CSV.")
-        return redirect("import_data")
-
-    from integrations.imports.senscritique import import_from_senscritique_csv
-    import_from_senscritique_csv.delay(
+    mode = request.POST["mode"]
+    tasks.import_senscritique.delay(
+        file=request.FILES["sc_csv"],
         user_id=request.user.id,
-        csv_content=csv_content,
-        overwrite=overwrite,
+        mode=mode,
     )
-    messages.info(request, "SensCritique CSV import started in the background.")
+    messages.info(
+        request,
+        "The task to import media from SensCritique has been queued.",
+    )
     return redirect("import_data")
 
 

@@ -15,6 +15,7 @@ from integrations.imports import (
     imdb,
     kitsu,
     mal,
+    senscritique,
     simkl,
     steam,
     trakt,
@@ -153,3 +154,9 @@ def import_imdb(file, user_id, mode):
 def import_goodreads(file, user_id, mode):
     """Celery task for importing media data from GoodReads."""
     return import_media(goodreads.importer, file, user_id, mode)
+
+
+@shared_task(name="Import from SensCritique")
+def import_senscritique(file, user_id, mode):
+    """Celery task for importing media data from SensCritique CSV export."""
+    return import_media(senscritique.importer, file, user_id, mode)
