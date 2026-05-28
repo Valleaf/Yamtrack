@@ -249,7 +249,6 @@ def get_media_metadata(
         ),
         MediaTypes.COMIC.value: lambda: comicvine.comic(media_id),
         MediaTypes.BOARDGAME.value: lambda: bgg.boardgame(media_id),
-        MediaTypes.MUSIC.value: lambda: senscritique.album(media_id),
         MediaTypes.MUSIC.value: lambda: musicbrainz.album(media_id),
     }
     return metadata_retrievers[media_type]()
@@ -276,7 +275,6 @@ def search(media_type, query, page, source=None):
         ),
         MediaTypes.COMIC.value: lambda: comicvine.search(query, page),
         MediaTypes.BOARDGAME.value: lambda: bgg.search(query, page),
-        MediaTypes.MUSIC.value: lambda: senscritique.search_music(query),
         MediaTypes.MUSIC.value: lambda: musicbrainz.search_music(query, page, source or ""),
     }
     return search_handlers[media_type]()

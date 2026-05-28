@@ -12,6 +12,7 @@ from django.core.cache import cache
 
 from app import helpers
 from app.models import MediaTypes, Sources
+from app.providers.services import ProviderAPIError
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +38,15 @@ TYPE_FILTERS = {
 
 def _get(endpoint: str, params: dict) -> dict:
     params["fmt"] = "json"
-    resp = requests.get(f"{MB_BASE}/{endpoint}", params=params, headers=HEADERS, timeout=10)
-    resp.raise_for_status()
-    time.sleep(1)
-    return resp.json()
+    try:
+        resp = requests.get(f"{MB_BASE}/{endpoint}", params=params, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        time.sleep(1)
+        return resp.json()
+    except requests.exceptions.Timeout as error:
+        raise ProviderAPIError(Sources.MUSICBRAINZ.value, error, "Request timed out") from None
+    except requests.exceptions.RequestException as error:
+        raise ProviderAPIError(Sources.MUSICBRAINZ.value, error) from None
 
 
 def _cover_url(mb_id: str) -> str:
