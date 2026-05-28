@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block title %}
+  {{ director.name }} - Yamtrack
+{% endblock title %}
+
+{% block content %}
+  <div class="space-y-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">{{ director.name }}</h1>
+        <p class="text-gray-400 mt-2">{{ director.movie_count }} movie{{ director.movie_count|pluralize }} tracked • {{ director.percentage }}%</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'medialist' 'movie' %}"
+           class="px-4 py-2 rounded-full bg-[#39404b] text-gray-300 hover:bg-[#454d5a] transition-colors duration-200">Movies</a>
+        <a href="{% url 'movie_directors' %}"
+           class="px-4 py-2 rounded-full bg-[#2a2f35] text-white hover:bg-[#343a40] transition-colors duration-200">Directors</a>
+      </div>
+    </div>
+
+    {% if movies %}
+      <div class="flex flex-col gap-2 text-sm text-gray-400">
+        <span>{{ filmography_count }} directed movie{{ filmography_count|pluralize }}</span>
+        <span>{{ director.movie_count }} tracked movie{{ director.movie_count|pluralize }}</span>
+      </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+        {% for movie in movies %}
+          <a href="{{ movie.link }}"
+             class="min-w-0 block rounded-2xl bg-[#2a2f35] overflow-hidden hover:bg-[#343a40] transition-colors duration-200"
+             {% if movie.external %}target="_blank" rel="noreferrer noopener"{% endif %}>
+            <div class="h-60 overflow-hidden bg-[#1f2429]">
+              {% if movie.image %}
+                <img src="{{ movie.image }}" alt="{{ movie.title }}" class="w-full h-full object-cover" />
+              {% else %}
+                <div class="h-full flex items-center justify-center text-gray-500">No image</div>
+              {% endif %}
+            </div>
+            <div class="p-4">
+              <h2 class="text-sm font-semibold mb-1 line-clamp-2 text-white">{{ movie.title }}</h2>
+              <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                {% if movie.release_year %}
+                  <span>{{ movie.release_year }}</span>
+                {% endif %}
+                {% if movie.tracked %}
+                  <span class="rounded-full bg-indigo-600 px-2 py-1 text-white">Tracked</span>
+                {% else %}
+                  <span class="rounded-full bg-slate-700 px-2 py-1 text-slate-200">Untracked</span>
+                {% endif %}
+              </div>
+              {% if movie.status %}
+                <p class="text-xs text-gray-400 mt-2">Status: {{ movie.status|media_status_readable }}</p>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-2xl bg-[#2a2f35] p-8 text-center text-gray-400">
+        No directed movies found for this director.
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}

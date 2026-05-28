@@ -9,6 +9,19 @@
 {% block content %}
   <h1 class="text-3xl font-bold mb-6">{{ media_type|media_type_readable_plural }}</h1>
 
+  {% if media_type == MediaTypes.MOVIE.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 {% if request.resolver_match.url_name == 'medialist' %}bg-indigo-600 text-white{% else %}bg-[#39404b] text-gray-300 hover:bg-[#454d5a]{% endif %}">
+        Movies
+      </a>
+      <a href="{% url 'movie_directors' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 {% if request.resolver_match.url_name == 'movie_directors' %}bg-indigo-600 text-white{% else %}bg-[#39404b] text-gray-300 hover:bg-[#454d5a]{% endif %}">
+        Directors
+      </a>
+    </div>
+  {% endif %}
+
   <div x-data="{ sort: '{{ current_sort }}', status: '{{ current_status }}', layout: '{{ current_layout }}', search: '{{ request.GET.search|default:'' }}', statusLabels: {
     {% for value, label in status_choices %}
       '{{ value }}': '{{ label }}'

@@ -119,6 +119,21 @@
         {% endif %}
       {% endif %}
 
+      {# Directors #}
+      {% if media.directors %}
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-gray-400 mb-2">DIRECTOR{% if media.directors|length > 1 %}S{% endif %}</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for director in media.directors %}
+              <a href="{% url 'movie_director' director_id=director.id name=director.name|slug %}"
+                 class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white hover:bg-[#343a40] transition-colors duration-200">
+                {{ director.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
       {# Genres #}
       <div class="flex flex-wrap gap-2 mb-4">
         {% for genre in media.genres %}

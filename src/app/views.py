@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import prefetch_related_objects
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -363,6 +363,184 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "collection_banner": collection_banner,
     }
     return render(request, "app/media_details.html", context)
+
+
+def _get_user_movie_directors(user):
+    """Return tracked directors for the user's movie collection."""
+    movies = BasicMedia.objects.get_media_list(
+        user=user,
+        media_type=MediaTypes.MOVIE.value,
+        status_filter=MediaStatusChoices.ALL,
+        sort_filter="title",
+    )
+
+    directors = {}
+    total_movies = movies.count()
+    cached_movie_count = 0
+
+    for movie in movies:
+        if movie.item.source != Sources.TMDB.value:
+            continue
+
+        cache_key = f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{movie.item.media_id}"
+        metadata = cache.get(cache_key)
+        if metadata is None:
+            continue
+
+        cached_movie_count += 1
+        for director in metadata.get("directors", []):
+            director_id = director["id"]
+            director_record = directors.setdefault(
+                director_id,
+                {
+                    "id": director_id,
+                    "name": director["name"],
+                    "image": director.get("image"),
+                    "movies": [],
+                },
+            )
+            director_record["movies"].append(
+                {
+                    "metadata": metadata,
+                    "item": movie.item,
+                    "status": movie.status,
+                }
+            )
+
+    return directors, total_movies, cached_movie_count
+
+
+@require_GET
+def movie_directors(request):
+    """Return the director subtab for tracked movies."""
+    directors, total_movies, cached_movie_count = _get_user_movie_directors(request.user)
+
+    director_list = []
+    for director in directors.values():
+        movie_count = len(director["movies"])
+        # Prefer calculating share based on the director's full filmography
+        try:
+            filmography = tmdb.person_credits(director["id"])
+            filmography_count = len(filmography) if filmography is not None else 0
+        except Exception:
+            filmography_count = 0
+            logger.exception("Failed to fetch filmography for director %s", director["id"])
+
+        if filmography_count:
+            percentage = round(movie_count / filmography_count * 100, 1)
+        else:
+            # Fallback to previous behaviour using total tracked movies
+            percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
+
+        director_list.append(
+            {
+                "id": director["id"],
+                "name": director["name"],
+                "image": director.get("image"),
+                "movie_count": movie_count,
+                "percentage": percentage,
+                "filmography_count": filmography_count,
+            }
+        )
+
+    director_list.sort(key=lambda entry: (-entry["movie_count"], entry["name"]))
+
+    return render(
+        request,
+        "app/movie_directors.html",
+        {
+            "directors": director_list,
+            "total_movies": total_movies,
+            "cached_movie_count": cached_movie_count,
+        },
+    )
+
+
+@require_GET
+def movie_director(request, director_id, name):
+    """Return the director detail page for a tracked movie director."""
+    directors, total_movies, cached_movie_count = _get_user_movie_directors(request.user)
+    director = directors.get(director_id)
+    if not director:
+        raise Http404("Director not found")
+
+    movie_count = len(director["movies"])
+
+    # Prefer filmography-based percentage when available
+    try:
+        filmography = tmdb.person_credits(director_id)
+        filmography_count = len(filmography) if filmography is not None else 0
+    except Exception:
+        filmography_count = 0
+        filmography = []
+        logger.exception("Failed to fetch filmography for director %s", director_id)
+
+    if filmography_count:
+        percentage = round(movie_count / filmography_count * 100, 1)
+    else:
+        percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
+
+    tracked_movies = {
+        movie["metadata"]["media_id"]: movie
+        for movie in director["movies"]
+    }
+
+    # If filmography wasn't fetched above, attempt to fetch it for the list
+    if filmography is None:
+        try:
+            filmography = tmdb.person_credits(director_id)
+        except Exception:
+            filmography = []
+            logger.exception("Failed to fetch filmography for director %s", director_id)
+
+    movies = []
+    for film in filmography:
+        media_id = film["media_id"]
+        tracked_movie = tracked_movies.get(media_id)
+        if tracked_movie:
+            link = reverse(
+                "media_details",
+                kwargs={
+                    "source": tracked_movie["item"].source,
+                    "media_type": MediaTypes.MOVIE.value,
+                    "media_id": media_id,
+                    "title": slugify(film["title"]),
+                },
+            )
+        else:
+            link = film["source_url"]
+
+        movies.append(
+            {
+                "id": media_id,
+                "title": film["title"],
+                "image": film["image"],
+                "release_date": film.get("release_date"),
+                "release_year": film.get("release_date", "")[:4] if film.get("release_date") else None,
+                "tracked": bool(tracked_movie),
+                "status": tracked_movie["status"] if tracked_movie else None,
+                "link": link,
+                "external": not bool(tracked_movie),
+            }
+        )
+
+    return render(
+        request,
+        "app/movie_director.html",
+        {
+            "director": {
+                "id": director_id,
+                "name": director["name"],
+                "image": director.get("image"),
+                "movie_count": movie_count,
+                "percentage": percentage,
+            },
+            "movies": movies,
+            "total_movies": total_movies,
+            "cached_movie_count": cached_movie_count,
+            "filmography_count": len(movies),
+        },
+    )
 
 
 @require_GET

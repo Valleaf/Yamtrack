@@ -11,6 +11,8 @@ urlpatterns = [
     path("medialist/<media_type:media_type>", views.media_list, name="medialist"),
     path("search", views.media_search, name="search"),
     path("artist/musicbrainz/<str:artist_id>", views.music_artist, name="music_artist"),
+    path("movies/directors", views.movie_directors, name="movie_directors"),
+    path("movie/director/<int:director_id>/<slug:name>", views.movie_director, name="movie_director"),
     path(
         "details/<source:source>/<media_type:media_type>/<str:media_id>/<str:title>",
         views.media_details,

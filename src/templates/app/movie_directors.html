@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block title %}
+  Directors - Yamtrack
+{% endblock title %}
+
+{% block content %}
+  <div class="space-y-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Movie Directors</h1>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'medialist' 'movie' %}"
+           class="px-4 py-2 rounded-full bg-[#39404b] text-gray-300 hover:bg-[#454d5a] transition-colors duration-200">Movies</a>
+        <a href="{% url 'movie_directors' %}"
+           class="px-4 py-2 rounded-full bg-indigo-600 text-white transition-colors duration-200">Directors</a>
+      </div>
+    </div>
+
+    {% if directors %}
+      {% if total_movies != cached_movie_count %}
+        <div class="rounded-2xl bg-[#333942] p-4 text-sm text-yellow-300">
+          Showing {{ cached_movie_count }} cached TMDB movie{{ cached_movie_count|pluralize }} with director metadata.
+          {{ total_movies|add:"-cached_movie_count" }} tracked movie{{ total_movies|add:"-cached_movie_count"|pluralize }} are excluded because metadata is not yet cached.
+        </div>
+      {% endif %}
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+        {% for director in directors %}
+          <a href="{% url 'movie_director' director_id=director.id name=director.name|slug %}"
+             class="min-w-0 block rounded-2xl bg-[#2a2f35] p-5 hover:bg-[#343a40] transition-colors duration-200">
+            <div class="flex items-center gap-4 mb-4">
+              {% if director.image %}
+                <img src="{{ director.image }}" alt="{{ director.name }}" class="w-14 h-14 rounded-full object-cover" />
+              {% else %}
+                <div class="w-14 h-14 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg">{{ director.name|slice:"0:1" }}</div>
+              {% endif %}
+              <div>
+                <h2 class="text-lg font-semibold">{{ director.name }}</h2>
+                <p class="text-sm text-gray-400">{{ director.movie_count }} movie{{ director.movie_count|pluralize }}</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-300">
+              <span>Filmography tracked</span>
+              <span class="font-semibold text-white">{{ director.percentage }}%</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-2xl bg-[#2a2f35] p-8 text-center text-gray-400">
+        No tracked directors found. Add movies with directors to your tracker to populate this page.
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}

@@ -199,6 +199,7 @@ def movie(media_id):
         ]
 
         cast = response.get("credits", {}).get("cast", [])
+        crew = response.get("credits", {}).get("crew", [])
         filtered_cast = [
             {
                 "id": member.get("id"),
@@ -207,6 +208,15 @@ def movie(media_id):
                 "image": get_image_url(member.get("profile_path")),
             }
             for member in cast[:30]
+        ]
+        directors = [
+            {
+                "id": member.get("id"),
+                "name": member.get("name"),
+                "image": get_image_url(member.get("profile_path")),
+            }
+            for member in crew
+            if member.get("job") == "Director"
         ]
 
         data = {
@@ -231,6 +241,7 @@ def movie(media_id):
                 "languages": get_languages(response["spoken_languages"]),
             },
             "cast": filtered_cast,
+            "directors": directors,
             "total_cast_count": len(cast),
             "related": {
                 collection_response.get("name", "collection"): collection_items,
@@ -251,6 +262,46 @@ def movie(media_id):
             } if collection_response.get("id") else None,
         }
 
+        cache.set(cache_key, data)
+
+    return data
+
+
+def person_credits(person_id):
+    """Return a director's full TMDB movie filmography."""
+    cache_key = f"{Sources.TMDB.value}_person_credits_{person_id}"
+    data = cache.get(cache_key)
+
+    if data is None:
+        url = f"{base_url}/person/{person_id}/movie_credits"
+        try:
+            response = services.api_request(
+                Sources.TMDB.value,
+                "GET",
+                url,
+                params={**base_params},
+            )
+        except requests.exceptions.HTTPError as error:
+            handle_error(error)
+
+        crew = response.get("crew", [])
+        directed_movies = [
+            {
+                "media_id": movie.get("id"),
+                "title": get_title(movie),
+                "image": get_image_url(movie.get("poster_path")),
+                "release_date": movie.get("release_date"),
+                "source_url": f"https://www.themoviedb.org/movie/{movie.get('id')}",
+            }
+            for movie in crew
+            if movie.get("job") == "Director"
+        ]
+
+        directed_movies.sort(
+            key=lambda entry: entry.get("release_date") or "",
+            reverse=True,
+        )
+        data = directed_movies
         cache.set(cache_key, data)
 
     return data
