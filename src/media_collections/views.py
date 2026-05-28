@@ -1,5 +1,6 @@
 import logging
 
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -7,6 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from app.models import Status
 from app.providers import collections_providers as col_providers
 
 from .models import Collection, CollectionItem
@@ -118,6 +120,28 @@ def collection_detail(request, collection_id):
     per_page = _get_items_per_page(request)
     paginator = Paginator(collection_items, per_page)
     collection_items_page = paginator.get_page(request.GET.get("page", 1))
+
+    page_items = list(collection_items_page)
+    item_ids_by_type = {}
+    for ci in page_items:
+        item_ids_by_type.setdefault(ci.item.media_type, []).append(ci.item_id)
+
+    tracked_by_item_id = {}
+    for media_type, item_ids in item_ids_by_type.items():
+        try:
+            model = apps.get_model("app", media_type)
+        except LookupError:
+            continue
+
+        for media in model.objects.filter(item_id__in=item_ids, user=request.user).select_related("item"):
+            tracked_by_item_id[media.item_id] = media
+
+    for ci in page_items:
+        tracked = tracked_by_item_id.get(ci.item_id)
+        ci.tracked = bool(tracked)
+        ci.completed = bool(tracked and tracked.status == Status.COMPLETED.value)
+
+    collection_items_page.object_list = page_items
 
     all_types = list(
         CollectionItem.objects.filter(collection=collection)

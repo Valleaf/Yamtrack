@@ -128,7 +128,7 @@
   <div class="collection-grid" style="--collection-columns: {{ columns }};">
     {% for ci in collection_items %}
     {% with item=ci.item %}
-    <div class="group bg-[#1e2329] rounded-lg overflow-hidden">
+    <div class="group relative overflow-hidden rounded-lg bg-[#1e2329] {% if ci.completed %}ring-2 ring-emerald-500/30{% endif %}">
       <a href="{{ item|media_url }}"
          class="block">
         <div class="aspect-[2/3] relative overflow-hidden bg-[#2c3136]">
@@ -139,6 +139,12 @@
           <div class="absolute top-2 left-2">
             <span class="px-1.5 py-0.5 bg-black/70 text-gray-300 text-xs rounded">{{ item.media_type|title }}</span>
           </div>
+          {% if ci.completed %}
+            <div class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-slate-950/90 text-emerald-100 text-[11px] font-medium px-2 py-1 shadow-sm">
+              {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
+              Completed
+            </div>
+          {% endif %}
         </div>
       </a>
       <div class="p-3">

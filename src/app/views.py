@@ -510,6 +510,7 @@ def movie_director(request, director_id, name):
         else:
             link = film["source_url"]
 
+        movie_status = tracked_movie["status"] if tracked_movie else None
         movies.append(
             {
                 "id": media_id,
@@ -518,7 +519,8 @@ def movie_director(request, director_id, name):
                 "release_date": film.get("release_date"),
                 "release_year": film.get("release_date", "")[:4] if film.get("release_date") else None,
                 "tracked": bool(tracked_movie),
-                "status": tracked_movie["status"] if tracked_movie else None,
+                "status": movie_status,
+                "completed": movie_status == Status.COMPLETED.value,
                 "link": link,
                 "external": not bool(tracked_movie),
             }

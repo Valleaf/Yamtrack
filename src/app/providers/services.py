@@ -88,18 +88,21 @@ class ProviderAPIError(Exception):
     def __init__(self, provider, error, details=None):
         """Initialize the exception with the provider name."""
         self.provider = provider
-        self.status_code = error.response.status_code
+        response = getattr(error, "response", None)
+        self.status_code = getattr(response, "status_code", None)
         try:
             provider = Sources(provider).label
         except ValueError:
             provider = provider.title()
 
-        logger.error("%s error: %s", provider, error.response.text)
+        if response is not None:
+            logger.error("%s error: %s", provider, getattr(response, "text", ""))
+        else:
+            logger.error("%s request error: %s", provider, str(error))
 
-        message = (
-            f"There was an error contacting the {provider} API "
-            f"(HTTP {self.status_code})"
-        )
+        message = f"There was an error contacting the {provider} API"
+        if self.status_code is not None:
+            message += f" (HTTP {self.status_code})"
         if details:
             message += f": {details}"
         message += ". Check the logs for more details."
@@ -160,6 +163,7 @@ def api_request(
             "url": url,
             "headers": headers,
             "timeout": settings.REQUEST_TIMEOUT,
+            "verify": settings.REQUESTS_VERIFY_SSL,
         }
 
         if method == "GET":
@@ -198,6 +202,8 @@ def api_request(
             )
 
         raise error from None
+    except requests.exceptions.RequestException as error:
+        raise ProviderAPIError(provider, error, details=str(error)) from None
 
 
 def get_media_metadata(

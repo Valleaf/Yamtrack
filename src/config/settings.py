@@ -339,6 +339,7 @@ TZ = zoneinfo.ZoneInfo(TIME_ZONE)
 IMG_NONE = "https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg"
 
 REQUEST_TIMEOUT = 120  # seconds
+REQUESTS_VERIFY_SSL = config("REQUESTS_VERIFY_SSL", default=True, cast=bool)
 PER_PAGE = 24
 
 TMDB_API = config(

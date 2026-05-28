@@ -28,9 +28,15 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
         {% for movie in movies %}
           <a href="{{ movie.link }}"
-             class="min-w-0 block rounded-2xl bg-[#2a2f35] overflow-hidden hover:bg-[#343a40] transition-colors duration-200"
+             class="relative min-w-0 block rounded-2xl overflow-hidden transition-colors duration-200 {% if movie.completed %}ring-2 ring-emerald-500/60 bg-slate-950/95 shadow-lg shadow-emerald-500/10 hover:bg-slate-900{% else %}bg-[#2a2f35] hover:bg-[#343a40]{% endif %}"
              {% if movie.external %}target="_blank" rel="noreferrer noopener"{% endif %}>
-            <div class="h-60 overflow-hidden bg-[#1f2429]">
+            {% if movie.completed %}
+              <div class="absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full bg-slate-950 text-emerald-100 text-[11px] font-semibold px-2 py-1 shadow-lg shadow-black/20">
+                {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
+                Completed
+              </div>
+            {% endif %}
+            <div class="h-60 overflow-hidden bg-[#1f2429] {% if movie.completed %}ring-2 ring-emerald-500/70{% endif %}">
               {% if movie.image %}
                 <img src="{{ movie.image }}" alt="{{ movie.title }}" class="w-full h-full object-cover" />
               {% else %}
