@@ -228,11 +228,16 @@ class HomeViewTests(TestCase):
             section["key"]: section for section in response.context["home_sections"]
         }
         in_progress_section = sections_by_key[Status.IN_PROGRESS.value]
+        planning_section = sections_by_key[Status.PLANNING.value]
 
-        self.assertIn(MediaTypes.TV.value, in_progress_section["media_types"])
-        tv_media = in_progress_section["media_types"][MediaTypes.TV.value]
-        self.assertEqual(tv_media["total"], 1)
-        self.assertEqual(tv_media["items"][0].item.title, "Returning Show")
+        self.assertNotIn(MediaTypes.TV.value, in_progress_section["media_types"])
+        self.assertIn(MediaTypes.SEASON.value, in_progress_section["media_types"])
+
+        season_media = in_progress_section[MediaTypes.SEASON.value]
+        self.assertEqual(season_media["total"], 1)
+        self.assertEqual(season_media["items"][0].item.title, "Returning Show")
+
+        self.assertNotIn(MediaTypes.SEASON.value, planning_section["media_types"])
 
     def test_home_view_with_sort(self):
         """Test the home view with sorting parameter."""

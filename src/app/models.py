@@ -449,8 +449,14 @@ class MediaManager(models.Manager):
                 sort_filter=None,
             )
 
-            if media_type == MediaTypes.TV.value:
-                media_list = self._filter_tv_with_unwatched_seasons(media_list)
+            if media_type == MediaTypes.TV.value and status == Status.IN_PROGRESS.value:
+                media_list = self._exclude_tv_with_seasons(media_list)
+
+            if status == Status.IN_PROGRESS.value and media_type == MediaTypes.SEASON.value:
+                media_list = self._get_seasons_for_in_progress_home(user)
+
+            if status == Status.PLANNING.value and media_type == MediaTypes.SEASON.value:
+                continue
 
             if not media_list:
                 continue
@@ -481,10 +487,13 @@ class MediaManager(models.Manager):
         if specific_media_type:
             return [specific_media_type]
 
+        active_media_types = user.get_active_media_types()
+        has_season_type = MediaTypes.SEASON.value in active_media_types
+
         media_types = []
-        for media_type in user.get_active_media_types():
+        for media_type in active_media_types:
             if media_type == MediaTypes.TV.value:
-                if status == Status.IN_PROGRESS.value:
+                if not has_season_type and status == Status.IN_PROGRESS.value:
                     media_types.append(media_type)
                 continue
 
@@ -492,17 +501,134 @@ class MediaManager(models.Manager):
 
         return media_types
 
-    def _filter_tv_with_unwatched_seasons(self, tv_list):
-        """Return TV shows with regular seasons still left to watch."""
+    def _exclude_tv_with_seasons(self, tv_list):
+        """Exclude TV shows from in-progress home lists when season cards exist."""
         return [
             tv
             for tv in tv_list
-            if any(
-                season.item.season_number != 0
-                and season.status == Status.PLANNING.value
+            if not any(
+                season.status in (Status.IN_PROGRESS.value, Status.PLANNING.value)
                 for season in tv.seasons.all()
             )
         ]
+
+    def _get_seasons_for_in_progress_home(self, user):
+        """Return seasons for the home in-progress section."""
+        seasons = list(
+            Season.objects.filter(
+                user=user,
+                status__in=(Status.IN_PROGRESS.value, Status.PLANNING.value),
+            )
+            .select_related("item", "related_tv")
+            .prefetch_related(
+                Prefetch(
+                    "item__event_set",
+                    queryset=events.models.Event.objects.all(),
+                    to_attr="prefetched_events",
+                ),
+            )
+        )
+
+        def sort_key(season):
+            if season.related_tv_id and season.related_tv.status == Status.IN_PROGRESS.value:
+                if season.status == Status.PLANNING.value:
+                    priority = 0
+                elif season.status == Status.IN_PROGRESS.value:
+                    priority = 1
+                else:
+                    priority = 2
+            else:
+                if season.status == Status.PLANNING.value:
+                    priority = 2
+                else:
+                    priority = 3
+
+            return (priority, season.item.season_number or 0)
+
+        seasons.sort(key=sort_key)
+
+        seasons_by_tv = {}
+        for season in seasons:
+            tv_key = season.related_tv_id if season.related_tv_id is not None else f"season-{season.id}"
+            if tv_key not in seasons_by_tv:
+                seasons_by_tv[tv_key] = season
+
+        return list(seasons_by_tv.values())
+
+    def _replace_seasons_with_next_planning_seasons_for_in_progress_tvs(
+        self,
+        user,
+        season_list,
+    ):
+        """Replace season entries with the next planned season for active TV shows."""
+        if hasattr(season_list, "exclude"):
+            season_list = list(season_list)
+
+        next_planned_seasons = self._get_next_planned_seasons_for_in_progress_tvs(user)
+        if next_planned_seasons:
+            planned_tv_ids = {season.related_tv_id for season in next_planned_seasons}
+            season_list = [
+                season
+                for season in season_list
+                if season.related_tv_id not in planned_tv_ids
+            ]
+            season_list.extend(next_planned_seasons)
+
+        return season_list
+
+    def _get_next_planned_seasons_for_in_progress_tvs(self, user):
+        """Return the next planned season for each TV show currently in progress."""
+        seasons = (
+            Season.objects.filter(
+                related_tv__user=user,
+                related_tv__status=Status.IN_PROGRESS.value,
+                status=Status.PLANNING.value,
+                item__season_number__gt=0,
+            )
+            .select_related("item")
+            .prefetch_related(
+                Prefetch(
+                    "item__event_set",
+                    queryset=events.models.Event.objects.all(),
+                    to_attr="prefetched_events",
+                ),
+            )
+            .order_by("related_tv_id", "item__season_number")
+        )
+
+        next_seasons = {}
+        for season in seasons:
+            if season.related_tv_id not in next_seasons:
+                next_seasons[season.related_tv_id] = season
+
+        return list(next_seasons.values())
+
+    def _exclude_planning_seasons_for_in_progress_tv(self, season_list):
+        """Remove planning seasons from the planning section when their TV is already active."""
+        if hasattr(season_list, "exclude"):
+            return season_list.exclude(
+                related_tv__status=Status.IN_PROGRESS.value,
+            )
+
+        return [
+            season
+            for season in season_list
+            if season.related_tv_id is None
+            or season.related_tv.status != Status.IN_PROGRESS.value
+        ]
+
+    def _filter_one_season_per_tv(self, season_list):
+        """Keep at most one season per TV show on the planning home list."""
+        seasons_by_tv = {}
+        for season in sorted(
+            season_list,
+            key=lambda s: s.item.season_number or 0,
+        ):
+            tv_id = season.related_tv_id
+            if tv_id not in seasons_by_tv:
+                seasons_by_tv[tv_id] = season
+
+        return list(seasons_by_tv.values())
 
     def _annotate_next_event(self, media_list):
         """Annotate next_event for media items."""
@@ -1276,12 +1402,6 @@ class TV(Media):
             ):
                 continue
 
-            if not app.helpers.is_released_date(
-                season_data.get("first_air_date"),
-                current_date,
-            ):
-                continue
-
             if next_unwatched_season is None:
                 item, _ = Item.objects.get_or_create(
                     media_id=self.item.media_id,
@@ -1298,15 +1418,15 @@ class TV(Media):
                     item=item,
                     user=self.user,
                     related_tv=self,
-                    status=Status.IN_PROGRESS.value,
+                    status=Status.PLANNING.value,
                 )
                 bulk_create_with_history([next_unwatched_season], Season)
                 season_started = True
                 started_season_number = season_number
                 break
 
-            if next_unwatched_season.status != Status.IN_PROGRESS.value:
-                next_unwatched_season.status = Status.IN_PROGRESS.value
+            if next_unwatched_season.status != Status.PLANNING.value:
+                next_unwatched_season.status = Status.PLANNING.value
                 bulk_update_with_history(
                     [next_unwatched_season],
                     Season,
@@ -1328,7 +1448,7 @@ class TV(Media):
 
         if started_season_number is not None:
             self.create_user_message(
-                f"Season {started_season_number} was marked as in progress "
+                f"Season {started_season_number} was marked as planning "
                 "automatically.",
                 level=UserMessageLevel.INFO,
             )

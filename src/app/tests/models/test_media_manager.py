@@ -623,8 +623,8 @@ class MediaManagerTests(TestCase):
         self.assertEqual(movie.max_progress, 1)
         self.assertIsNone(movie.next_event)
 
-    def test_get_home_status_includes_tv_with_planning_season(self):
-        """Test in-progress TV shows with unwatched seasons appear on home."""
+    def test_get_home_status_excludes_tv_with_planning_season_from_in_progress(self):
+        """Test TV shows with unwatched future seasons appear in progress only once."""
         manager = MediaManager()
 
         season2_item = Item.objects.create(
@@ -655,10 +655,126 @@ class MediaManagerTests(TestCase):
             items_limit=14,
         )
 
-        self.assertIn(MediaTypes.TV.value, home_status)
-        tv = home_status[MediaTypes.TV.value]["items"][0]
-        self.assertEqual(tv, self.tv)
-        self.assertEqual(tv.next_event.item, season2_item)
+        self.assertNotIn(MediaTypes.TV.value, home_status)
+        self.assertIn(MediaTypes.SEASON.value, home_status)
+
+        season = home_status[MediaTypes.SEASON.value]["items"][0]
+        self.assertEqual(season.item, season2_item)
+
+        planning_status = manager.get_home_status(
+            user=self.user,
+            status=Status.PLANNING.value,
+            sort_by=HomeSortChoices.UPCOMING,
+            items_limit=14,
+        )
+
+        self.assertNotIn(MediaTypes.SEASON.value, planning_status)
+
+    def test_get_home_status_uses_next_planned_season_for_active_tv(self):
+        """Test only the next planning season is shown for active TV in progress."""
+        manager = MediaManager()
+
+        season2_item = Item.objects.create(
+            media_id="1668",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Friends",
+            image="http://example.com/friends-s2.jpg",
+            season_number=2,
+        )
+        Season.objects.create(
+            item=season2_item,
+            user=self.user,
+            related_tv=self.tv,
+            status=Status.PLANNING.value,
+        )
+
+        season3_item = Item.objects.create(
+            media_id="1668",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Friends",
+            image="http://example.com/friends-s3.jpg",
+            season_number=3,
+        )
+        Season.objects.create(
+            item=season3_item,
+            user=self.user,
+            related_tv=self.tv,
+            status=Status.PLANNING.value,
+        )
+
+        home_status = manager.get_home_status(
+            user=self.user,
+            status=Status.IN_PROGRESS.value,
+            sort_by=HomeSortChoices.UPCOMING,
+            items_limit=14,
+        )
+
+        self.assertIn(MediaTypes.SEASON.value, home_status)
+        seasons = home_status[MediaTypes.SEASON.value]["items"]
+        self.assertEqual(len(seasons), 1)
+        self.assertEqual(seasons[0].item, season2_item)
+
+        planning_status = manager.get_home_status(
+            user=self.user,
+            status=Status.PLANNING.value,
+            sort_by=HomeSortChoices.UPCOMING,
+            items_limit=14,
+        )
+
+        self.assertEqual(planning_status.get(MediaTypes.SEASON.value, {}).get("total", 0), 0)
+
+    def test_get_home_status_filters_planning_seasons_to_one_per_tv(self):
+        """Test planning home items show only the next season for each TV."""
+        manager = MediaManager()
+
+        season2_item = Item.objects.create(
+            media_id="1668",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Friends S2",
+            image="http://example.com/friends-s2.jpg",
+            season_number=2,
+        )
+        Season.objects.create(
+            item=season2_item,
+            user=self.user,
+            related_tv=self.tv,
+            status=Status.PLANNING.value,
+        )
+
+        season3_item = Item.objects.create(
+            media_id="1668",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.SEASON.value,
+            title="Friends S3",
+            image="http://example.com/friends-s3.jpg",
+            season_number=3,
+        )
+        Season.objects.create(
+            item=season3_item,
+            user=self.user,
+            related_tv=self.tv,
+            status=Status.PLANNING.value,
+        )
+
+        planning_status = manager.get_home_status(
+            user=self.user,
+            status=Status.PLANNING.value,
+            sort_by=HomeSortChoices.TITLE,
+            items_limit=14,
+        )
+
+        self.assertIn(MediaTypes.SEASON.value, planning_status)
+        self.assertEqual(
+            len(planning_status[MediaTypes.SEASON.value]["items"]),
+            1,
+        )
+        self.assertEqual(
+            planning_status[MediaTypes.SEASON.value]["items"][0].item,
+            season2_item,
+        )
 
     def test_get_home_status_specific_media_type_returns_remaining_items(self):
         """Test get_home_status returns the remaining items for load-more."""
