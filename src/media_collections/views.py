@@ -454,10 +454,18 @@ def collection_item_toggle(request):
         CollectionItem.objects.create(collection=collection, item=item)
         in_collection = True
 
-    return render(request, "media_collections/components/collection_item_button.html", {
-        "collection": collection,
-        "source": source,
-        "media_type": media_type,
-        "media_id": media_id,
-        "has_item": in_collection,
-    })
+    # HTMX request: return the button partial for inline swap
+    if request.headers.get("HX-Request"):
+        return render(request, "media_collections/components/collection_item_button.html", {
+            "collection": collection,
+            "source": source,
+            "media_type": media_type,
+            "media_id": media_id,
+            "has_item": in_collection,
+        })
+
+    # Plain form POST: redirect back to referring page
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
+    if next_url:
+        return redirect(next_url)
+    return redirect("collection_detail", collection_id=collection.pk)

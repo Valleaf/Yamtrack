@@ -12,8 +12,6 @@ from django.core.cache import cache
 
 from app import helpers
 from app.models import MediaTypes, Sources
-from app.providers.services import ProviderAPIError
-
 logger = logging.getLogger(__name__)
 
 MB_BASE = "https://musicbrainz.org/ws/2"
@@ -37,6 +35,7 @@ TYPE_FILTERS = {
 
 
 def _get(endpoint: str, params: dict) -> dict:
+    from app.providers.services import ProviderAPIError  # noqa: PLC0415
     params["fmt"] = "json"
     try:
         resp = requests.get(f"{MB_BASE}/{endpoint}", params=params, headers=HEADERS, timeout=15)

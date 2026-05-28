@@ -367,6 +367,8 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
 
 def _get_user_movie_directors(user):
     """Return tracked directors for the user's movie collection."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: PLC0415
+
     movies = BasicMedia.objects.get_media_list(
         user=user,
         media_type=MediaTypes.MOVIE.value,
@@ -378,12 +380,42 @@ def _get_user_movie_directors(user):
     total_movies = movies.count()
     cached_movie_count = 0
 
-    for movie in movies:
-        if movie.item.source != Sources.TMDB.value:
-            continue
+    # Split into cached and uncached
+    tmdb_movies = [m for m in movies if m.item.source == Sources.TMDB.value]
+    cached_metadata = {}
+    uncached_movies = []
 
+    for movie in tmdb_movies:
         cache_key = f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{movie.item.media_id}"
         metadata = cache.get(cache_key)
+        if metadata is not None:
+            cached_metadata[movie.item.media_id] = metadata
+        else:
+            uncached_movies.append(movie)
+
+    # Fetch uncached movies concurrently
+    if uncached_movies:
+        def fetch(movie):
+            try:
+                return movie.item.media_id, services.get_media_metadata(
+                    MediaTypes.MOVIE.value,
+                    movie.item.media_id,
+                    Sources.TMDB.value,
+                )
+            except Exception:
+                logger.exception("Failed to fetch metadata for movie %s", movie.item.media_id)
+                return movie.item.media_id, None
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {executor.submit(fetch, m): m for m in uncached_movies}
+            for future in as_completed(futures):
+                media_id, metadata = future.result()
+                if metadata is not None:
+                    cached_metadata[media_id] = metadata
+
+    # Build directors from all metadata
+    for movie in tmdb_movies:
+        metadata = cached_metadata.get(movie.item.media_id)
         if metadata is None:
             continue
 
@@ -855,6 +887,16 @@ def media_save(request):
                 "image": metadata["image"],
             },
         )
+        # Patch image/title if the item already existed with blank values
+        update_fields = []
+        if not item.image and metadata["image"]:
+            item.image = metadata["image"]
+            update_fields.append("image")
+        if not item.title and metadata["title"]:
+            item.title = metadata["title"]
+            update_fields.append("title")
+        if update_fields:
+            item.save(update_fields=update_fields)
         model = apps.get_model(app_label="app", model_name=media_type)
         instance = model(item=item, user=request.user, country=metadata.get("country") or "")
 

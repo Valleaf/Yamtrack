@@ -287,7 +287,7 @@ def person_credits(person_id):
         crew = response.get("crew", [])
         directed_movies = [
             {
-                "media_id": movie.get("id"),
+                "media_id": str(movie.get("id")),
                 "title": get_title(movie),
                 "image": get_image_url(movie.get("poster_path")),
                 "release_date": movie.get("release_date"),
