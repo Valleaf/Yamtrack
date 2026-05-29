@@ -24,19 +24,25 @@ Status mapping:
 
 Score mapping:
     SensCritique 1-10 → Yamtrack 1-10 (no conversion needed)
+
+Confidence tiers for fuzzy matching:
+    score >= HIGH_CONFIDENCE_THRESHOLD  → imported automatically
+    score >= REVIEW_THRESHOLD           → queued for user review
+    score <  REVIEW_THRESHOLD           → skipped / warning
 """
 
 import csv
 import io
+import json
 import logging
 import re
 import unicodedata
 from collections import defaultdict
+from datetime import datetime
 from difflib import SequenceMatcher
 
 from django.apps import apps
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 
 from app.models import Item, MediaTypes, Sources, Status
 from app.providers import services
@@ -44,6 +50,10 @@ from integrations.imports import helpers
 from integrations.imports.helpers import MediaImportError
 
 logger = logging.getLogger(__name__)
+
+# --------------------------------------------------------------------------- #
+# Constants                                                                     #
+# --------------------------------------------------------------------------- #
 
 # Map SensCritique 'type' column values to Yamtrack media_type strings
 SC_TYPE_MAP: dict[str, str] = {
@@ -75,12 +85,160 @@ _NO_DATE_FIELDS = frozenset({
 # SC types that cannot be mapped — silently skipped
 UNSUPPORTED_TYPES: set[str] = set()
 
+# Matching thresholds
+HIGH_CONFIDENCE_THRESHOLD = 0.82  # auto-import above this
+REVIEW_THRESHOLD = 0.50           # queue for review between this and high
+
+
+# --------------------------------------------------------------------------- #
+# Public entry point                                                            #
+# --------------------------------------------------------------------------- #
 
 def importer(file, user, mode):
-    """Entry point called by the shared import_media task helper."""
+    """Entry point called by the shared import_media task helper.
+
+    Returns (imported_counts, warnings_str).
+    Items that need user review are stored in Redis under a key specific to
+    the user and can be retrieved via get_pending_review / confirm_pending.
+    """
     sc_importer = SensCritiqueImporter(file, user, mode)
     return sc_importer.import_data()
 
+
+# --------------------------------------------------------------------------- #
+# Redis helpers for pending-review items                                        #
+# --------------------------------------------------------------------------- #
+
+PENDING_KEY_PREFIX = "sc_review:"
+PENDING_TTL = 60 * 60 * 24 * 7  # 7 days
+
+
+def _redis():
+    """Return the shared Redis client from services."""
+    return services.redis_db
+
+
+def store_pending_review(user_id: int, pending: list[dict]) -> None:
+    """Persist pending-review items for the user in Redis."""
+    key = f"{PENDING_KEY_PREFIX}{user_id}"
+    _redis().set(key, json.dumps(pending), ex=PENDING_TTL)
+
+
+def get_pending_review(user_id: int) -> list[dict]:
+    """Retrieve pending-review items for the user from Redis."""
+    key = f"{PENDING_KEY_PREFIX}{user_id}"
+    raw = _redis().get(key)
+    if not raw:
+        return []
+    try:
+        return json.loads(raw)
+    except Exception:
+        return []
+
+
+def clear_pending_review(user_id: int) -> None:
+    """Remove pending-review items for the user from Redis."""
+    _redis().delete(f"{PENDING_KEY_PREFIX}{user_id}")
+
+
+def confirm_pending_items(
+    user_id: int,
+    confirmed_indices: list[int],
+    mode: str,
+) -> tuple[dict, str | None]:
+    """Import the user-confirmed subset of pending items.
+
+    ``confirmed_indices`` is a list of integer positions in the pending list
+    that the user approved.  Items not in the list are discarded.
+
+    Returns (imported_counts, warnings_str) just like the main importer.
+    """
+    from django.contrib.auth import get_user_model
+
+    user = get_user_model().objects.get(id=user_id)
+    pending = get_pending_review(user_id)
+
+    if not pending:
+        return {}, "No pending review items found."
+
+    existing_media = helpers.get_existing_media(user)
+    to_delete: dict = defaultdict(lambda: defaultdict(set))
+    bulk_media: dict = defaultdict(list)
+    warnings: list[str] = []
+
+    confirmed_set = set(confirmed_indices)
+
+    for idx, item_data in enumerate(pending):
+        if idx not in confirmed_set:
+            continue
+
+        media_type = item_data["media_type"]
+        media_id = item_data["media_id"]
+        source = item_data["source"]
+        title = item_data["sc_title"]
+        score = item_data.get("score")
+        status = item_data.get("status", Status.IN_PROGRESS.value)
+        notes = item_data.get("notes", "")
+        date_added = item_data.get("date_added")
+
+        if not helpers.should_process_media(
+            existing_media,
+            to_delete,
+            media_type,
+            source,
+            str(media_id),
+            mode,
+        ):
+            continue
+
+        db_item, _ = Item.objects.get_or_create(
+            media_id=media_id,
+            source=source,
+            media_type=media_type,
+            defaults={"title": title, "image": ""},
+        )
+
+        model = apps.get_model(app_label="app", model_name=media_type)
+        params = {
+            "item": db_item,
+            "user": user,
+            "score": score,
+            "status": status,
+            "notes": notes,
+        }
+
+        aware_date = None
+        if date_added:
+            try:
+                naive = datetime.fromisoformat(date_added)
+                aware_date = timezone.make_aware(naive) if timezone.is_naive(naive) else naive
+            except Exception:
+                pass
+
+        if aware_date and media_type not in _NO_DATE_FIELDS:
+            params["start_date"] = aware_date
+            if status == Status.COMPLETED.value:
+                params["end_date"] = aware_date
+
+        instance = model(**params)
+        if aware_date:
+            instance._history_date = aware_date
+        bulk_media[media_type].append(instance)
+
+    helpers.cleanup_existing_media(to_delete, user)
+    helpers.bulk_create_media(bulk_media, user)
+
+    # Remove pending items now they've been processed
+    clear_pending_review(user_id)
+
+    imported_counts = {mt: len(items) for mt, items in bulk_media.items()}
+    warnings_str = "\n".join(warnings) if warnings else None
+    return imported_counts, warnings_str
+
+
+# --------------------------------------------------------------------------- #
+# Importer class                                                                #
+# --------------------------------------------------------------------------- #
 
 class SensCritiqueImporter:
     """Import media from a SensCritique collections CSV export."""
@@ -93,6 +251,9 @@ class SensCritiqueImporter:
         self.existing_media = helpers.get_existing_media(user)
         self.to_delete: dict = defaultdict(lambda: defaultdict(set))
         self.bulk_media: dict = defaultdict(list)
+        # Items whose match confidence is between REVIEW_THRESHOLD and
+        # HIGH_CONFIDENCE_THRESHOLD — stored for user validation.
+        self.pending_review: list[dict] = []
 
         logger.info(
             "Initialized SensCritique importer for user %s with mode %s",
@@ -149,6 +310,14 @@ class SensCritiqueImporter:
         helpers.cleanup_existing_media(self.to_delete, self.user)
         helpers.bulk_create_media(self.bulk_media, self.user)
 
+        # Persist pending-review items so the view can display them
+        if self.pending_review:
+            store_pending_review(self.user.id, self.pending_review)
+            logger.info(
+                "SensCritique: %d items queued for user review",
+                len(self.pending_review),
+            )
+
         imported_counts = {
             mt: len(items) for mt, items in self.bulk_media.items()
         }
@@ -160,7 +329,7 @@ class SensCritiqueImporter:
     # ------------------------------------------------------------------ #
 
     def _process_row(self, row: dict, media_type: str):
-        """Process a single CSV row and append to bulk_media if valid."""
+        """Process a single CSV row, auto-import or queue for review."""
         source = SOURCE_FOR[media_type]
 
         # Prefer original title (usually English → better API match)
@@ -169,6 +338,9 @@ class SensCritiqueImporter:
             title = (row.get("titre") or "").strip()
         if not title:
             return
+
+        # SC display title (may be in French) — useful to show in review UI
+        sc_display_title = (row.get("titre") or title).strip()
 
         # Release year from 'sortie' column (YYYY or YYYY-MM-DD)
         sortie = (row.get("sortie") or "").strip()
@@ -183,18 +355,66 @@ class SensCritiqueImporter:
         date_added = _parse_date(row.get("date_notation") or "")
         notes = (row.get("critique") or "").strip()
 
-        media_id, resolved_source = _resolve(title, year, media_type, source)
-        if not media_id:
-            self.warnings.append(
-                f"{title} ({media_type}): ambiguous or no confident match via {source}"
-            )
-            return
+        media_id, resolved_source, confidence, candidate = _resolve(
+            title, year, media_type, source
+        )
 
+        if media_id and confidence >= HIGH_CONFIDENCE_THRESHOLD:
+            # High confidence → auto-import
+            self._enqueue_item(
+                media_type=media_type,
+                media_id=media_id,
+                source=resolved_source,
+                title=title,
+                score=score,
+                status=status,
+                notes=notes,
+                date_added=date_added,
+            )
+
+        elif media_id and confidence >= REVIEW_THRESHOLD:
+            # Medium confidence → queue for user review
+            self.pending_review.append({
+                "sc_title": sc_display_title,
+                "sc_original_title": title,
+                "sc_year": year,
+                "media_type": media_type,
+                "source": resolved_source,
+                "media_id": str(media_id),
+                "candidate_title": candidate.get("title", ""),
+                "candidate_year": str(candidate.get("year") or candidate.get("release_date", ""))[:4],
+                "candidate_image": candidate.get("image", ""),
+                "confidence": round(confidence, 3),
+                "score": score,
+                "status": status,
+                "notes": notes,
+                "date_added": date_added.isoformat() if date_added else None,
+            })
+
+        else:
+            # No usable match
+            self.warnings.append(
+                f"{sc_display_title} ({media_type}): no confident match found"
+            )
+
+    def _enqueue_item(
+        self,
+        *,
+        media_type: str,
+        media_id: str,
+        source: str,
+        title: str,
+        score,
+        status: str,
+        notes: str,
+        date_added,
+    ):
+        """Validate and add item to the bulk-create queue."""
         if not helpers.should_process_media(
             self.existing_media,
             self.to_delete,
             media_type,
-            resolved_source,
+            source,
             str(media_id),
             self.mode,
         ):
@@ -202,7 +422,7 @@ class SensCritiqueImporter:
 
         item, _ = Item.objects.get_or_create(
             media_id=media_id,
-            source=resolved_source,
+            source=source,
             media_type=media_type,
             defaults={"title": title, "image": ""},
         )
@@ -216,7 +436,6 @@ class SensCritiqueImporter:
             "notes": notes,
         }
 
-        # TV/Season/Episode have computed properties for dates — skip them
         if date_added and media_type not in _NO_DATE_FIELDS:
             params["start_date"] = date_added
             if status == Status.COMPLETED.value:
@@ -228,9 +447,9 @@ class SensCritiqueImporter:
         self.bulk_media[media_type].append(instance)
 
 
-# ------------------------------------------------------------------ #
-# Module-level helpers                                                #
-# ------------------------------------------------------------------ #
+# --------------------------------------------------------------------------- #
+# Module-level helpers                                                          #
+# --------------------------------------------------------------------------- #
 
 def _parse_status(acheve: str, envie: str) -> str:
     if acheve.strip().upper() == "TRUE":
@@ -253,7 +472,6 @@ def _parse_score(note: str) -> float | None:
 def _parse_date(date_notation: str):
     """Parse SensCritique dates into aware datetime."""
     date_notation = date_notation.strip()
-
     if not date_notation:
         return None
 
@@ -262,25 +480,22 @@ def _parse_date(date_notation: str):
         "%m/%d/%Y %H:%M:%S",
         "%Y-%m-%d %H:%M:%S",
     ]
-
     for fmt in formats:
         try:
             naive = datetime.strptime(date_notation, fmt)
             return timezone.make_aware(naive)
         except ValueError:
             continue
-
     return None
+
 
 def _normalize_title(title: str) -> str:
     """Normalize titles for safer matching."""
-
     if not title:
         return ""
 
     title = unicodedata.normalize("NFKD", title)
     title = title.encode("ascii", "ignore").decode("ascii")
-
     title = title.lower()
 
     # Remove stuff in brackets
@@ -289,16 +504,10 @@ def _normalize_title(title: str) -> str:
 
     # Remove common noisy suffixes
     noisy = [
-        "ost",
-        "original soundtrack",
-        "hd remaster",
-        "remastered",
-        "definitive edition",
-        "goty edition",
-        "game of the year edition",
+        "ost", "original soundtrack", "hd remaster", "remastered",
+        "definitive edition", "goty edition", "game of the year edition",
         "collector edition",
     ]
-
     for n in noisy:
         title = title.replace(n, "")
 
@@ -306,9 +515,7 @@ def _normalize_title(title: str) -> str:
     title = re.sub(r"[^a-z0-9\s]", " ", title)
 
     # Collapse spaces
-    title = " ".join(title.split())
-
-    return title
+    return " ".join(title.split())
 
 
 def _resolve(
@@ -316,20 +523,22 @@ def _resolve(
     year: int | None,
     media_type: str,
     source: str,
-) -> tuple[str | None, str]:
-    """Search provider and return a safe high-confidence match."""
+) -> tuple[str | None, str, float, dict]:
+    """Search provider and return (media_id, source, confidence, candidate).
 
+    Returns (None, '', 0.0, {}) on failure.
+    """
     try:
         response = services.search(media_type, title, page=1)
         results = (response or {}).get("results", [])
 
         if not results:
-            return None, ""
+            return None, "", 0.0, {}
 
         normalized_target = _normalize_title(title)
 
-        best_match = None
-        best_score = 0
+        best_match: dict = {}
+        best_score: float = 0.0
 
         for result in results[:10]:
             r_title = result.get("title") or ""
@@ -344,8 +553,7 @@ def _resolve(
             score = similarity
 
             r_year = str(
-                result.get("year")
-                or result.get("release_date", "")
+                result.get("year") or result.get("release_date", "")
             )[:4]
 
             # Strong bonus for matching year
@@ -360,12 +568,11 @@ def _resolve(
                 best_score = score
                 best_match = result
 
-        # Require decent confidence
-        if best_match and best_score >= 0.72:
-            return str(best_match["media_id"]), source
+        if best_match:
+            return str(best_match["media_id"]), source, best_score, best_match
 
-        return None, ""
+        return None, "", 0.0, {}
 
     except Exception as exc:
         logger.debug("SC resolve error for '%s': %s", title, exc)
-        return None, ""
+        return None, "", 0.0, {}

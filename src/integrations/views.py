@@ -19,7 +19,7 @@ from django.views.decorators.http import require_GET, require_POST
 import users
 from app import helpers as app_helpers
 from integrations import exports, tasks
-from integrations.imports import anilist, helpers, simkl, trakt
+from integrations.imports import anilist, helpers, senscritique as sc_import, simkl, trakt
 from integrations.webhooks import emby, jellyfin, plex
 
 logger = logging.getLogger(__name__)
@@ -566,6 +566,39 @@ def emby_webhook(request, token):
     processor.process_payload(payload, user)
     return HttpResponse(status=200)
 
+
+
+@require_GET
+def senscritique_review(request):
+    """Show uncertain SC matches for user validation before import."""
+    pending = sc_import.get_pending_review(request.user.id)
+    if not pending:
+        messages.info(request, "No pending SensCritique items to review.")
+        return redirect("import_data")
+    return render(request, "users/senscritique_review.html", {
+        "pending": list(enumerate(pending)),
+        "pending_count": len(pending),
+        "mode": request.GET.get("mode", "new"),
+    })
+
+
+@require_POST
+def senscritique_confirm(request):
+    """Process the user's review choices and import approved matches."""
+    confirmed_indices = [
+        int(i) for i in request.POST.getlist("confirmed")
+    ]
+    mode = request.POST.get("mode", "new")
+    tasks.confirm_senscritique.delay(
+        user_id=request.user.id,
+        confirmed_indices=confirmed_indices,
+        mode=mode,
+    )
+    messages.info(
+        request,
+        f"Importing {len(confirmed_indices)} confirmed SensCritique items…",
+    )
+    return redirect("import_data")
 
 
 @require_POST

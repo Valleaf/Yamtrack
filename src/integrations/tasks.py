@@ -159,4 +159,22 @@ def import_goodreads(file, user_id, mode):
 @shared_task(name="Import from SensCritique")
 def import_senscritique(file, user_id, mode):
     """Celery task for importing media data from SensCritique CSV export."""
-    return import_media(senscritique.importer, file, user_id, mode)
+    result = import_media(senscritique.importer, file, user_id, mode)
+    # If there are pending items for review, append a notice
+    from integrations.imports.senscritique import get_pending_review
+    pending = get_pending_review(user_id)
+    if pending:
+        review_url = f"/integrations/import/senscritique/review/?mode={mode}"
+        result = (
+            result or ""
+        ) + f"\n\n{len(pending)} items need your review — visit the review page to approve or reject them."
+    return result
+
+
+@shared_task(name="Confirm SensCritique review")
+def confirm_senscritique(user_id, confirmed_indices, mode):
+    """Celery task for importing user-confirmed SensCritique items."""
+    from integrations.imports.senscritique import confirm_pending_items
+    from django.contrib.auth import get_user_model
+    imported_counts, warnings = confirm_pending_items(user_id, confirmed_indices, mode)
+    return format_import_message(imported_counts, warnings)
