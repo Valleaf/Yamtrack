@@ -29,7 +29,10 @@ Score mapping:
 import csv
 import io
 import logging
+import re
+import unicodedata
 from collections import defaultdict
+from difflib import SequenceMatcher
 
 from django.apps import apps
 from django.utils import timezone
@@ -175,13 +178,15 @@ class SensCritiqueImporter:
 
         score = _parse_score(row.get("note") or "")
         status = _parse_status(row.get("acheve") or "", row.get("envie") or "")
+        if score is None and status != Status.PLANNING.value:
+            return
         date_added = _parse_date(row.get("date_notation") or "")
         notes = (row.get("critique") or "").strip()
 
         media_id, resolved_source = _resolve(title, year, media_type, source)
         if not media_id:
             self.warnings.append(
-                f"{title}: could not be matched via {source} — skipped"
+                f"{title} ({media_type}): ambiguous or no confident match via {source}"
             )
             return
 
@@ -246,17 +251,64 @@ def _parse_score(note: str) -> float | None:
 
 
 def _parse_date(date_notation: str):
-    """Parse 'YYYY-MM-DD HH:MM:SS' into an aware datetime, or None."""
+    """Parse SensCritique dates into aware datetime."""
     date_notation = date_notation.strip()
+
     if not date_notation:
         return None
-    try:
-        naive = parse_datetime(date_notation)
-        if naive is None:
-            return None
-        return timezone.make_aware(naive)
-    except Exception:
-        return None
+
+    formats = [
+        "%m/%d/%Y %H:%M",
+        "%m/%d/%Y %H:%M:%S",
+        "%Y-%m-%d %H:%M:%S",
+    ]
+
+    for fmt in formats:
+        try:
+            naive = datetime.strptime(date_notation, fmt)
+            return timezone.make_aware(naive)
+        except ValueError:
+            continue
+
+    return None
+
+def _normalize_title(title: str) -> str:
+    """Normalize titles for safer matching."""
+
+    if not title:
+        return ""
+
+    title = unicodedata.normalize("NFKD", title)
+    title = title.encode("ascii", "ignore").decode("ascii")
+
+    title = title.lower()
+
+    # Remove stuff in brackets
+    title = re.sub(r"\(.*?\)", "", title)
+    title = re.sub(r"\[.*?\]", "", title)
+
+    # Remove common noisy suffixes
+    noisy = [
+        "ost",
+        "original soundtrack",
+        "hd remaster",
+        "remastered",
+        "definitive edition",
+        "goty edition",
+        "game of the year edition",
+        "collector edition",
+    ]
+
+    for n in noisy:
+        title = title.replace(n, "")
+
+    # Remove punctuation
+    title = re.sub(r"[^a-z0-9\s]", " ", title)
+
+    # Collapse spaces
+    title = " ".join(title.split())
+
+    return title
 
 
 def _resolve(
@@ -265,7 +317,8 @@ def _resolve(
     media_type: str,
     source: str,
 ) -> tuple[str | None, str]:
-    """Search the provider and return (media_id, source) or (None, '')."""
+    """Search provider and return a safe high-confidence match."""
+
     try:
         response = services.search(media_type, title, page=1)
         results = (response or {}).get("results", [])
@@ -273,18 +326,45 @@ def _resolve(
         if not results:
             return None, ""
 
-        # Prefer exact title + year match within first 5 results
-        for result in results[:5]:
-            r_title = (result.get("title") or "").lower()
-            r_year = str(
-                result.get("year") or result.get("release_date", "")
-            )[:4]
-            year_match = year is None or str(year) == r_year
-            if r_title == title.lower() and year_match:
-                return str(result["media_id"]), source
+        normalized_target = _normalize_title(title)
 
-        # Fall back to the first result
-        return str(results[0]["media_id"]), source
+        best_match = None
+        best_score = 0
+
+        for result in results[:10]:
+            r_title = result.get("title") or ""
+            normalized_result = _normalize_title(r_title)
+
+            similarity = SequenceMatcher(
+                None,
+                normalized_target,
+                normalized_result,
+            ).ratio()
+
+            score = similarity
+
+            r_year = str(
+                result.get("year")
+                or result.get("release_date", "")
+            )[:4]
+
+            # Strong bonus for matching year
+            if year and r_year == str(year):
+                score += 0.15
+
+            # Exact normalized match bonus
+            if normalized_target == normalized_result:
+                score += 0.25
+
+            if score > best_score:
+                best_score = score
+                best_match = result
+
+        # Require decent confidence
+        if best_match and best_score >= 0.72:
+            return str(best_match["media_id"]), source
+
+        return None, ""
 
     except Exception as exc:
         logger.debug("SC resolve error for '%s': %s", title, exc)
