@@ -277,7 +277,9 @@ def game(media_id):
         data = (
             "fields name,cover.image_id,artworks.image_id,"
             "url,summary,game_type,first_release_date,total_rating,total_rating_count,"
-            "genres.name,themes.name,platforms.name,involved_companies.company.name,"
+            "genres.name,themes.name,platforms.name,"
+            "involved_companies.company.id,involved_companies.company.name,"
+            "involved_companies.company.logo.image_id,involved_companies.developer,"
             "collection.id,collection.name,collection.games.id,collection.games.name,collection.games.cover.image_id,"
             "collections.id,collections.name,collections.games.id,collections.games.name,collections.games.cover.image_id,"
             "parent_game.name,parent_game.cover.image_id,"
@@ -351,6 +353,7 @@ def game(media_id):
                 "platforms": get_list(response, "platforms"),
                 "companies": get_companies(response),
             },
+            "developers": get_developers(response),
             "related": {
                 "parent_game": get_parent(response.get("parent_game")),
                 "remasters": get_related(response.get("remasters")),
@@ -443,15 +446,33 @@ def get_list(response, field):
 
 
 def get_companies(response):
-    """Return the companies involved in the game."""
-    # when no companies, involved_companies is not present in the response
-    # e.g game: 238417
+    """Return the companies involved in the game as a display string."""
     try:
         return ", ".join(
             company["company"]["name"] for company in response["involved_companies"]
         )
     except KeyError:
         return None
+
+
+def get_developers(response):
+    """Return structured developer info with id, name and image."""
+    try:
+        devs = []
+        for entry in response.get("involved_companies", []):
+            if not entry.get("developer"):
+                continue
+            company = entry.get("company", {})
+            logo = company.get("logo", {})
+            image_id = logo.get("image_id") if logo else None
+            devs.append({
+                "id": company.get("id"),
+                "name": company.get("name", ""),
+                "image": f"https://images.igdb.com/igdb/image/upload/t_logo_med/{image_id}.png" if image_id else None,
+            })
+        return devs
+    except (KeyError, TypeError):
+        return []
 
 
 def get_score(response):

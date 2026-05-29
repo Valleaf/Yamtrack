@@ -153,6 +153,7 @@ def comic(media_id):
                 "people": get_people(response),
                 "last_updated": response.get("date_last_updated").split()[0],
             },
+            "creators": get_creators(response),
             "related": {
                 "recommendations": publisher_comics,
             },
@@ -244,9 +245,27 @@ def get_last_issue_number(response):
 
 
 def get_people(response):
-    """Return the people associated with the comic volume."""
+    """Return the people associated with the comic volume as display strings."""
     people = response.get("people", [])
     return [person["name"] for person in people[:5] if isinstance(person, dict)]
+
+
+def get_creators(response):
+    """Return structured writer/author info with id and name."""
+    people = response.get("people", [])
+    creators = []
+    writer_roles = {"writer", "plotter", "scripter", "story"}
+    for person in people:
+        if not isinstance(person, dict):
+            continue
+        roles = [r.strip().lower() for r in (person.get("role") or "").split(",")]
+        if any(r in writer_roles for r in roles):
+            creators.append({
+                "id": str(person.get("id", "")),
+                "name": person.get("name", ""),
+                "image": None,  # ComicVine person images need a separate API call
+            })
+    return creators
 
 
 def get_publisher_comics(publisher_id, current_id, limit=15):

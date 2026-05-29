@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block title %}{{ page_title }} - Yamtrack{% endblock title %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <h1 class="text-3xl font-bold">{{ page_title }}</h1>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url medialist_url_name media_type %}"
+         class="px-4 py-2 rounded-full bg-[#39404b] text-gray-300 hover:bg-[#454d5a] transition-colors duration-200">
+        {{ media_type|media_type_readable_plural }}
+      </a>
+      <a href="{% url list_url_name %}"
+         class="px-4 py-2 rounded-full bg-indigo-600 text-white transition-colors duration-200">
+        {{ person_type_plural }}
+      </a>
+    </div>
+  </div>
+
+  {% if persons %}
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+      {% for person in persons %}
+        <a href="{% url detail_url_name person.id person.name|slugify %}"
+           class="min-w-0 block rounded-2xl bg-[#2a2f35] p-5 hover:bg-[#343a40] transition-colors duration-200">
+          <div class="flex items-center gap-3 mb-4">
+            {% if person.image %}
+              <img src="{{ person.image }}" alt="{{ person.name }}"
+                   class="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <div class="w-12 h-12 rounded-full bg-indigo-600 items-center justify-center text-white text-lg flex-shrink-0 hidden">{{ person.name|slice:"0:1" }}</div>
+            {% else %}
+              <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg flex-shrink-0">{{ person.name|slice:"0:1" }}</div>
+            {% endif %}
+            <div class="min-w-0">
+              <h2 class="text-sm font-semibold truncate">{{ person.name }}</h2>
+              <p class="text-xs text-gray-400">{{ person.media_count }} {{ media_type|media_type_readable }}{{ person.media_count|pluralize }}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-300">
+            <span>Tracked</span>
+            <span class="font-semibold text-white">{{ person.percentage }}%</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-2xl bg-[#2a2f35] p-8 text-center text-gray-400">
+      No {{ person_type_plural|lower }} found. Track some {{ media_type|media_type_readable_plural|lower }} to populate this page.
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}

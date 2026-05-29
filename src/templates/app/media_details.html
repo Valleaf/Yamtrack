@@ -134,6 +134,60 @@
         </div>
       {% endif %}
 
+      {# Game developers #}
+      {% if media.developers %}
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-gray-400 mb-2">DEVELOPER{% if media.developers|length > 1 %}S{% endif %}</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for dev in media.developers %}
+              <a href="{% url 'game_studio' studio_id=dev.id name=dev.name|slug %}"
+                 class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white hover:bg-[#343a40] transition-colors duration-200">
+                {{ dev.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Comic creators #}
+      {% if media.creators %}
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-gray-400 mb-2">WRITER{% if media.creators|length > 1 %}S{% endif %}</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for creator in media.creators %}
+              <a href="{% url 'comic_person' person_id=creator.id name=creator.name|slug %}"
+                 class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white hover:bg-[#343a40] transition-colors duration-200">
+                {{ creator.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Manga/book authors #}
+      {% if media.authors %}
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-gray-400 mb-2">AUTHOR{% if media.authors|length > 1 %}S{% endif %}</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for author in media.authors %}
+              {% if media_type == MediaTypes.MANGA.value %}
+                <a href="{% url 'manga_author' author_id=author.id name=author.name|slug %}"
+                   class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white hover:bg-[#343a40] transition-colors duration-200">
+                  {{ author.name }}
+                </a>
+              {% elif media_type == MediaTypes.BOOK.value %}
+                <a href="{% url 'book_author' author_id=author.id name=author.name|slug %}"
+                   class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white hover:bg-[#343a40] transition-colors duration-200">
+                  {{ author.name }}
+                </a>
+              {% else %}
+                <span class="px-3 py-2 bg-[#2a2f35] rounded-full text-sm text-white">{{ author.name }}</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
       {# Genres #}
       <div class="flex flex-wrap gap-2 mb-4">
         {% for genre in media.genres %}

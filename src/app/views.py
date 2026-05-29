@@ -585,6 +585,420 @@ def music_artist(request, artist_id):
     return render(request, "app/music_artist.html", {"artist": artist_data})
 
 
+# ── Generic person/studio grouping ────────────────────────────────────────────
+
+def _get_media_by_person(user, media_type, person_key, source_filter=None):
+    """Generic helper: group a user's tracked media by a person/studio field.
+
+    Returns (persons_dict, total_count, cached_count).
+    persons_dict maps person_id -> {id, name, image, media: [...]}
+    person_key is the metadata key that holds a list of {id, name, image} dicts.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: PLC0415
+
+    tracked = BasicMedia.objects.get_media_list(
+        user=user,
+        media_type=media_type,
+        status_filter=MediaStatusChoices.ALL,
+        sort_filter="title",
+    )
+    if source_filter:
+        tracked = [m for m in tracked if m.item.source == source_filter]
+    else:
+        tracked = list(tracked)
+
+    total_count = len(tracked)
+    cached_metadata = {}
+    uncached = []
+
+    for m in tracked:
+        cache_key = f"{m.item.source}_{media_type}_{m.item.media_id}"
+        metadata = cache.get(cache_key)
+        if metadata is not None:
+            cached_metadata[m.item.media_id] = metadata
+        else:
+            uncached.append(m)
+
+    if uncached:
+        def _fetch(m):
+            try:
+                return m.item.media_id, services.get_media_metadata(
+                    media_type, m.item.media_id, m.item.source
+                )
+            except Exception:
+                logger.exception("Failed to fetch metadata for %s %s", media_type, m.item.media_id)
+                return m.item.media_id, None
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            for media_id, metadata in executor.map(_fetch, uncached):
+                if metadata is not None:
+                    cached_metadata[media_id] = metadata
+
+    persons = {}
+    cached_count = 0
+    for m in tracked:
+        metadata = cached_metadata.get(m.item.media_id)
+        if metadata is None:
+            continue
+        cached_count += 1
+        for person in metadata.get(person_key) or []:
+            pid = str(person.get("id") or person.get("name", ""))
+            if not pid:
+                continue
+            record = persons.setdefault(pid, {
+                "id": pid,
+                "name": person.get("name", ""),
+                "image": person.get("image"),
+                "media": [],
+            })
+            record["media"].append({"metadata": metadata, "item": m.item, "status": m.status})
+
+    return persons, total_count, cached_count
+
+
+def _build_person_list(persons, total_count):
+    """Build a sorted list of person dicts with media_count and percentage."""
+    result = []
+    for p in persons.values():
+        count = len(p["media"])
+        result.append({
+            "id": p["id"],
+            "name": p["name"],
+            "image": p.get("image"),
+            "media_count": count,
+            "percentage": round(count / total_count * 100, 1) if total_count else 0,
+        })
+    result.sort(key=lambda x: (-x["media_count"], x["name"]))
+    return result
+
+
+# ── Game studios ──────────────────────────────────────────────────────────────
+
+@require_GET
+def game_studios(request):
+    """List view: tracked games grouped by developer studio."""
+    persons, total_count, cached_count = _get_media_by_person(
+        request.user, MediaTypes.GAME.value, "developers", Sources.IGDB.value
+    )
+    studio_list = _build_person_list(persons, total_count)
+    return render(request, "app/persons_list.html", {
+        "persons": studio_list,
+        "total_count": total_count,
+        "cached_count": cached_count,
+        "media_type": MediaTypes.GAME.value,
+        "person_type": "studio",
+        "person_type_plural": "Studios",
+        "list_url_name": "game_studios",
+        "detail_url_name": "game_studio",
+        "medialist_url_name": "medialist",
+        "page_title": "Game Studios",
+    })
+
+
+@require_GET
+def game_studio(request, studio_id, name):  # noqa: ARG001
+    """Detail view: a specific developer studio and their tracked games."""
+    persons, total_count, _ = _get_media_by_person(
+        request.user, MediaTypes.GAME.value, "developers", Sources.IGDB.value
+    )
+    person = persons.get(studio_id)
+    if not person:
+        raise Http404("Studio not found")
+
+    media_count = len(person["media"])
+    percentage = round(media_count / total_count * 100, 1) if total_count else 0
+
+    tracked_items = [
+        {
+            "id": m["metadata"]["media_id"],
+            "title": m["metadata"]["title"],
+            "image": m["metadata"].get("image"),
+            "release_year": (m["metadata"].get("details", {}).get("release_date") or "")[:4],
+            "tracked": True,
+            "status": m["status"],
+            "completed": m["status"] == Status.COMPLETED.value,
+            "link": reverse("media_details", kwargs={
+                "source": m["item"].source,
+                "media_type": MediaTypes.GAME.value,
+                "media_id": m["metadata"]["media_id"],
+                "title": slugify(m["metadata"]["title"]),
+            }),
+            "external": False,
+        }
+        for m in person["media"]
+    ]
+    tracked_items.sort(key=lambda x: x["title"])
+
+    return render(request, "app/person_detail.html", {
+        "person": {
+            "id": studio_id,
+            "name": person["name"],
+            "image": person.get("image"),
+            "media_count": media_count,
+            "percentage": percentage,
+        },
+        "media_items": tracked_items,
+        "media_type": MediaTypes.GAME.value,
+        "person_type": "studio",
+        "person_type_plural": "Studios",
+        "list_url_name": "game_studios",
+        "medialist_url_name": "medialist",
+        "page_title": f"{person['name']} — Studio",
+        "total_count": total_count,
+    })
+
+
+# ── Music artists ─────────────────────────────────────────────────────────────
+
+@require_GET
+def music_artists(request):
+    """List view: tracked music grouped by artist."""
+    persons, total_count, cached_count = _get_media_by_person(
+        request.user, MediaTypes.MUSIC.value, "artists", Sources.MUSICBRAINZ.value
+    )
+    artist_list = _build_person_list(persons, total_count)
+    return render(request, "app/persons_list.html", {
+        "persons": artist_list,
+        "total_count": total_count,
+        "cached_count": cached_count,
+        "media_type": MediaTypes.MUSIC.value,
+        "person_type": "artist",
+        "person_type_plural": "Artists",
+        "list_url_name": "music_artists",
+        "detail_url_name": "music_artist",
+        "medialist_url_name": "medialist",
+        "page_title": "Music Artists",
+    })
+
+
+# ── Comic creators ────────────────────────────────────────────────────────────
+
+@require_GET
+def comic_people(request):
+    """List view: tracked comics grouped by writer/creator."""
+    persons, total_count, cached_count = _get_media_by_person(
+        request.user, MediaTypes.COMIC.value, "creators", Sources.COMICVINE.value
+    )
+    people_list = _build_person_list(persons, total_count)
+    return render(request, "app/persons_list.html", {
+        "persons": people_list,
+        "total_count": total_count,
+        "cached_count": cached_count,
+        "media_type": MediaTypes.COMIC.value,
+        "person_type": "creator",
+        "person_type_plural": "Creators",
+        "list_url_name": "comic_people",
+        "detail_url_name": "comic_person",
+        "medialist_url_name": "medialist",
+        "page_title": "Comic Creators",
+    })
+
+
+@require_GET
+def comic_person(request, person_id, name):  # noqa: ARG001
+    """Detail view: a specific comic writer/creator."""
+    persons, total_count, _ = _get_media_by_person(
+        request.user, MediaTypes.COMIC.value, "creators", Sources.COMICVINE.value
+    )
+    person = persons.get(person_id)
+    if not person:
+        raise Http404("Creator not found")
+
+    media_count = len(person["media"])
+    percentage = round(media_count / total_count * 100, 1) if total_count else 0
+
+    tracked_items = [
+        {
+            "id": m["metadata"]["media_id"],
+            "title": m["metadata"]["title"],
+            "image": m["metadata"].get("image"),
+            "release_year": str(m["metadata"].get("details", {}).get("start_year") or ""),
+            "tracked": True,
+            "status": m["status"],
+            "completed": m["status"] == Status.COMPLETED.value,
+            "link": reverse("media_details", kwargs={
+                "source": m["item"].source,
+                "media_type": MediaTypes.COMIC.value,
+                "media_id": m["metadata"]["media_id"],
+                "title": slugify(m["metadata"]["title"]),
+            }),
+            "external": False,
+        }
+        for m in person["media"]
+    ]
+    tracked_items.sort(key=lambda x: x["title"])
+
+    return render(request, "app/person_detail.html", {
+        "person": {
+            "id": person_id,
+            "name": person["name"],
+            "image": person.get("image"),
+            "media_count": media_count,
+            "percentage": percentage,
+        },
+        "media_items": tracked_items,
+        "media_type": MediaTypes.COMIC.value,
+        "person_type": "creator",
+        "person_type_plural": "Creators",
+        "list_url_name": "comic_people",
+        "medialist_url_name": "medialist",
+        "page_title": f"{person['name']} — Creator",
+        "total_count": total_count,
+    })
+
+
+# ── Manga authors ────────────────────────────────────────────────────────────
+
+@require_GET
+def manga_authors(request):
+    """List view: tracked manga grouped by author."""
+    persons, total_count, cached_count = _get_media_by_person(
+        request.user, MediaTypes.MANGA.value, "authors"
+    )
+    author_list = _build_person_list(persons, total_count)
+    return render(request, "app/persons_list.html", {
+        "persons": author_list,
+        "total_count": total_count,
+        "cached_count": cached_count,
+        "media_type": MediaTypes.MANGA.value,
+        "person_type": "author",
+        "person_type_plural": "Authors",
+        "list_url_name": "manga_authors",
+        "detail_url_name": "manga_author",
+        "medialist_url_name": "medialist",
+        "page_title": "Manga Authors",
+    })
+
+
+@require_GET
+def manga_author(request, author_id, name):  # noqa: ARG001
+    """Detail view: a specific manga author."""
+    persons, total_count, _ = _get_media_by_person(
+        request.user, MediaTypes.MANGA.value, "authors"
+    )
+    person = persons.get(author_id)
+    if not person:
+        raise Http404("Author not found")
+
+    media_count = len(person["media"])
+    percentage = round(media_count / total_count * 100, 1) if total_count else 0
+
+    tracked_items = [
+        {
+            "id": m["metadata"]["media_id"],
+            "title": m["metadata"]["title"],
+            "image": m["metadata"].get("image"),
+            "release_year": str(m["metadata"].get("details", {}).get("year") or ""),
+            "tracked": True,
+            "status": m["status"],
+            "completed": m["status"] == Status.COMPLETED.value,
+            "link": reverse("media_details", kwargs={
+                "source": m["item"].source,
+                "media_type": MediaTypes.MANGA.value,
+                "media_id": m["metadata"]["media_id"],
+                "title": slugify(m["metadata"]["title"]),
+            }),
+            "external": False,
+        }
+        for m in person["media"]
+    ]
+    tracked_items.sort(key=lambda x: x["title"])
+
+    return render(request, "app/person_detail.html", {
+        "person": {
+            "id": author_id,
+            "name": person["name"],
+            "image": person.get("image"),
+            "media_count": media_count,
+            "percentage": percentage,
+        },
+        "media_items": tracked_items,
+        "media_type": MediaTypes.MANGA.value,
+        "person_type": "author",
+        "person_type_plural": "Authors",
+        "list_url_name": "manga_authors",
+        "medialist_url_name": "medialist",
+        "page_title": f"{person['name']} — Author",
+        "total_count": total_count,
+    })
+
+
+# ── Book authors ───────────────────────────────────────────────────────────
+
+@require_GET
+def book_authors(request):
+    """List view: tracked books grouped by author."""
+    persons, total_count, cached_count = _get_media_by_person(
+        request.user, MediaTypes.BOOK.value, "authors"
+    )
+    author_list = _build_person_list(persons, total_count)
+    return render(request, "app/persons_list.html", {
+        "persons": author_list,
+        "total_count": total_count,
+        "cached_count": cached_count,
+        "media_type": MediaTypes.BOOK.value,
+        "person_type": "author",
+        "person_type_plural": "Authors",
+        "list_url_name": "book_authors",
+        "detail_url_name": "book_author",
+        "medialist_url_name": "medialist",
+        "page_title": "Book Authors",
+    })
+
+
+@require_GET
+def book_author(request, author_id, name):  # noqa: ARG001
+    """Detail view: a specific book author."""
+    persons, total_count, _ = _get_media_by_person(
+        request.user, MediaTypes.BOOK.value, "authors"
+    )
+    person = persons.get(author_id)
+    if not person:
+        raise Http404("Author not found")
+
+    media_count = len(person["media"])
+    percentage = round(media_count / total_count * 100, 1) if total_count else 0
+
+    tracked_items = [
+        {
+            "id": m["metadata"]["media_id"],
+            "title": m["metadata"]["title"],
+            "image": m["metadata"].get("image"),
+            "release_year": str(m["metadata"].get("details", {}).get("publish_date") or "")[:4],
+            "tracked": True,
+            "status": m["status"],
+            "completed": m["status"] == Status.COMPLETED.value,
+            "link": reverse("media_details", kwargs={
+                "source": m["item"].source,
+                "media_type": MediaTypes.BOOK.value,
+                "media_id": m["metadata"]["media_id"],
+                "title": slugify(m["metadata"]["title"]),
+            }),
+            "external": False,
+        }
+        for m in person["media"]
+    ]
+    tracked_items.sort(key=lambda x: x["title"])
+
+    return render(request, "app/person_detail.html", {
+        "person": {
+            "id": author_id,
+            "name": person["name"],
+            "image": person.get("image"),
+            "media_count": media_count,
+            "percentage": percentage,
+        },
+        "media_items": tracked_items,
+        "media_type": MediaTypes.BOOK.value,
+        "person_type": "author",
+        "person_type_plural": "Authors",
+        "list_url_name": "book_authors",
+        "medialist_url_name": "medialist",
+        "page_title": f"{person['name']} — Author",
+        "total_count": total_count,
+    })
+
+
 @require_GET
 def season_details(request, source, media_id, title, season_number):  # noqa: ARG001 For URL
     """Return the details page for a season."""

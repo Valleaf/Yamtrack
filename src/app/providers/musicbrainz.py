@@ -5,10 +5,10 @@ API docs: https://musicbrainz.org/doc/MusicBrainz_API
 """
 
 import logging
-import time
 
 import requests
 from django.core.cache import cache
+from requests_ratelimiter import LimiterSession
 
 from app import helpers
 from app.models import MediaTypes, Sources
@@ -16,9 +16,14 @@ logger = logging.getLogger(__name__)
 
 MB_BASE = "https://musicbrainz.org/ws/2"
 HEADERS = {
-    "User-Agent": "Yamtrack/1.0 (https://github.com/Valleaf/Yamtrack)",
+    "User-Agent": "Yamtrack/1.0 (https://github.com/FuzzyGrim/Yamtrack)",
     "Accept": "application/json",
 }
+
+# One request per second, shared across all threads — MusicBrainz requirement.
+# LimiterSession is thread-safe and blocks the calling thread until the slot is free.
+_MB_SESSION = LimiterSession(per_second=1)
+_MB_SESSION.headers.update(HEADERS)
 
 CAA_BASE = "https://coverartarchive.org/release-group"
 RESULTS_PER_PAGE = 15
@@ -38,9 +43,8 @@ def _get(endpoint: str, params: dict) -> dict:
     from app.providers.services import ProviderAPIError  # noqa: PLC0415
     params["fmt"] = "json"
     try:
-        resp = requests.get(f"{MB_BASE}/{endpoint}", params=params, headers=HEADERS, timeout=15)
+        resp = _MB_SESSION.get(f"{MB_BASE}/{endpoint}", params=params, timeout=15)
         resp.raise_for_status()
-        time.sleep(1)
         return resp.json()
     except requests.exceptions.Timeout as error:
         raise ProviderAPIError(Sources.MUSICBRAINZ.value, error, "Request timed out") from None

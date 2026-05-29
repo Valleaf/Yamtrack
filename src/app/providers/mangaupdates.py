@@ -150,6 +150,7 @@ async def async_manga(media_id):
                 "related_manga": await related_task,
                 "recommendations": await recommendations_task,
             },
+            "authors": get_authors_structured(response["authors"]),
         }
 
         cache.set(cache_key, data)
@@ -179,10 +180,26 @@ def get_genres(genres):
 
 
 def get_authors(authors):
-    """Get the authors for a media item."""
+    """Get the authors for a media item as display strings."""
     if authors:
         return [item["name"] for item in authors]
     return None
+
+
+def get_authors_structured(authors):
+    """Return structured author info with id and name."""
+    if not authors:
+        return []
+    return [
+        {
+            "id": item.get("author_id") or item.get("name", "").lower().replace(" ", "-"),
+            "name": item.get("name", ""),
+            "role": item.get("type", ""),
+            "image": None,
+        }
+        for item in authors
+        if item.get("name")
+    ]
 
 
 def get_status(status):

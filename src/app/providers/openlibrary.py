@@ -168,6 +168,7 @@ async def async_book(media_id):
         )
         score, score_count = await ratings_task
 
+        authors = await authors_task
         data = {
             "media_id": media_id,
             "source": Sources.OPENLIBRARY.value,
@@ -184,10 +185,11 @@ async def async_book(media_id):
                 "physical_format": get_physical_format(response_book),
                 "number_of_pages": response_book.get("number_of_pages"),
                 "publish_date": get_publish_date(response_book),
-                "author": await authors_task,
+                "author": ", ".join(a["name"] for a in authors) if authors else None,
                 "publishers": get_publishers(response_book),
                 "isbn": get_isbns(response_book),
             },
+            "authors": authors,
             "related": {
                 "other_editions": await editions_task,
             },
@@ -260,23 +262,26 @@ def get_publish_date(response):
 
 async def get_authors(response):
     """Get list of author names asynchronously."""
-    authors = []
     author_entries = response.get("authors", [])
 
     async with aiohttp.ClientSession() as session:
         tasks = []
+        keys = []
         for author in author_entries:
             if isinstance(author, dict) and "author" in author:
-                author_key = author["author"]["key"]
+                author_key = author["author"]["key"]  # e.g. /authors/OL123A
                 author_url = f"https://openlibrary.org{author_key}.json"
                 tasks.append(fetch_author_data(session, author_url))
+                keys.append(extract_openlibrary_id(author_key))
 
         author_data_list = await asyncio.gather(*tasks)
-        authors = [
-            data.get("name", "Unknown Author") for data in author_data_list if data
-        ]
 
-    return authors or None
+    structured = [
+        {"id": key, "name": data.get("name", "Unknown Author"), "image": None}
+        for key, data in zip(keys, author_data_list, strict=False)
+        if data
+    ]
+    return structured or None
 
 
 async def fetch_author_data(session, url):

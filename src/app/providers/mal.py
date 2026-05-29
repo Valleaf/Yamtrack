@@ -163,7 +163,7 @@ def manga(media_id):
     if data is None:
         url = f"{base_url}/manga/{media_id}"
         params = {
-            "fields": f"{base_fields},num_chapters,related_manga,recommendations",
+            "fields": f"{base_fields},num_chapters,related_manga,recommendations,authors{{first_name,last_name,role}}",
         }
 
         try:
@@ -208,6 +208,7 @@ def manga(media_id):
                     MediaTypes.MANGA.value,
                 ),
             },
+            "authors": get_authors_structured(response),
         }
 
         cache.set(cache_key, data)
@@ -363,6 +364,27 @@ def get_source(response):
         return response["source"].replace("_", " ").title()
     except KeyError:
         return None
+
+
+def get_authors_structured(response):
+    """Return structured author info with id, name and role."""
+    authors = response.get("authors", [])
+    if not authors:
+        return []
+    result = []
+    for entry in authors:
+        node = entry.get("node", {})
+        role = entry.get("role", "")
+        name_parts = [node.get("first_name", ""), node.get("last_name", "")]
+        name = " ".join(p for p in name_parts if p).strip()
+        if node.get("id") and name:
+            result.append({
+                "id": node["id"],
+                "name": name,
+                "role": role,
+                "image": None,
+            })
+    return result
 
 
 def get_score(response):

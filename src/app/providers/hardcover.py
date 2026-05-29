@@ -113,7 +113,14 @@ def book(media_id):
             pages
             release_date
             slug
-            cached_contributors(path: "[0]['author']['name']")
+            cached_contributors(path: "url")
+            contributions {
+              author {
+                id
+                name
+                slug
+              }
+            }
             book_series {
               position
               series {
@@ -190,16 +197,40 @@ def book(media_id):
                 "number_of_pages": book_data.get("pages"),
                 "publish_date": edition_details.get("release_date")
                 or book_data.get("release_date"),
-                "author": book_data.get("cached_contributors"),
+                "author": ", ".join(
+                    c["author"]["name"]
+                    for c in (book_data.get("contributions") or [])
+                    if c.get("author", {}).get("name")
+                ) or book_data.get("cached_contributors") or None,
                 "publisher": edition_details.get("publisher"),
                 "isbn": edition_details.get("isbn"),
             },
+            "authors": get_authors_structured(book_data),
             "hardcover_series": get_book_series(book_data.get("book_series")),
         }
 
         cache.set(cache_key, data)
 
     return data
+
+
+def get_authors_structured(book_data):
+    """Return structured author info with id, name from contributions."""
+    contributions = book_data.get("contributions") or []
+    seen = set()
+    result = []
+    for c in contributions:
+        author = c.get("author") or {}
+        aid = author.get("id")
+        name = author.get("name", "")
+        if aid and name and aid not in seen:
+            seen.add(aid)
+            result.append({
+                "id": str(aid),
+                "name": name,
+                "image": None,
+            })
+    return result or None
 
 
 def get_tags(tags_data):

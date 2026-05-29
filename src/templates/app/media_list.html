@@ -22,6 +22,71 @@
     </div>
   {% endif %}
 
+  {% if media_type == MediaTypes.MUSIC.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-indigo-600 text-white">
+        Albums
+      </a>
+      <a href="{% url 'music_artists' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-[#39404b] text-gray-300 hover:bg-[#454d5a]">
+        Artists
+      </a>
+    </div>
+  {% endif %}
+
+  {% if media_type == MediaTypes.GAME.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-indigo-600 text-white">
+        Games
+      </a>
+      <a href="{% url 'game_studios' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-[#39404b] text-gray-300 hover:bg-[#454d5a]">
+        Studios
+      </a>
+    </div>
+  {% endif %}
+
+  {% if media_type == MediaTypes.COMIC.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-indigo-600 text-white">
+        Comics
+      </a>
+      <a href="{% url 'comic_people' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-[#39404b] text-gray-300 hover:bg-[#454d5a]">
+        Creators
+      </a>
+    </div>
+  {% endif %}
+
+  {% if media_type == MediaTypes.MANGA.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-indigo-600 text-white">
+        Manga
+      </a>
+      <a href="{% url 'manga_authors' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-[#39404b] text-gray-300 hover:bg-[#454d5a]">
+        Authors
+      </a>
+    </div>
+  {% endif %}
+
+  {% if media_type == MediaTypes.BOOK.value %}
+    <div class="flex flex-wrap gap-2 mb-6">
+      <a href="{% url 'medialist' media_type %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-indigo-600 text-white">
+        Books
+      </a>
+      <a href="{% url 'book_authors' %}"
+         class="px-4 py-2 rounded-full transition-colors duration-200 bg-[#39404b] text-gray-300 hover:bg-[#454d5a]">
+        Authors
+      </a>
+    </div>
+  {% endif %}
+
   <div x-data="{ sort: '{{ current_sort }}', status: '{{ current_status }}', layout: '{{ current_layout }}', search: '{{ request.GET.search|default:'' }}', statusLabels: {
     {% for value, label in status_choices %}
       '{{ value }}': '{{ label }}'
