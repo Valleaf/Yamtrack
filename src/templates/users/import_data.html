@@ -396,7 +396,7 @@
         <div class="bg-[#39404b] p-4 rounded-lg">
           <div class="flex items-center mb-3">{% source_display "senscritique" %}</div>
           <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import from SensCritique CSV export' : 'File uploads are not available for periodic imports'">
+             x-text="importFrequency === 'once' ? 'Import from SensCritique CSV export : Not Fully Functional' : 'File uploads are not available for periodic imports'">
           </p>
           <form method="post"
                 action="{% url 'import_senscritique_csv' %}"

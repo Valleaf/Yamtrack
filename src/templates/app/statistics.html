@@ -14,7 +14,7 @@
   <div x-data="dateRangePicker()" x-init="init()" class="relative mb-8">
     <!-- Trigger Button -->
     <button @click="toggleDropdown()"
-            class="flex items-center gap-2 px-4 py-2.5 bg-[#2a2f35] hover:bg-[#343a40] rounded-lg transition-all duration-200 border border-gray-700 shadow-sm cursor-pointer">
+            class="flex items-center gap-2 px-4 py-2.5 bg-[#1e2329] ring-1 ring-white/10 shadow-2xl backdrop-blur-xl hover:bg-[#343a40] rounded-lg transition-all duration-200 border border-gray-700 shadow-sm cursor-pointer">
       {% include "app/icons/calendar.svg" with classes="w-5 h-5 text-indigo-400" %}
       <span class="font-medium" x-text="selectedRange"></span>
       <div class="w-4 h-4 ml-1 transition-transform duration-200"
@@ -26,7 +26,7 @@
          x-show="isOpen"
          x-transition
          @click.outside="isOpen = false"
-         class="absolute z-20 mt-2 w-[340px] bg-[#2a2f35] rounded-lg shadow-lg border border-gray-700 overflow-hidden transition-all duration-200 animate-in fade-in-50 slide-in-from-top-5">
+         class="absolute z-20 mt-2 w-[340px] bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md shadow-lg border border-gray-700 overflow-hidden transition-all duration-200 animate-in fade-in-50 slide-in-from-top-5">
 
       <!-- Tabs -->
       <div class="flex border-b border-gray-700">
@@ -44,7 +44,7 @@
         <div class="grid grid-cols-2 gap-2">
           <template x-for="range in predefinedRanges" :key="range.name">
             <button @click="selectPredefinedRange(range.name)"
-                    :class="{'bg-indigo-600 text-white': selectedRange === range.name, 'hover:bg-[#39404b] text-gray-200': selectedRange !== range.name}"
+                    :class="{'bg-indigo-600 text-white': selectedRange === range.name, 'hover:bg-[#2a2f35] ring-1 ring-white/5 text-gray-200': selectedRange !== range.name}"
                     class="flex items-center justify-between p-3 rounded-md text-left text-sm transition-all cursor-pointer">
               <span x-text="range.name"></span>
               <div x-show="selectedRange === range.name">{% include "app/icons/checkmark.svg" with classes="w-4 h-4" %}</div>
@@ -61,14 +61,14 @@
               <label class="block text-sm font-medium mb-2 text-gray-300">Start Date</label>
               <input x-model="startDate"
                      @change="updateDateRange()"
-                     class="w-full p-2.5 bg-[#39404b] rounded-md text-white border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm scheme-dark"
+                     class="w-full p-2.5 bg-[#2a2f35] ring-1 ring-white/5 rounded-md text-white border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm scheme-dark"
                      type="date">
             </div>
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-300">End Date</label>
               <input x-model="endDate"
                      @change="updateDateRange()"
-                     class="w-full p-2.5 bg-[#39404b] rounded-md text-white border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm scheme-dark"
+                     class="w-full p-2.5 bg-[#2a2f35] ring-1 ring-white/5 rounded-md text-white border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm scheme-dark"
                      type="date">
             </div>
           </div>
@@ -92,65 +92,65 @@
   <div class="space-y-8">
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="bg-[#2a2f35] rounded-lg p-6 flex items-center">
-        <div class="bg-indigo-600/20 p-4 rounded-full mr-4">
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
+        <div class="bg-indigo-500/15 ring-1 ring-indigo-400/20 p-4 rounded-full mr-4">
           {% include "app/icons/states/completed.svg" with classes="w-8 h-8 text-indigo-400" %}
         </div>
         <div>
           <h3 class="text-sm font-medium text-gray-400">Completed Items</h3>
           {% if media_count.total %}
-            <p class="text-2xl font-bold">
+            <p class="text-3xl font-bold tracking-tight text-white">
               {{ status_distribution.total_completed }} <span class="text-gray-500 text-lg">/ {{ media_count.total }}</span>
             </p>
           {% else %}
-            <p class="text-2xl font-bold text-gray-500">--</p>
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
           {% endif %}
         </div>
       </div>
-      <div class="bg-[#2a2f35] rounded-lg p-6 flex items-center">
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
         <div class="bg-yellow-600/20 p-4 rounded-full mr-4">
           {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-yellow-400" %}
         </div>
         <div>
           <h3 class="text-sm font-medium text-gray-400">Average Rating</h3>
           {% if score_distribution.total_scored %}
-            <p class="text-2xl font-bold">
+            <p class="text-3xl font-bold tracking-tight text-white">
               {{ score_distribution.average_score }} <span class="text-gray-500 text-lg">/ 10</span>
             </p>
           {% else %}
-            <p class="text-2xl font-bold text-gray-500">--</p>
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
           {% endif %}
         </div>
       </div>
-      <div class="bg-[#2a2f35] rounded-lg p-6 flex items-center">
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
         <div class="bg-emerald-600/20 p-4 rounded-full mr-4">
           {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-emerald-400" %}
         </div>
         <div>
           <h3 class="text-sm font-medium text-gray-400">Most Active Day</h3>
           {% if activity_data.stats.most_active_day %}
-            <p class="text-2xl font-bold">{{ activity_data.stats.most_active_day }}</p>
+            <p class="text-3xl font-bold tracking-tight text-white">{{ activity_data.stats.most_active_day }}</p>
             <p class="text-sm text-gray-500">{{ activity_data.stats.most_active_day_percentage }}% of activity</p>
           {% else %}
-            <p class="text-2xl font-bold text-gray-500">--</p>
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
           {% endif %}
         </div>
       </div>
-      <div class="bg-[#2a2f35] rounded-lg p-6 flex items-center">
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
         <div class="bg-red-600/20 p-4 rounded-full mr-4">
           {% include "app/icons/flame.svg" with classes="w-8 h-8 text-red-400" %}
         </div>
         <div>
           <h3 class="text-sm font-medium text-gray-400">Current Streak</h3>
           {% if activity_data.stats.most_active_day %}
-            <p class="text-2xl font-bold">
+            <p class="text-3xl font-bold tracking-tight text-white">
               {{ activity_data.stats.current_streak }} day{{ activity_data.stats.current_streak|pluralize }}
               <p class="text-sm text-gray-500">
                 Longest: {{ activity_data.stats.longest_streak }} day{{ activity_data.stats.longest_streak|pluralize }}
               </p>
             </p>
           {% else %}
-            <p class="text-2xl font-bold text-gray-500">--</p>
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
           {% endif %}
         </div>
       </div>
@@ -164,7 +164,7 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
-        <div class="bg-[#2a2f35] rounded-lg p-5">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Completion Rate</h3>
           {% if extended_statistics.summary.total_items %}
             <p class="mt-2 text-3xl font-bold">{{ extended_statistics.summary.completion_percentage }}%</p>
@@ -175,7 +175,7 @@
             <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
           {% endif %}
         </div>
-        <div class="bg-[#2a2f35] rounded-lg p-5">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Median Rating</h3>
           {% if extended_statistics.summary.median_score is not None %}
             <p class="mt-2 text-3xl font-bold">
@@ -186,7 +186,7 @@
             <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
           {% endif %}
         </div>
-        <div class="bg-[#2a2f35] rounded-lg p-5">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Rated Library</h3>
           {% if extended_statistics.summary.total_items %}
             <p class="mt-2 text-3xl font-bold">
@@ -199,7 +199,7 @@
             <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
           {% endif %}
         </div>
-        <div class="bg-[#2a2f35] rounded-lg p-5">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Highest Rating</h3>
           {% if extended_statistics.summary.highest_rated %}
             <p class="mt-2 text-3xl font-bold">
@@ -214,7 +214,7 @@
             <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
           {% endif %}
         </div>
-        <div class="bg-[#2a2f35] rounded-lg p-5">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Lowest Rating</h3>
           {% if extended_statistics.summary.lowest_rated %}
             <p class="mt-2 text-3xl font-bold">
@@ -232,12 +232,12 @@
       </div>
 
       <div class="grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] gap-6">
-        <div class="bg-[#2a2f35] rounded-lg p-6 overflow-x-auto">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
           <h3 class="text-lg font-semibold mb-4 text-white">By Media Type</h3>
           {% if extended_statistics.media_type_rows %}
             <table class="w-full text-sm">
-              <thead class="text-left text-gray-400 border-b border-gray-700">
-                <tr>
+              <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+                <tr class="hover:bg-white/[0.02] transition-colors">
                   <th class="pb-3 pr-4 font-medium">Type</th>
                   <th class="pb-3 px-4 text-right font-medium">Total</th>
                   <th class="pb-3 px-4 text-right font-medium">Completed</th>
@@ -246,9 +246,9 @@
                   <th class="pb-3 pl-4 font-medium">Top Rated</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-800">
+              <tbody class="divide-y divide-white/5">
                 {% for row in extended_statistics.media_type_rows %}
-                  <tr>
+                  <tr class="hover:bg-white/[0.02] transition-colors">
                     <td class="py-3 pr-4 font-medium text-white">{{ row.label }}</td>
                     <td class="py-3 px-4 text-right text-gray-300">{{ row.total }}</td>
                     <td class="py-3 px-4 text-right text-gray-300">{{ row.completed }} <span class="text-gray-500">({{ row.completion_percentage }}%)</span></td>
@@ -273,12 +273,12 @@
           {% endif %}
         </div>
 
-        <div class="bg-[#2a2f35] rounded-lg p-6">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
           <h3 class="text-lg font-semibold mb-4 text-white">Rating Breakdown</h3>
           {% if extended_statistics.summary.scored_items %}
             <div class="mb-5 grid grid-cols-2 gap-3">
               {% for band in extended_statistics.rating_bands %}
-                <div class="rounded-md bg-[#39404b] p-3">
+                <div class="rounded-md bg-[#2a2f35] ring-1 ring-white/5 p-3">
                   <div class="flex items-center justify-between gap-2">
                     <span class="text-sm font-medium text-white">{{ band.label }}</span>
                     <span class="text-xs text-gray-400">{{ band.range }}</span>
@@ -294,8 +294,8 @@
               {% for bucket in extended_statistics.score_buckets %}
                 <div class="grid grid-cols-[2.5rem_1fr_3rem] items-center gap-3 text-sm">
                   <div class="text-right font-medium text-gray-300">{{ bucket.score }}</div>
-                  <div class="h-2 overflow-hidden rounded-full bg-[#39404b]">
-                    <div class="h-full rounded-full bg-yellow-400"
+                  <div class="h-2 overflow-hidden rounded-full bg-[#2a2f35] ring-1 ring-white/5">
+                    <div class="h-full rounded-full bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.4)]"
                          style="width: {{ bucket.percentage }}%"></div>
                   </div>
                   <div class="text-right text-gray-400">{{ bucket.count }}</div>
@@ -308,12 +308,12 @@
         </div>
       </div>
 
-      <div class="bg-[#2a2f35] rounded-lg p-6 overflow-x-auto">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
         <h3 class="text-lg font-semibold mb-4 text-white">By Source</h3>
         {% if extended_statistics.source_rows %}
           <table class="w-full text-sm">
-            <thead class="text-left text-gray-400 border-b border-gray-700">
-              <tr>
+            <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+              <tr class="hover:bg-white/[0.02] transition-colors">
                 <th class="pb-3 pr-4 font-medium">Source</th>
                 <th class="pb-3 px-4 text-right font-medium">Items</th>
                 <th class="pb-3 px-4 text-right font-medium">Library Share</th>
@@ -321,9 +321,9 @@
                 <th class="pb-3 pl-4 text-right font-medium">Average</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800">
+            <tbody class="divide-y divide-white/5">
               {% for row in extended_statistics.source_rows %}
-                <tr>
+                <tr class="hover:bg-white/[0.02] transition-colors">
                   <td class="py-3 pr-4 font-medium text-white">{{ row.source }}</td>
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.count }}</td>
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.percentage }}%</td>
@@ -340,20 +340,20 @@
         {% endif %}
       </div>
 
-      <div class="bg-[#2a2f35] rounded-lg p-6 overflow-x-auto">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
         <h3 class="text-lg font-semibold mb-4 text-white">By Year</h3>
         {% if extended_statistics.year_rows %}
           <table class="w-full text-sm">
-            <thead class="text-left text-gray-400 border-b border-gray-700">
-              <tr>
+            <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+              <tr class="hover:bg-white/[0.02] transition-colors">
                 <th class="pb-3 pr-4 font-medium">Year</th>
                 <th class="pb-3 px-4 text-right font-medium">Started</th>
                 <th class="pb-3 pl-4 text-right font-medium">Completed</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800">
+            <tbody class="divide-y divide-white/5">
               {% for row in extended_statistics.year_rows %}
-                <tr>
+                <tr class="hover:bg-white/[0.02] transition-colors">
                   <td class="py-3 pr-4 font-medium text-white">{{ row.year }}</td>
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.started }}</td>
                   <td class="py-3 pl-4 text-right text-gray-300">{{ row.completed }}</td>
@@ -368,7 +368,7 @@
     </div>
 
     <!-- Activity History Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6 max-w-[calc(100svw-4rem)]">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
       <h2 class="text-xl font-semibold mb-4 text-center">Activity History</h2>
       <div class="overflow-x-auto flex flex-col justify-center"
            x-data="{ graphTooWide: false }"
@@ -402,7 +402,7 @@
               {% for week in activity_data.calendar_weeks %}
                 <div class="flex flex-col gap-1">
                   {% for day in week %}
-                    <div class="w-4 h-4 rounded-sm transition-colors duration-200 hover:ring-2 hover:ring-white {% if day.level == 0 %}bg-[#2f353e]{% elif day.level == 1 %}bg-indigo-700{% elif day.level == 2 %}bg-indigo-600{% elif day.level == 3 %}bg-indigo-500{% elif day.level == 4 %}bg-indigo-400{% endif %}"
+                    <div class="w-4 h-4 rounded-sm transition-colors duration-200 hover:scale-125 hover:ring-2 hover:ring-white/40 transition-all duration-150 {% if day.level == 0 %}bg-[#2f353e]{% elif day.level == 1 %}bg-indigo-700{% elif day.level == 2 %}bg-indigo-600{% elif day.level == 3 %}bg-indigo-500{% elif day.level == 4 %}bg-indigo-400{% endif %}"
                          title="{{ day.date }}: {{ day.count }} activit{{ day.count|pluralize:"y,ies" }}"></div>
                   {% endfor %}
                 </div>
@@ -427,7 +427,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Media Type Distribution Section -->
-      <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Media Type Distribution</h2>
 
         {% if media_type_distribution.labels %}
@@ -436,7 +436,7 @@
           </div>
         {% else %}
           <div class="flex flex-col items-center justify-center py-16">
-            <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               {% include "app/icons/piechart.svg" with classes="w-8 h-8 text-gray-400" %}
             </div>
             <h3 class="text-lg font-medium mb-2">No media types to display</h3>
@@ -446,7 +446,7 @@
       </div>
 
       <!-- Status Distribution Section -->
-      <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Status Distribution</h2>
 
         {% if status_pie_chart_data.labels %}
@@ -455,7 +455,7 @@
           </div>
         {% else %}
           <div class="flex flex-col items-center justify-center py-16">
-            <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
             </div>
             <h3 class="text-lg font-medium mb-2">No status data to display</h3>
@@ -465,7 +465,7 @@
       </div>
 
       <!-- Status Distribution by Media Type Section -->
-      <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Status Distribution by Media Type</h2>
 
         {% if media_type_distribution.labels %}
@@ -474,7 +474,7 @@
           </div>
         {% else %}
           <div class="flex flex-col items-center justify-center py-16">
-            <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               {% include "app/icons/bars-pyramid.svg" with classes="w-8 h-8 text-gray-400" %}
             </div>
             <h3 class="text-lg font-medium mb-2">No data available</h3>
@@ -486,7 +486,7 @@
       </div>
 
       <!-- Score Distribution by Media Type Section -->
-      <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Score Distribution by Media Type</h2>
 
         {% if score_distribution.total_scored %}
@@ -495,7 +495,7 @@
           </div>
         {% else %}
           <div class="flex flex-col items-center justify-center py-16">
-            <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
             </div>
             <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
@@ -506,7 +506,7 @@
     </div>
 
     <!-- Progress Distribution Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4">Completion Progress</h2>
       
       {% if progress_distribution %}
@@ -518,7 +518,7 @@
                   <span class="text-gray-300">{{ progress_label }}</span>
                   <span class="text-gray-400">{{ count }} item{{ count|pluralize }}</span>
                 </div>
-                <div class="h-2 bg-[#39404b] rounded-full overflow-hidden">
+                <div class="h-2 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden">
                   {% if progress_label == "Not Started" %}
                     <div class="h-full bg-gray-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
                   {% elif progress_label == "1-25%" %}
@@ -539,7 +539,7 @@
         </div>
       {% else %}
         <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
           </div>
           <h3 class="text-lg font-medium mb-2">No progress data</h3>
@@ -549,7 +549,7 @@
     </div>
 
     <!-- World Map by Media Type Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Media by Country</h2>
         <p class="text-sm text-gray-400">Distribution of media by production country</p>
@@ -561,7 +561,7 @@
           {% for media_type, countries in country_distribution.items %}
             <button data-media-type-btn="{{ media_type }}"
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400"
-                    :class="{'bg-indigo-600/20 text-indigo-400 border-indigo-500': active_media_type === '{{ media_type }}'}">
+                    :class="{'bg-indigo-500/15 ring-1 ring-indigo-400/20 text-indigo-400 border-indigo-500': active_media_type === '{{ media_type }}'}">
               {{ media_type|upper }}
             </button>
           {% endfor %}
@@ -581,7 +581,7 @@
         </div>
       {% else %}
         <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0l6-3m-6 3v13m6-13l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.553.894L15 13"></path>
             </svg>
@@ -593,7 +593,7 @@
     </div>
 
     <!-- Top Rated Media Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
 
       {% if top_rated %}
@@ -604,7 +604,7 @@
         </div>
       {% else %}
         <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
           </div>
           <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
@@ -614,7 +614,7 @@
     </div>
 
     <!-- Source Distribution Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6 overflow-x-auto">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
       <h2 class="text-xl font-semibold mb-4">Media by Source</h2>
       
       {% if country_distribution %}
@@ -627,7 +627,7 @@
                   {% for source, count in sources.items %}
                     <div class="flex items-center justify-between text-xs">
                       <span class="text-gray-300">{{ source }}</span>
-                      <span class="bg-[#39404b] px-2 py-1 rounded text-gray-400">{{ count }}</span>
+                      <span class="bg-[#2a2f35] ring-1 ring-white/5 px-2 py-1 rounded text-gray-400">{{ count }}</span>
                     </div>
                   {% endfor %}
                 </div>
@@ -637,7 +637,7 @@
         </div>
       {% else %}
         <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
           </div>
           <h3 class="text-lg font-medium mb-2">No source data</h3>
@@ -647,7 +647,7 @@
     </div>
 
     <!-- Media Timeline Section -->
-    <div class="bg-[#2a2f35] rounded-lg p-6 max-w-[calc(100svw-4rem)]">
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
       <h2 class="text-xl font-semibold mb-6 md:mb-10">Media Timeline</h2>
 
       {% if timeline %}
@@ -682,7 +682,7 @@
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 md:w-[calc(50%-2rem)] lg:w-[calc(50%-1rem)] {% if forloop.counter|divisibleby:2 %}md:mr-auto md:ml-0{% else %}md:ml-auto md:mr-0{% endif %}">
                   {% for media in media_list %}
-                    <div class="bg-[#39404b] p-4 rounded-lg hover:ring-2 hover:ring-indigo-500 transition-all duration-200">
+                    <div class="bg-[#2a2f35] ring-1 ring-white/5 p-4 rounded-lg hover:ring-2 hover:ring-indigo-500 transition-all duration-200">
                       <div class="flex items-start gap-4">
                         <div class="shrink-0 order-0">
                           <a href="{{ media.item|media_url }}">
@@ -721,7 +721,7 @@
         </div>
       {% else %}
         <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             {% include "app/icons/clock.svg" with classes="w-8 h-8 text-gray-400" %}
           </div>
           <h3 class="text-lg font-medium mb-2">Your timeline is empty</h3>
