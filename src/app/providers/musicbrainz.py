@@ -5,6 +5,7 @@ API docs: https://musicbrainz.org/doc/MusicBrainz_API
 """
 
 import logging
+import time
 
 import requests
 from django.core.cache import cache
@@ -39,17 +40,26 @@ TYPE_FILTERS = {
 }
 
 
-def _get(endpoint: str, params: dict) -> dict:
+def _get(endpoint: str, params: dict, retries: int = 2) -> dict:
     from app.providers.services import ProviderAPIError  # noqa: PLC0415
     params["fmt"] = "json"
-    try:
-        resp = _MB_SESSION.get(f"{MB_BASE}/{endpoint}", params=params, timeout=15)
-        resp.raise_for_status()
-        return resp.json()
-    except requests.exceptions.Timeout as error:
-        raise ProviderAPIError(Sources.MUSICBRAINZ.value, error, "Request timed out") from None
-    except requests.exceptions.RequestException as error:
-        raise ProviderAPIError(Sources.MUSICBRAINZ.value, error) from None
+    last_error = None
+    for attempt in range(retries + 1):
+        try:
+            resp = _MB_SESSION.get(f"{MB_BASE}/{endpoint}", params=params, timeout=30)
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.Timeout as error:
+            last_error = error
+            logger.warning(
+                "MusicBrainz timeout on %s (attempt %d/%d)",
+                endpoint, attempt + 1, retries + 1,
+            )
+            if attempt < retries:
+                time.sleep(2 ** attempt)  # 1s, 2s backoff
+        except requests.exceptions.RequestException as error:
+            raise ProviderAPIError(Sources.MUSICBRAINZ.value, error) from None
+    raise ProviderAPIError(Sources.MUSICBRAINZ.value, last_error, "Request timed out after retries") from None
 
 
 def _cover_url(mb_id: str) -> str:
@@ -229,6 +239,10 @@ def album(mb_id: str) -> dict:
 
 def _get_tracklist(rg_id: str) -> list[dict]:
     """Fetch tracklist from the first official release of a release group."""
+    cache_key = f"musicbrainz_tracklist_{rg_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
     try:
         # Get releases in this release group
         rg_data = _get(f"release", {
@@ -238,6 +252,7 @@ def _get_tracklist(rg_id: str) -> list[dict]:
         })
         releases = rg_data.get("releases", [])
         if not releases:
+            cache.set(cache_key, [], 3600)
             return []
 
         release_id = releases[0]["id"]
@@ -259,10 +274,11 @@ def _get_tracklist(rg_id: str) -> list[dict]:
                     "title": track.get("title") or recording.get("title", ""),
                     "duration": duration,
                 })
+        cache.set(cache_key, tracks, 3600)
         return tracks
 
     except Exception as e:
-        logger.debug("MusicBrainz tracklist error for %s: %s", rg_id, e)
+        logger.warning("MusicBrainz tracklist error for %s: %s", rg_id, e)
         return []
 
 

@@ -49,6 +49,7 @@ class Sources(models.TextChoices):
     MANUAL = "manual", "Manual"
     SENSCRITIQUE = "senscritique", "SensCritique"
     MUSICBRAINZ = "musicbrainz", "MusicBrainz"
+    BNF = "bnf", "Bibliothèque nationale de France"
 
 
 class MediaTypes(models.TextChoices):

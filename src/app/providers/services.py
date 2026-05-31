@@ -12,6 +12,7 @@ from requests_ratelimiter import LimiterAdapter, LimiterSession
 from app.models import MediaTypes, Sources
 from app.providers import (
     bgg,
+    bnf,
     comicvine,
     hardcover,
     igdb,
@@ -247,7 +248,11 @@ def get_media_metadata(
             if source == Sources.HARDCOVER.value
             else openlibrary.book(media_id)
         ),
-        MediaTypes.COMIC.value: lambda: comicvine.comic(media_id),
+        MediaTypes.COMIC.value: lambda: (
+            bnf.comic(media_id)
+            if source == Sources.BNF.value
+            else comicvine.comic(media_id)
+        ),
         MediaTypes.BOARDGAME.value: lambda: bgg.boardgame(media_id),
         MediaTypes.MUSIC.value: lambda: musicbrainz.album(media_id),
     }
@@ -273,7 +278,11 @@ def search(media_type, query, page, source=None):
             if source == Sources.OPENLIBRARY.value
             else hardcover.search(query, page)
         ),
-        MediaTypes.COMIC.value: lambda: comicvine.search(query, page),
+        MediaTypes.COMIC.value: lambda: (
+            bnf.search(query, page)
+            if source == Sources.BNF.value
+            else comicvine.search(query, page)
+        ),
         MediaTypes.BOARDGAME.value: lambda: bgg.search(query, page),
         MediaTypes.MUSIC.value: lambda: musicbrainz.search_music(query, page, source or ""),
     }

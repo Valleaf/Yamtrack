@@ -396,13 +396,51 @@
         <div class="bg-[#39404b] p-4 rounded-lg">
           <div class="flex items-center mb-3">{% source_display "senscritique" %}</div>
           <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import from SensCritique CSV export : Not Fully Functional' : 'File uploads are not available for periodic imports'">
+             x-text="importFrequency === 'once' ? 'Import from SensCritique CSV export' : 'File uploads are not available for periodic imports'">
           </p>
           <form method="post"
                 action="{% url 'import_senscritique_csv' %}"
                 enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="mode" x-model="importMode">
+
+            {# Media-type filter — shown only when a one-time import is active #}
+            <div x-show="importFrequency === 'once'" class="mb-3">
+              <p class="text-xs text-gray-400 mb-2">Select categories to import:</p>
+              <div class="grid grid-cols-2 gap-y-1.5 gap-x-3 text-sm">
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="movie" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  Movies
+                </label>
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="tv show" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  TV Shows
+                </label>
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="book" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  Books
+                </label>
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="game" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  Games
+                </label>
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="music album" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  Music
+                </label>
+                <label class="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
+                  <input type="checkbox" name="sc_types" value="comic book" checked
+                         class="rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                  Comics &amp; Manga
+                </label>
+              </div>
+            </div>
+
             <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
                    :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'">
               <input name="sc_csv" accept=".csv" class="hidden" type="file"

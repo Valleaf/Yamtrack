@@ -157,24 +157,54 @@ def import_goodreads(file, user_id, mode):
 
 
 @shared_task(name="Import from SensCritique")
-def import_senscritique(file, user_id, mode):
-    """Celery task for importing media data from SensCritique CSV export."""
-    result = import_media(senscritique.importer, file, user_id, mode)
-    # If there are pending items for review, append a notice
+def import_senscritique(file, user_id, mode, allowed_sc_types=None):
+    """Celery task for importing media data from SensCritique CSV export.
+
+    ``allowed_sc_types`` is an optional list of raw SC type strings
+    (e.g. ["movie", "tv show"]).  None means import all types.
+    """
+    result = import_media(
+        senscritique.importer,
+        file,
+        user_id,
+        mode,
+        allowed_sc_types=allowed_sc_types,
+    )
+    # If there are pending items for review, create a UserMessage with a clickable link
     from integrations.imports.senscritique import get_pending_review
     pending = get_pending_review(user_id)
     if pending:
-        review_url = f"/integrations/import/senscritique/review/?mode={mode}"
-        result = (
-            result or ""
-        ) + f"\n\n{len(pending)} items need your review — visit the review page to approve or reject them."
+        from django.urls import reverse
+        from django.utils.safestring import mark_safe
+        from app.models import UserMessage, UserMessageLevel
+        review_url = reverse("senscritique_review") + f"?mode={mode}"
+        UserMessage.objects.create(
+            user_id=user_id,
+            level=UserMessageLevel.INFO,
+            message=mark_safe(
+                f'{len(pending)} SensCritique items need your review — '
+                f'<a href="{review_url}" class="underline text-indigo-300 hover:text-indigo-200">'
+                f'visit the review page</a> to approve or reject them.'
+            ),
+        )
     return result
 
 
 @shared_task(name="Confirm SensCritique review")
-def confirm_senscritique(user_id, confirmed_indices, mode):
+def confirm_senscritique(
+    user_id,
+    confirmed_indices,
+    mode,
+    candidate_overrides=None,
+    manual_overrides=None,
+):
     """Celery task for importing user-confirmed SensCritique items."""
     from integrations.imports.senscritique import confirm_pending_items
-    from django.contrib.auth import get_user_model
-    imported_counts, warnings = confirm_pending_items(user_id, confirmed_indices, mode)
+    imported_counts, warnings = confirm_pending_items(
+        user_id,
+        confirmed_indices,
+        mode,
+        candidate_overrides=candidate_overrides,
+        manual_overrides=manual_overrides,
+    )
     return format_import_message(imported_counts, warnings)

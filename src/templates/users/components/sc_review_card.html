@@ -1,0 +1,269 @@
+{#
+  sc_review_card.html — included by senscritique_review.html
+
+  Context variables:
+    item  – enriched pending-review dict (includes _idx, _cands_id, candidates_json)
+    tier  – "medium" | "low" | "none"
+
+  Features:
+    • Candidate picker  – click to swap which API match to import
+    • Manual re-search  – AJAX query to /import/senscritique/search/
+    • Hidden inputs     – candidate_idx_{_idx} / manual_* track the user's choice
+#}
+
+{# ── Safe JSON data blob for Alpine initialisation ─────────────────────────── #}
+<script id="{{ item._cands_id }}" type="application/json">{{ item.candidates_json|safe }}</script>
+
+{# ── Alpine component ─────────────────────────────────────────────────────── #}
+<div class="flex gap-3 flex-1 min-w-0"
+     data-search-url="{% url 'senscritique_search' %}"
+     data-media-type="{{ item.media_type }}"
+     data-source="{{ item.source }}"
+     data-original-title="{{ item.sc_original_title|default:item.sc_title }}"
+     x-data="{
+       candidates: [],
+       selectedIdx: 0,
+       manualSelection: null,
+       showCandidates: false,
+       showSearch: false,
+       searchQuery: '',
+       searchResults: [],
+       searching: false,
+       searchError: false,
+
+       init() {
+         const el = document.getElementById('{{ item._cands_id }}');
+         try { this.candidates = el ? JSON.parse(el.textContent) : []; } catch(e) { this.candidates = []; }
+         this.searchQuery = this.$el.dataset.originalTitle || '';
+       },
+
+       get current() {
+         if (this.manualSelection) return this.manualSelection;
+         return this.candidates[this.selectedIdx] || {};
+       },
+
+       async doSearch() {
+         this.searching = true;
+         this.searchError = false;
+         this.searchResults = [];
+         try {
+           const base   = this.$el.dataset.searchUrl;
+           const mt     = this.$el.dataset.mediaType;
+           const source = this.$el.dataset.source;
+           const url    = base
+             + '?media_type=' + encodeURIComponent(mt)
+             + '&q='          + encodeURIComponent(this.searchQuery)
+             + '&source='     + encodeURIComponent(source);
+           const resp = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+           if (!resp.ok) throw new Error();
+           const data = await resp.json();
+           this.searchResults = data.candidates || [];
+         } catch(e) { this.searchError = true; }
+         this.searching = false;
+       },
+
+       selectCandidate(idx) {
+         this.selectedIdx = idx;
+         this.manualSelection = null;
+         this.showCandidates = false;
+       },
+
+       selectManualResult(cand) {
+         this.manualSelection = cand;
+         this.showSearch = false;
+         this.searchResults = [];
+         {# Enable the checkbox so the user can immediately confirm #}
+         const wrap = this.$el.closest('[x-data]');
+         if (wrap && wrap.__x) {
+           const outerData = wrap._x_dataStack && wrap._x_dataStack[0];
+           if (outerData && 'checked' in outerData) outerData.checked = true;
+         }
+       }
+     }">
+
+  {# ── Hidden form inputs (submitted with the Confirm form) ───────────────── #}
+  {# candidate_idx: which item from the original candidates list was chosen    #}
+  <input type="hidden"
+         name="candidate_idx_{{ item._idx }}"
+         :value="manualSelection ? -1 : selectedIdx">
+  {# manual_*: set only when the user picked a result from the re-search box   #}
+  <input type="hidden" name="manual_media_id_{{ item._idx }}"
+         :value="manualSelection ? (manualSelection.media_id || '') : ''">
+  <input type="hidden" name="manual_source_{{ item._idx }}"
+         :value="manualSelection ? (manualSelection.source || '') : ''">
+  <input type="hidden" name="manual_title_{{ item._idx }}"
+         :value="manualSelection ? (manualSelection.title || '') : ''">
+
+  {# ── Poster ─────────────────────────────────────────────────────────────── #}
+  <div class="flex-shrink-0 w-14 h-20 bg-[#39404b] rounded overflow-hidden">
+    <template x-if="current.image">
+      <img :src="current.image" :alt="current.title" class="w-full h-full object-cover">
+    </template>
+    <template x-if="!current.image">
+      <div class="w-full h-full flex items-center justify-center text-gray-600 text-xs text-center p-1 leading-tight">
+        {% if item.candidate_image %}
+          {# SSR fallback before Alpine boots #}
+          <img src="{{ item.candidate_image }}" alt="{{ item.candidate_title }}"
+               class="w-full h-full object-cover">
+        {% else %}
+          No image
+        {% endif %}
+      </div>
+    </template>
+  </div>
+
+  {# ── Card body ───────────────────────────────────────────────────────────── #}
+  <div class="flex-1 min-w-0 space-y-1.5">
+
+    {# Title row + confidence badge #}
+    <div class="flex flex-wrap items-start justify-between gap-2">
+      <div class="min-w-0">
+        <template x-if="current.title">
+          <p class="text-white font-medium leading-tight truncate" x-text="current.title"></p>
+        </template>
+        <template x-if="!current.title">
+          <p class="text-gray-500 italic text-sm">No match — use Search below</p>
+        </template>
+        <p class="text-gray-400 text-xs" x-show="current.year" x-text="current.year"></p>
+      </div>
+
+      {# Confidence badge — colour tracks the currently selected candidate #}
+      {% if tier == "none" %}
+        <span class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium text-gray-500 bg-gray-500/10">
+          no match
+        </span>
+      {% else %}
+        <span class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium"
+              :class="(current.confidence || 0) >= 0.50
+                        ? 'text-yellow-400 bg-yellow-400/10'
+                        : 'text-red-400 bg-red-400/10'"
+              x-text="((current.confidence || 0)).toFixed(2)">
+          {{ item.confidence|floatformat:2 }}
+        </span>
+      {% endif %}
+    </div>
+
+    {# SC source info #}
+    <div class="text-xs text-gray-500 space-y-0.5">
+      <div>
+        <span class="text-gray-400">SC:</span>
+        {{ item.sc_title }}{% if item.sc_year %} ({{ item.sc_year }}){% endif %}
+      </div>
+      <div class="flex flex-wrap gap-x-3">
+        <span><span class="text-gray-400">Type:</span> {{ item.media_type }}</span>
+        <span><span class="text-gray-400">Status:</span> {{ item.status }}</span>
+        {% if item.score %}<span><span class="text-gray-400">Score:</span> {{ item.score }}</span>{% endif %}
+      </div>
+    </div>
+
+    {# ── Candidate picker ──────────────────────────────────────────────────── #}
+    <template x-if="candidates.length > 1">
+      <div>
+        <button type="button"
+                @click="showCandidates = !showCandidates; showSearch = false"
+                class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
+                x-text="showCandidates
+                         ? 'Hide alternatives'
+                         : (candidates.length - 1) + ' alternative' + (candidates.length > 2 ? 's' : '')">
+        </button>
+
+        <div x-show="showCandidates" x-cloak class="mt-2 space-y-1">
+          <template x-for="(cand, idx) in candidates" :key="idx">
+            <button type="button"
+                    @click="selectCandidate(idx)"
+                    class="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded text-xs transition-colors"
+                    :class="!manualSelection && selectedIdx === idx
+                              ? 'bg-indigo-600/20 ring-1 ring-indigo-500'
+                              : 'bg-[#39404b] hover:bg-[#454e5c]'">
+              <img x-show="cand.image" :src="cand.image" :alt="cand.title"
+                   class="w-7 h-10 object-cover rounded flex-shrink-0">
+              <div class="min-w-0 flex-1 text-left">
+                <p class="text-white truncate" x-text="cand.title"></p>
+                <p class="text-gray-400" x-text="cand.year"></p>
+              </div>
+              <span class="flex-shrink-0 px-1.5 py-0.5 rounded text-xs"
+                    :class="(cand.confidence || 0) >= 0.50
+                              ? 'text-yellow-400 bg-yellow-400/10'
+                              : 'text-red-400 bg-red-400/10'"
+                    x-text="(cand.confidence || 0).toFixed(2)"></span>
+            </button>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    {# ── Manual re-search ─────────────────────────────────────────────────── #}
+    <div>
+      <button type="button"
+              @click="showSearch = !showSearch; showCandidates = false"
+              class="text-xs text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
+              x-text="showSearch ? 'Cancel' : 'Search manually'">
+      </button>
+
+      <div x-show="showSearch" x-cloak class="mt-2 space-y-2">
+
+        {# Search input row #}
+        <div class="flex gap-2">
+          <input x-model="searchQuery"
+                 @keydown.enter.prevent="doSearch()"
+                 type="text"
+                 placeholder="Search term…"
+                 class="flex-1 py-1 px-2 text-xs bg-[#39404b] border border-gray-600 rounded text-white focus:border-indigo-500 focus:outline-none min-w-0">
+          <button type="button"
+                  @click="doSearch()"
+                  :disabled="searching || searchQuery.trim() === ''"
+                  class="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded cursor-pointer transition-colors flex-shrink-0">
+            <span x-show="!searching">Search</span>
+            <span x-show="searching" x-cloak>…</span>
+          </button>
+        </div>
+
+        {# Error #}
+        <p x-show="searchError" x-cloak class="text-xs text-red-400">
+          Search failed — check your connection and try again.
+        </p>
+
+        {# Empty state (only after a completed search) #}
+        <p x-show="!searching && !searchError && searchResults.length === 0 && searchQuery.trim() !== ''"
+           x-cloak
+           class="text-xs text-gray-500 italic">
+          No results found.
+        </p>
+
+        {# Results #}
+        <div x-show="searchResults.length > 0" x-cloak class="space-y-1">
+          <template x-for="(cand, idx) in searchResults" :key="idx">
+            <button type="button"
+                    @click="selectManualResult(cand)"
+                    class="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded text-xs transition-colors"
+                    :class="manualSelection && manualSelection.media_id === cand.media_id
+                              ? 'bg-indigo-600/20 ring-1 ring-indigo-500'
+                              : 'bg-[#39404b] hover:bg-[#454e5c]'">
+              <img x-show="cand.image" :src="cand.image" :alt="cand.title"
+                   class="w-7 h-10 object-cover rounded flex-shrink-0">
+              <div class="min-w-0 flex-1 text-left">
+                <p class="text-white truncate" x-text="cand.title"></p>
+                <p class="text-gray-400" x-text="cand.year"></p>
+              </div>
+              <span class="flex-shrink-0 px-1.5 py-0.5 rounded text-xs"
+                    :class="(cand.confidence || 0) >= 0.50
+                              ? 'text-yellow-400 bg-yellow-400/10'
+                              : 'text-red-400 bg-red-400/10'"
+                    x-text="(cand.confidence || 0).toFixed(2)"></span>
+            </button>
+          </template>
+        </div>
+
+        {# Manual selection active indicator #}
+        <p x-show="manualSelection" x-cloak class="text-xs text-indigo-300">
+          ✓ Using manual selection: <span x-text="manualSelection ? manualSelection.title : ''"></span>
+          <button type="button"
+                  @click="manualSelection = null"
+                  class="ml-1 text-gray-400 hover:text-white cursor-pointer">&times; clear</button>
+        </p>
+
+      </div>
+    </div>
+
+  </div>{# /card body #}
+</div>{# /Alpine component #}

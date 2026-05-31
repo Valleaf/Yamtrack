@@ -571,34 +571,182 @@ def emby_webhook(request, token):
 @require_GET
 def senscritique_review(request):
     """Show uncertain SC matches for user validation before import."""
+    import json
     pending = sc_import.get_pending_review(request.user.id)
     if not pending:
         messages.info(request, "No pending SensCritique items to review.")
         return redirect("import_data")
+
+    # Build a global-index map before any filtering (id() works because list
+    # items are the same Python dict objects in both lists).
+    global_idx_map = {id(item): i for i, item in enumerate(pending)}
+
+    # Media-type filter
+    all_types = sorted({item["media_type"] for item in pending})
+    media_type_filter = request.GET.get("type", "")
+    if media_type_filter not in all_types:
+        media_type_filter = ""
+
+    filtered = (
+        [item for item in pending if item["media_type"] == media_type_filter]
+        if media_type_filter
+        else pending
+    )
+
+    # Pagination over the (possibly filtered) list
+    page_size = 50
+    try:
+        page_num = max(1, int(request.GET.get("page", 1)))
+    except (ValueError, TypeError):
+        page_num = 1
+
+    total = len(filtered)
+    total_pages = max(1, (total + page_size - 1) // page_size)
+    page_num = min(page_num, total_pages)
+    start = (page_num - 1) * page_size
+    page_items = filtered[start: start + page_size]
+
+    # Enrich each page item with its global index and a safe JSON blob for
+    # Alpine.js candidate-picker initialisation.
+    pending_with_idx = [
+        {
+            **item,
+            "_idx": global_idx_map[id(item)],
+            "_cands_id": f"sc-cands-{global_idx_map[id(item)]}",
+            # Safe JSON for <script type="application/json"> embedding:
+            # escape <, >, & so the script tag can never be injected.
+            "candidates_json": (
+                json.dumps(item.get("candidates", []), ensure_ascii=False)
+                .replace("&", "\\u0026")
+                .replace("<", "\\u003c")
+                .replace(">", "\\u003e")
+            ),
+        }
+        for item in page_items
+    ]
+
+    # TTL notice
+    ttl_seconds = sc_import.get_pending_review_ttl(request.user.id)
+    ttl_days = max(1, ttl_seconds // 86400) if ttl_seconds and ttl_seconds > 0 else None
+
     return render(request, "users/senscritique_review.html", {
-        "pending": list(enumerate(pending)),
+        "pending": pending_with_idx,
         "pending_count": len(pending),
+        "filtered_count": total,
+        "page_num": page_num,
+        "total_pages": total_pages,
+        "has_prev": page_num > 1,
+        "has_next": page_num < total_pages,
         "mode": request.GET.get("mode", "new"),
+        "all_types": all_types,
+        "media_type_filter": media_type_filter,
+        "ttl_days": ttl_days,
     })
 
 
 @require_POST
 def senscritique_confirm(request):
     """Process the user's review choices and import approved matches."""
-    confirmed_indices = [
-        int(i) for i in request.POST.getlist("confirmed")
-    ]
+    confirmed_indices = [int(i) for i in request.POST.getlist("confirmed")]
     mode = request.POST.get("mode", "new")
-    tasks.confirm_senscritique.delay(
-        user_id=request.user.id,
-        confirmed_indices=confirmed_indices,
-        mode=mode,
-    )
-    messages.info(
-        request,
-        f"Importing {len(confirmed_indices)} confirmed SensCritique items…",
-    )
-    return redirect("import_data")
+    next_page = request.POST.get("next_page") or "/"
+
+    # Candidate-picker overrides: candidate_idx_{item_idx} -> int
+    candidate_overrides: dict[int, int] = {}
+    for key, val in request.POST.items():
+        if key.startswith("candidate_idx_"):
+            try:
+                item_idx = int(key[len("candidate_idx_"):])
+                candidate_overrides[item_idx] = int(val)
+            except (ValueError, TypeError):
+                pass
+
+    # Manual re-search overrides: manual_media_id_{item_idx} etc.
+    manual_overrides: dict[int, dict] = {}
+    for key, val in request.POST.items():
+        if not val:
+            continue
+        if key.startswith("manual_media_id_"):
+            try:
+                idx = int(key[len("manual_media_id_"):])
+                manual_overrides.setdefault(idx, {})["media_id"] = val
+            except (ValueError, TypeError):
+                pass
+        elif key.startswith("manual_source_"):
+            try:
+                idx = int(key[len("manual_source_"):])
+                manual_overrides.setdefault(idx, {})["source"] = val
+            except (ValueError, TypeError):
+                pass
+        elif key.startswith("manual_title_"):
+            try:
+                idx = int(key[len("manual_title_"):])
+                manual_overrides.setdefault(idx, {})["title"] = val
+            except (ValueError, TypeError):
+                pass
+
+    if confirmed_indices:
+        tasks.confirm_senscritique.delay(
+            user_id=request.user.id,
+            confirmed_indices=confirmed_indices,
+            mode=mode,
+            candidate_overrides=candidate_overrides or None,
+            manual_overrides=manual_overrides or None,
+        )
+        messages.info(
+            request,
+            f"Importing {len(confirmed_indices)} confirmed SensCritique items…",
+        )
+    return redirect(next_page)
+
+
+@require_GET
+def senscritique_search(request):
+    """AJAX: search a provider for alternative matches (used by the review card)."""
+    from difflib import SequenceMatcher
+
+    from django.http import JsonResponse
+
+    from integrations.imports.senscritique import SOURCE_FOR, _cached_search, _normalize_title
+    from app.models import Sources
+
+    media_type = request.GET.get("media_type", "").strip()
+    query = request.GET.get("q", "").strip()
+    # Allow the card to specify an explicit source (e.g. bnf for BD cards)
+    explicit_source = request.GET.get("source", "").strip()
+
+    if not media_type or not query:
+        return JsonResponse({"candidates": []})
+
+    source = explicit_source or SOURCE_FOR.get(media_type, "")
+    if not source:
+        return JsonResponse({"candidates": []})
+
+    results = _cached_search(media_type, query, source)
+
+    # For BD cards: if BnF returns nothing, also try ComicVine
+    fallback_source = None
+    if not results and source == Sources.BNF.value:
+        fallback_source = Sources.COMICVINE.value
+        results = _cached_search(media_type, query, fallback_source)
+    actual_source = fallback_source or source
+
+    normalized_q = _normalize_title(query)
+
+    candidates = []
+    for result in results[:5]:
+        r_title = result.get("title") or ""
+        similarity = SequenceMatcher(None, normalized_q, _normalize_title(r_title)).ratio()
+        candidates.append({
+            "media_id": str(result.get("media_id", "")),
+            "title": r_title,
+            "year": str(result.get("year") or result.get("release_date", "") or "")[:4],
+            "image": result.get("image", ""),
+            "confidence": round(similarity, 3),
+            "source": actual_source,
+        })
+
+    return JsonResponse({"candidates": candidates})
 
 
 @require_POST
@@ -611,10 +759,17 @@ def import_senscritique_csv(request):
         return redirect("import_data")
 
     mode = request.POST["mode"]
+    # sc_types is a list of SC type strings the user checked.
+    # An empty list means "nothing selected" — treat as all types to avoid
+    # silently importing nothing, but log a warning.
+    raw_sc_types = request.POST.getlist("sc_types")
+    allowed_sc_types = raw_sc_types if raw_sc_types else None
+
     tasks.import_senscritique.delay(
         file=request.FILES["sc_csv"],
         user_id=request.user.id,
         mode=mode,
+        allowed_sc_types=allowed_sc_types,
     )
     messages.info(
         request,

@@ -1,0 +1,185 @@
+{% extends "users/base.html" %}
+{% load app_tags %}
+
+{% block title %}Review SensCritique Matches - Yamtrack{% endblock title %}
+
+{% block settings_content %}
+<div class="space-y-6"
+     x-data="{
+       toggleAll(checked) {
+         document.querySelectorAll('input[name=confirmed]:not(:disabled)').forEach(cb => cb.checked = checked);
+       }
+     }">
+
+  {# TTL expiry notice #}
+  {% if ttl_days %}
+    <div class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-5 py-3 text-sm text-amber-300">
+      {% include "app/icons/info.svg" with classes="w-4 h-4 flex-shrink-0 mt-0.5" %}
+      <span>
+        These items expire in approximately <strong>{{ ttl_days }} day{{ ttl_days|pluralize }}</strong>.
+        Unreviewed items will be lost after that — confirm them before they disappear.
+      </span>
+    </div>
+  {% endif %}
+
+  {# Header #}
+  <div class="bg-[#2a2f35] rounded-lg p-6">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center">
+        {% include "app/icons/database.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
+        <h2 class="text-xl font-semibold">Review SensCritique Matches</h2>
+      </div>
+      <span class="text-sm text-gray-400">
+        {% if media_type_filter %}
+          {{ filtered_count }} / {{ pending_count }} item{{ pending_count|pluralize }}
+        {% else %}
+          {{ pending_count }} item{{ pending_count|pluralize }}
+        {% endif %}
+        {% if total_pages > 1 %}&mdash; page {{ page_num }} / {{ total_pages }}{% endif %}
+      </span>
+    </div>
+    <p class="text-gray-400 text-sm mb-4">
+      High-confidence items were imported automatically. Review the rest below,
+      check the ones you want to import, then click <strong>Confirm Selected</strong>.
+      Use the alternative picker or re-search if the top match is wrong.
+    </p>
+
+    {# Confidence legend #}
+    <div class="flex flex-wrap gap-4 text-xs mb-4">
+      <span class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>
+        <span class="text-gray-400">Medium confidence (0.50&ndash;0.82) &mdash; pre-selected</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
+        <span class="text-gray-400">Low confidence (&lt;&nbsp;0.50) &mdash; verify before importing</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-gray-500 inline-block"></span>
+        <span class="text-gray-400">No match found &mdash; use manual search</span>
+      </span>
+    </div>
+
+    {# Media-type filter tabs #}
+    {% if all_types|length > 1 %}
+      <div class="flex flex-wrap gap-2 text-sm">
+        <a href="{% url 'senscritique_review' %}?mode={{ mode }}"
+           class="px-3 py-1 rounded-full transition-colors {% if not media_type_filter %}bg-indigo-600 text-white{% else %}bg-[#39404b] text-gray-300 hover:bg-[#454e5c]{% endif %}">
+          All ({{ pending_count }})
+        </a>
+        {% for type in all_types %}
+          <a href="{% url 'senscritique_review' %}?mode={{ mode }}&type={{ type }}"
+             class="px-3 py-1 rounded-full transition-colors {% if media_type_filter == type %}bg-indigo-600 text-white{% else %}bg-[#39404b] text-gray-300 hover:bg-[#454e5c]{% endif %}">
+            {{ type|title }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <form method="post" action="{% url 'senscritique_confirm' %}">
+    {% csrf_token %}
+    <input type="hidden" name="mode" value="{{ mode }}">
+    <input type="hidden" name="next_page" value="{% if has_next %}{% url 'senscritique_review' %}?mode={{ mode }}&page={{ page_num|add:1 }}{% if media_type_filter %}&type={{ media_type_filter }}{% endif %}{% else %}{% url 'import_data' %}{% endif %}">
+
+    {# Bulk actions bar #}
+    <div class="flex items-center justify-between bg-[#2a2f35] rounded-lg px-6 py-3 mb-4 sticky top-20 z-10 gap-4">
+      <div class="flex gap-4 text-sm">
+        <button type="button"
+                @click="toggleAll(true)"
+                class="text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer">
+          Select all
+        </button>
+        <button type="button"
+                @click="toggleAll(false)"
+                class="text-gray-400 hover:text-gray-200 transition-colors cursor-pointer">
+          Deselect all
+        </button>
+      </div>
+      <div class="flex items-center gap-3">
+        {% if total_pages > 1 %}
+          <span class="text-xs text-gray-500">Page {{ page_num }}/{{ total_pages }}</span>
+        {% endif %}
+        <button type="submit"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors cursor-pointer">
+          {% if has_next %}Confirm &amp; Next Page{% else %}Confirm Selected{% endif %}
+        </button>
+      </div>
+    </div>
+
+    {# Item cards #}
+    <div class="space-y-3">
+      {% for item in pending %}
+        {% if item.media_id and item.confidence >= 0.50 %}
+          {# Medium confidence — pre-checked #}
+          <div class="bg-[#2a2f35] rounded-lg p-4 flex gap-4 items-start"
+               x-data="{ checked: true }"
+               :class="checked ? 'ring-1 ring-indigo-500' : ''">
+            <div class="flex items-center pt-1 flex-shrink-0">
+              <input type="checkbox"
+                     name="confirmed"
+                     value="{{ item._idx }}"
+                     x-model="checked"
+                     checked
+                     class="w-5 h-5 rounded bg-[#39404b] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer">
+            </div>
+            {% include "users/components/sc_review_card.html" with item=item tier="medium" %}
+          </div>
+
+        {% elif item.media_id %}
+          {# Low confidence — unchecked #}
+          <div class="bg-[#2a2f35] rounded-lg p-4 flex gap-4 items-start"
+               x-data="{ checked: false }"
+               :class="checked ? 'ring-1 ring-indigo-500' : ''">
+            <div class="flex items-center pt-1 flex-shrink-0">
+              <input type="checkbox"
+                     name="confirmed"
+                     value="{{ item._idx }}"
+                     x-model="checked"
+                     class="w-5 h-5 rounded bg-[#39404b] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer">
+            </div>
+            {% include "users/components/sc_review_card.html" with item=item tier="low" %}
+          </div>
+
+        {% else %}
+          {# No match — disabled checkbox but manual search still available #}
+          <div class="bg-[#2a2f35] rounded-lg p-4 flex gap-4 items-start"
+               x-data="{ checked: false }"
+               :class="checked ? 'ring-1 ring-indigo-500' : 'opacity-60 hover:opacity-100 transition-opacity'">
+            <div class="flex items-center pt-1 flex-shrink-0">
+              <input type="checkbox"
+                     name="confirmed"
+                     value="{{ item._idx }}"
+                     x-model="checked"
+                     disabled
+                     title="No match found — use Search manually to find one"
+                     class="w-5 h-5 rounded bg-[#39404b] border-gray-600 cursor-not-allowed">
+            </div>
+            {% include "users/components/sc_review_card.html" with item=item tier="none" %}
+          </div>
+        {% endif %}
+      {% empty %}
+        <div class="bg-[#2a2f35] rounded-lg p-10 text-center text-gray-400">
+          No items to review.
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Bottom actions: submit + pagination #}
+    <div class="flex items-center justify-between mt-6">
+      <div>
+        {% if has_prev %}
+          <a href="{% url 'senscritique_review' %}?mode={{ mode }}&page={{ page_num|add:-1 }}{% if media_type_filter %}&type={{ media_type_filter }}{% endif %}"
+             class="px-4 py-2 text-sm text-gray-400 hover:text-white bg-[#2a2f35] hover:bg-[#39404b] rounded-md transition-colors">
+            &larr; Previous page
+          </a>
+        {% endif %}
+      </div>
+      <button type="submit"
+              class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors cursor-pointer">
+        {% if has_next %}Confirm &amp; Next Page{% else %}Confirm Selected{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock settings_content %}
