@@ -153,6 +153,7 @@ def find(external_id, external_source):
 
 def movie(media_id):
     """Return the metadata for the selected movie from The Movie Database."""
+    media_id = str(media_id)  # normalize: cache keys and comparisons always use strings
     cache_key = f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{media_id}"
     data = cache.get(cache_key)
 
@@ -192,10 +193,10 @@ def movie(media_id):
 
         # Filter out collection items from recommendations, to avoid duplicates
         collection_items = get_collection(collection_response)
-        collection_ids = [item["media_id"] for item in collection_items]
+        collection_ids = {item["media_id"] for item in collection_items}  # already str after get_collection
         recommended_items = response.get("recommendations", {}).get("results", [])
         filtered_recommendations = [
-            item for item in recommended_items if item["id"] not in collection_ids
+            item for item in recommended_items if str(item["id"]) not in collection_ids
         ]
 
         cast = response.get("credits", {}).get("cast", [])
@@ -714,7 +715,7 @@ def get_collection(collection_response):
             "source": Sources.TMDB.value,
             "media_type": MediaTypes.MOVIE.value,
             "image": get_image_url(media["poster_path"]),
-            "media_id": media["id"],
+            "media_id": str(media["id"]),
             "title": get_title(media),
         }
         for media in parts

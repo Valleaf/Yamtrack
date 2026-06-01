@@ -513,7 +513,7 @@ def movie_director(request, director_id, name):
         percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
 
     tracked_movies = {
-        movie["metadata"]["media_id"]: movie
+        str(movie["metadata"]["media_id"]): movie
         for movie in director["movies"]
     }
 
