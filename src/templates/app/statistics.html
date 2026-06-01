@@ -14,9 +14,9 @@
   <div x-data="dateRangePicker()" x-init="init()" class="relative mb-8">
     <!-- Trigger Button -->
     <button @click="toggleDropdown()"
-            class="flex items-center gap-2 px-4 py-2.5 bg-[#1e2329] ring-1 ring-white/10 shadow-2xl backdrop-blur-xl hover:bg-[#343a40] rounded-lg transition-all duration-200 border border-gray-700 shadow-sm cursor-pointer">
+            class="flex items-center gap-2 px-4 py-2.5 bg-[#1e2329] ring-1 ring-white/10 hover:bg-[#343a40] rounded-lg transition-all duration-200 border border-gray-700 shadow-sm cursor-pointer">
       {% include "app/icons/calendar.svg" with classes="w-5 h-5 text-indigo-400" %}
-      <span class="font-medium" x-text="selectedRange"></span>
+      <span class="font-semibold text-white" x-text="selectedRange"></span>
       <div class="w-4 h-4 ml-1 transition-transform duration-200"
            :class="{'rotate-180': isOpen}">{% include "app/icons/chevron-down.svg" %}</div>
     </button>
