@@ -95,6 +95,14 @@
                 class="text-gray-400 hover:text-gray-200 transition-colors cursor-pointer">
           Deselect all
         </button>
+        <form method="post" action="{% url 'senscritique_discard' %}" class="ml-auto">
+          {% csrf_token %}
+          <button type="submit"
+                  class="text-red-400 hover:text-red-300 transition-colors text-sm cursor-pointer"
+                  onclick="return confirm('Discard all pending items?')">
+            Discard all
+          </button>
+        </form>
       </div>
       <div class="flex items-center gap-3">
         {% if total_pages > 1 %}

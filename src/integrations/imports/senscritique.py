@@ -364,7 +364,11 @@ class SensCritiqueImporter:
         rows_by_type: dict[str, list[dict]] = defaultdict(list)
         for row in rows:
             raw_type = (row.get("type") or "").strip().lower()
-            # Honour the user's type filter if one was supplied
+            # Compare raw SC type strings (e.g. "comic book") against
+            # allowed_sc_types, never the mapped values.  SC_TYPE_MAP maps
+            # "comic book" → "_comic_auto" (a sentinel resolved later in
+            # _process_row); "_comic_auto" is never present in
+            # allowed_sc_types, so this filter always operates correctly.
             if self.allowed_sc_types is not None and raw_type not in self.allowed_sc_types:
                 continue
             media_type = SC_TYPE_MAP.get(raw_type)

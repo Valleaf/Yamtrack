@@ -35,6 +35,7 @@ urlpatterns = [
     path("import/senscritique/csv/", views.import_senscritique_csv, name="import_senscritique_csv"),
     path("import/senscritique/review/", views.senscritique_review, name="senscritique_review"),
     path("import/senscritique/confirm/", views.senscritique_confirm, name="senscritique_confirm"),
+    path("import/senscritique/discard/", views.senscritique_discard, name="senscritique_discard"),
     path("import/senscritique/search/", views.senscritique_search, name="senscritique_search"),
     path("import/filmaffinity/", views.import_filmaffinity_html, name="import_filmaffinity_html"),
     path("import/imdb", views.import_imdb, name="import_imdb"),

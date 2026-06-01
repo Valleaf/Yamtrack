@@ -78,3 +78,11 @@ def source_display(source_name):
     """
 
     return format_html(html)
+
+@register.simple_tag(takes_context=True)
+def sc_pending_count(context):
+    from integrations.imports.senscritique import get_pending_review
+    request = context.get("request")
+    if not request or not request.user.is_authenticated:
+        return 0
+    return len(get_pending_review(request.user.id))

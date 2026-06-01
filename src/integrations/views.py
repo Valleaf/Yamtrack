@@ -568,6 +568,14 @@ def emby_webhook(request, token):
 
 
 
+@require_POST
+def senscritique_discard(request):
+    """Discard all pending SensCritique review items for the current user."""
+    sc_import.clear_pending_review(request.user.id)
+    messages.info(request, "Pending SensCritique review items have been discarded.")
+    return redirect("import_data")
+
+
 @require_GET
 def senscritique_review(request):
     """Show uncertain SC matches for user validation before import."""
