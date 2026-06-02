@@ -366,9 +366,11 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
 
 
 def _get_user_movie_directors(user):
-    """Return tracked directors for the user's movie collection."""
-    from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: PLC0415
+    """Return tracked directors for the user's movie collection.
 
+    Cache-only: only movies whose metadata is already in Redis are included.
+    Movies will appear here automatically after the user visits their detail pages.
+    """
     movies = BasicMedia.objects.get_media_list(
         user=user,
         media_type=MediaTypes.MOVIE.value,
@@ -380,42 +382,11 @@ def _get_user_movie_directors(user):
     total_movies = movies.count()
     cached_movie_count = 0
 
-    # Split into cached and uncached
     tmdb_movies = [m for m in movies if m.item.source == Sources.TMDB.value]
-    cached_metadata = {}
-    uncached_movies = []
 
     for movie in tmdb_movies:
         cache_key = f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{movie.item.media_id}"
         metadata = cache.get(cache_key)
-        if metadata is not None:
-            cached_metadata[movie.item.media_id] = metadata
-        else:
-            uncached_movies.append(movie)
-
-    # Fetch uncached movies concurrently
-    if uncached_movies:
-        def fetch(movie):
-            try:
-                return movie.item.media_id, services.get_media_metadata(
-                    MediaTypes.MOVIE.value,
-                    movie.item.media_id,
-                    Sources.TMDB.value,
-                )
-            except Exception:
-                logger.exception("Failed to fetch metadata for movie %s", movie.item.media_id)
-                return movie.item.media_id, None
-
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            futures = {executor.submit(fetch, m): m for m in uncached_movies}
-            for future in as_completed(futures):
-                media_id, metadata = future.result()
-                if metadata is not None:
-                    cached_metadata[media_id] = metadata
-
-    # Build directors from all metadata
-    for movie in tmdb_movies:
-        metadata = cached_metadata.get(movie.item.media_id)
         if metadata is None:
             continue
 
@@ -450,19 +421,7 @@ def movie_directors(request):
     director_list = []
     for director in directors.values():
         movie_count = len(director["movies"])
-        # Prefer calculating share based on the director's full filmography
-        try:
-            filmography = tmdb.person_credits(director["id"])
-            filmography_count = len(filmography) if filmography is not None else 0
-        except Exception:
-            filmography_count = 0
-            logger.exception("Failed to fetch filmography for director %s", director["id"])
-
-        if filmography_count:
-            percentage = round(movie_count / filmography_count * 100, 1)
-        else:
-            # Fallback to previous behaviour using total tracked movies
-            percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
+        percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
 
         director_list.append(
             {
@@ -471,7 +430,7 @@ def movie_directors(request):
                 "image": director.get("image"),
                 "movie_count": movie_count,
                 "percentage": percentage,
-                "filmography_count": filmography_count,
+                "filmography_count": None,  # loaded lazily on detail page
             }
         )
 
@@ -497,37 +456,53 @@ def movie_director(request, director_id, name):
         raise Http404("Director not found")
 
     movie_count = len(director["movies"])
-
-    # Prefer filmography-based percentage when available
-    try:
-        filmography = tmdb.person_credits(director_id)
-        filmography_count = len(filmography) if filmography is not None else 0
-    except Exception:
-        filmography_count = 0
-        filmography = []
-        logger.exception("Failed to fetch filmography for director %s", director_id)
-
-    if filmography_count:
-        percentage = round(movie_count / filmography_count * 100, 1)
-    else:
-        percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
+    percentage = round(movie_count / total_movies * 100, 1) if total_movies else 0
 
     tracked_movies = {
         str(movie["metadata"]["media_id"]): movie
         for movie in director["movies"]
     }
 
-    # If filmography wasn't fetched above, attempt to fetch it for the list
-    if filmography is None:
-        try:
-            filmography = tmdb.person_credits(director_id)
-        except Exception:
-            filmography = []
-            logger.exception("Failed to fetch filmography for director %s", director_id)
+    return render(
+        request,
+        "app/movie_director.html",
+        {
+            "director": {
+                "id": director_id,
+                "name": director["name"],
+                "image": director.get("image"),
+                "movie_count": movie_count,
+                "percentage": percentage,
+            },
+            "tracked_movies": tracked_movies,
+            "total_movies": total_movies,
+            "cached_movie_count": cached_movie_count,
+        },
+    )
+
+
+@require_GET
+def movie_director_filmography(request, director_id):
+    """HTMX endpoint: load a director's full filmography from TMDB."""
+    directors, total_movies, _ = _get_user_movie_directors(request.user)
+    director = directors.get(director_id)
+
+    tracked_movies = {}
+    if director:
+        tracked_movies = {
+            str(movie["metadata"]["media_id"]): movie
+            for movie in director["movies"]
+        }
+
+    try:
+        filmography = tmdb.person_credits(director_id) or []
+    except Exception:
+        logger.exception("Failed to fetch filmography for director %s", director_id)
+        filmography = []
 
     movies = []
     for film in filmography:
-        media_id = film["media_id"]
+        media_id = str(film["media_id"])
         tracked_movie = tracked_movies.get(media_id)
         if tracked_movie:
             link = reverse(
@@ -558,21 +533,24 @@ def movie_director(request, director_id, name):
             }
         )
 
+    # Recalculate percentage now we have the real filmography count
+    movie_count = len(tracked_movies)
+    filmography_count = len(movies)
+    if filmography_count:
+        percentage = round(movie_count / filmography_count * 100, 1)
+    elif total_movies:
+        percentage = round(movie_count / total_movies * 100, 1)
+    else:
+        percentage = 0
+
     return render(
         request,
-        "app/movie_director.html",
+        "app/components/director_filmography.html",
         {
-            "director": {
-                "id": director_id,
-                "name": director["name"],
-                "image": director.get("image"),
-                "movie_count": movie_count,
-                "percentage": percentage,
-            },
             "movies": movies,
-            "total_movies": total_movies,
-            "cached_movie_count": cached_movie_count,
-            "filmography_count": len(movies),
+            "filmography_count": filmography_count,
+            "percentage": percentage,
+            "movie_count": movie_count,
         },
     )
 

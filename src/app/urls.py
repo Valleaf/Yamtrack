@@ -12,6 +12,7 @@ urlpatterns = [
     path("search", views.media_search, name="search"),
     path("artist/musicbrainz/<str:artist_id>", views.music_artist, name="music_artist"),
     path("movies/directors", views.movie_directors, name="movie_directors"),
+    path("movie/director/<int:director_id>/filmography", views.movie_director_filmography, name="movie_director_filmography"),
     path("movie/director/<int:director_id>/<slug:name>", views.movie_director, name="movie_director"),
     path("music/artists", views.music_artists, name="music_artists"),
     path("games/studios", views.game_studios, name="game_studios"),
