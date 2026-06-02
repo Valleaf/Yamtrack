@@ -189,7 +189,7 @@ MEDIA_TYPE_CONFIG = {
         "unit": ("P", "Page"),
     },
     MediaTypes.COMIC.value: {
-        "sources": [Sources.COMICVINE],
+        "sources": [Sources.COMICVINE, Sources.BNF],
         "default_source": Sources.COMICVINE,
         "sample_query": "Batman",
         "unicode_icon": "📕",
