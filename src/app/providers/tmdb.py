@@ -232,6 +232,7 @@ def movie(media_id):
             "genres": get_genres(response["genres"]),
             "score": get_score(response["vote_average"]),
             "score_count": response["vote_count"],
+            "country": get_country_code(response["production_countries"]),
             "details": {
                 "format": "Movie",
                 "release_date": get_start_date(response["release_date"]),
@@ -484,6 +485,7 @@ def process_tv(response):
         "genres": get_genres(response["genres"]),
         "score": get_score(response["vote_average"]),
         "score_count": response["vote_count"],
+        "country": get_country_code(response["production_countries"]),
         "details": {
             "format": "TV",
             "first_air_date": get_start_date(response["first_air_date"]),
@@ -642,12 +644,19 @@ def get_genres(genres):
 
 
 def get_country(countries):
-    """Return the production country for the media."""
+    """Return the production country name for the media."""
     # when unknown production country, value from response is empty list
     # e.g tv: 24795
     if countries:
         return countries[0]["name"]
     return None
+
+
+def get_country_code(countries):
+    """Return the ISO 3166-1 alpha-2 code for the primary production country."""
+    if countries:
+        return countries[0].get("iso_3166_1", "")
+    return ""
 
 
 def get_languages(languages):

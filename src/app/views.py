@@ -1106,6 +1106,7 @@ def sync_metadata(request, source, media_type, media_id, season_number=None):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
+                "country": metadata.get("country", ""),
             },
         )
         title = metadata["title"]
@@ -1277,9 +1278,10 @@ def media_save(request):
             defaults={
                 "title": metadata["title"],
                 "image": metadata["image"],
+                "country": metadata.get("country", ""),
             },
         )
-        # Patch image/title if the item already existed with blank values
+        # Patch image/title/country if the item already existed with blank values
         update_fields = []
         if not item.image and metadata["image"]:
             item.image = metadata["image"]
@@ -1287,6 +1289,9 @@ def media_save(request):
         if not item.title and metadata["title"]:
             item.title = metadata["title"]
             update_fields.append("title")
+        if not item.country and metadata.get("country"):
+            item.country = metadata["country"]
+            update_fields.append("country")
         if update_fields:
             item.save(update_fields=update_fields)
         model = apps.get_model(app_label="app", model_name=media_type)
