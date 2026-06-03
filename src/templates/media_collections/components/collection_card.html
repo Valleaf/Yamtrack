@@ -1,18 +1,42 @@
 <a href="{% url 'collection_detail' collection.id %}"
-   class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors">
+   class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors ring-1 {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}ring-emerald-500/40{% else %}ring-white/5{% endif %}">
   <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
     <img src="{{ collection.image }}"
          alt="{{ collection.name }}"
          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
          onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
+    {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}
+      <div class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 backdrop-blur-md text-[11px] font-medium px-2 py-1 shadow-sm">
+        {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
+        Complete
+      </div>
+    {% endif %}
   </div>
   <div class="p-3">
     <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
     <p class="text-xs text-gray-400 mt-1">
-      {{ collection.collectionitem_set.count }} item{{ collection.collectionitem_set.count|pluralize }}
+      {{ collection.card_stats.total }} item{{ collection.card_stats.total|pluralize }}
       {% if collection.source and collection.source != "manual" %}
-      · <span class="text-indigo-400">TMDB</span>
+        &middot; <span class="text-indigo-400">{{ collection.source|cut:"_collection"|upper }}</span>
       {% endif %}
     </p>
+    {% if collection.card_stats.total %}
+      <div class="mt-3 space-y-1.5">
+        <div class="flex items-center justify-between text-[11px] text-gray-400">
+          <span>Tracked</span>
+          <span>{{ collection.card_stats.tracked_pct }}%</span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-[#2a2f35]">
+          <div class="h-full rounded-full bg-indigo-500" style="width: {{ collection.card_stats.tracked_pct }}%"></div>
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-gray-400">
+          <span>Completed</span>
+          <span>{{ collection.card_stats.completed_pct }}%</span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-[#2a2f35]">
+          <div class="h-full rounded-full bg-emerald-500" style="width: {{ collection.card_stats.completed_pct }}%"></div>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </a>

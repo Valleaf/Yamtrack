@@ -4,6 +4,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -11,7 +12,7 @@ from django.views.decorators.http import require_POST
 from app.models import Status
 from app.providers import collections_providers as col_providers
 
-from .models import Collection, CollectionItem
+from .models import Collection, CollectionItem, CollectionItemExclusion
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +30,11 @@ def _user_can_edit(user, collection):
 
 
 COLLECTION_ITEMS_PER_PAGE_CHOICES = (6, 12, 24)
-DEFAULT_COLLECTION_ITEMS_PER_PAGE = 24
+DEFAULT_COLLECTION_ITEMS_PER_PAGE = 6
 COLLECTION_COLUMNS_CHOICES = (3, 4, 5, 6)
 DEFAULT_COLLECTION_COLUMNS = 6
+COLLECTION_SORT_CHOICES = ("name", "items", "tracked", "completed")
+DEFAULT_COLLECTION_SORT = "name"
 
 
 def _get_items_per_page(request):
@@ -54,6 +57,28 @@ def _get_columns(request):
     if columns not in COLLECTION_COLUMNS_CHOICES:
         return DEFAULT_COLLECTION_COLUMNS
     return columns
+
+
+def _get_collection_sort(request):
+    sort = request.GET.get("sort", DEFAULT_COLLECTION_SORT)
+    if sort not in COLLECTION_SORT_CHOICES:
+        return DEFAULT_COLLECTION_SORT
+    return sort
+
+
+def _prepare_collection_cards(collections, user, sort):
+    prepared = list(collections)
+    for collection in prepared:
+        collection.card_stats = collection.get_stats(user)
+
+    sorters = {
+        "name": lambda c: (c.name.lower(),),
+        "items": lambda c: (-c.card_stats["total"], c.name.lower()),
+        "tracked": lambda c: (-c.card_stats["tracked_pct"], c.name.lower()),
+        "completed": lambda c: (-c.card_stats["completed_pct"], c.name.lower()),
+    }
+    prepared.sort(key=sorters[sort])
+    return prepared
 
 
 def _paginate(items, request, page_param):
@@ -80,18 +105,30 @@ def collections(request):
     )
 
     # Split owned into auto-sourced vs manual
-    auto_collections = [c for c in owned if c.source and c.source != "manual"]
-    manual_collections = [c for c in owned if not c.source or c.source == "manual"]
+    sort = _get_collection_sort(request)
+    auto_collections = _prepare_collection_cards(
+        [c for c in owned if c.source and c.source != "manual"],
+        request.user,
+        sort,
+    )
+    manual_collections = _prepare_collection_cards(
+        [c for c in owned if not c.source or c.source == "manual"],
+        request.user,
+        sort,
+    )
+    collab_collections = _prepare_collection_cards(collab, request.user, sort)
     per_page = _get_items_per_page(request)
 
     return render(request, "media_collections/collections.html", {
         "auto_collections": _paginate(auto_collections, request, "auto_page"),
         "manual_collections": _paginate(manual_collections, request, "manual_page"),
-        "collab_collections": _paginate(collab, request, "collab_page"),
+        "collab_collections": _paginate(collab_collections, request, "collab_page"),
         "items_per_page": per_page,
         "items_per_page_choices": COLLECTION_ITEMS_PER_PAGE_CHOICES,
         "columns": _get_columns(request),
         "columns_choices": COLLECTION_COLUMNS_CHOICES,
+        "sort": sort,
+        "sort_choices": COLLECTION_SORT_CHOICES,
     })
 
 
@@ -273,20 +310,22 @@ def _sync_items(collection, items):
     """Replace CollectionItems with the given list, deduplicating by item."""
     from app.models import Item
 
+    excluded_keys = set(
+        CollectionItemExclusion.objects.filter(collection=collection).values_list(
+            "media_id",
+            "source",
+            "media_type",
+        )
+    )
+
     # Deduplicate incoming items by media_id to avoid creating duplicate rows
     seen_ids = set()
     unique_items = []
     for entry in items:
         key = (str(entry["media_id"]), entry["source"], entry["media_type"])
-        if key not in seen_ids:
+        if key not in seen_ids and key not in excluded_keys:
             seen_ids.add(key)
             unique_items.append(entry)
-
-    # Get existing CollectionItem ids for this collection
-    existing_item_ids = set(
-        CollectionItem.objects.filter(collection=collection)
-        .values_list("item__media_id", flat=True)
-    )
 
     added = 0
     for entry in unique_items:
@@ -318,10 +357,20 @@ def _sync_items(collection, items):
             added += 1
 
     # Remove any CollectionItems that are no longer in the source
-    valid_item_ids = {str(e["media_id"]) for e in unique_items}
-    stale = CollectionItem.objects.filter(collection=collection).exclude(
-        item__media_id__in=valid_item_ids
-    )
+    valid_item_keys = {
+        (str(e["media_id"]), e["source"], e["media_type"]) for e in unique_items
+    }
+    stale_key_filter = Q()
+    for media_id, source, media_type in valid_item_keys:
+        stale_key_filter |= Q(
+            item__media_id=media_id,
+            item__source=source,
+            item__media_type=media_type,
+        )
+
+    stale = CollectionItem.objects.filter(collection=collection)
+    if stale_key_filter:
+        stale = stale.exclude(stale_key_filter)
     removed = stale.count()
     stale.delete()
     if removed:
@@ -448,9 +497,22 @@ def collection_item_toggle(request):
 
     ci = CollectionItem.objects.filter(collection=collection, item=item).first()
     if ci:
+        if collection.source and collection.source != "manual":
+            CollectionItemExclusion.objects.get_or_create(
+                collection=collection,
+                media_id=item.media_id,
+                source=item.source,
+                media_type=item.media_type,
+            )
         ci.delete()
         in_collection = False
     else:
+        CollectionItemExclusion.objects.filter(
+            collection=collection,
+            media_id=item.media_id,
+            source=item.source,
+            media_type=item.media_type,
+        ).delete()
         CollectionItem.objects.create(collection=collection, item=item)
         in_collection = True
 

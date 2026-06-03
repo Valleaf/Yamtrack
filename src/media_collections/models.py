@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
-from django.db.models import Avg, Count, Exists, OuterRef, Prefetch, Q
+from django.db.models import Exists, Prefetch, Q
 
-from app.models import Item, MediaTypes
+from app.models import Item, MediaTypes, Status
 
 
 class CollectionManager(models.Manager):
@@ -12,38 +12,6 @@ class CollectionManager(models.Manager):
         return (
             self.filter(Q(owner=user) | Q(collaborators=user))
             .select_related("owner")
-            .prefetch_related(
-                "collaborators",
-                Prefetch(
-                    "collectionitem_set",
-                    queryset=CollectionItem.objects.select_related("item")
-                    .order_by("date_added"),
-                ),
-            )
-            .distinct()
-            .order_by("name")
-        )
-
-# If the issue is that the collection contains no items, it might be filtered out or hard to track.
-# I will add a slight improvement to how the query is structured to ensure general robustness.
-# The original logic seems correct for Django ORM, but if the user experiences a bug,
-# sometimes changing the filter structure helps. I will adjust the queryset to be slightly more explicit
-# about the item presence if the issue is data related, but that's too invasive.
-# Let's assume the initial query structure is correct and the issue is an overlooked data constraint.
-# I will try rewriting the method slightly without changing the logic, to force the ORM to re-evaluate its assumptions.
-
-# Re-evaluation: The original query is standard and correct. The bug is likely data-related (the new item wasn't correctly linked).
-# Since I cannot fix the data entry process, I must trust the ORM. I will trust the previous logic but make it cleaner and more standard.
-# Reverting to the original search block to apply a minimal fix.
-    def get_user_collections(self, user):
-        return (
-            self.filter(Q(owner=user) | Q(collaborators=user))
-            .select_related("owner")
-            .annotate(
-                # Annotation to ensure that a collection must have at least one associated item
-                has_items=Count("collectionitem_set__item"),
-            )
-            .filter(has_items__gt=0) # Ensure collection actually has items
             .prefetch_related(
                 "collaborators",
                 Prefetch(
@@ -125,6 +93,8 @@ class Collection(models.Model):
                 "total": 0,
                 "tracked": 0,
                 "tracked_pct": 0,
+                "completed": 0,
+                "completed_pct": 0,
                 "by_type": {},
                 "avg_score": None,
             }
@@ -138,6 +108,7 @@ class Collection(models.Model):
 
         type_stats = {}
         total_tracked = 0
+        total_completed = 0
         score_sum = 0
         score_count = 0
 
@@ -151,16 +122,21 @@ class Collection(models.Model):
             qs = model.objects.filter(item_id__in=item_ids, user=user).select_related("item")
 
             tracked_ids = set(qs.values_list("item_id", flat=True))
+            completed_count = qs.filter(status=Status.COMPLETED.value).count()
             scores = [float(m.score) for m in qs if m.score is not None]
 
             type_stats[mt] = {
                 "total": len(type_items),
                 "tracked": len(tracked_ids),
                 "tracked_pct": round(len(tracked_ids) / len(type_items) * 100) if type_items else 0,
+                "completed": completed_count,
+                "completed_pct": round(completed_count / len(type_items) * 100) if type_items else 0,
+                "share_pct": round(len(type_items) / total * 100) if total else 0,
                 "avg_score": round(sum(scores) / len(scores), 1) if scores else None,
                 "items": type_items,
             }
             total_tracked += len(tracked_ids)
+            total_completed += completed_count
             score_sum += sum(scores)
             score_count += len(scores)
 
@@ -168,6 +144,8 @@ class Collection(models.Model):
             "total": total,
             "tracked": total_tracked,
             "tracked_pct": round(total_tracked / total * 100) if total else 0,
+            "completed": total_completed,
+            "completed_pct": round(total_completed / total * 100) if total else 0,
             "by_type": type_stats,
             "avg_score": round(score_sum / score_count, 1) if score_count else None,
         }
@@ -192,3 +170,25 @@ class CollectionItem(models.Model):
 
     def __str__(self):
         return self.item.title
+
+
+class CollectionItemExclusion(models.Model):
+    """A source item the owner intentionally removed from a synced collection."""
+
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    media_id = models.CharField(max_length=255)
+    source = models.CharField(max_length=50)
+    media_type = models.CharField(max_length=10, choices=MediaTypes)
+    date_removed = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["date_removed"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["collection", "media_id", "source", "media_type"],
+                name="collections_exclusion_unique_source_item",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.collection}: {self.source}/{self.media_type}/{self.media_id}"

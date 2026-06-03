@@ -3,7 +3,12 @@ from django.test import TestCase
 from django.urls import reverse
 
 from app.models import Item, MediaTypes, Sources
-from media_collections.models import Collection, CollectionItem
+from media_collections.models import (
+    Collection,
+    CollectionItem,
+    CollectionItemExclusion,
+)
+from media_collections.views import _sync_items
 
 
 class CollectionDetailViewTests(TestCase):
@@ -97,3 +102,98 @@ class CollectionDetailViewTests(TestCase):
         self.assertEqual(response.context["columns"], 6)
         self.assertEqual(len(response.context["auto_collections"]), 6)
         self.assertTrue(response.context["auto_collections"].has_next())
+
+    def test_removed_source_item_is_not_readded_on_sync(self):
+        self.collection.source = "tmdb_collection"
+        self.collection.source_id = "collection-1"
+        self.collection.save(update_fields=["source", "source_id"])
+        item = Item.objects.create(
+            media_id="1",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.MOVIE.value,
+            title="Movie 1",
+            image="http://example.com/image.jpg",
+        )
+        CollectionItem.objects.create(collection=self.collection, item=item)
+
+        response = self.client.post(
+            reverse("collection_item_toggle"),
+            {
+                "collection_id": self.collection.id,
+                "source": item.source,
+                "media_type": item.media_type,
+                "media_id": item.media_id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(
+            CollectionItem.objects.filter(collection=self.collection, item=item).exists()
+        )
+        self.assertTrue(
+            CollectionItemExclusion.objects.filter(
+                collection=self.collection,
+                media_id=item.media_id,
+                source=item.source,
+                media_type=item.media_type,
+            ).exists()
+        )
+
+        added = _sync_items(
+            self.collection,
+            [
+                {
+                    "media_id": item.media_id,
+                    "source": item.source,
+                    "media_type": item.media_type,
+                    "title": item.title,
+                    "image": item.image,
+                }
+            ],
+        )
+
+        self.assertEqual(added, 0)
+        self.assertFalse(
+            CollectionItem.objects.filter(collection=self.collection, item=item).exists()
+        )
+
+    def test_manually_readding_source_item_clears_exclusion(self):
+        self.collection.source = "tmdb_collection"
+        self.collection.source_id = "collection-1"
+        self.collection.save(update_fields=["source", "source_id"])
+        item = Item.objects.create(
+            media_id="1",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.MOVIE.value,
+            title="Movie 1",
+            image="http://example.com/image.jpg",
+        )
+        CollectionItemExclusion.objects.create(
+            collection=self.collection,
+            media_id=item.media_id,
+            source=item.source,
+            media_type=item.media_type,
+        )
+
+        response = self.client.post(
+            reverse("collection_item_toggle"),
+            {
+                "collection_id": self.collection.id,
+                "source": item.source,
+                "media_type": item.media_type,
+                "media_id": item.media_id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            CollectionItem.objects.filter(collection=self.collection, item=item).exists()
+        )
+        self.assertFalse(
+            CollectionItemExclusion.objects.filter(
+                collection=self.collection,
+                media_id=item.media_id,
+                source=item.source,
+                media_type=item.media_type,
+            ).exists()
+        )

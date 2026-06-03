@@ -5,7 +5,6 @@ import itertools
 import logging
 from collections import defaultdict
 from decimal import Decimal
-from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
@@ -190,7 +189,7 @@ def get_extended_statistics(user_media):
     source_stats = {}
     year_stats = {}
     score_buckets = {
-        score: {"score": score, "count": 0, "percentage": 0}
+        score: {"score": score, "count": 0, "percentage": 0, "bar_percentage": 0}
         for score in range(10, -1, -1)
     }
     rating_bands = [
@@ -284,12 +283,15 @@ def get_extended_statistics(user_media):
     for bucket in score_buckets.values():
         if scored_items:
             bucket["percentage"] = round(bucket["count"] / scored_items * 100)
+            bucket["bar_percentage"] = max(bucket["percentage"], 2) if bucket["count"] else 0
 
     for band in rating_bands:
         if scored_items:
             band["percentage"] = round(band["count"] / scored_items * 100)
+            band["bar_percentage"] = max(band["percentage"], 2) if band["count"] else 0
         else:
             band["percentage"] = 0
+            band["bar_percentage"] = 0
 
     source_rows = []
     for stats in source_stats.values():
@@ -731,7 +733,11 @@ def get_country_distribution(user_media):
         country_counts = defaultdict(int)
 
         for media in media_list:
-            code = (getattr(media, "country", None) or "").strip().upper()
+            code = (
+                getattr(media, "country", None)
+                or getattr(media.item, "country", None)
+                or ""
+            ).strip().upper()
             if not code or len(code) != 2:
                 continue
             name = _ISO_TO_NAME.get(code, code)

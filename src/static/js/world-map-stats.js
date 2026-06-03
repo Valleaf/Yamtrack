@@ -71,6 +71,21 @@
   // Track Chart instances so we can destroy before re-creating
   var chartInstances = {};
 
+  function showCountryList(container) {
+    var mediaType = container.id.replace(/^map-/, '');
+    var list = document.getElementById('country-list-' + mediaType);
+    container.innerHTML = '';
+    if (list) {
+      list.classList.remove('hidden');
+    }
+  }
+
+  function hideCountryLists() {
+    document.querySelectorAll('[id^="country-list-"]').forEach(function(el) {
+      el.classList.add('hidden');
+    });
+  }
+
   function buildChoropleth(container, countryNameData) {
     // countryNameData = { "United States": 5, "Japan": 3, ... }
 
@@ -82,7 +97,7 @@
     });
 
     if (!Object.keys(alpha2Data).length) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-8">No geographic data available for this media type yet.</p>';
+      showCountryList(container);
       return;
     }
 
@@ -100,6 +115,11 @@
     var maxVal = Math.max.apply(null, Object.values(alpha2Data).concat([1]));
 
     getWorld().then(function(wd) {
+      if (!window.ChartGeo || !window.ChartGeo.topojson) {
+        showCountryList(container);
+        return;
+      }
+
       var countries = ChartGeo.topojson.feature(wd, wd.objects.countries);
 
       var chartData = countries.features.map(function(f) {
@@ -154,6 +174,8 @@
           },
         },
       });
+    }).catch(function() {
+      showCountryList(container);
     });
   }
 
@@ -163,6 +185,7 @@
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4/build/index.umd.min.js';
     s.onload = cb;
+    s.onerror = cb;
     document.head.appendChild(s);
   }
 
@@ -178,6 +201,7 @@
         document.querySelectorAll('.world-map-view').forEach(function(el) {
           el.style.display = 'none';
         });
+        hideCountryLists();
 
         var mapEl = document.getElementById('map-' + mediaType);
         if (!mapEl) return;

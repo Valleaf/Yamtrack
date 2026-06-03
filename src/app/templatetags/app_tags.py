@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from django.urls import reverse
 from django.utils import formats, timezone
 from django.utils.dateparse import parse_date
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
 from app import config, helpers
@@ -488,3 +490,9 @@ def get_other_users(user):
     if total == 2:
         return all_users
     return []
+
+
+@register.filter
+def to_json(value):
+    """Serialize a template value as JSON for script tags."""
+    return mark_safe(json.dumps(value).replace("</", "<\\/"))

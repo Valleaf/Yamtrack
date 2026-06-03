@@ -296,7 +296,7 @@
                   <div class="text-right font-medium text-gray-300">{{ bucket.score }}</div>
                   <div class="h-2 overflow-hidden rounded-full bg-[#2a2f35] ring-1 ring-white/5">
                     <div class="h-full rounded-full bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.4)]"
-                         style="width: {{ bucket.percentage }}%"></div>
+                         style="width: {{ bucket.bar_percentage }}%"></div>
                   </div>
                   <div class="text-right text-gray-400">{{ bucket.count }}</div>
                 </div>
@@ -560,8 +560,7 @@
         <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
           {% for media_type, countries in country_distribution.items %}
             <button data-media-type-btn="{{ media_type }}"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400"
-                    :class="{'bg-indigo-500/15 ring-1 ring-indigo-400/20 text-indigo-400 border-indigo-500': active_media_type === '{{ media_type }}'}">
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400">
               {{ media_type|upper }}
             </button>
           {% endfor %}
@@ -575,8 +574,16 @@
             </div>
             <!-- Hidden JSON data for each media type -->
             <script id="country-data-{{ media_type }}" type="application/json">
-              {{ countries|safe }}
+              {{ countries|to_json }}
             </script>
+            <div id="country-list-{{ media_type }}" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {% for country, count in countries.items %}
+                <div class="flex items-center justify-between gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
+                  <span class="truncate text-gray-300">{{ country }}</span>
+                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs text-gray-400">{{ count }}</span>
+                </div>
+              {% endfor %}
+            </div>
           {% endfor %}
         </div>
       {% else %}
@@ -609,39 +616,6 @@
           </div>
           <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
           <p class="text-gray-400 text-center max-w-md">Rate your media items to see score distribution statistics.</p>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- Source Distribution Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
-      <h2 class="text-xl font-semibold mb-4">Media by Source</h2>
-      
-      {% if country_distribution %}
-        <div class="space-y-3">
-          {% for media_type, sources in country_distribution.items %}
-            {% if sources %}
-              <div class="mb-4">
-                <h3 class="text-sm font-medium text-gray-400 mb-2">{{ media_type|upper }}</h3>
-                <div class="space-y-2 pl-2">
-                  {% for source, count in sources.items %}
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-gray-300">{{ source }}</span>
-                      <span class="bg-[#2a2f35] ring-1 ring-white/5 px-2 py-1 rounded text-gray-400">{{ count }}</span>
-                    </div>
-                  {% endfor %}
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="flex flex-col items-center justify-center py-16">
-          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
-          </div>
-          <h3 class="text-lg font-medium mb-2">No source data</h3>
-          <p class="text-gray-400 text-center max-w-md">Add media from different sources to see this breakdown.</p>
         </div>
       {% endif %}
     </div>
