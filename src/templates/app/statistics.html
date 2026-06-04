@@ -114,7 +114,7 @@
         <div>
           <h3 class="text-sm font-medium text-gray-400">Average Rating</h3>
           {% if score_distribution.total_scored %}
-            <p class="text-3xl font-bold tracking-tight text-white">
+            <p class="text-3xl font-bold tracking-tight {{ score_distribution.average_score|score_color }}">
               {{ score_distribution.average_score }} <span class="text-gray-500 text-lg">/ 10</span>
             </p>
           {% else %}
@@ -178,7 +178,7 @@
         <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Median Rating</h3>
           {% if extended_statistics.summary.median_score is not None %}
-            <p class="mt-2 text-3xl font-bold">
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.median_score|score_color }}">
               {{ extended_statistics.summary.median_score }} <span class="text-lg text-gray-500">/ 10</span>
             </p>
             <p class="mt-1 text-sm text-gray-500">{{ extended_statistics.summary.scored_items }} rated item{{ extended_statistics.summary.scored_items|pluralize }}</p>
@@ -202,7 +202,7 @@
         <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Highest Rating</h3>
           {% if extended_statistics.summary.highest_rated %}
-            <p class="mt-2 text-3xl font-bold">
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.highest_rated.score|score_color }}">
               {{ extended_statistics.summary.highest_rated.formatted_score }}
               <span class="text-lg text-gray-500">/ 10</span>
             </p>
@@ -217,7 +217,7 @@
         <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
           <h3 class="text-sm font-medium text-gray-400">Lowest Rating</h3>
           {% if extended_statistics.summary.lowest_rated %}
-            <p class="mt-2 text-3xl font-bold">
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.lowest_rated.score|score_color }}">
               {{ extended_statistics.summary.lowest_rated.formatted_score }}
               <span class="text-lg text-gray-500">/ 10</span>
             </p>
@@ -253,8 +253,8 @@
                     <td class="py-3 px-4 text-right text-gray-300">{{ row.total }}</td>
                     <td class="py-3 px-4 text-right text-gray-300">{{ row.completed }} <span class="text-gray-500">({{ row.completion_percentage }}%)</span></td>
                     <td class="py-3 px-4 text-right text-gray-300">{{ row.scored }} <span class="text-gray-500">({{ row.rated_percentage }}%)</span></td>
-                    <td class="py-3 px-4 text-right text-gray-300">
-                      {% if row.average_score is not None %}{{ row.average_score }}{% else %}<span class="text-gray-500">--</span>{% endif %}
+                    <td class="py-3 px-4 text-right">
+                      {% if row.average_score is not None %}<span class="{{ row.average_score|score_color }}">{{ row.average_score }}</span>{% else %}<span class="text-gray-500">--</span>{% endif %}
                     </td>
                     <td class="py-3 pl-4 text-gray-300">
                       {% if row.best_media %}
@@ -272,41 +272,6 @@
             <p class="py-10 text-center text-gray-400">No media data available for this range.</p>
           {% endif %}
         </div>
-
-        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
-          <h3 class="text-lg font-semibold mb-4 text-white">Rating Breakdown</h3>
-          {% if extended_statistics.summary.scored_items %}
-            <div class="mb-5 grid grid-cols-2 gap-3">
-              {% for band in extended_statistics.rating_bands %}
-                <div class="rounded-md bg-[#2a2f35] ring-1 ring-white/5 p-3">
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="text-sm font-medium text-white">{{ band.label }}</span>
-                    <span class="text-xs text-gray-400">{{ band.range }}</span>
-                  </div>
-                  <div class="mt-2 flex items-end justify-between gap-2">
-                    <span class="text-2xl font-semibold">{{ band.count }}</span>
-                    <span class="text-sm text-gray-400">{{ band.percentage }}%</span>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-            <div class="space-y-2">
-              {% for bucket in extended_statistics.score_buckets %}
-                <div class="grid grid-cols-[2.5rem_1fr_3rem] items-center gap-3 text-sm">
-                  <div class="text-right font-medium text-gray-300">{{ bucket.score }}</div>
-                  <div class="h-2 overflow-hidden rounded-full bg-[#2a2f35] ring-1 ring-white/5">
-                    <div class="h-full rounded-full bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.4)]"
-                         style="width: {{ bucket.bar_percentage }}%"></div>
-                  </div>
-                  <div class="text-right text-gray-400">{{ bucket.count }}</div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p class="py-10 text-center text-gray-400">Rate items to see a rating breakdown.</p>
-          {% endif %}
-        </div>
-      </div>
 
       <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
         <h3 class="text-lg font-semibold mb-4 text-white">By Source</h3>
@@ -328,8 +293,8 @@
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.count }}</td>
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.percentage }}%</td>
                   <td class="py-3 px-4 text-right text-gray-300">{{ row.scored }}</td>
-                  <td class="py-3 pl-4 text-right text-gray-300">
-                    {% if row.average_score is not None %}{{ row.average_score }}{% else %}<span class="text-gray-500">--</span>{% endif %}
+                  <td class="py-3 pl-4 text-right">
+                    {% if row.average_score is not None %}<span class="{{ row.average_score|score_color }}">{{ row.average_score }}</span>{% else %}<span class="text-gray-500">--</span>{% endif %}
                   </td>
                 </tr>
               {% endfor %}

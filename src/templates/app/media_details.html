@@ -239,7 +239,7 @@
             <div class="flex items-center justify-center">
               {% include "app/icons/star.svg" with classes="w-5 h-5 mr-1.5 text-yellow-400 fill-yellow-400" %}
               {% if media.score is not None %}
-                <span class="text-lg font-bold text-white">{{ media.score }}</span><span class="text-gray-400 ml-0.5 text-sm">/10</span>
+                <span class="text-lg font-bold {{ media.score|score_color }}">{{ media.score }}</span><span class="text-gray-400 ml-0.5 text-sm">/10</span>
               {% else %}
                 <span class="text-lg font-bold text-gray-400">-</span>
               {% endif %}
@@ -262,7 +262,9 @@
                 {% include "app/icons/star.svg" with classes="w-5 h-5 mr-1.5 text-yellow-400 fill-yellow-400" %}
                 <template x-if="rating">
                   <div class="flex items-baseline">
-                    <span class="text-lg font-bold text-white" x-text="rating"></span>
+                    <span class="text-lg font-bold"
+                          :class="rating >= 8 ? 'text-emerald-400' : rating >= 6 ? 'text-yellow-400' : rating >= 4 ? 'text-orange-400' : 'text-red-400'"
+                          x-text="rating"></span>
                     <span class="text-gray-400 ml-0.5 text-sm">/10</span>
                   </div>
                 </template>
@@ -386,7 +388,7 @@
                           {% include "app/icons/star.svg" with classes="w-4 h-4 mr-2 text-gray-400 fill-gray-400" %}
                         {% endif %}
                         {% if user_media.score %}
-                          <span class="text-sm font-medium text-gray-300">{{ user_media.score }}</span>
+                          <span class="text-sm font-medium {{ user_media.score|score_color }}">{{ user_media.score }}</span>
                         {% else %}
                           <span class="text-sm font-medium text-gray-400">Not rated</span>
                         {% endif %}

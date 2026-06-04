@@ -263,6 +263,42 @@ def status_background_color(status):
 
 
 @register.filter
+def score_color(score):
+    """Return a Tailwind text-color class based on a 0-10 score value."""
+    if score is None:
+        return "text-gray-400"
+    try:
+        val = float(score)
+    except (TypeError, ValueError):
+        return "text-gray-400"
+    if val >= 8:
+        return "text-emerald-400"
+    if val >= 6:
+        return "text-yellow-400"
+    if val >= 4:
+        return "text-orange-400"
+    return "text-red-400"
+
+
+@register.filter
+def score_color(score):
+    """Return a Tailwind text-color class based on a 0-10 score value."""
+    if score is None:
+        return "text-gray-400"
+    try:
+        val = float(score)
+    except (TypeError, ValueError):
+        return "text-gray-400"
+    if val >= 8:
+        return "text-emerald-400"
+    if val >= 6:
+        return "text-yellow-400"
+    if val >= 4:
+        return "text-orange-400"
+    return "text-red-400"
+
+
+@register.filter
 def natural_day(value, user):
     """Format date with natural language (Today, Tomorrow, etc.)."""
     if not value:

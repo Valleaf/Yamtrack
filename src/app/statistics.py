@@ -189,14 +189,25 @@ def get_extended_statistics(user_media):
     source_stats = {}
     year_stats = {}
     score_buckets = {
-        score: {"score": score, "count": 0, "percentage": 0, "bar_percentage": 0}
+        score: {
+            "score": score,
+            "count": 0,
+            "percentage": 0,
+            "bar_percentage": 0,
+            "bar_color": (
+                "bg-emerald-400" if score >= 8
+                else "bg-yellow-400" if score >= 6
+                else "bg-orange-400" if score >= 4
+                else "bg-red-400"
+            ),
+        }
         for score in range(10, -1, -1)
     }
     rating_bands = [
-        {"label": "Favorites", "range": "8-10", "min": 8, "max": 10, "count": 0},
-        {"label": "Positive", "range": "6-7", "min": 6, "max": 7, "count": 0},
-        {"label": "Mixed", "range": "4-5", "min": 4, "max": 5, "count": 0},
-        {"label": "Low", "range": "0-3", "min": 0, "max": 3, "count": 0},
+        {"label": "Favorites", "range": "8-10", "min": 8, "max": 10, "count": 0, "color": "bg-emerald-400"},
+        {"label": "Positive", "range": "6-7", "min": 6, "max": 7, "count": 0, "color": "bg-yellow-400"},
+        {"label": "Mixed", "range": "4-5", "min": 4, "max": 5, "count": 0, "color": "bg-orange-400"},
+        {"label": "Low", "range": "0-3", "min": 0, "max": 3, "count": 0, "color": "bg-red-400"},
     ]
     score_values = []
     total_items = 0
@@ -280,17 +291,21 @@ def get_extended_statistics(user_media):
         round(completed_items / total_items * 100) if total_items else 0
     )
 
+    max_bucket_count = max((b["count"] for b in score_buckets.values()), default=0)
     for bucket in score_buckets.values():
         if scored_items:
             bucket["percentage"] = round(bucket["count"] / scored_items * 100)
-            bucket["bar_percentage"] = max(bucket["percentage"], 2) if bucket["count"] else 0
-
-    for band in rating_bands:
-        if scored_items:
-            band["percentage"] = round(band["count"] / scored_items * 100)
-            band["bar_percentage"] = max(band["percentage"], 2) if band["count"] else 0
+        if max_bucket_count > 0 and bucket["count"] > 0:
+            bucket["bar_percentage"] = max(round(bucket["count"] / max_bucket_count * 100), 2)
         else:
-            band["percentage"] = 0
+            bucket["bar_percentage"] = 0
+
+    max_band_count = max((b["count"] for b in rating_bands), default=0)
+    for band in rating_bands:
+        band["percentage"] = round(band["count"] / scored_items * 100) if scored_items else 0
+        if max_band_count > 0 and band["count"] > 0:
+            band["bar_percentage"] = max(round(band["count"] / max_band_count * 100), 2)
+        else:
             band["bar_percentage"] = 0
 
     source_rows = []
