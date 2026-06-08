@@ -522,6 +522,32 @@
       </div>
     </div>
 
+    {# Maintenance #}
+    {% if missing_artwork_count > 0 %}
+    <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="flex items-center mb-4">
+        {% include "app/icons/image.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
+        <h2 class="text-xl font-semibold">Maintenance</h2>
+      </div>
+      <div class="bg-[#39404b] rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium text-white">Sync Missing Artwork</p>
+          <p class="text-xs text-gray-400 mt-1">
+            {{ missing_artwork_count }} item{{ missing_artwork_count|pluralize }} in your library ha{{ missing_artwork_count|pluralize:"s,ve" }} no cover image.
+            This task will fetch artwork from each item's source API and may take a few minutes.
+          </p>
+        </div>
+        <form method="post" action="{% url 'sync_artwork' %}" class="shrink-0">
+          {% csrf_token %}
+          <button type="submit"
+                  class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors cursor-pointer whitespace-nowrap">
+            Sync {{ missing_artwork_count }} item{{ missing_artwork_count|pluralize }}
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
     {# Import History #}
     <div class="bg-[#2a2f35] rounded-lg p-6">
       <div class="flex items-center mb-4">

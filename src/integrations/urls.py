@@ -37,6 +37,7 @@ urlpatterns = [
     path("import/senscritique/confirm/", views.senscritique_confirm, name="senscritique_confirm"),
     path("import/senscritique/discard/", views.senscritique_discard, name="senscritique_discard"),
     path("import/senscritique/search/", views.senscritique_search, name="senscritique_search"),
+    path("import/sync-artwork/", views.sync_artwork, name="sync_artwork"),
     path("import/filmaffinity/", views.import_filmaffinity_html, name="import_filmaffinity_html"),
     path("import/imdb", views.import_imdb, name="import_imdb"),
     path("import/goodreads", views.import_goodreads, name="import_goodreads"),

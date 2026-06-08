@@ -286,8 +286,21 @@ def integrations(request):
 @require_GET
 def import_data(request):
     """Render the import data settings page."""
+    from django.db.models import Q
+    from app.models import Sources
+
     import_tasks = request.user.get_import_tasks()
-    return render(request, "users/import_data.html", {"import_tasks": import_tasks})
+    missing_artwork_count = Item.objects.filter(
+        Q(image="") | Q(image=settings.IMG_NONE)
+    ).exclude(
+        source=Sources.MANUAL.value
+    ).exclude(
+        media_type__in=[MediaTypes.SEASON.value, MediaTypes.EPISODE.value]
+    ).count()
+    return render(request, "users/import_data.html", {
+        "import_tasks": import_tasks,
+        "missing_artwork_count": missing_artwork_count,
+    })
 
 
 @require_GET

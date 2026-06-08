@@ -190,6 +190,58 @@ def import_senscritique(file, user_id, mode, allowed_sc_types=None):
     return result
 
 
+@shared_task(name="Sync missing artwork")
+def sync_missing_artwork():
+    """Fetch and save cover images for all tracked Items with no/placeholder image."""
+    import time
+    from django.conf import settings
+    from django.db.models import Q
+    from app.models import Item, MediaTypes, Sources
+
+    skip_types = {MediaTypes.SEASON.value, MediaTypes.EPISODE.value}
+
+    items = list(
+        Item.objects.filter(
+            Q(image="") | Q(image=settings.IMG_NONE)
+        ).exclude(
+            source=Sources.MANUAL.value
+        ).exclude(
+            media_type__in=skip_types
+        )
+    )
+
+    total = len(items)
+    updated = 0
+    failed = 0
+
+    logger.info("Artwork sync: %d items need artwork", total)
+    
+    from app.providers.services import get_media_metadata
+    for item in items:
+        try:
+            metadata = get_media_metadata(
+                item.media_type,
+                item.media_id,
+                item.source,
+            )
+            new_image = metadata.get("image", "")
+            if new_image and new_image != settings.IMG_NONE:
+                item.image = new_image
+                item.save(update_fields=["image"])
+                updated += 1
+                logger.debug("Updated artwork for %s", item)
+            time.sleep(0.05)  # be gentle to external APIs
+        except Exception as exc:
+            failed += 1
+            logger.exception("Artwork sync failed for %s", item)
+
+    msg = f"Synced artwork: {updated} updated out of {total} items"
+    if failed:
+        msg += f" ({failed} failed)"
+    logger.info(msg)
+    return msg
+
+
 @shared_task(name="Confirm SensCritique review")
 def confirm_senscritique(
     user_id,

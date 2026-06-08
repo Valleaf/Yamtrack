@@ -15,17 +15,19 @@
 
 ### Artwork & Metadata
 
-- [ ] Music artwork not saving/displaying.
-- [ ] Game artwork not saving/displaying.
-- [ ] Music artwork missing in grids until detail page is opened.
-- [ ] Movie posters missing in grids until detail page is opened.
+- [X] Music artwork not saving/displaying.
+- [X] Game artwork not saving/displaying.
+- [X] Music artwork missing in grids until detail page is opened.
+- [X] Movie posters missing in grids until detail page is opened.
 - [ ] Some games display wrong title in lists but correct title on detail page.
+- [ ] Searching Lucky Luke on bnf returns nothing
 
 ### Performance
 
 - [ ] Music pages are slow.
 - [ ] Game pages are slow.
 - [ ] Music quick menu not working.
+- [ ] compose down . up resends daily emails ?
 
 ---
 
@@ -33,11 +35,10 @@
 
 ### Collections
 
-- [ ] Collection sorting improvements.
-- [ ] Show completion percentage per collection.
+- [X] Collection sorting improvements.
+- [X] Show completion percentage per collection.
 - [ ] Highlight completed collections.
 - [ ] Improve completed badge/icon.
-- [ ] Allow tracking directly from collection pages.
 
 ### People Pages
 
@@ -130,7 +131,7 @@ World map should be an actual map with dos, like rateyourmusiuc
 
 ---
 
-# 🏆 Curated Lists & Awards
+# 🏆 Curated Lists & Awards in a new tab
 
 ### External Lists
 
@@ -160,3 +161,4 @@ World map should be an actual map with dos, like rateyourmusiuc
 - [ ] Show score more prominently across pages.
 - [ ] Better visual indicators for ratings.
 - [ ] Richer metadata throughout the application.
+- [ ] Images in new releases

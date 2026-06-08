@@ -569,6 +569,14 @@ def emby_webhook(request, token):
 
 
 @require_POST
+def sync_artwork(request):
+    """Queue a background task to fetch artwork for all items missing it."""
+    tasks.sync_missing_artwork.delay()
+    messages.info(request, "Artwork sync queued — images will update as the task runs in the background.")
+    return redirect("import_data")
+
+
+@require_POST
 def senscritique_discard(request):
     """Discard all pending SensCritique review items for the current user."""
     sc_import.clear_pending_review(request.user.id)

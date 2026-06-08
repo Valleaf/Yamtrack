@@ -1,0 +1,48 @@
+{% load app_tags %}
+
+{% if media_items %}
+  <div>
+    <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-400 mb-4">
+      <span>
+        <span class="text-white font-medium">{{ media_count }}</span>
+        {{ media_type|media_type_readable }}{{ media_count|pluralize }} tracked
+        <span class="text-gray-500">({{ percentage }}%)</span>
+      </span>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+      {% for item in media_items %}
+        <a href="{{ item.link }}"
+           class="relative group flex flex-col min-w-0 rounded-xl overflow-hidden bg-[#2a2f35] ring-1 ring-white/5 hover:ring-white/10 shadow-md hover:shadow-xl transition-all duration-200 {% if item.completed %}ring-2 ring-emerald-500/30{% endif %}"
+           {% if item.external %}target="_blank" rel="noreferrer noopener"{% endif %}>
+          {% if item.completed %}
+            <div class="absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 backdrop-blur-md text-[10px] font-semibold px-1.5 py-0.5">
+              {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
+              Done
+            </div>
+          {% endif %}
+          <div class="aspect-[2/3] overflow-hidden bg-[#1f2429]">
+            {% if item.image %}
+              <img src="{{ item.image }}" alt="{{ item.title }}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            {% else %}
+              <div class="h-full flex items-center justify-center text-gray-600 text-3xl select-none">?</div>
+            {% endif %}
+          </div>
+          <div class="p-2.5 flex flex-col gap-1">
+            <h2 class="text-xs font-semibold line-clamp-2 text-white">{{ item.title }}</h2>
+            <div class="flex items-center justify-between text-[10px] text-gray-500 mt-auto">
+              {% if item.release_year %}<span>{{ item.release_year }}</span>{% endif %}
+              {% if item.status %}
+                <span class="truncate">{{ item.status|media_status_readable }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <div class="rounded-xl bg-[#2a2f35] p-8 text-center text-gray-400 ring-1 ring-white/5">
+    No tracked {{ media_type|media_type_readable_plural|lower }} found for this author.
+  </div>
+{% endif %}

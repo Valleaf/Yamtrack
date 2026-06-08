@@ -1,58 +1,70 @@
 {% extends "base.html" %}
 {% load app_tags %}
 
-{% block title %}
-  Directors - Yamtrack
-{% endblock title %}
+{% block title %}Directors - Yamtrack{% endblock title %}
 
 {% block content %}
-  <div class="space-y-6">
+  <div class="space-y-5">
+
+    {# ── Header ──────────────────────────────────────────────────────────── #}
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 class="text-3xl font-bold">Movie Directors</h1>
-      </div>
-      <div class="flex flex-wrap gap-2">
+      <h1 class="text-3xl font-bold">Movie Directors</h1>
+      <div class="flex overflow-hidden rounded-lg border border-white/10 text-sm self-start">
         <a href="{% url 'medialist' 'movie' %}"
-           class="px-4 py-2 rounded-full bg-[#39404b] text-gray-300 hover:bg-[#454d5a] transition-colors duration-200">Movies</a>
+           class="px-3 py-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors duration-150">Movies</a>
         <a href="{% url 'movie_directors' %}"
-           class="px-4 py-2 rounded-full bg-indigo-600 text-white transition-colors duration-200">Directors</a>
+           class="border-l border-white/10 bg-indigo-600 px-3 py-2 text-white">Directors</a>
       </div>
     </div>
 
-    {% if directors %}
-      {% if total_movies != cached_movie_count %}
-        <div class="rounded-2xl bg-[#333942] p-4 text-sm text-yellow-300">
-          Showing {{ cached_movie_count }} cached TMDB movie{{ cached_movie_count|pluralize }} with director metadata.
-          {{ total_movies|add:"-cached_movie_count" }} tracked movie{{ total_movies|add:"-cached_movie_count"|pluralize }} are excluded because metadata is not yet cached.
-        </div>
-      {% endif %}
+    {% if total_movies != cached_movie_count %}
+      <div class="rounded-xl bg-yellow-400/10 ring-1 ring-yellow-400/20 px-4 py-3 text-sm text-yellow-300">
+        Showing <strong>{{ cached_movie_count }}</strong> cached movie{{ cached_movie_count|pluralize }} with director metadata.
+        {{ total_movies|add:"-cached_movie_count" }} tracked movie{{ total_movies|add:"-cached_movie_count"|pluralize }} are excluded because metadata is not yet cached.
+      </div>
+    {% endif %}
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+    {% if directors %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
         {% for director in directors %}
           <a href="{% url 'movie_director' director_id=director.id name=director.name|slug %}"
-             class="min-w-0 block rounded-2xl bg-[#2a2f35] p-5 hover:bg-[#343a40] transition-colors duration-200">
-            <div class="flex items-center gap-4 mb-4">
-              {% if director.image %}
-                <img src="{{ director.image }}" alt="{{ director.name }}" class="w-14 h-14 rounded-full object-cover" />
-              {% else %}
-                <div class="w-14 h-14 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg">{{ director.name|slice:"0:1" }}</div>
-              {% endif %}
-              <div>
-                <h2 class="text-lg font-semibold">{{ director.name }}</h2>
-                <p class="text-sm text-gray-400">{{ director.movie_count }} movie{{ director.movie_count|pluralize }}</p>
+             class="group flex flex-col items-center gap-3 rounded-xl bg-[#2a2f35] p-4 hover:bg-[#343a40] ring-1 ring-white/5 hover:ring-white/10 transition-all duration-200 text-center">
+            {# Portrait #}
+            {% if director.image %}
+              <img src="{{ director.image }}" alt="{{ director.name }}"
+                   class="w-16 h-16 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-indigo-400/40 transition-all duration-200"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <div class="w-16 h-16 rounded-full bg-indigo-600 items-center justify-center text-white text-xl font-bold hidden ring-2 ring-white/10">
+                {{ director.name|slice:"0:1" }}
               </div>
+            {% else %}
+              <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xl font-bold ring-2 ring-white/10 group-hover:ring-indigo-400/40 transition-all duration-200">
+                {{ director.name|slice:"0:1" }}
+              </div>
+            {% endif %}
+            {# Info #}
+            <div class="w-full min-w-0">
+              <p class="text-sm font-semibold truncate">{{ director.name }}</p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ director.movie_count }} movie{{ director.movie_count|pluralize }}</p>
             </div>
-            <div class="flex items-center justify-between text-sm text-gray-300">
-              <span>Filmography tracked</span>
-              <span class="font-semibold text-white">{{ director.percentage }}%</span>
+            {# Percentage bar #}
+            <div class="w-full">
+              <div class="flex justify-between text-[10px] text-gray-500 mb-1">
+                <span>Tracked</span>
+                <span class="text-gray-300 font-medium">{{ director.percentage }}%</span>
+              </div>
+              <div class="w-full rounded-full bg-[#1e2329] h-1">
+                <div class="h-1 rounded-full bg-indigo-500 transition-all" style="width: {{ director.percentage }}%"></div>
+              </div>
             </div>
           </a>
         {% endfor %}
       </div>
     {% else %}
-      <div class="rounded-2xl bg-[#2a2f35] p-8 text-center text-gray-400">
+      <div class="rounded-xl bg-[#2a2f35] p-8 text-center text-gray-400 ring-1 ring-white/5">
         No tracked directors found. Add movies with directors to your tracker to populate this page.
       </div>
     {% endif %}
+
   </div>
 {% endblock content %}

@@ -46,6 +46,7 @@ from difflib import SequenceMatcher
 from functools import lru_cache
 
 from django.apps import apps
+from django.conf import settings
 from django.utils import timezone
 
 from app.models import Item, MediaTypes, Sources, Status
@@ -261,12 +262,25 @@ def confirm_pending_items(
                     continue
                 to_delete[media_type][source].add(media_id_str)
 
-        db_item, _ = Item.objects.get_or_create(
+        # Extract image from the selected candidate
+        if manual and manual.get("media_id"):
+            item_image = manual.get("image", "")
+        elif candidates and 0 <= candidate_idx < len(candidates):
+            item_image = candidates[candidate_idx].get("image", "")
+        else:
+            item_image = item_data.get("candidate_image", "")
+
+        saved_image = item_image or settings.IMG_NONE
+        db_item, created = Item.objects.get_or_create(
             media_id=media_id,
             source=source,
             media_type=media_type,
-            defaults={"title": title, "image": ""},
+            defaults={"title": title, "image": saved_image},
         )
+        # Patch image if the existing item has no real artwork
+        if not created and item_image and (not db_item.image or db_item.image == settings.IMG_NONE):
+            db_item.image = item_image
+            db_item.save(update_fields=["image"])
 
         model = apps.get_model(app_label="app", model_name=media_type)
         params = {
@@ -451,11 +465,13 @@ class SensCritiqueImporter:
 
         if media_id and confidence >= HIGH_CONFIDENCE_THRESHOLD:
             # High confidence → auto-import
+            top_image = candidates[0].get("image", "") if candidates else ""
             self._enqueue_item(
                 media_type=media_type,
                 media_id=media_id,
                 source=resolved_source,
                 title=title,
+                image=top_image,
                 score=score,
                 status=status,
                 notes=notes,
@@ -492,6 +508,7 @@ class SensCritiqueImporter:
         media_id: str,
         source: str,
         title: str,
+        image: str = "",
         score,
         status: str,
         notes: str,
@@ -519,12 +536,17 @@ class SensCritiqueImporter:
                 # Mark for deletion so it will be replaced
                 self.to_delete[media_type][source].add(media_id_str)
 
-        item, _ = Item.objects.get_or_create(
+        saved_image = image or settings.IMG_NONE
+        item, created = Item.objects.get_or_create(
             media_id=media_id,
             source=source,
             media_type=media_type,
-            defaults={"title": title, "image": ""},
+            defaults={"title": title, "image": saved_image},
         )
+        # Patch image if the existing item has no real artwork
+        if not created and image and (not item.image or item.image == settings.IMG_NONE):
+            item.image = image
+            item.save(update_fields=["image"])
 
         model = apps.get_model(app_label="app", model_name=media_type)
         params = {

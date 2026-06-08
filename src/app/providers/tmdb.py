@@ -309,6 +309,37 @@ def person_credits(person_id):
     return data
 
 
+def person_details(person_id):
+    """Return biography and metadata for a TMDB person."""
+    cache_key = f"{Sources.TMDB.value}_person_details_{person_id}"
+    data = cache.get(cache_key)
+
+    if data is None:
+        url = f"{base_url}/person/{person_id}"
+        try:
+            response = services.api_request(
+                Sources.TMDB.value,
+                "GET",
+                url,
+                params={**base_params},
+            )
+        except requests.exceptions.HTTPError as error:
+            handle_error(error)
+            return None
+
+        data = {
+            "biography": response.get("biography") or "",
+            "birthday": response.get("birthday"),
+            "deathday": response.get("deathday"),
+            "place_of_birth": response.get("place_of_birth"),
+            "imdb_id": response.get("imdb_id"),
+            "tmdb_url": f"https://www.themoviedb.org/person/{person_id}",
+        }
+        cache.set(cache_key, data, 60 * 60 * 24 * 7)  # 7 days
+
+    return data
+
+
 def get_cached_seasons(media_id, season_numbers):
     """Check cache for seasons and return cached data and list of uncached seasons."""
     cached_data = {}

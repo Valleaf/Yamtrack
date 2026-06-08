@@ -4,7 +4,7 @@ Used for French bandes dessinées (BD) search and metadata retrieval.
 Public SRU API — no API key required.
 
 SRU endpoint: https://catalogue.bnf.fr/api/SRU
-Record schema: Dublin Core (dc)
+Record schema: Dublin Core (dublincore)
 """
 
 import logging
@@ -44,7 +44,7 @@ def _sru_search(cql_query: str, max_records: int = 10, start_record: int = 1):
     params = {
         "version": "1.2",
         "operation": "searchRetrieve",
-        "recordSchema": "dc",
+        "recordSchema": "dublincore",
         "maximumRecords": max_records,
         "startRecord": start_record,
         "query": cql_query,
@@ -87,11 +87,17 @@ def _get_first(dc_el, tag: str, default: str = "") -> str:
 def _extract_ark(dc_el) -> str | None:
     """Find the BnF ARK from dc:identifier elements.
 
-    Returns the full ARK string (e.g. ``ark:/12148/cb12345678x``) or None.
+    BnF DC records store the ARK as a full URI, e.g.:
+      ``http://catalogue.bnf.fr/ark:/12148/cb12345678x``
+    but sometimes as a bare ARK:
+      ``ark:/12148/cb12345678x``
+
+    Returns the bare ARK string (e.g. ``ark:/12148/cb12345678x``) or None.
     """
     for ident in _get_all(dc_el, "identifier"):
-        if ident.startswith("ark:/12148/"):
-            return ident
+        if "ark:/12148/" in ident:
+            # Normalise to bare ARK regardless of URI prefix
+            return "ark:/12148/" + ident.split("ark:/12148/")[1]
     return None
 
 
@@ -119,6 +125,9 @@ def _dc_to_result(dc_el) -> dict | None:
     """Convert a parsed DC element to the standard provider search-result dict.
 
     Returns None if the record has no usable ARK or title.
+
+    ``media_id`` is stored as the short ARK suffix (e.g. ``cb12345678x``)
+    so it can be safely embedded in URL path segments.
     """
     ark = _extract_ark(dc_el)
     if not ark:
@@ -126,8 +135,9 @@ def _dc_to_result(dc_el) -> dict | None:
     title = _get_first(dc_el, "title")
     if not title:
         return None
+    ark_short = ark.split("/")[-1]  # e.g. cb12345678x — no slashes, URL-safe
     return {
-        "media_id": ark,
+        "media_id": ark_short,
         "source": Sources.BNF.value,
         "media_type": MediaTypes.COMIC.value,
         "title": title,
@@ -180,14 +190,16 @@ def search(query: str, page: int) -> dict:
 def comic(media_id: str) -> dict:
     """Return full metadata for a BnF item (used on the comic detail page).
 
-    ``media_id`` is the full BnF ARK string, e.g. ``ark:/12148/cb12345678x``.
+    ``media_id`` is the short ARK suffix, e.g. ``cb12345678x``.
+    The full ARK ``ark:/12148/<media_id>`` is reconstructed internally.
     """
     cache_key = f"{Sources.BNF.value}_{MediaTypes.COMIC.value}_{media_id}"
     data = cache.get(cache_key)
 
     if data is None:
+        ark = f"ark:/12148/{media_id}"
         # Retrieve by persistent ARK identifier
-        cql = f'bib.persistentId adj "{media_id}"'
+        cql = f'bib.persistentId adj "{ark}"'
         try:
             root = _sru_search(cql, max_records=1)
         except Exception as exc:
@@ -198,7 +210,7 @@ def comic(media_id: str) -> dict:
         if dc_el is None:
             services.raise_not_found_error(Sources.BNF.value, media_id, "comic")
 
-        ark = _extract_ark(dc_el) or media_id
+        ark = _extract_ark(dc_el) or ark
         title = _get_first(dc_el, "title") or media_id
         creator = _get_first(dc_el, "creator")
         year = _extract_year(dc_el)
@@ -245,3 +257,5 @@ def comic(media_id: str) -> dict:
         cache.set(cache_key, data)
 
     return data
+
+

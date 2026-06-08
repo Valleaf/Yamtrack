@@ -565,12 +565,13 @@ def music_artist(request, artist_id):
 
 # ── Generic person/studio grouping ────────────────────────────────────────────
 
-def _get_media_by_person(user, media_type, person_key, source_filter=None):
+def _get_media_by_person(user, media_type, person_key, source_filter=None, cached_only=False):
     """Generic helper: group a user's tracked media by a person/studio field.
 
     Returns (persons_dict, total_count, cached_count).
     persons_dict maps person_id -> {id, name, image, media: [...]}
     person_key is the metadata key that holds a list of {id, name, image} dicts.
+    If cached_only=True, skips API fetching and only uses Redis-cached metadata.
     """
     from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: PLC0415
 
@@ -597,7 +598,7 @@ def _get_media_by_person(user, media_type, person_key, source_filter=None):
         else:
             uncached.append(m)
 
-    if uncached:
+    if uncached and not cached_only:
         def _fetch(m):
             try:
                 return m.item.media_id, services.get_media_metadata(
@@ -729,6 +730,47 @@ def game_studio(request, studio_id, name):  # noqa: ARG001
 # ── Music artists ─────────────────────────────────────────────────────────────
 
 @require_GET
+def movie_director_bio(request, director_id):
+    """HTMX endpoint: load a director's bio and external links from TMDB."""
+    try:
+        bio = tmdb.person_details(director_id)
+    except Exception:
+        logger.exception("Failed to fetch bio for director %s", director_id)
+        bio = None
+    return render(request, "app/components/person_bio.html", {"bio": bio})
+
+
+@require_GET
+def music_artist_bio(request, artist_id):
+    """HTMX endpoint: fetch Wikipedia extract for a MusicBrainz artist."""
+    import requests as _requests  # noqa: PLC0415
+    from app.providers import musicbrainz  # noqa: PLC0415
+
+    bio_html = ""
+    bio_url = ""
+    try:
+        artist_data = musicbrainz.artist(artist_id)
+        bio_url = artist_data.get("bio_url", "")
+        if bio_url and "wikipedia.org/wiki/" in bio_url:
+            title = bio_url.split("/wiki/")[-1]
+            resp = _requests.get(
+                f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}",
+                headers={"User-Agent": "Yamtrack/1.0"},
+                timeout=5,
+            )
+            if resp.ok:
+                bio_html = resp.json().get("extract", "")
+    except Exception:
+        logger.exception("Failed to fetch Wikipedia bio for artist %s", artist_id)
+
+    return render(request, "app/components/person_bio.html", {
+        "bio": {"biography": bio_html, "tmdb_url": "", "imdb_id": ""},
+        "source_url": bio_url,
+        "source_label": "Wikipedia",
+    })
+
+
+@require_GET
 def music_artists(request):
     """List view: tracked music grouped by artist."""
     persons, total_count, cached_count = _get_media_by_person(
@@ -849,18 +891,63 @@ def manga_authors(request):
 
 
 @require_GET
-def manga_author(request, author_id, name):  # noqa: ARG001
-    """Detail view: a specific manga author."""
+def manga_author(request, author_id, name):
+    """Detail view: a specific manga author (fast initial render; items load via HTMX)."""
+    # Use only cached metadata so the page renders immediately without MAL API calls.
+    persons, total_count, _ = _get_media_by_person(
+        request.user, MediaTypes.MANGA.value, "authors", cached_only=True
+    )
+    person = persons.get(author_id)
+
+    if person:
+        person_data = {
+            "id": author_id,
+            "name": person["name"],
+            "image": person.get("image"),
+        }
+    else:
+        # Author not yet in cache — reconstruct name from URL slug as placeholder.
+        person_data = {
+            "id": author_id,
+            "name": name.replace("-", " ").title(),
+            "image": None,
+        }
+
+    items_url = reverse(
+        "manga_author_items",
+        kwargs={"author_id": author_id, "name": name},
+    )
+
+    return render(request, "app/person_detail.html", {
+        "person": person_data,
+        "items_htmx_url": items_url,
+        "media_type": MediaTypes.MANGA.value,
+        "person_type": "author",
+        "person_type_plural": "Authors",
+        "list_url_name": "manga_authors",
+        "medialist_url_name": "medialist",
+        "page_title": f"{person_data['name']} — Author",
+        "total_count": total_count,
+    })
+
+
+@require_GET
+def manga_author_items(request, author_id, name):  # noqa: ARG001
+    """HTMX endpoint: load a manga author's tracked items (may call MAL API)."""
     persons, total_count, _ = _get_media_by_person(
         request.user, MediaTypes.MANGA.value, "authors"
     )
     person = persons.get(author_id)
     if not person:
-        raise Http404("Author not found")
+        return render(request, "app/components/person_tracked_items.html", {
+            "media_items": [],
+            "media_type": MediaTypes.MANGA.value,
+            "media_count": 0,
+            "percentage": 0,
+            "total_count": total_count,
+        })
 
     media_count = len(person["media"])
-    percentage = round(media_count / total_count * 100, 1) if total_count else 0
-
     tracked_items = [
         {
             "id": m["metadata"]["media_id"],
@@ -882,21 +969,11 @@ def manga_author(request, author_id, name):  # noqa: ARG001
     ]
     tracked_items.sort(key=lambda x: x["title"])
 
-    return render(request, "app/person_detail.html", {
-        "person": {
-            "id": author_id,
-            "name": person["name"],
-            "image": person.get("image"),
-            "media_count": media_count,
-            "percentage": percentage,
-        },
+    return render(request, "app/components/person_tracked_items.html", {
         "media_items": tracked_items,
         "media_type": MediaTypes.MANGA.value,
-        "person_type": "author",
-        "person_type_plural": "Authors",
-        "list_url_name": "manga_authors",
-        "medialist_url_name": "medialist",
-        "page_title": f"{person['name']} — Author",
+        "media_count": media_count,
+        "percentage": round(media_count / total_count * 100, 1) if total_count else 0,
         "total_count": total_count,
     })
 
@@ -1281,9 +1358,10 @@ def media_save(request):
                 "country": metadata.get("country", ""),
             },
         )
-        # Patch image/title/country if the item already existed with blank values
+        # Patch image/title/country if the item already existed with blank/placeholder values
         update_fields = []
-        if not item.image and metadata["image"]:
+        real_image = metadata["image"] and metadata["image"] != settings.IMG_NONE
+        if (not item.image or item.image == settings.IMG_NONE) and real_image:
             item.image = metadata["image"]
             update_fields.append("image")
         if not item.title and metadata["title"]:

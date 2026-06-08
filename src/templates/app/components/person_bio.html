@@ -1,0 +1,46 @@
+{% if bio and bio.biography %}
+  <div class="rounded-xl bg-[#1e2329] ring-1 ring-white/5 p-5 space-y-3"
+       x-data="{ expanded: false }">
+    <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-500">Biography</h2>
+    <p class="text-sm text-gray-300 leading-relaxed"
+       :class="expanded ? '' : 'line-clamp-5'"
+       style="white-space: pre-wrap">{{ bio.biography }}</p>
+    <button @click="expanded = !expanded"
+            class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors duration-150">
+      <span x-text="expanded ? '↑ Show less' : '↓ Read more'"></span>
+    </button>
+
+    {% if bio.birthday or bio.place_of_birth or bio.deathday %}
+      <div class="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pt-3 border-t border-white/5">
+        {% if bio.birthday %}
+          <span>
+            Born
+            <span class="text-gray-200 ml-1">{{ bio.birthday }}</span>
+            {% if bio.place_of_birth %}
+              <span class="text-gray-500">in</span>
+              <span class="text-gray-200">{{ bio.place_of_birth }}</span>
+            {% endif %}
+          </span>
+        {% endif %}
+        {% if bio.deathday %}
+          <span>Died <span class="text-gray-200 ml-1">{{ bio.deathday }}</span></span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="flex flex-wrap gap-3 text-xs pt-1">
+      {% if bio.tmdb_url %}
+        <a href="{{ bio.tmdb_url }}" target="_blank" rel="noopener noreferrer"
+           class="text-indigo-400 hover:text-indigo-300 underline transition-colors">TMDB ↗</a>
+      {% endif %}
+      {% if bio.imdb_id %}
+        <a href="https://www.imdb.com/name/{{ bio.imdb_id }}" target="_blank" rel="noopener noreferrer"
+           class="text-indigo-400 hover:text-indigo-300 underline transition-colors">IMDb ↗</a>
+      {% endif %}
+      {% if source_url %}
+        <a href="{{ source_url }}" target="_blank" rel="noopener noreferrer"
+           class="text-indigo-400 hover:text-indigo-300 underline transition-colors">{{ source_label|default:"Source" }} ↗</a>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

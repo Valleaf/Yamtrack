@@ -23,18 +23,11 @@
     {% if collection.card_stats.total %}
       <div class="mt-3 space-y-1.5">
         <div class="flex items-center justify-between text-[11px] text-gray-400">
-          <span>Tracked</span>
-          <span>{{ collection.card_stats.tracked_pct }}%</span>
-        </div>
-        <div class="h-1.5 overflow-hidden rounded-full bg-[#2a2f35]">
-          <div class="h-full rounded-full bg-indigo-500" style="width: {{ collection.card_stats.tracked_pct }}%"></div>
-        </div>
-        <div class="flex items-center justify-between text-[11px] text-gray-400">
           <span>Completed</span>
           <span>{{ collection.card_stats.completed_pct }}%</span>
         </div>
         <div class="h-1.5 overflow-hidden rounded-full bg-[#2a2f35]">
-          <div class="h-full rounded-full bg-emerald-500" style="width: {{ collection.card_stats.completed_pct }}%"></div>
+          <div class="h-full rounded-full bg-indigo-500" style="width: {{ collection.card_stats.completed_pct }}%"></div>
         </div>
       </div>
     {% endif %}
