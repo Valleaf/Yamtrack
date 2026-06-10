@@ -812,3 +812,197 @@ def get_media_by_type_country_data(user_media):
     function so the view can pass both independently to the template.
     """
     return get_country_distribution(user_media)
+
+
+# ── Genre / People / Time chart helpers ──────────────────────────────────────
+
+_GENRE_MEDIA_TYPES = frozenset({
+    "movie", "tv", "anime", "manga", "game", "book", "music",
+})
+
+
+def get_genre_distribution(user_media):
+    """Return genre counts per media type by reading provider metadata.
+
+    Calls get_media_metadata for each item; results are served from the
+    Redis cache for warm libraries (no fresh API requests).
+    Returns::
+
+        {
+            "movie": {
+                "label": "Movie",
+                "color": "#f97316",
+                "entries": [{"name": "Action", "count": 25, "bar_pct": 100}, ...],
+            },
+            ...
+        }
+    """
+    from app import providers  # noqa: PLC0415 — local import avoids circularity
+
+    genre_data = {}
+
+    for media_type, media_list in user_media.items():
+        if media_type not in _GENRE_MEDIA_TYPES:
+            continue
+
+        genre_counts: dict[str, int] = defaultdict(int)
+        for media in media_list:
+            try:
+                metadata = providers.services.get_media_metadata(
+                    media.item.media_type,
+                    media.item.media_id,
+                    media.item.source,
+                )
+            except Exception:
+                logger.debug(
+                    "Genre fetch skipped for %s/%s",
+                    media_type,
+                    media.item.media_id,
+                )
+                continue
+
+            for genre in (metadata.get("genres") or []):
+                if genre:
+                    genre_counts[str(genre)] += 1
+
+        if not genre_counts:
+            continue
+
+        sorted_genres = sorted(genre_counts.items(), key=lambda x: (-x[1], x[0]))[:15]
+        max_count = sorted_genres[0][1] if sorted_genres else 1
+        genre_data[media_type] = {
+            "label": app_tags.media_type_readable(media_type),
+            "color": config.get_stats_color(media_type),
+            "entries": [
+                {
+                    "name": name,
+                    "count": count,
+                    "bar_pct": max(round(count / max_count * 100), 2),
+                }
+                for name, count in sorted_genres
+            ],
+        }
+
+    return genre_data
+
+
+def get_people_stats(user_media):
+    """Return top directors, actors, and artists from the user's library.
+
+    Directors and actors come from TMDB movie metadata.
+    Artists come from MusicBrainz album metadata.
+    """
+    from app import providers  # noqa: PLC0415
+
+    directors: dict = {}
+    actors: dict = {}
+    artists: dict = {}
+
+    for media in user_media.get("movie", []):
+        try:
+            metadata = providers.services.get_media_metadata(
+                media.item.media_type,
+                media.item.media_id,
+                media.item.source,
+            )
+        except Exception:
+            continue
+
+        for person in metadata.get("directors", []):
+            pid = person.get("id")
+            if not pid:
+                continue
+            entry = directors.setdefault(
+                pid,
+                {"id": pid, "name": person["name"], "image": person.get("image"), "count": 0},
+            )
+            entry["count"] += 1
+
+        for person in metadata.get("cast", []):
+            pid = person.get("id")
+            if not pid:
+                continue
+            entry = actors.setdefault(
+                pid,
+                {"id": pid, "name": person["name"], "image": person.get("image"), "count": 0},
+            )
+            entry["count"] += 1
+
+    for media in user_media.get("music", []):
+        try:
+            metadata = providers.services.get_media_metadata(
+                media.item.media_type,
+                media.item.media_id,
+                media.item.source,
+            )
+        except Exception:
+            continue
+
+        for artist in metadata.get("artist_links", []):
+            aid = artist.get("id")
+            if not aid:
+                continue
+            entry = artists.setdefault(
+                aid,
+                {"id": aid, "name": artist["name"], "image": None, "count": 0},
+            )
+            entry["count"] += 1
+
+    top_n = 10
+    return {
+        "directors": sorted(directors.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
+        "actors": sorted(actors.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
+        "artists": sorted(artists.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
+    }
+
+
+def get_year_chart_data(year_rows):
+    """Format yearly activity for a grouped Chart.js bar chart."""
+    if not year_rows:
+        return None
+    sorted_rows = sorted(year_rows, key=lambda r: r["year"])
+    return {
+        "labels": [str(r["year"]) for r in sorted_rows],
+        "datasets": [
+            {
+                "label": "Completed",
+                "data": [r["completed"] for r in sorted_rows],
+                "background_color": "rgba(99, 102, 241, 0.85)",
+            },
+            {
+                "label": "Started",
+                "data": [r["started"] for r in sorted_rows],
+                "background_color": "rgba(52, 211, 153, 0.85)",
+            },
+        ],
+    }
+
+
+def get_decade_chart_data(year_rows):
+    """Aggregate yearly activity into decades for a Chart.js bar chart."""
+    if not year_rows:
+        return None
+
+    buckets: dict[int, dict] = {}
+    for row in year_rows:
+        decade = (row["year"] // 10) * 10
+        b = buckets.setdefault(decade, {"started": 0, "completed": 0})
+        b["started"] += row["started"]
+        b["completed"] += row["completed"]
+
+    sorted_decades = sorted(buckets.items())
+    return {
+        "labels": [f"{d}s" for d, _ in sorted_decades],
+        "datasets": [
+            {
+                "label": "Completed",
+                "data": [v["completed"] for _, v in sorted_decades],
+                "background_color": "rgba(99, 102, 241, 0.85)",
+            },
+            {
+                "label": "Started",
+                "data": [v["started"] for _, v in sorted_decades],
+                "background_color": "rgba(52, 211, 153, 0.85)",
+            },
+        ],
+    }

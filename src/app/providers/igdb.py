@@ -262,6 +262,14 @@ def search(query, page):
                     for entry in media.get("involved_companies", [])
                     if entry.get("company")
                 ],
+                "subtitle": next(
+                    (
+                        entry["company"]["name"]
+                        for entry in media.get("involved_companies", [])
+                        if entry.get("company")
+                    ),
+                    None,
+                ),
             }
             for media in search_results
         ]

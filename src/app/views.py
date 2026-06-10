@@ -1771,14 +1771,25 @@ def statistics(request):
         status_distribution,
     )
     extended_statistics = stats.get_extended_statistics(user_media)
-    timeline = stats.get_timeline(user_media)
+
+    # Timeline is always all-time regardless of the date filter so users
+    # can see their full media history even when stats are filtered by range.
+    if start_date is None and end_date is None:
+        timeline_media = user_media
+    else:
+        timeline_media, _ = stats.get_user_media(request.user, None, None)
+    timeline = stats.get_timeline(timeline_media)
 
     activity_data = stats.get_activity_data(request.user, start_date, end_date)
 
-    # New statistics for enhanced visualizations
+    # Enhanced visualisations
     progress_distribution = stats.get_progress_distribution(user_media)
     country_distribution = stats.get_country_distribution(user_media)
     media_by_type_country = stats.get_media_by_type_country_data(user_media)
+    genre_distribution = stats.get_genre_distribution(user_media)
+    people_stats = stats.get_people_stats(user_media)
+    year_chart_data = stats.get_year_chart_data(extended_statistics["year_rows"])
+    decade_chart_data = stats.get_decade_chart_data(extended_statistics["year_rows"])
 
     context = {
         "start_date": start_date,
@@ -1796,6 +1807,10 @@ def statistics(request):
         "progress_distribution": progress_distribution,
         "country_distribution": country_distribution,
         "media_by_type_country": media_by_type_country,
+        "genre_distribution": genre_distribution,
+        "people_stats": people_stats,
+        "year_chart_data": year_chart_data,
+        "decade_chart_data": decade_chart_data,
     }
 
     return render(request, "app/statistics.html", context)

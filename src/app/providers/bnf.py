@@ -145,6 +145,7 @@ def _dc_to_result(dc_el) -> dict | None:
         "image": _cover_url(ark),
         # Extra fields used by the import confidence scorer
         "creator": _get_first(dc_el, "creator"),
+        "subtitle": _get_first(dc_el, "creator") or None,
     }
 
 
@@ -229,6 +230,7 @@ def comic(media_id: str) -> dict:
             "source_url": source_url,
             "media_type": MediaTypes.COMIC.value,
             "title": title,
+            "country": "FR",  # BnF is the French national library
             "max_progress": None,
             "max_issue_number": None,
             "image": _cover_url(ark),

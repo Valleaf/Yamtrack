@@ -120,8 +120,9 @@ def search_music(query: str, page: int = 1, mb_type: str = "") -> dict:
             "media_type": MediaTypes.MUSIC.value,
             "source": Sources.MUSICBRAINZ.value,
             "image": _cover_url(rg["id"]),
-            "year": (rg.get("first-release-date") or "")[:4],
+            "year": (rg.get("first-release-date") or "")[:4] or None,
             "artists": artists,
+            "subtitle": ", ".join(artists) if artists else None,
             "type": type_label,
         })
 

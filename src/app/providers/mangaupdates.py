@@ -84,6 +84,7 @@ def search(query, page):
                 "media_type": MediaTypes.MANGA.value,
                 "title": media["record"]["title"],
                 "image": get_image_url(media["record"]),
+                "year": str(media["record"]["year"]) if media["record"].get("year") else None,
             }
             for media in response["results"]
         ]
@@ -133,6 +134,7 @@ async def async_manga(media_id):
             "source_url": response["url"],
             "media_type": MediaTypes.MANGA.value,
             "title": response["title"],
+            "country": _get_series_country(response.get("type", "")),
             "image": get_image_url(response),
             "synopsis": response["description"],
             "max_progress": get_max_progress(response),
@@ -156,6 +158,16 @@ async def async_manga(media_id):
         cache.set(cache_key, data)
 
     return data
+
+
+def _get_series_country(series_type):
+    """Derive country of origin from MangaUpdates series type."""
+    mapping = {
+        "Manhwa": "KR",
+        "Manhua": "CN",
+    }
+    # anything else (Manga, Doujinshi, Novel, OEL, Artbook, …) defaults to JP
+    return mapping.get(series_type or "", "JP")
 
 
 def get_image_url(response):

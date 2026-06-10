@@ -49,7 +49,7 @@ def search(media_type, query, page):
         url = f"{base_url}/{media_type}"
         params = {
             "q": query,
-            "fields": "media_type",
+            "fields": "media_type,start_date",
             "limit": settings.PER_PAGE,
         }
         if settings.MAL_NSFW:
@@ -74,6 +74,7 @@ def search(media_type, query, page):
                 "media_type": media_type,
                 "title": media["node"]["title"],
                 "image": get_image_url(media["node"]),
+                "year": (media["node"].get("start_date") or "")[:4] or None,
             }
             for media in response
         ]
@@ -120,6 +121,7 @@ def anime(media_id):
             "source_url": f"https://myanimelist.net/anime/{media_id}",
             "media_type": MediaTypes.ANIME.value,
             "title": response["title"],
+            "country": "JP",  # MAL only carries Japanese-produced anime
             "max_progress": num_episodes,
             "image": get_image_url(response),
             "synopsis": get_synopsis(response),
@@ -185,6 +187,7 @@ def manga(media_id):
             "source_url": f"https://myanimelist.net/manga/{media_id}",
             "media_type": MediaTypes.MANGA.value,
             "title": response["title"],
+            "country": _get_manga_country(response.get("media_type", "")),
             "image": get_image_url(response),
             "synopsis": get_synopsis(response),
             "max_progress": num_chapters,
@@ -214,6 +217,15 @@ def manga(media_id):
         cache.set(cache_key, data)
 
     return data
+
+
+def _get_manga_country(media_type):
+    """Derive country of origin from MAL manga/manhwa/manhua media_type."""
+    mapping = {
+        "manhwa": "KR",
+        "manhua": "CN",
+    }
+    return mapping.get((media_type or "").lower(), "JP")
 
 
 def get_format(response):

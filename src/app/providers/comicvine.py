@@ -48,7 +48,7 @@ def search(query, page):
             "format": "json",
             "query": query,
             "resources": "volume",
-            "field_list": "id,name,image",
+            "field_list": "id,name,image,start_year,publisher",
             "limit": settings.PER_PAGE,
             "page": page,
         }
@@ -71,6 +71,8 @@ def search(query, page):
                 "media_type": MediaTypes.COMIC.value,
                 "title": item["name"],
                 "image": get_image(item),
+                "year": str(item["start_year"]) if item.get("start_year") else None,
+                "subtitle": (item.get("publisher") or {}).get("name") or None,
             }
             for item in response["results"]
         ]

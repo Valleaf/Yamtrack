@@ -326,9 +326,96 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  // Create Score Stacked Bar Chart
-  const scoreDistributionElement =
-    document.getElementById("score_distribution");
+  // Common configuration for grouped (non-stacked) bar charts
+  const groupedBarChartConfig = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        stacked: false,
+        grid: { color: "rgba(255, 255, 255, 0.1)" },
+        ticks: { color: "#D1D5DB", maxRotation: 45 },
+      },
+      y: {
+        stacked: false,
+        beginAtZero: true,
+        grid: { color: "rgba(255, 255, 255, 0.1)" },
+        ticks: { color: "#D1D5DB", precision: 0 },
+      },
+    },
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#D1D5DB",
+          padding: 20,
+          boxWidth: 12,
+          boxHeight: 12,
+          usePointStyle: true,
+          pointStyle: "rectRounded",
+        },
+      },
+      tooltip: {
+        enabled: true,
+        mode: "index",
+        intersect: false,
+        backgroundColor: "#1e2329",
+        borderColor: "rgba(255,255,255,0.1)",
+        borderWidth: 1,
+        titleColor: "#D1D5DB",
+        bodyColor: "#D1D5DB",
+        padding: 10,
+      },
+      datalabels: { display: false },
+    },
+    interaction: { mode: "index", intersect: false },
+  };
+
+  // Helper: convert processBarData-style data to grouped bar datasets
+  function processGroupedBarData(chartData) {
+    return {
+      labels: chartData.labels,
+      datasets: chartData.datasets.map((ds) => ({
+        label: ds.label,
+        data: ds.data,
+        backgroundColor: ds.background_color,
+        borderColor: "rgba(255, 255, 255, 0.1)",
+        borderRadius: 5,
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8,
+      })),
+    };
+  }
+
+  // Year Activity Chart
+  const yearDataEl = document.getElementById("year_chart_data");
+  if (yearDataEl) {
+    const yearData = JSON.parse(yearDataEl.textContent);
+    const yearOptions = JSON.parse(JSON.stringify(groupedBarChartConfig));
+    yearOptions.plugins.title = {
+      display: false,
+    };
+    initializeChartIfExists(
+      "yearActivityChart",
+      "bar",
+      processGroupedBarData(yearData),
+      yearOptions
+    );
+  }
+
+  // Decade Activity Chart
+  const decadeDataEl = document.getElementById("decade_chart_data");
+  if (decadeDataEl) {
+    const decadeData = JSON.parse(decadeDataEl.textContent);
+    initializeChartIfExists(
+      "decadeActivityChart",
+      "bar",
+      processGroupedBarData(decadeData),
+      groupedBarChartConfig
+    );
+  }
+
   if (scoreDistributionElement) {
     const scoreData = JSON.parse(scoreDistributionElement.textContent);
     const scoreChartOptions = JSON.parse(JSON.stringify(barChartConfig)); // Deep clone

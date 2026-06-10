@@ -30,6 +30,20 @@
               {% include "app/icons/cube.svg" with classes="w-4 h-4" %}
               {{ item.media_type|default_source }}
             </span>
+
+            {% if item.year %}
+              <span class="flex items-center gap-1">
+                {% include "app/icons/calendar.svg" with classes="w-4 h-4" %}
+                {{ item.year }}
+              </span>
+            {% endif %}
+
+            {% if item.subtitle %}
+              <span class="flex items-center gap-1 min-w-0">
+                {% include "app/icons/person.svg" with classes="w-4 h-4 shrink-0" %}
+                <span class="truncate">{{ item.subtitle }}</span>
+              </span>
+            {% endif %}
           </div>
         </div>
 

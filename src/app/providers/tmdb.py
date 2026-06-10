@@ -97,16 +97,17 @@ def search(media_type, query, page):
         except requests.exceptions.HTTPError as error:
             handle_error(error)
 
-        results = [
-            {
+        results = []
+        for media in response["results"]:
+            date = media.get("release_date") or media.get("first_air_date") or ""
+            results.append({
                 "media_id": media["id"],
                 "source": Sources.TMDB.value,
                 "media_type": media_type,
                 "title": get_title(media),
                 "image": get_image_url(media["poster_path"]),
-            }
-            for media in response["results"]
-        ]
+                "year": date[:4] if date else None,
+            })
 
         total_results = response["total_results"]
         per_page = 20  # TMDB always returns 20 results per page

@@ -70,16 +70,19 @@ def search(query, page):
             response = handle_error(error)
 
         hits = response["data"]["search"]["results"]["hits"]
-        results = [
-            {
-                "media_id": hit["document"]["id"],
+        results = []
+        for hit in hits:
+            doc = hit["document"]
+            author_names = doc.get("author_names") or []
+            results.append({
+                "media_id": doc["id"],
                 "source": Sources.HARDCOVER.value,
                 "media_type": MediaTypes.BOOK.value,
-                "title": hit["document"]["title"],
-                "image": get_image_url(hit["document"]),
-            }
-            for hit in hits
-        ]
+                "title": doc["title"],
+                "image": get_image_url(doc),
+                "year": str(doc["release_year"]) if doc.get("release_year") else None,
+                "subtitle": ", ".join(author_names[:2]) if author_names else None,
+            })
         total_results = response["data"]["search"]["results"]["found"]
 
         data = helpers.format_search_response(
