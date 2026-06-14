@@ -3,11 +3,13 @@ import datetime
 import heapq
 import itertools
 import logging
+import math
 from collections import defaultdict
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
+from django.core.cache import cache
 from django.db import models
 from django.db.models import (
     Prefetch,
@@ -822,23 +824,11 @@ _GENRE_MEDIA_TYPES = frozenset({
 
 
 def get_genre_distribution(user_media):
-    """Return genre counts per media type by reading provider metadata.
+    """Return genre counts per media type using only cached provider metadata.
 
-    Calls get_media_metadata for each item; results are served from the
-    Redis cache for warm libraries (no fresh API requests).
-    Returns::
-
-        {
-            "movie": {
-                "label": "Movie",
-                "color": "#f97316",
-                "entries": [{"name": "Action", "count": 25, "bar_pct": 100}, ...],
-            },
-            ...
-        }
+    Items whose metadata isn't already cached are silently skipped — no live
+    API calls are made from the statistics page.
     """
-    from app import providers  # noqa: PLC0415 — local import avoids circularity
-
     genre_data = {}
 
     for media_type, media_list in user_media.items():
@@ -847,18 +837,9 @@ def get_genre_distribution(user_media):
 
         genre_counts: dict[str, int] = defaultdict(int)
         for media in media_list:
-            try:
-                metadata = providers.services.get_media_metadata(
-                    media.item.media_type,
-                    media.item.media_id,
-                    media.item.source,
-                )
-            except Exception:
-                logger.debug(
-                    "Genre fetch skipped for %s/%s",
-                    media_type,
-                    media.item.media_id,
-                )
+            cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+            metadata = cache.get(cache_key)
+            if metadata is None:
                 continue
 
             for genre in (metadata.get("genres") or []):
@@ -887,25 +868,19 @@ def get_genre_distribution(user_media):
 
 
 def get_people_stats(user_media):
-    """Return top directors, actors, and artists from the user's library.
+    """Return top directors, actors, and artists using only cached provider metadata.
 
-    Directors and actors come from TMDB movie metadata.
-    Artists come from MusicBrainz album metadata.
+    Items whose metadata isn't already cached are silently skipped — no live
+    API calls are made from the statistics page.
     """
-    from app import providers  # noqa: PLC0415
-
     directors: dict = {}
     actors: dict = {}
     artists: dict = {}
 
     for media in user_media.get("movie", []):
-        try:
-            metadata = providers.services.get_media_metadata(
-                media.item.media_type,
-                media.item.media_id,
-                media.item.source,
-            )
-        except Exception:
+        cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+        metadata = cache.get(cache_key)
+        if metadata is None:
             continue
 
         for person in metadata.get("directors", []):
@@ -929,13 +904,9 @@ def get_people_stats(user_media):
             entry["count"] += 1
 
     for media in user_media.get("music", []):
-        try:
-            metadata = providers.services.get_media_metadata(
-                media.item.media_type,
-                media.item.media_id,
-                media.item.source,
-            )
-        except Exception:
+        cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+        metadata = cache.get(cache_key)
+        if metadata is None:
             continue
 
         for artist in metadata.get("artist_links", []):
@@ -1006,3 +977,120 @@ def get_decade_chart_data(year_rows):
             },
         ],
     }
+
+
+# SVG donut constants (r=40 circle, full 360°)
+_DONUT_R = 40
+_DONUT_CIRCUMFERENCE = round(2 * math.pi * _DONUT_R, 2)  # ≈ 251.33
+
+
+def get_awards_progress(user):
+    """Return per-user tracking progress for each configured award category.
+
+    Returns a list of dicts, each containing: name, icon, tracked, total,
+    percentage, dash_offset.
+    """
+    from app.awards_data import AWARDS  # noqa: PLC0415
+
+    result = []
+    for award in AWARDS:
+        source = award["source"]
+        media_type = award["media_type"]
+        id_key = f"{source}_id"
+        winner_ids = {str(w[id_key]) for w in award["winners"] if w.get(id_key)}
+        total = len(winner_ids)
+
+        if not total:
+            continue
+
+        try:
+            model = apps.get_model("app", media_type)
+        except LookupError:
+            continue
+
+        tracked = (
+            model.objects.filter(
+                user=user,
+                item__source=source,
+                item__media_type=media_type,
+                item__media_id__in=winner_ids,
+            )
+            .values("item__media_id")
+            .distinct()
+            .count()
+        )
+
+        pct = round(tracked / total * 100) if total else 0
+        offset = round(_DONUT_CIRCUMFERENCE * (1 - pct / 100), 2)
+
+        result.append({
+            "name": award["name"],
+            "icon": award["icon"],
+            "tracked": tracked,
+            "total": total,
+            "percentage": pct,
+            "dash_offset": offset,
+        })
+
+    return result
+
+
+def get_list_progress(user):
+    """Return per-user progress for each configured ExternalList.
+
+    Returns a list of dicts sorted by descending completion percentage.
+    Each dict contains: name, tracked, total, percentage, dash_offset,
+    last_synced.
+    """
+    from app.models import ExternalList  # noqa: PLC0415
+
+    lists = list(ExternalList.objects.prefetch_related("entries").order_by("name"))
+    if not lists:
+        return []
+
+    result = []
+    for ext_list in lists:
+        list_media_ids = {str(e.media_id) for e in ext_list.entries.all()}
+        total = len(list_media_ids) or ext_list.item_count
+
+        if not total:
+            result.append({
+                "name": ext_list.name,
+                "tracked": 0,
+                "total": 0,
+                "percentage": 0,
+                "dash_offset": _DONUT_CIRCUMFERENCE,
+                "last_synced": ext_list.last_synced,
+            })
+            continue
+
+        try:
+            model = apps.get_model("app", ext_list.media_type)
+        except LookupError:
+            continue
+
+        tracked = (
+            model.objects.filter(
+                user=user,
+                item__media_id__in=list_media_ids,
+                item__source=Sources.TMDB.value,
+                item__media_type=ext_list.media_type,
+            )
+            .values("item__media_id")
+            .distinct()
+            .count()
+        )
+
+        pct = round(tracked / total * 100) if total else 0
+        offset = round(_DONUT_CIRCUMFERENCE * (1 - pct / 100), 2)
+
+        result.append({
+            "name": ext_list.name,
+            "tracked": tracked,
+            "total": total,
+            "percentage": pct,
+            "dash_offset": offset,
+            "last_synced": ext_list.last_synced,
+        })
+
+    return sorted(result, key=lambda x: (-x["percentage"], x["name"]))

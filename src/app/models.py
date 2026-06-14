@@ -2070,3 +2070,51 @@ class Music(Media):
     """Model for music albums."""
 
     tracker = FieldTracker()
+
+
+class ExternalList(models.Model):
+    """A curated external list (e.g. IMDb Top 250) synced from TMDB."""
+
+    slug = models.SlugField(max_length=100, unique=True)
+    name = models.CharField(max_length=255)
+    media_type = models.CharField(max_length=10, choices=MediaTypes)
+    tmdb_list_id = models.CharField(max_length=50)
+    item_count = models.PositiveIntegerField(default=0)
+    last_synced = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        """Meta options for the model."""
+
+        ordering = ["name"]
+
+    def __str__(self):
+        """Return the name of the list."""
+        return self.name
+
+
+class ExternalListItem(models.Model):
+    """A single TMDB media entry within an ExternalList."""
+
+    external_list = models.ForeignKey(
+        ExternalList,
+        on_delete=models.CASCADE,
+        related_name="entries",
+    )
+    media_id = models.CharField(max_length=50)
+    rank = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        """Meta options for the model."""
+
+        ordering = ["rank", "media_id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["external_list", "media_id"],
+                name="app_externallistitem_unique_list_media",
+            )
+        ]
+
+    def __str__(self):
+        """Return the list name and rank."""
+        return f"{self.external_list.name}: #{self.rank} ({self.media_id})"
+

@@ -872,6 +872,38 @@ def episode(media_id, season_number, episode_number):
     )
 
 
+def fetch_list(list_id):
+    """Fetch all items from a TMDB user list, handling pagination.
+
+    Returns a flat list of raw TMDB item dicts.
+    Each item has at minimum 'id' (int) and usually 'media_type' (str).
+    """
+    items = []
+    page = 1
+
+    while True:
+        url = f"{base_url}/list/{list_id}"
+        params = {**base_params, "page": page}
+
+        try:
+            response = services.api_request(
+                Sources.TMDB.value,
+                "GET",
+                url,
+                params=params,
+            )
+        except requests.exceptions.HTTPError as error:
+            handle_error(error)
+
+        items.extend(response.get("items", []))
+        total_pages = response.get("total_pages", 1)
+        if page >= total_pages:
+            break
+        page += 1
+
+    return items
+
+
 def watch_provider_regions():
     """Return the available watch provider regions from The Movie Database."""
     cache_key = f"{Sources.TMDB.value}_watch_provider_regions"

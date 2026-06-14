@@ -555,6 +555,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "Cleanup user messages",
         "schedule": 60 * 60 * 24,  # every 24 hours
     },
+    "sync_external_lists": {
+        "task": "Sync external lists",
+        "schedule": 60 * 60 * 24 * 7,  # weekly
+    },
 }
 
 IS_PROD = not any(cmd in sys.argv for cmd in ("runserver", "test"))

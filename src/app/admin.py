@@ -6,6 +6,8 @@ from django.contrib.admin.sites import AlreadyRegistered
 
 from app.models import (
     Episode,
+    ExternalList,
+    ExternalListItem,
     Item,
     UserMessage,
 )
@@ -43,6 +45,27 @@ class UserMessageAdmin(admin.ModelAdmin):
     search_fields = ["user__username", "message"]
     list_display = ["message", "level", "user", "created_at", "shown_at"]
     list_filter = ["level", "shown_at"]
+
+
+@admin.register(ExternalList)
+class ExternalListAdmin(admin.ModelAdmin):
+    """Admin for curated external lists."""
+
+    list_display = ["name", "media_type", "tmdb_list_id", "item_count", "last_synced"]
+    list_filter = ["media_type"]
+    search_fields = ["name", "slug", "tmdb_list_id"]
+    readonly_fields = ["item_count", "last_synced"]
+    prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(ExternalListItem)
+class ExternalListItemAdmin(admin.ModelAdmin):
+    """Admin for individual entries within external lists."""
+
+    list_display = ["external_list", "rank", "media_id"]
+    list_filter = ["external_list"]
+    search_fields = ["media_id", "external_list__name"]
+    raw_id_fields = ["external_list"]
 
 
 class MediaAdmin(admin.ModelAdmin):

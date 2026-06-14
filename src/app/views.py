@@ -1790,6 +1790,8 @@ def statistics(request):
     people_stats = stats.get_people_stats(user_media)
     year_chart_data = stats.get_year_chart_data(extended_statistics["year_rows"])
     decade_chart_data = stats.get_decade_chart_data(extended_statistics["year_rows"])
+    list_progress = stats.get_list_progress(request.user)
+    awards_progress = stats.get_awards_progress(request.user)
 
     context = {
         "start_date": start_date,
@@ -1811,6 +1813,8 @@ def statistics(request):
         "people_stats": people_stats,
         "year_chart_data": year_chart_data,
         "decade_chart_data": decade_chart_data,
+        "list_progress": list_progress,
+        "awards_progress": awards_progress,
     }
 
     return render(request, "app/statistics.html", context)

@@ -374,6 +374,17 @@ def update_plex_usernames(request):
 
 
 @require_POST
+def sync_external_lists_now(request):
+    """Trigger an immediate sync of all configured ExternalLists."""
+    from app.tasks import sync_external_lists  # noqa: PLC0415
+
+    sync_external_lists.delay()
+    messages.success(request, "External list sync queued — results will appear on the statistics page shortly.")
+    logger.info("Manual external list sync triggered by %s", request.user)
+    return redirect("advanced")
+
+
+@require_POST
 def clear_search_cache(request):
     """Clear all cached search entries."""
     deleted = cache.delete_pattern("search_*")

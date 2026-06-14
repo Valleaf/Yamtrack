@@ -41,7 +41,7 @@
     [2026-06-10 17:18:05 +0200] [41] [ERROR] Bibliothèque nationale de France error: Comic with ID cb42732025d not found
     [2026-06-10 17:18:05 +0200] [41] [ERROR] Internal Server Error: /details/bnf/comic/cb42732025d/lucky-luke-contre-joss-jamon-dessins-de-morris-scenario-de-r-goscinny
 
-### P
+Home page : if more than 15 items in a planning, they dont show up. Also tv shows planning, that do not have any seasons watched should go in the planning sections (Only with those criterias)
 
 # 🟠 UI / UX Improvements
 
@@ -119,21 +119,27 @@ World map should be an actual map with dots, like rateyourmusiuc. Also not sure 
 
 ### Awards
 
-- [ ] Oscar Best Picture winners.
-- [ ] Cannes Palme d'Or winners.
-- [ ] Game Awards GOTY winners.
+- [ ] fill in the list
+
+more festivals, cesar, sundance, etc
 
 ### Custom Awards
 
-- [ ] Personal GOTY collections.
+- [ ] Personal GOTY collections (where i make my selection ).
+- [ ] Personal best of each year /decade by media type
+- [ ] Personal best of by genre
 - [ ] Personal Oscars/Awards.
 - [ ] User-defined award lists.
+- [ ]
 
 ---
 
 # 🔵 Nice To Have
 
 - [ ] Show score more prominently across pages.
+- [ ] calendar with images
 - [ ] Better visual indicators for ratings.
 - [ ] Richer metadata throughout the application.
-- [ ] Images in new releases
+- [ ] Images in new releases and indiciation if it's a season finale or somehting
+- [ ] time watched sums tv shows
+- [ ]

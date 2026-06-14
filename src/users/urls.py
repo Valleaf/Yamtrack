@@ -30,6 +30,7 @@ urlpatterns = [
     ),
     path("regenerate_token", views.regenerate_token, name="regenerate_token"),
     path("clear_search_cache", views.clear_search_cache, name="clear_search_cache"),
+    path("sync_external_lists", views.sync_external_lists_now, name="sync_external_lists"),
     path("switch_user", views.switch_user, name="switch_user"),
     path(
         "update_plex_usernames",
