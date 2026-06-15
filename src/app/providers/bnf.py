@@ -9,10 +9,15 @@ Record schema: Dublin Core (dublincore)
 
 import logging
 import re
+import ssl
 from urllib.parse import quote
 
+import requests
+from defusedxml import ElementTree
 from django.conf import settings
 from django.core.cache import cache
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 from app import helpers
 from app.models import MediaTypes, Sources
@@ -20,7 +25,41 @@ from app.providers import services
 
 logger = logging.getLogger(__name__)
 
-SRU_URL = "https://catalogue.bnf.fr/api/SRU"
+SRU_URL = "http://catalogue.bnf.fr/api/SRU"
+
+# ---------------------------------------------------------------------------
+# Dedicated HTTP session for catalogue.bnf.fr
+# ---------------------------------------------------------------------------
+# catalogue.bnf.fr drops TLS connections without a proper close_notify alert.
+# Python 3.12 / OpenSSL 3.x treats this as SSLEOFError.  Setting
+# OP_IGNORE_UNEXPECTED_EOF on the SSL context suppresses the error.
+# We use a standalone session (not the shared LimiterSession) so the SSL
+# adapter is guaranteed to be applied without interference.
+
+
+class _BnFSSLAdapter(HTTPAdapter):
+    """HTTPAdapter with TLS compatibility fixes for catalogue.bnf.fr."""
+
+    def _make_ctx(self):
+        ctx = create_urllib3_context()
+        if hasattr(ssl, "OP_IGNORE_UNEXPECTED_EOF"):
+            ctx.options |= ssl.OP_IGNORE_UNEXPECTED_EOF
+        if hasattr(ssl, "OP_LEGACY_SERVER_CONNECT"):
+            ctx.options |= ssl.OP_LEGACY_SERVER_CONNECT
+        return ctx
+
+    def init_poolmanager(self, *args, **kwargs):
+        kwargs["ssl_context"] = self._make_ctx()
+        super().init_poolmanager(*args, **kwargs)
+
+    def proxy_manager_for(self, proxy, **proxy_kwargs):
+        proxy_kwargs["ssl_context"] = self._make_ctx()
+        return super().proxy_manager_for(proxy, **proxy_kwargs)
+
+
+_bnf_session = requests.Session()
+_bnf_session.mount("https://", _BnFSSLAdapter(max_retries=3))
+_bnf_session.mount("http://", HTTPAdapter(max_retries=3))
 
 # XML namespace URIs
 _SRW_NS = "http://www.loc.gov/zing/srw/"
@@ -49,13 +88,19 @@ def _sru_search(cql_query: str, max_records: int = 10, start_record: int = 1):
         "startRecord": start_record,
         "query": cql_query,
     }
-    return services.api_request(
-        Sources.BNF.value,
-        "GET",
-        SRU_URL,
-        params=params,
-        response_format="xml",
-    )
+    try:
+        resp = _bnf_session.get(
+            SRU_URL,
+            params=params,
+            timeout=settings.REQUEST_TIMEOUT,
+            verify=settings.REQUESTS_VERIFY_SSL,
+        )
+        resp.raise_for_status()
+        return ElementTree.fromstring(resp.text)
+    except requests.exceptions.RequestException as exc:
+        raise services.ProviderAPIError(
+            Sources.BNF.value, exc, details=str(exc)
+        ) from None
 
 
 def _iter_dc_elements(root):
@@ -110,15 +155,91 @@ def _extract_year(dc_el) -> str:
     return ""
 
 
-def _cover_url(ark: str | None) -> str:
-    """Build the BnF catalog cover-image URL for an ARK identifier."""
-    if not ark:
-        return settings.IMG_NONE
-    encoded = quote(ark, safe="")
-    return (
-        f"https://catalogue.bnf.fr/couverture"
-        f"?appName=NE&idArk={encoded}&couverture=1"
+def _extract_ean_isbn(dc_el) -> tuple[str | None, str | None]:
+    """Return (ean, isbn) from dc:identifier and dc:description elements.
+
+    BnF DC records typically store ISBNs with hyphens in dc:identifier, e.g.:
+      ``978-2-8001-1234-5``  or  ``2-8001-1234-5``
+    and commercial EAN in dc:description as:
+      ``Code à barres commercial : EAN 3781507006999``
+    """
+    ean = None
+    isbn = None
+
+    for ident in _get_all(dc_el, "identifier"):
+        # Skip URI-form identifiers (ARK, HTTP URLs)
+        if "://" in ident or ident.strip().startswith("ark:"):
+            continue
+        # Normalise: strip hyphens/spaces to get a plain digit string
+        digits_only = re.sub(r"[\-\s]", "", ident.strip())
+        if re.fullmatch(r"\d{13}", digits_only):
+            if digits_only.startswith(("978", "979")):
+                isbn = isbn or digits_only
+            else:
+                ean = ean or digits_only
+        elif re.fullmatch(r"\d{9}[\dX]", digits_only, re.IGNORECASE) and not isbn:
+            isbn = digits_only.upper()
+
+    for desc in _get_all(dc_el, "description"):
+        m = re.search(r"EAN[\s:]*([0-9]{13})", desc, re.IGNORECASE)
+        if m and not ean:
+            ean = m.group(1)
+
+    return ean, isbn
+
+
+def _extract_people(dc_el) -> list[str]:
+    """Return deduplicated list of all people from dc:creator + dc:contributor."""
+    seen: set[str] = set()
+    people = []
+    for val in _get_all(dc_el, "creator") + _get_all(dc_el, "contributor"):
+        if val and val not in seen:
+            seen.add(val)
+            people.append(val)
+    return people
+
+
+def _clean_description(dc_el) -> str:
+    """Return the dc:description, filtering out lines that are only barcode/EAN metadata."""
+    _barcode_pat = re.compile(
+        r"^\s*(code[\s\u00e0àa]+barres|ean[\s:]+\d{13}|isbn[\s:]+[\d\-X]+)",
+        re.IGNORECASE,
     )
+    meaningful = [
+        text
+        for text in _get_all(dc_el, "description")
+        if not _barcode_pat.match(text)
+    ]
+    return meaningful[0] if meaningful else ""
+
+
+def _best_cover_url(
+    ark: str | None,
+    ean: str | None = None,
+    isbn: str | None = None,
+) -> str:
+    """Return best available cover image URL.
+
+    Priority: Open Library by EAN > Open Library by ISBN
+    > BnF catalogue couverture > IMG_NONE.
+
+    Open Library returns actual cover art for most commercially
+    distributed albums; BnF couverture works only when BnF has
+    explicitly indexed a cover scan.
+    """
+    if ean:
+        return f"https://covers.openlibrary.org/b/ean/{ean}-L.jpg"
+    if isbn:
+        return f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
+    if ark:
+        # Keep `:` and `/` unencoded — BnF's couverture endpoint does plain
+        # string matching on idArk and won't decode %3A / %2F.
+        encoded = quote(ark, safe=":/")
+        return (
+            f"https://catalogue.bnf.fr/couverture"
+            f"?appName=NE&idArk={encoded}&couverture=1"
+        )
+    return settings.IMG_NONE
 
 
 def _dc_to_result(dc_el) -> dict | None:
@@ -136,16 +257,18 @@ def _dc_to_result(dc_el) -> dict | None:
     if not title:
         return None
     ark_short = ark.split("/")[-1]  # e.g. cb12345678x — no slashes, URL-safe
+    ean, isbn = _extract_ean_isbn(dc_el)
+    creator = _get_first(dc_el, "creator")
     return {
         "media_id": ark_short,
         "source": Sources.BNF.value,
         "media_type": MediaTypes.COMIC.value,
         "title": title,
         "year": _extract_year(dc_el),
-        "image": _cover_url(ark),
+        "image": _best_cover_url(ark, ean, isbn),
         # Extra fields used by the import confidence scorer
-        "creator": _get_first(dc_el, "creator"),
-        "subtitle": _get_first(dc_el, "creator") or None,
+        "creator": creator,
+        "subtitle": creator or None,
     }
 
 
@@ -200,7 +323,7 @@ def comic(media_id: str) -> dict:
     if data is None:
         ark = f"ark:/12148/{media_id}"
         # Retrieve by persistent ARK identifier
-        cql = f'bib.persistentId adj "{ark}"'
+        cql = f'bib.persistentid any "{ark}"'
         try:
             root = _sru_search(cql, max_records=1)
         except Exception as exc:
@@ -213,16 +336,28 @@ def comic(media_id: str) -> dict:
 
         ark = _extract_ark(dc_el) or ark
         title = _get_first(dc_el, "title") or media_id
-        creator = _get_first(dc_el, "creator")
         year = _extract_year(dc_el)
         publisher = _get_first(dc_el, "publisher")
-        description = _get_first(dc_el, "description") or "No synopsis available"
+        description = _clean_description(dc_el) or "No synopsis available"
         subjects = _get_all(dc_el, "subject")
         language = _get_first(dc_el, "language")
+        ean, isbn = _extract_ean_isbn(dc_el)
+        people = _extract_people(dc_el)
 
         # Canonical page on catalogue.bnf.fr
         ark_short = ark.split("/")[-1]  # e.g. cb12345678x
         source_url = f"https://catalogue.bnf.fr/ark:/12148/{ark_short}"
+
+        details: dict = {
+            "start_date": year or None,
+            "publisher": publisher or None,
+            "people": people,
+            "language": language or None,
+        }
+        if ean:
+            details["ean"] = ean
+        if isbn:
+            details["isbn"] = isbn
 
         data = {
             "media_id": media_id,
@@ -233,24 +368,13 @@ def comic(media_id: str) -> dict:
             "country": "FR",  # BnF is the French national library
             "max_progress": None,
             "max_issue_number": None,
-            "image": _cover_url(ark),
+            "image": _best_cover_url(ark, ean, isbn),
             "synopsis": description,
             "genres": subjects[:5] if subjects else None,
             "score": None,
             "score_count": None,
-            "details": {
-                "start_date": year or None,
-                "publisher": publisher or None,
-                "issues_count": None,
-                "last_issue_name": None,
-                "last_issue_number": None,
-                "people": [creator] if creator else [],
-                "last_updated": None,
-                "language": language or None,
-            },
-            "creators": (
-                [{"id": "", "name": creator, "image": None}] if creator else []
-            ),
+            "details": details,
+            "creators": [],
             "related": {"recommendations": []},
             # No ComicVine-style issue events for BnF items
             "last_issue_id": None,

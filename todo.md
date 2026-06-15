@@ -58,16 +58,10 @@ World map should be an actual map with dots, like rateyourmusiuc. Also not sure 
 
 # 🟡 Statistics Expansion
 
-### People
-
-- [ ] Most watched directors.
-- [ ] Most watched actors.
-- [ ] Most listened artists.
-
 ### Time
 
-- [ ] Year statistics.
-- [ ] Decade statistics.(Bar chart like senscritique maybe ?)
+- [ ] Year statistics. From the media, not only consumption
+- [ ] Decade statistics.(Bar chart like senscritique maybe ?)From the media not only consumption
 - [ ] Media timeline (all time).
 
 ### Genres
@@ -111,6 +105,7 @@ World map should be an actual map with dots, like rateyourmusiuc. Also not sure 
 ### External Lists
 
 - [ ] Letterboxd Top 250.
+- [ ] Show list on click
 - [ ] Sight & Sound Top 250.
 - [ ] Edgar Wright's 100 Favorites.
 - [ ] BFI Best Films.
