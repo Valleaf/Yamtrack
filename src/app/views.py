@@ -314,6 +314,7 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
             (Sources.IGDB.value, MediaTypes.GAME.value): "igdb_collection",
             (Sources.HARDCOVER.value, MediaTypes.BOOK.value): "hardcover_series",
             (Sources.BNF.value, MediaTypes.COMIC.value): "bnf_series",
+            (Sources.COMICVINE.value, MediaTypes.COMIC.value): "comicvine_volume",
         }
         source_key = source_key_map.get((source, media_type))
         if source_key:
@@ -330,12 +331,14 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
                         sync_igdb_collection,
                         sync_hardcover_series,
                         sync_bnf_series,
+                        sync_comicvine_volume,
                     )
                     sync_map = {
                         "tmdb_collection": sync_tmdb_collection,
                         "igdb_collection": sync_igdb_collection,
                         "hardcover_series": sync_hardcover_series,
                         "bnf_series": sync_bnf_series,
+                        "comicvine_volume": sync_comicvine_volume,
                     }
                     sync_fn = sync_map.get(source_key)
                     if sync_fn:
@@ -1432,6 +1435,19 @@ def media_save(request):
                 sync_bnf_series(request.user, comic_metadata)
             except Exception:
                 logger.exception("Failed to sync BnF series for %s", media_id)
+
+        # Auto-sync ComicVine volume (issue-tracked comics only -- comic()
+        # only embeds "comicvine_volume" for "i<id>" media_ids; legacy
+        # volume-tracked comics have no such key, so this is a no-op for them)
+        if source == Sources.COMICVINE.value and media_type == MediaTypes.COMIC.value:
+            try:
+                from app.providers.collections_providers import sync_comicvine_volume
+                comic_metadata = services.get_media_metadata(
+                    media_type, media_id, source
+                )
+                sync_comicvine_volume(request.user, comic_metadata)
+            except Exception:
+                logger.exception("Failed to sync ComicVine volume for %s", media_id)
     else:
         logger.error(form.errors.as_json())
         for field, errors in form.errors.items():

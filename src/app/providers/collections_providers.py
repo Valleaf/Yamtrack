@@ -31,6 +31,8 @@ def fetch(source, source_id):
         return _fetch_igdb_collection(source_id)
     if source == "comicvine_arc":
         return _fetch_comicvine_arc(source_id)
+    if source == "comicvine_volume":
+        return _fetch_comicvine_volume(source_id)
     if source == "bnf_series":
         return _fetch_bnf_series(source_id)
     msg = f"Unknown collection source: {source}"
@@ -412,6 +414,30 @@ def _fetch_comicvine_arc(source_id):
         "items": parts,
         "parts": parts,  # _sync_collection reads 'parts', fetch() callers read 'items'
     }
+
+
+def _fetch_comicvine_volume(source_id):
+    """Re-fetch a Comic Vine volume's issue list for the manual Sync button.
+
+    Reuses ``comicvine._build_volume_collection()`` -- the same builder that
+    seeds the collection the first time an issue in this volume is tracked
+    (see ``sync_comicvine_volume``) -- so a manual re-sync picks up any new
+    issues Comic Vine has added since.
+
+    Deliberately doesn't refetch the volume *name*: ``_build_volume_collection``
+    has no name lookup of its own (the name comes from the issue payload's
+    nested ``volume.name`` at first-sync time), so this returns ``name=""``.
+    ``_sync_items`` only overwrites ``Collection.name`` when truthy, so the
+    existing name is left alone on re-sync.
+    """
+    from app.providers import comicvine
+
+    col_data = comicvine._build_volume_collection(source_id)
+    if not col_data:
+        return None
+    # _sync_collection/_sync_items read 'parts'/'items' respectively (see
+    # _fetch_comicvine_arc above for the same dual-key shim).
+    return {**col_data, "items": col_data["parts"]}
 
 
 def _search_bnf_series(query: str) -> list[dict]:

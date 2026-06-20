@@ -44,12 +44,9 @@ Awards progress should be openable when clicked (in the sam page, like a dropdow
 
 ### Collections
 
-- [ ] Collections filter by media type.
-- [ ] Multiple collections per item.
-- [ ] Dropped counts as completed. Same for directors
-- [ ] collections for BD(Comics)
+Dropped should count as completed for the collections and directors
 
-### Planning
+- Planning
 
 - [ ] Planning button available on the grids when searching.
 
@@ -98,4 +95,71 @@ more festivals, cesar, sundance, etc
 - [ ] time watched sums tv shows
 - [ ] ios app for local use ?
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack
-- [ ]
+
+App : 
+
+
+
+You have full filesystem access to my Yamtrack fork.
+
+I want you to implement full Progressive Web App (PWA) support for Yamtrack so it can be installed on iPhone and Android from the browser and launched from the home screen like a native app.
+
+### Requirements
+
+1. Create a valid `manifest.json`
+
+* Name: Yamtrack
+* Short name: Yamtrack
+* Display: standalone
+* Start URL: /
+* Theme/background colors matching the current Yamtrack UI
+* Include 192x192 and 512x512 icons
+
+1. Add all required meta tags to the global base template
+
+* manifest link
+* theme-color
+* Apple mobile web app tags
+* Apple touch icon
+* viewport-fit=cover support
+
+1. Add a Service Worker
+
+* Register globally
+* Cache static assets
+* Cache CSS/JS/images
+* Offline fallback for basic navigation
+* Keep implementation simple and maintainable
+
+1. Add iPhone-specific support
+
+* Home screen installation support
+* Proper status bar behavior
+* Safe-area support for notches and home indicator
+
+1. Create any required icon assets
+
+* Reuse existing Yamtrack branding/logo if available
+* Otherwise generate simple placeholder icons automatically
+
+1. Verify all Django static paths work correctly in production Docker deployments.
+
+### Important
+
+* Read the existing project structure before making changes.
+* Follow existing project conventions.
+* Do not ask me for manual edits.
+* Edit files directly.
+* Show me every file changed.
+* Explain any rebuild steps required afterwards.
+
+### Validation
+
+After implementation, tell me:
+
+1. Which files were modified.
+2. The URL I should open on my iPhone.
+3. Exact steps to install Yamtrack on iPhone.
+4. Any limitations of the current PWA implementation.
+
+Also check whether Yamtrack already contains any PWA-related files and extend them instead of creating duplicates.
