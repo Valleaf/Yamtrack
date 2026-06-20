@@ -459,6 +459,10 @@ class MediaManager(models.Manager):
             if status == Status.PLANNING.value and media_type == MediaTypes.SEASON.value:
                 continue
 
+            if media_type == MediaTypes.TV.value and status == Status.PLANNING.value:
+                # Only show TV shows that have no seasons at all (truly unwatched)
+                media_list = [tv for tv in media_list if not list(tv.seasons.all())]
+
             if not media_list:
                 continue
 
@@ -473,6 +477,8 @@ class MediaManager(models.Manager):
             total_count = len(sorted_list)
             if specific_media_type:
                 paginated_list = sorted_list[items_limit:]
+            elif status == Status.PLANNING.value:
+                paginated_list = sorted_list  # Always show all planning items
             else:
                 paginated_list = sorted_list[:items_limit]
 
@@ -495,6 +501,9 @@ class MediaManager(models.Manager):
         for media_type in active_media_types:
             if media_type == MediaTypes.TV.value:
                 if not has_season_type and status == Status.IN_PROGRESS.value:
+                    media_types.append(media_type)
+                elif status == Status.PLANNING.value:
+                    # Include TV shows in planning (filtered later to no-seasons-only)
                     media_types.append(media_type)
                 continue
 

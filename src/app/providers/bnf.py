@@ -7,9 +7,11 @@ SRU endpoint: https://catalogue.bnf.fr/api/SRU
 Record schema: Dublin Core (dublincore)
 """
 
+from difflib import SequenceMatcher
 import logging
 import re
 import ssl
+import unicodedata
 from urllib.parse import quote
 
 import requests
@@ -21,11 +23,28 @@ from urllib3.util.ssl_ import create_urllib3_context
 
 from app import helpers
 from app.models import MediaTypes, Sources
-from app.providers import services
+from app.providers import comicvine, services
 
 logger = logging.getLogger(__name__)
 
 SRU_URL = "http://catalogue.bnf.fr/api/SRU"
+
+# BnF "Service Couvertures" API (beta, launched Feb 2026).
+# Unlike the old catalogue.bnf.fr/couverture endpoint (ARK only), this
+# supports lookup by idArk, EAN, or ISBN directly.
+# Docs: https://api.bnf.fr/fr/api-service-couvertures-du-catalogue-general
+BNF_COVER_API_URL = "https://openapi.bnf.fr/couverture/image/image/recupererImage"
+
+# Hardcover's GraphQL API has no REST "cover by ISBN" endpoint, so
+# get_hardcover_cover() queries this directly. See its docstring.
+HARDCOVER_GRAPHQL_URL = "https://api.hardcover.app/v1/graphql"
+
+# Real cover scans/thumbnails are reliably larger than the known
+# placeholder responses (Open Library's ~43-byte "no cover" GIF, and
+# BnF's historical generic blank-book graphic on the old endpoint).
+# Used to detect a fake-success (HTTP 200, but not a real cover) response.
+_MIN_VALID_IMAGE_BYTES = 1500
+_COVER_PROBE_TIMEOUT = 10  # seconds — short-lived HEAD/GET, not a full API call
 
 # ---------------------------------------------------------------------------
 # Dedicated HTTP session for catalogue.bnf.fr
@@ -60,6 +79,15 @@ class _BnFSSLAdapter(HTTPAdapter):
 _bnf_session = requests.Session()
 _bnf_session.mount("https://", _BnFSSLAdapter(max_retries=3))
 _bnf_session.mount("http://", HTTPAdapter(max_retries=3))
+# Default requests UA (python-requests/x.y) is a common bot signature and
+# can get flagged/throttled by BnF's front-end. Look like a normal browser.
+_bnf_session.headers.update({
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+})
 
 # XML namespace URIs
 _SRW_NS = "http://www.loc.gov/zing/srw/"
@@ -155,37 +183,111 @@ def _extract_year(dc_el) -> str:
     return ""
 
 
-def _extract_ean_isbn(dc_el) -> tuple[str | None, str | None]:
-    """Return (ean, isbn) from dc:identifier and dc:description elements.
+# BnF tags the series/collection statement as a free-text dc:description
+# line with a "Collection : " label, e.g. "Collection : Lucky Luke" or
+# "Collection : Collection Lucky Luke ; 5" (some records redundantly
+# repeat the word "Collection" inside the value itself).
+_SERIES_DESC_PAT = re.compile(r"^\s*Collection\s*:\s*(.+?)\s*$", re.IGNORECASE)
+_SERIES_LABEL_PAT = re.compile(r"^Collection\s+", re.IGNORECASE)
+_SERIES_VOLUME_PAT = re.compile(r"^(.*?)\s*;\s*(\d+)\s*$")
 
-    BnF DC records typically store ISBNs with hyphens in dc:identifier, e.g.:
-      ``978-2-8001-1234-5``  or  ``2-8001-1234-5``
-    and commercial EAN in dc:description as:
-      ``Code à barres commercial : EAN 3781507006999``
+
+def _extract_series_info(dc_el) -> tuple[str | None, str | None]:
+    """Extract the BD series name (and volume number, if present).
+
+    There is no dedicated/populated MARC series field exposed over SRU
+    for BnF's BD holdings (see the note on ``search_by_series`` for why
+    ``bib.serie`` can't be used) -- the series statement only exists as
+    free text inside dc:description with a "Collection : " label.
+
+    A trailing "; <n>" on the value is the album's position within the
+    series.
+
+    Returns (series_name, volume) -- either element is None when no
+    Collection line is present, or no volume number is given.
     """
+    for desc in _get_all(dc_el, "description"):
+        match = _SERIES_DESC_PAT.match(desc)
+        if not match:
+            continue
+        value = _SERIES_LABEL_PAT.sub("", match.group(1)).strip()
+        volume_match = _SERIES_VOLUME_PAT.match(value)
+        if volume_match:
+            return volume_match.group(1).strip(), volume_match.group(2)
+        return value, None
+    return None, None
+
+
+def _normalize_series_name(name: str) -> str:
+    """Diacritic/case-insensitive normalisation for series-name matching."""
+    normalized = unicodedata.normalize("NFKD", name)
+    return normalized.encode("ascii", "ignore").decode("ascii").strip().lower()
+
+
+def _normalize_title(title: str) -> str:
+    """Diacritic/case/punctuation-insensitive normalisation for title matching.
+
+    Used only to compare a BnF album title against a ComicVine issue name
+    -- see ``get_comicvine_cover``'s title-matching fallback. Punctuation
+    is stripped (not just diacritics) since apostrophes/quotes vary
+    between sources (e.g. ``L'Evasion`` vs ``L Evasion``).
+    """
+    if not title:
+        return ""
+    normalized = unicodedata.normalize("NFKD", title)
+    normalized = normalized.encode("ascii", "ignore").decode("ascii").lower()
+    normalized = re.sub(r"[^a-z0-9\s]", " ", normalized)
+    return " ".join(normalized.split())
+
+
+def extract_identifiers(dc_el) -> dict[str, str | None]:
+    """Extract every identifier needed for metadata + cover lookups.
+
+    Returns a dict with keys ``isbn10``, ``isbn13``, ``ean``, ``ark``
+    (each a string or ``None``).
+
+    BnF DC records typically store ISBNs with hyphens in dc:identifier,
+    e.g. ``978-2-8001-1234-5`` or ``2-8001-1234-5``, and commercial EAN
+    in dc:description as ``Code à barres commercial : EAN 3781507006999``.
+
+    ISBN values are kept in their original hyphenated form (not just
+    digits) since BnF's cover API examples pass ISBNs with hyphens, e.g.
+    ``ISBN=978-2-226-25022-3``.
+    """
+    ark = _extract_ark(dc_el)
+    isbn10 = None
+    isbn13 = None
     ean = None
-    isbn = None
+
+    # BnF DC records sometimes prefix the bare identifier with a text
+    # label, e.g. ``ISBN 2800118377`` instead of just ``2-8001-1234-5``.
+    # Strip it before classifying, but keep everything else (including
+    # hyphens) intact for the value we actually store.
+    _label_pat = re.compile(r"^(?:isbn|ean)\b[\s:]*", re.IGNORECASE)
 
     for ident in _get_all(dc_el, "identifier"):
+        raw = ident.strip()
         # Skip URI-form identifiers (ARK, HTTP URLs)
-        if "://" in ident or ident.strip().startswith("ark:"):
+        if "://" in raw or raw.startswith("ark:"):
             continue
-        # Normalise: strip hyphens/spaces to get a plain digit string
-        digits_only = re.sub(r"[\-\s]", "", ident.strip())
+        raw = _label_pat.sub("", raw).strip()
+        # Normalise: strip hyphens/spaces to get a plain digit string,
+        # used only to classify the identifier (not for the API call).
+        digits_only = re.sub(r"[\-\s]", "", raw)
         if re.fullmatch(r"\d{13}", digits_only):
             if digits_only.startswith(("978", "979")):
-                isbn = isbn or digits_only
+                isbn13 = isbn13 or raw
             else:
                 ean = ean or digits_only
-        elif re.fullmatch(r"\d{9}[\dX]", digits_only, re.IGNORECASE) and not isbn:
-            isbn = digits_only.upper()
+        elif re.fullmatch(r"\d{9}[\dX]", digits_only, re.IGNORECASE) and not isbn10:
+            isbn10 = raw.upper()
 
     for desc in _get_all(dc_el, "description"):
         m = re.search(r"EAN[\s:]*([0-9]{13})", desc, re.IGNORECASE)
         if m and not ean:
             ean = m.group(1)
 
-    return ean, isbn
+    return {"isbn10": isbn10, "isbn13": isbn13, "ean": ean, "ark": ark}
 
 
 def _extract_people(dc_el) -> list[str]:
@@ -213,33 +315,415 @@ def _clean_description(dc_el) -> str:
     return meaningful[0] if meaningful else ""
 
 
-def _best_cover_url(
-    ark: str | None,
-    ean: str | None = None,
-    isbn: str | None = None,
-) -> str:
-    """Return best available cover image URL.
+def _probe_image_url(url: str) -> bool:
+    """Return True if `url` resolves to what looks like a genuine cover image.
 
-    Priority: Open Library by EAN > Open Library by ISBN
-    > BnF catalogue couverture > IMG_NONE.
+    Guards against "fake success" responses that would otherwise render
+    as a blank/placeholder image instead of failing outright:
+      - Open Library serves a tiny ~43-byte placeholder GIF with HTTP 200
+        when no cover exists for a given identifier.
+      - BnF's cover service has historically served a generic blank-book
+        graphic with HTTP 200 when no scan is indexed for a record.
 
-    Open Library returns actual cover art for most commercially
-    distributed albums; BnF couverture works only when BnF has
-    explicitly indexed a cover scan.
+    Both cases are filtered out using a minimum byte-size heuristic,
+    since real cover scans/thumbnails are reliably larger than either
+    placeholder. This is a heuristic, not a guarantee — if a server omits
+    Content-Length we give the URL the benefit of the doubt.
     """
-    if ean:
-        return f"https://covers.openlibrary.org/b/ean/{ean}-L.jpg"
-    if isbn:
-        return f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
-    if ark:
-        # Keep `:` and `/` unencoded — BnF's couverture endpoint does plain
-        # string matching on idArk and won't decode %3A / %2F.
-        encoded = quote(ark, safe=":/")
-        return (
-            f"https://catalogue.bnf.fr/couverture"
-            f"?appName=NE&idArk={encoded}&couverture=1"
+    try:
+        resp = _bnf_session.head(
+            url,
+            timeout=_COVER_PROBE_TIMEOUT,
+            verify=settings.REQUESTS_VERIFY_SSL,
+            allow_redirects=True,
         )
-    return settings.IMG_NONE
+        if resp.status_code == requests.codes.method_not_allowed:
+            # Some endpoints don't support HEAD — fall back to a GET and
+            # close immediately without reading the body.
+            resp = _bnf_session.get(
+                url,
+                timeout=_COVER_PROBE_TIMEOUT,
+                verify=settings.REQUESTS_VERIFY_SSL,
+                stream=True,
+            )
+            resp.close()
+    except requests.exceptions.RequestException as exc:
+        logger.debug("Cover probe failed for %s: %s", url, exc)
+        return False
+
+    if resp.status_code != requests.codes.ok:
+        logger.debug("Cover probe non-200 (%s) for %s", resp.status_code, url)
+        return False
+
+    content_type = resp.headers.get("Content-Type", "")
+    if not content_type.startswith("image/"):
+        logger.debug(
+            "Cover probe non-image content-type (%s) for %s", content_type, url,
+        )
+        return False
+
+    content_length = resp.headers.get("Content-Length")
+    if content_length is not None and int(content_length) < _MIN_VALID_IMAGE_BYTES:
+        logger.debug(
+            "Cover probe placeholder-sized (%s bytes) for %s", content_length, url,
+        )
+        return False
+
+    return True
+
+
+# NOTE: currently not called from resolve_cover() — BnF's Service
+# Couvertures API proved unreliable in practice (frequent false
+# negatives/empty results even for records with a real scan indexed).
+# Kept here in case it's worth revisiting once the upstream API
+# stabilises; Open Library + Hardcover cover the bulk of cases for now.
+def get_bnf_cover(
+    identifiers: dict[str, str | None],
+    *,
+    validate: bool = True,
+) -> str | None:
+    """Resolve a cover URL from BnF's Service Couvertures API.
+
+    Currently unused by resolve_cover() — see the module-level note
+    above this function.
+
+    Priority: ISBN-13 > ISBN-10 > EAN > ARK. ISBN/EAN are commercial
+    identifiers that BnF indexes covers against directly; ARK is the
+    fallback for records without one (only works if BnF has explicitly
+    linked a cover scan to that specific record).
+
+    When ``validate`` is False, the highest-priority candidate URL is
+    returned without confirming a real image exists behind it (cheap
+    path for bulk search results — see ``resolve_cover``). When True,
+    each candidate is checked in priority order and the first one that
+    resolves to a real image wins.
+    """
+    candidates: list[tuple[str, str]] = []
+
+    isbn = identifiers.get("isbn13") or identifiers.get("isbn10")
+    if isbn:
+        candidates.append(
+            ("isbn", f"{BNF_COVER_API_URL}?ISBN={quote(isbn)}&couverture=1"),
+        )
+    if identifiers.get("ean"):
+        candidates.append(
+            ("ean", f"{BNF_COVER_API_URL}?EAN={identifiers['ean']}&couverture=1"),
+        )
+    if identifiers.get("ark"):
+        # Keep `:` and `/` unencoded — BnF's cover endpoint does plain
+        # string matching on idArk and won't decode %3A / %2F.
+        encoded = quote(identifiers["ark"], safe=":/")
+        candidates.append(
+            ("ark", f"{BNF_COVER_API_URL}?idArk={encoded}&couverture=1"),
+        )
+
+    if not candidates:
+        return None
+
+    if not validate:
+        kind, url = candidates[0]
+        logger.debug("BnF cover (unvalidated) via %s: %s", kind, url)
+        return url
+
+    for kind, url in candidates:
+        logger.debug("BnF cover attempt via %s: %s", kind, url)
+        if _probe_image_url(url):
+            logger.debug("BnF cover confirmed via %s: %s", kind, url)
+            return url
+
+    logger.debug("No valid BnF cover found for identifiers=%s", identifiers)
+    return None
+
+
+def get_openlibrary_cover(
+    identifiers: dict[str, str | None],
+    *,
+    validate: bool = True,
+) -> str | None:
+    """Resolve a cover URL from Open Library, using the large-size endpoint.
+
+    Fallback for when BnF has no cover indexed. Open Library's coverage
+    of French BD is sparse, so this rarely succeeds where BnF failed,
+    but it's a free secondary attempt before giving up.
+    """
+    candidates: list[tuple[str, str]] = []
+
+    isbn = identifiers.get("isbn13") or identifiers.get("isbn10")
+    if isbn:
+        digits = re.sub(r"[\-\s]", "", isbn)
+        candidates.append(
+            ("isbn", f"https://covers.openlibrary.org/b/isbn/{digits}-L.jpg"),
+        )
+    if identifiers.get("ean"):
+        candidates.append(
+            (
+                "ean",
+                f"https://covers.openlibrary.org/b/ean/{identifiers['ean']}-L.jpg",
+            ),
+        )
+
+    if not candidates:
+        return None
+
+    if not validate:
+        kind, url = candidates[0]
+        logger.debug("Open Library cover (unvalidated) via %s: %s", kind, url)
+        return url
+
+    for kind, url in candidates:
+        logger.debug("Open Library cover attempt via %s: %s", kind, url)
+        if _probe_image_url(url):
+            logger.debug("Open Library cover confirmed via %s: %s", kind, url)
+            return url
+
+    return None
+
+
+def _hardcover_edition_lookup(isbn: str) -> dict | None:
+    """Query Hardcover's GraphQL editions table for a cover by ISBN.
+
+    Matches against both isbn_13 and isbn_10 columns with a single value
+    since the two never collide (different digit counts/checksums), so
+    callers don't need to know which kind of ISBN they're passing in.
+    Returns the raw edition dict (with its nested book) or None.
+    """
+    query = """
+    query GetEditionCoverByISBN($isbn: String!) {
+      editions(
+        where: {_or: [{isbn_13: {_eq: $isbn}}, {isbn_10: {_eq: $isbn}}]}
+        limit: 1
+      ) {
+        cached_image(path: "url")
+        book {
+          cached_image(path: "url")
+        }
+      }
+    }
+    """
+    try:
+        response = services.api_request(
+            Sources.HARDCOVER.value,
+            "POST",
+            HARDCOVER_GRAPHQL_URL,
+            params={"query": query, "variables": {"isbn": isbn}},
+            headers={"Authorization": settings.HARDCOVER_API},
+        )
+    except requests.exceptions.RequestException as exc:
+        logger.debug("Hardcover cover lookup failed for isbn=%s: %s", isbn, exc)
+        return None
+
+    editions = (response.get("data") or {}).get("editions") or []
+    return editions[0] if editions else None
+
+
+def get_hardcover_cover(
+    identifiers: dict[str, str | None],
+    *,
+    validate: bool = True,
+) -> str | None:
+    """Resolve a cover URL from Hardcover, looked up by ISBN.
+
+    Hardcover has no REST "cover by ISBN" endpoint and no predictable
+    cover-URL pattern derivable from an ISBN the way Open Library does
+    — the only way to get a cover is a live GraphQL query against the
+    editions table (falling back to the parent book's cover if the
+    matched edition itself has none cached).
+
+    Because that means every call here is a real network round-trip
+    (unlike Open Library's free URL-template guess), this is skipped
+    entirely when ``validate`` is False (bulk search results) to avoid
+    N synchronous Hardcover API calls in a single search response.
+    """
+    if not validate:
+        return None
+
+    for kind, isbn in (
+        ("isbn13", identifiers.get("isbn13")),
+        ("isbn10", identifiers.get("isbn10")),
+    ):
+        if not isbn:
+            continue
+        logger.debug("Hardcover cover attempt via %s: %s", kind, isbn)
+        edition = _hardcover_edition_lookup(isbn)
+        if not edition:
+            continue
+        url = edition.get("cached_image") or (edition.get("book") or {}).get(
+            "cached_image",
+        )
+        if url:
+            logger.debug("Hardcover cover confirmed via %s: %s", kind, url)
+            return url
+
+    logger.debug("No Hardcover cover found for identifiers=%s", identifiers)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# ComicVine cover fallback — BD series with no ISBN/EAN at all (pre-~1970
+# albums), where the identifier-based fallbacks above have nothing to try.
+# ---------------------------------------------------------------------------
+# ComicVine's volume resource has no language/country field, so the
+# correct volume_id for *the original French edition* of a series can't
+# be resolved automatically — a plain-name search for e.g. "Lucky Luke"
+# returns a dozen volumes split by publisher/language (Cinebook EN,
+# Egmont SE, Bastei DE, etc.), several renumbered relative to the French
+# Dargaud originals and using translated titles. Each entry below was
+# confirmed by hand against the French-language ComicVine volume before
+# being added.
+_BD_COMICVINE_VOLUMES: dict[str, str] = {
+    # _normalize_series_name(series_name): comicvine volume id (bare numeric, no "4050-" prefix)
+    "lucky luke": "32180",  # French Dargaud-era run, #1-72 (1949-2002)
+}
+
+# How close a BnF album title and a ComicVine issue name need to be
+# (post-normalization) to accept a title-based match -- see
+# get_comicvine_cover's fallback path. Deliberately strict: a same-volume
+# free-text search for "Des rails sur la prairie" (issue #9) also pulled
+# back issue #29 "Des barbeles sur la prairie" purely on the shared
+# "sur la prairie" tail (~0.7 ratio) -- this threshold is set high enough
+# to reject that kind of partial overlap while still tolerating harmless
+# case/typography differences between sources.
+_TITLE_MATCH_THRESHOLD = 0.92
+
+
+def get_comicvine_cover(
+    series_name: str | None,
+    series_volume: str | None,
+    title: str | None = None,
+) -> str | None:
+    """Resolve a cover from ComicVine by series name + album number/title.
+
+    Unlike the identifier-based fallbacks above, this needs no ISBN/EAN
+    — it's the only cover source that can work for pre-barcode-era BDs,
+    which will never have one. Requires a series recognised in
+    ``_BD_COMICVINE_VOLUMES``; returns None if it isn't mapped yet.
+
+    Primary match is by album number (from the Collection statement's
+    "; N" suffix, see ``_extract_series_info``). Some Collection lines
+    have no volume number at all, so when that's missing this falls back
+    to a same-volume title search instead — but only accepts a result
+    whose name is a near-exact match (``_TITLE_MATCH_THRESHOLD``) against
+    the BnF album title, since an unscoped/loose title search on
+    ComicVine reliably returns plausible-looking wrong answers (other
+    editions of the same series, or unrelated issues sharing a few
+    words) — there's no safe "take the top result" shortcut here.
+
+    Always a live call with no cheap fallback of its own, so callers
+    should only reach this after the identifier-based fallbacks above
+    have already failed.
+    """
+    if not series_name:
+        return None
+
+    volume_id = _BD_COMICVINE_VOLUMES.get(_normalize_series_name(series_name))
+    if not volume_id:
+        return None
+
+    cv_issue = None
+    if series_volume:
+        logger.debug(
+            "ComicVine cover attempt by number: series=%r volume=%r cv_volume_id=%s",
+            series_name, series_volume, volume_id,
+        )
+        cv_issue = comicvine.get_issue_by_number(volume_id, series_volume)
+
+    if cv_issue is None and title:
+        logger.debug(
+            "ComicVine cover attempt by title: series=%r title=%r cv_volume_id=%s",
+            series_name, title, volume_id,
+        )
+        normalized_target = _normalize_title(title)
+        for candidate in comicvine.search_issues(title, volume_id=volume_id):
+            normalized_candidate = _normalize_title(candidate.get("name") or "")
+            similarity = SequenceMatcher(
+                None, normalized_target, normalized_candidate,
+            ).ratio()
+            if similarity >= _TITLE_MATCH_THRESHOLD:
+                cv_issue = candidate
+                break
+            logger.debug(
+                "Rejected ComicVine title match %r (similarity=%.2f < %.2f)",
+                candidate.get("name"), similarity, _TITLE_MATCH_THRESHOLD,
+            )
+
+    if not cv_issue:
+        logger.debug(
+            "No ComicVine match for series=%r volume=%r title=%r in cv_volume_id=%s",
+            series_name, series_volume, title, volume_id,
+        )
+        return None
+
+    return comicvine.get_image(cv_issue)
+
+
+def resolve_cover(
+    identifiers: dict[str, str | None],
+    *,
+    series_name: str | None = None,
+    series_volume: str | None = None,
+    title: str | None = None,
+    validate: bool = True,
+) -> str:
+    """Resolve the best available cover image URL for a BnF record.
+
+    Order: Open Library (ISBN > EAN) > Hardcover (ISBN-13 > ISBN-10) >
+    ComicVine (series + album number, or series + title) > IMG_NONE.
+    BnF's own Service Couvertures API (get_bnf_cover) is intentionally
+    skipped here — see the note above get_bnf_cover's definition for why.
+
+    ComicVine is tried last, only when ``validate`` is True, and only
+    does anything when ``series_name`` is passed in — currently just
+    ``comic()``, since bulk search results don't extract series info
+    (see ``_dc_to_result()``). It's the one fallback that doesn't need
+    an ISBN/EAN at all, so it's the path that actually covers
+    pre-barcode-era albums.
+
+    When ``validate`` is True, successful *and* confirmed-empty lookups
+    are cached by identifier (ISBN/EAN/ARK) so the external probe only
+    ever runs once per identifier, regardless of how many BnF records
+    reference it. ``validate=False`` skips both the network probe and
+    the cache, since it's meant for cheap bulk listings.
+
+    Cover lookup failures never raise — any unexpected error here
+    should never break metadata import, since the cover is optional.
+    """
+    cache_id = (
+        identifiers.get("isbn13")
+        or identifiers.get("isbn10")
+        or identifiers.get("ean")
+        or identifiers.get("ark")
+    )
+    cache_key = f"{Sources.BNF.value}_cover_{cache_id}" if cache_id else None
+
+    if validate and cache_key:
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached if cached else settings.IMG_NONE
+
+    logger.debug(
+        "Resolving cover for identifiers=%s (validate=%s)", identifiers, validate,
+    )
+
+    try:
+        url = get_openlibrary_cover(identifiers, validate=validate)
+        if url is None:
+            url = get_hardcover_cover(identifiers, validate=validate)
+        if url is None and validate:
+            url = get_comicvine_cover(series_name, series_volume, title)
+    except Exception:
+        # Cover lookup is strictly optional — never let it break metadata
+        # import or a detail-page render.
+        logger.exception("Unexpected error resolving cover for %s", identifiers)
+        url = None
+
+    logger.debug("Final cover selected for %s: %s", identifiers, url or "(none)")
+
+    if validate and cache_key:
+        # Cache "" (not None) for a confirmed-empty result so we don't
+        # re-probe an identifier we already know has no cover.
+        cache.set(cache_key, url or "")
+
+    return url or settings.IMG_NONE
 
 
 def _dc_to_result(dc_el) -> dict | None:
@@ -257,7 +741,7 @@ def _dc_to_result(dc_el) -> dict | None:
     if not title:
         return None
     ark_short = ark.split("/")[-1]  # e.g. cb12345678x — no slashes, URL-safe
-    ean, isbn = _extract_ean_isbn(dc_el)
+    identifiers = extract_identifiers(dc_el)
     creator = _get_first(dc_el, "creator")
     return {
         "media_id": ark_short,
@@ -265,7 +749,9 @@ def _dc_to_result(dc_el) -> dict | None:
         "media_type": MediaTypes.COMIC.value,
         "title": title,
         "year": _extract_year(dc_el),
-        "image": _best_cover_url(ark, ean, isbn),
+        # Unvalidated: no network probe per result, to avoid N synchronous
+        # HTTP calls in a single search response. See resolve_cover().
+        "image": resolve_cover(identifiers, validate=False),
         # Extra fields used by the import confidence scorer
         "creator": creator,
         "subtitle": creator or None,
@@ -275,6 +761,52 @@ def _dc_to_result(dc_el) -> dict | None:
 # ---------------------------------------------------------------------------
 # Public provider interface
 # ---------------------------------------------------------------------------
+
+def search_by_series(series_name: str, max_results: int = 100) -> list[dict]:
+    """Return all BnF albums whose Collection statement matches *series_name*.
+
+    ``bib.serie`` (the MARC 490/830 Series Statement index) returns zero
+    records even for well-known series -- verified against live data, it
+    simply isn't populated for BnF's BD holdings. The series name only
+    exists as free text inside dc:description (see ``_extract_series_info``).
+
+    So this casts a wide net with the documented ``bib.anywhere`` index
+    (BnF's full-record keyword search -- see
+    https://www.bnf.fr/fr/service-sru-catalogue-general-de-la-bnf) and
+    keeps only the records whose own Collection line matches
+    *series_name*, diacritic/case-insensitively.
+
+    Note: BnF sometimes tags non-BD adaptations (audio dramas, etc.)
+    under the same Collection label as the BD album itself -- a BnF
+    data-quality quirk that can't be filtered out from the DC record
+    alone.
+
+    Returns a list of result dicts in the same format as ``_dc_to_result()``
+    so they can be used directly as collection parts.
+    """
+    target = _normalize_series_name(series_name)
+    cql = f'bib.anywhere all "{series_name}"'
+    logger.info("BnF series lookup: cql=%r max=%d", cql, max_results)
+    try:
+        root = _sru_search(cql, max_records=min(max_results, 100))
+    except Exception as exc:
+        logger.warning("BnF series search failed for %r: %s", series_name, exc)
+        return []
+
+    results: list[dict] = []
+    seen_ids: set[str] = set()
+    for dc_el in _iter_dc_elements(root):
+        found_series, _volume = _extract_series_info(dc_el)
+        if not found_series or _normalize_series_name(found_series) != target:
+            continue
+        result = _dc_to_result(dc_el)
+        if result and result["media_id"] not in seen_ids:
+            seen_ids.add(result["media_id"])
+            results.append(result)
+
+    logger.info("BnF series %r → %d unique records", series_name, len(results))
+    return results
+
 
 def search(query: str, page: int) -> dict:
     """Search the BnF catalog and return results in the standard provider format."""
@@ -341,8 +873,9 @@ def comic(media_id: str) -> dict:
         description = _clean_description(dc_el) or "No synopsis available"
         subjects = _get_all(dc_el, "subject")
         language = _get_first(dc_el, "language")
-        ean, isbn = _extract_ean_isbn(dc_el)
+        identifiers = extract_identifiers(dc_el)
         people = _extract_people(dc_el)
+        series_name, series_volume = _extract_series_info(dc_el)
 
         # Canonical page on catalogue.bnf.fr
         ark_short = ark.split("/")[-1]  # e.g. cb12345678x
@@ -354,10 +887,30 @@ def comic(media_id: str) -> dict:
             "people": people,
             "language": language or None,
         }
-        if ean:
-            details["ean"] = ean
-        if isbn:
-            details["isbn"] = isbn
+        if identifiers["ean"]:
+            details["ean"] = identifiers["ean"]
+        isbn_for_details = identifiers["isbn13"] or identifiers["isbn10"]
+        if isbn_for_details:
+            details["isbn"] = isbn_for_details
+        if series_name:
+            details["series"] = series_name
+        if series_volume:
+            details["series_position"] = series_volume
+
+        # Mirrors tmdb_collection/igdb_collection/hardcover_series: embed
+        # the full series listing now (one extra SRU search, cached
+        # alongside this comic's own metadata) so the generic collection
+        # auto-detect/lazy-sync logic in app/views.py can pick it up.
+        bnf_series = None
+        if series_name:
+            series_parts = search_by_series(series_name)
+            if series_parts:
+                bnf_series = {
+                    "id": series_name,
+                    "name": series_name,
+                    "image": next((p["image"] for p in series_parts if p["image"]), ""),
+                    "parts": series_parts,
+                }
 
         data = {
             "media_id": media_id,
@@ -368,7 +921,15 @@ def comic(media_id: str) -> dict:
             "country": "FR",  # BnF is the French national library
             "max_progress": None,
             "max_issue_number": None,
-            "image": _best_cover_url(ark, ean, isbn),
+            # Validated: single item, cached afterward, so the extra
+            # probe round-trip is paid once per cache period.
+            "image": resolve_cover(
+                identifiers,
+                series_name=series_name,
+                series_volume=series_volume,
+                title=title,
+                validate=True,
+            ),
             "synopsis": description,
             "genres": subjects[:5] if subjects else None,
             "score": None,
@@ -378,10 +939,9 @@ def comic(media_id: str) -> dict:
             "related": {"recommendations": []},
             # No ComicVine-style issue events for BnF items
             "last_issue_id": None,
+            "bnf_series": bnf_series,
         }
 
         cache.set(cache_key, data)
 
     return data
-
-

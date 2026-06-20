@@ -4,7 +4,7 @@ from datetime import UTC
 import apprise
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import Max, Q
 from django.utils import timezone
 
 from app.models import TV, MediaTypes, Season
@@ -15,7 +15,14 @@ logger = logging.getLogger(__name__)
 
 
 def send_releases():
-    """Send notifications for recently released media."""
+    """Send notifications for recently released media.
+
+    For TV season events only the season finale is notified; all other media
+    types are notified for every release. Each notification includes the item
+    poster image as an attachment. ALL events in the window are marked as sent
+    regardless of whether a notification was dispatched (so non-finale episode
+    events are silently consumed and won't be reprocessed).
+    """
     now = timezone.now()
     thirty_minutes_ago = now - timezone.timedelta(minutes=30)
 
@@ -44,20 +51,32 @@ def send_releases():
     if not events.exists():
         return "No recent releases found"
 
-    result = send_notifications(
-        events=events,
-        users=users,
-        title="🔔 YamTrack: New Releases Available! 🔔",
-    )
+    # Collect all event IDs now so we can mark them all as sent later,
+    # even the non-finale TV episodes that we won't actually notify about.
+    all_event_ids = list(events.values_list("id", flat=True))
 
-    # Mark events as notified
-    if result["event_ids"]:
-        Event.objects.filter(id__in=result["event_ids"]).update(
-            notification_sent=True,
+    # Build a lookup keyed by (item_id, content_number)
+    events_by_key = {}
+    for event in events:
+        key = (event.item.id, event.content_number)
+        events_by_key[key] = event
+
+    # For TV seasons: keep only the finale episode; pass everything else through.
+    notifiable_events = filter_to_season_finales(events_by_key)
+
+    if notifiable_events:
+        user_releases = get_user_releases(
+            users=users,
+            target_events=notifiable_events,
         )
-        logger.info("Marked %s events as notified", len(result["event_ids"]))
+        deliver_release_notifications(user_releases, users)
 
-    return f"{result['event_count']} recent releases processed"
+    # Mark ALL events (including silently-skipped non-finale episodes) as sent.
+    if all_event_ids:
+        Event.objects.filter(id__in=all_event_ids).update(notification_sent=True)
+        logger.info("Marked %s events as notified", len(all_event_ids))
+
+    return f"{len(all_event_ids)} recent releases processed"
 
 
 def send_daily_digest():
@@ -111,6 +130,104 @@ def send_daily_digest():
     )
 
     return f"Daily digest sent for {result['event_count']} releases"
+
+
+def filter_to_season_finales(events_dict):
+    """Return a filtered copy of *events_dict* where TV season events are kept
+    only if their episode number equals the season's highest episode number
+    (i.e. the finale).  All non-season events pass through unchanged.
+
+    Args:
+        events_dict: Mapping of (item_id, content_number) -> Event
+
+    Returns:
+        Filtered dict with the same key/value structure.
+    """
+    season_item_ids = {
+        event.item.id
+        for event in events_dict.values()
+        if event.item.media_type == MediaTypes.SEASON.value
+    }
+
+    if not season_item_ids:
+        return events_dict
+
+    # Single batch query: max episode number per season item.
+    rows = (
+        Event.objects.filter(item_id__in=season_item_ids)
+        .values("item_id")
+        .annotate(max_ep=Max("content_number"))
+    )
+    season_finale_map = {row["item_id"]: row["max_ep"] for row in rows}
+
+    return {
+        key: event
+        for key, event in events_dict.items()
+        if event.item.media_type != MediaTypes.SEASON.value
+        or event.content_number == season_finale_map.get(event.item.id)
+    }
+
+
+def deliver_release_notifications(user_releases, users):
+    """Deliver one notification per event to each user, with the item image attached.
+
+    Args:
+        user_releases: Mapping of user_id -> list[Event]
+        users: QuerySet of User objects
+    """
+    users_by_id = {user.id: user for user in users}
+
+    for user_id, releases in user_releases.items():
+        if not releases:
+            continue
+
+        user = users_by_id.get(user_id)
+        if not user:
+            logger.error("User %s not found", user_id)
+            continue
+
+        urls = [
+            url.strip() for url in user.notification_urls.splitlines() if url.strip()
+        ]
+        if not urls:
+            continue
+
+        for event in releases:
+            title = "🔔 YamTrack: New Release!"
+            body = format_single_release(event)
+            image_url = event.item.image or None
+            send_user_notification(user, urls, title, body, attach_url=image_url)
+
+
+def format_single_release(event):
+    """Format the notification body for a single release event.
+
+    Args:
+        event: Event object
+
+    Returns:
+        Formatted string for the notification body.
+    """
+    icon = app_tags.unicode_icon(event.item.media_type)
+
+    if event.item.media_type == MediaTypes.SEASON.value:
+        type_label = "TV Show"
+    else:
+        type_label = event.item.media_type.upper()
+
+    if event.is_sentinel_time:
+        time_suffix = ""
+    else:
+        local_dt = timezone.localtime(event.datetime)
+        time_suffix = f" ({local_dt.strftime('%H:%M')})"
+
+    return "\n".join([
+        f"{icon}  {type_label}",
+        "--------------------------------------------",
+        f"  {event}{time_suffix}",
+        "",
+        "Enjoy your media!",
+    ])
 
 
 def send_notifications(events, users, title):
@@ -453,7 +570,7 @@ def format_notification(releases):
     return "\n".join(notification_body)
 
 
-def send_user_notification(user, urls, title, body):
+def send_user_notification(user, urls, title, body, attach_url=None):
     """Send a notification to a specific user.
 
     Args:
@@ -461,13 +578,21 @@ def send_user_notification(user, urls, title, body):
         urls: List of notification URLs
         title: Notification title
         body: Notification body
+        attach_url: Optional image URL to attach to the notification.
     """
     apobj = apprise.Apprise()
     for url in urls:
         apobj.add(url)
 
+    kwargs = {"title": title, "body": body}
+
+    if attach_url:
+        attach = apprise.AppriseAttachment()
+        attach.add(attach_url)
+        kwargs["attach"] = attach
+
     try:
-        result = apobj.notify(title=title, body=body)
+        result = apobj.notify(**kwargs)
 
         if result:
             logger.info(

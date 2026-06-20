@@ -313,6 +313,7 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
             (Sources.TMDB.value, MediaTypes.MOVIE.value): "tmdb_collection",
             (Sources.IGDB.value, MediaTypes.GAME.value): "igdb_collection",
             (Sources.HARDCOVER.value, MediaTypes.BOOK.value): "hardcover_series",
+            (Sources.BNF.value, MediaTypes.COMIC.value): "bnf_series",
         }
         source_key = source_key_map.get((source, media_type))
         if source_key:
@@ -328,11 +329,13 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
                         sync_tmdb_collection,
                         sync_igdb_collection,
                         sync_hardcover_series,
+                        sync_bnf_series,
                     )
                     sync_map = {
                         "tmdb_collection": sync_tmdb_collection,
                         "igdb_collection": sync_igdb_collection,
                         "hardcover_series": sync_hardcover_series,
+                        "bnf_series": sync_bnf_series,
                     }
                     sync_fn = sync_map.get(source_key)
                     if sync_fn:
@@ -1418,6 +1421,17 @@ def media_save(request):
                 sync_hardcover_series(request.user, book_metadata)
             except Exception:
                 logger.exception("Failed to sync Hardcover series for %s", media_id)
+
+        # Auto-sync BnF BD series
+        if source == Sources.BNF.value and media_type == MediaTypes.COMIC.value:
+            try:
+                from app.providers.collections_providers import sync_bnf_series
+                comic_metadata = services.get_media_metadata(
+                    media_type, media_id, source
+                )
+                sync_bnf_series(request.user, comic_metadata)
+            except Exception:
+                logger.exception("Failed to sync BnF series for %s", media_id)
     else:
         logger.error(form.errors.as_json())
         for field, errors in form.errors.items():
@@ -1790,6 +1804,9 @@ def statistics(request):
     people_stats = stats.get_people_stats(user_media)
     year_chart_data = stats.get_year_chart_data(extended_statistics["year_rows"])
     decade_chart_data = stats.get_decade_chart_data(extended_statistics["year_rows"])
+    release_year_dist = stats.get_release_year_distribution(user_media)
+    release_year_chart_data = stats.get_release_year_chart_data(release_year_dist)
+    release_decade_chart_data = stats.get_release_decade_chart_data(release_year_dist)
     list_progress = stats.get_list_progress(request.user)
     awards_progress = stats.get_awards_progress(request.user)
 
@@ -1813,6 +1830,8 @@ def statistics(request):
         "people_stats": people_stats,
         "year_chart_data": year_chart_data,
         "decade_chart_data": decade_chart_data,
+        "release_year_chart_data": release_year_chart_data,
+        "release_decade_chart_data": release_decade_chart_data,
         "list_progress": list_progress,
         "awards_progress": awards_progress,
     }

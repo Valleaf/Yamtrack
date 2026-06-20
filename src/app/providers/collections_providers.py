@@ -12,6 +12,9 @@ SOURCE_CHOICES = [
     ("tmdb_collection", "TMDB Collection"),
     ("igdb_collection", "IGDB Game Series"),
     ("hardcover_series", "Hardcover Book Series"),
+    ("comicvine_arc", "ComicVine Story Arc"),
+    ("comicvine_volume", "ComicVine Volume (Issues)"),
+    ("bnf_series", "BnF Series (BD)"),
 ]
 
 
@@ -26,6 +29,10 @@ def fetch(source, source_id):
         return _fetch_tmdb_collection(source_id)
     if source == "igdb_collection":
         return _fetch_igdb_collection(source_id)
+    if source == "comicvine_arc":
+        return _fetch_comicvine_arc(source_id)
+    if source == "bnf_series":
+        return _fetch_bnf_series(source_id)
     msg = f"Unknown collection source: {source}"
     raise ValueError(msg)
 
@@ -36,6 +43,10 @@ def search(source, query):
         return _search_tmdb_collection(query)
     if source == "igdb_collection":
         return _search_igdb_collection(query)
+    if source == "comicvine_arc":
+        return _search_comicvine_arc(query)
+    if source == "bnf_series":
+        return _search_bnf_series(query)
     return []
 
 
@@ -120,6 +131,36 @@ def sync_hardcover_series(user, book_metadata):
     return _sync_collection(user, book_metadata.get("hardcover_series"), "hardcover_series")
 
 
+def sync_comicvine_arc(user, arc_data):
+    """Create/update a Collection from a ComicVine story arc data dict.
+
+    Unlike TMDB/IGDB/Hardcover this is not called automatically on save
+    because a ComicVine volume can belong to many story arcs simultaneously,
+    making auto-selection ambiguous.  The caller must pass the normalised
+    arc data dict (as returned by _fetch_comicvine_arc) directly.
+    """
+    return _sync_collection(user, arc_data, "comicvine_arc")
+
+
+def sync_comicvine_volume(user, comic_metadata):
+    """Auto-create/update a Collection from a Comic Vine issue's volume data.
+
+    `comic_metadata` is what `comicvine.comic()` returns for an
+    issue-tracked comic (media_id starting with "i") -- its
+    `comicvine_volume` key holds every issue in that issue's parent
+    volume, built by `comicvine._build_volume_collection()`. Mirrors
+    `sync_bnf_series` below.
+    """
+    return _sync_collection(
+        user, comic_metadata.get("comicvine_volume"), "comicvine_volume",
+    )
+
+
+def sync_bnf_series(user, comic_metadata):
+    """Auto-create/update a Collection from a BnF comic's series data."""
+    return _sync_collection(user, comic_metadata.get("bnf_series"), "bnf_series")
+
+
 def get_collection_for_media(user, media_metadata, source_key):
     """Return the Collection DB object for this media's collection, if it exists."""
     from media_collections.models import Collection
@@ -128,6 +169,8 @@ def get_collection_for_media(user, media_metadata, source_key):
         "tmdb_collection": "tmdb_collection",
         "igdb_collection": "igdb_collection",
         "hardcover_series": "hardcover_series",
+        "bnf_series": "bnf_series",
+        "comicvine_volume": "comicvine_volume",
     }
     field = field_map.get(source_key)
     if not field:
@@ -259,3 +302,173 @@ def _search_igdb_collection(query):
         }
         for item in (response or [])
     ]
+
+
+_COMICVINE_BASE_URL = "https://comicvine.gamespot.com/api"
+_COMICVINE_HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+
+def _search_comicvine_arc(query):
+    """Search ComicVine for story arcs whose name matches *query*."""
+    from django.conf import settings as django_settings
+
+    params = {
+        "api_key": django_settings.COMICVINE_API,
+        "format": "json",
+        "query": query,
+        "resources": "story_arc",
+        "field_list": "id,name,image",
+        "limit": 10,
+    }
+    try:
+        response = services.api_request(
+            Sources.COMICVINE.value,
+            "GET",
+            f"{_COMICVINE_BASE_URL}/search/",
+            params=params,
+            headers=_COMICVINE_HEADERS,
+        )
+    except Exception:
+        logger.exception("ComicVine story arc search failed for %r", query)
+        return []
+
+    return [
+        {
+            "id": str(item["id"]),
+            "name": item.get("name", ""),
+            "image": (item.get("image") or {}).get("medium_url", ""),
+            "year": None,
+        }
+        for item in (response.get("results") or [])[:10]
+    ]
+
+
+def _fetch_comicvine_arc(source_id):
+    """Fetch a ComicVine story arc and return normalised collection data.
+
+    The arc's issue list is used to derive the set of unique *volumes* that
+    belong to the story.  Issue images are not used — volume-level covers will
+    be populated naturally as users track individual comics (the Item record is
+    created/updated at tracking time).
+
+    ComicVine story arc IDs use the ``4045-`` type prefix on the detail
+    endpoint, so ``source_id`` must be the bare numeric ID only.
+    """
+    from django.conf import settings as django_settings
+
+    params = {
+        "api_key": django_settings.COMICVINE_API,
+        "format": "json",
+        "field_list": "id,name,image,issues",
+    }
+    try:
+        response = services.api_request(
+            Sources.COMICVINE.value,
+            "GET",
+            f"{_COMICVINE_BASE_URL}/story_arc/4045-{source_id}/",
+            params=params,
+            headers=_COMICVINE_HEADERS,
+        )
+    except Exception:
+        logger.exception("ComicVine story arc fetch failed for source_id=%s", source_id)
+        return None
+
+    arc = response.get("results") or {}
+    if not arc:
+        return None
+
+    # Derive the deduplicated volume list from the arc's issues.
+    # Each issue carries a 'volume' sub-object: {id, name}.
+    seen_volume_ids: set[int] = set()
+    parts = []
+    for issue in arc.get("issues") or []:
+        volume = issue.get("volume") or {}
+        vol_id = volume.get("id")
+        if not vol_id or vol_id in seen_volume_ids:
+            continue
+        seen_volume_ids.add(vol_id)
+        parts.append(
+            {
+                "source": Sources.COMICVINE.value,
+                "media_id": str(vol_id),
+                "media_type": MediaTypes.COMIC.value,
+                "title": volume.get("name", ""),
+                "image": "",
+            }
+        )
+
+    logger.info(
+        "ComicVine arc '%s' resolved to %d unique volumes",
+        arc.get("name", source_id),
+        len(parts),
+    )
+
+    return {
+        "id": str(arc.get("id", source_id)),
+        "name": arc.get("name", ""),
+        "description": "",
+        "image": (arc.get("image") or {}).get("medium_url", ""),
+        "source_id": str(source_id),
+        "items": parts,
+        "parts": parts,  # _sync_collection reads 'parts', fetch() callers read 'items'
+    }
+
+
+def _search_bnf_series(query: str) -> list[dict]:
+    """Return the query itself as a single selectable series candidate.
+
+    BnF has no "series catalogue" endpoint — series are just a MARC field
+    on individual records.  The user types the series name they want
+    (e.g. "Astérix"), we echo it back as a result so they can confirm it,
+    then ``_fetch_bnf_series`` does the real lookup.
+
+    Diacritics are normalised by BnF\'s SRU engine, so plain ASCII input
+    ("Asterix") will still match accented records ("Astérix").
+    """
+    q = query.strip()
+    if len(q) < 2:  # noqa: PLR2004
+        return []
+    return [{"id": q, "name": q, "image": "", "year": None}]
+
+
+def _fetch_bnf_series(series_name: str) -> dict | None:
+    """Fetch all BnF albums in *series_name* and return normalised collection data.
+
+    Calls ``bnf.search_by_series()``, which searches BnF's ``bib.anywhere``
+    full-text index and keeps only records whose own Collection statement
+    (in dc:description) matches *series_name*. Each matched record becomes
+    a collection part with ``source=bnf``.
+
+    The collection image is taken from the first matched album\'s cover so
+    the collection card has something to show immediately.
+    """
+    from app.providers import bnf as bnf_provider
+
+    records = bnf_provider.search_by_series(series_name)
+    if not records:
+        logger.warning("BnF series %r returned no results", series_name)
+        return None
+
+    parts = [
+        {
+            "source": Sources.BNF.value,
+            "media_id": r["media_id"],
+            "media_type": MediaTypes.COMIC.value,
+            "title": r["title"],
+            "image": r.get("image", ""),
+        }
+        for r in records
+    ]
+
+    # Use the first album\'s cover as a representative image for the collection card.
+    collection_image = next((p["image"] for p in parts if p["image"]), "")
+
+    return {
+        "id": series_name,
+        "name": series_name,
+        "description": "",
+        "image": collection_image,
+        "source_id": series_name,
+        "items": parts,
+        "parts": parts,
+    }

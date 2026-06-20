@@ -93,30 +93,51 @@ def _paginate(items, request, page_param):
 @login_required
 def collections(request):
     """Show all collections for the user — auto-sourced and manual."""
-    owned = (
+    type_filter = request.GET.get("type", "all")
+
+    # Gather all distinct media types across the user's collections for the filter tabs.
+    user_collection_ids = Collection.objects.filter(
+        Q(owner=request.user) | Q(collaborators=request.user)
+    ).values_list("id", flat=True)
+    all_types = list(
+        CollectionItem.objects.filter(collection_id__in=user_collection_ids)
+        .values_list("item__media_type", flat=True)
+        .distinct()
+        .order_by("item__media_type")
+    )
+
+    owned_qs = (
         Collection.objects.filter(owner=request.user)
         .prefetch_related("collectionitem_set__item")
         .order_by("name")
     )
-    collab = (
+    collab_qs = (
         Collection.objects.filter(collaborators=request.user)
         .prefetch_related("collectionitem_set__item")
         .order_by("name")
     )
 
+    if type_filter != "all":
+        owned_qs = owned_qs.filter(
+            collectionitem__item__media_type=type_filter
+        ).distinct()
+        collab_qs = collab_qs.filter(
+            collectionitem__item__media_type=type_filter
+        ).distinct()
+
     # Split owned into auto-sourced vs manual
     sort = _get_collection_sort(request)
     auto_collections = _prepare_collection_cards(
-        [c for c in owned if c.source and c.source != "manual"],
+        [c for c in owned_qs if c.source and c.source != "manual"],
         request.user,
         sort,
     )
     manual_collections = _prepare_collection_cards(
-        [c for c in owned if not c.source or c.source == "manual"],
+        [c for c in owned_qs if not c.source or c.source == "manual"],
         request.user,
         sort,
     )
-    collab_collections = _prepare_collection_cards(collab, request.user, sort)
+    collab_collections = _prepare_collection_cards(collab_qs, request.user, sort)
     per_page = _get_items_per_page(request)
 
     return render(request, "media_collections/collections.html", {
@@ -129,6 +150,8 @@ def collections(request):
         "columns_choices": COLLECTION_COLUMNS_CHOICES,
         "sort": sort,
         "sort_choices": COLLECTION_SORT_CHOICES,
+        "type_filter": type_filter,
+        "all_types": all_types,
     })
 
 

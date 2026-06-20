@@ -979,6 +979,99 @@ def get_decade_chart_data(year_rows):
     }
 
 
+def _get_media_release_year(metadata: dict) -> "int | None":
+    """Extract the release year from cached provider metadata."""
+    details = metadata.get("details") or {}
+
+    for key in ("year", "start_year"):
+        val = details.get(key)
+        if isinstance(val, int) and 1800 <= val <= 2200:
+            return val
+
+    for key in ("release_date", "first_air_date", "publish_date"):
+        val = details.get(key)
+        if val and isinstance(val, str) and len(val) >= 4:
+            try:
+                year = int(val[:4])
+                if 1800 <= year <= 2200:
+                    return year
+            except (ValueError, TypeError):
+                pass
+
+    return None
+
+
+_RELEASE_YEAR_SKIP = frozenset({"season", "episode"})
+
+
+def get_release_year_distribution(user_media: dict) -> "dict[int, int]":
+    """Count tracked media items by their release year (cache-only, no live API calls).
+
+    TV seasons and episodes are skipped — the parent TV show already covers them.
+    Returns a {year: count} mapping.
+    """
+    year_counts: dict = defaultdict(int)
+
+    for media_type, media_list in user_media.items():
+        if media_type in _RELEASE_YEAR_SKIP:
+            continue
+        for media in media_list:
+            cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+            metadata = cache.get(cache_key)
+            if metadata is None:
+                continue
+            year = _get_media_release_year(metadata)
+            if year is not None:
+                year_counts[year] += 1
+
+    return dict(year_counts)
+
+
+def get_release_year_chart_data(year_dist: "dict[int, int]") -> "dict | None":
+    """Format the release year distribution for a Chart.js bar chart."""
+    if not year_dist:
+        return None
+
+    min_year = min(year_dist)
+    max_year = max(year_dist)
+    all_years = list(range(min_year, max_year + 1))
+    data = [year_dist.get(y, 0) for y in all_years]
+
+    return {
+        "labels": [str(y) for y in all_years],
+        "datasets": [
+            {
+                "label": "Items",
+                "data": data,
+                "background_color": "rgba(99, 102, 241, 0.85)",
+            }
+        ],
+    }
+
+
+def get_release_decade_chart_data(year_dist: "dict[int, int]") -> "dict | None":
+    """Aggregate the release year distribution into decades for a Chart.js bar chart."""
+    if not year_dist:
+        return None
+
+    buckets: dict = defaultdict(int)
+    for year, count in year_dist.items():
+        decade = (year // 10) * 10
+        buckets[decade] += count
+
+    sorted_decades = sorted(buckets.items())
+    return {
+        "labels": [f"{d}s" for d, _ in sorted_decades],
+        "datasets": [
+            {
+                "label": "Items",
+                "data": [count for _, count in sorted_decades],
+                "background_color": "rgba(99, 102, 241, 0.85)",
+            }
+        ],
+    }
+
+
 # SVG donut constants (r=40 circle, full 360°)
 _DONUT_R = 40
 _DONUT_CIRCUMFERENCE = round(2 * math.pi * _DONUT_R, 2)  # ≈ 251.33

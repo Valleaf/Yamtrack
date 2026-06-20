@@ -11,66 +11,24 @@
 ### Artwork & Metadata
 
 - [ ] Some games display wrong title in lists but correct title on detail page. Exemple : Need for speed most wanted shows Need for speed on grid
-- [ ] Searching on bnf works but clicking on an item shows error :
-  - [ ] 127.0.0.1 - - [10/Jun/2026:17:17:39 +0200] "GET /health/ HTTP/1.0" 200 5329 "-" "Wget"
-    127.0.0.1 - - [10/Jun/2026:17:17:44 +0200] "GET /medialist/comic HTTP/1.0" 200 71569 "http://localhost:8080/statistics" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    172.18.0.1 - - [10/Jun/2026:17:17:44 +0200] "GET /medialist/comic HTTP/1.1" 200 10142 "http://localhost:8080/statistics" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    127.0.0.1 - - [10/Jun/2026:17:17:50 +0200] "GET /search?q=lucky+luke&media_type=comic HTTP/1.0" 200 155882 "http://localhost:8080/medialist/comic" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    172.18.0.1 - - [10/Jun/2026:17:17:50 +0200] "GET /search?q=lucky+luke&media_type=comic HTTP/1.1" 200 13077 "http://localhost:8080/medialist/comic" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    127.0.0.1 - - [10/Jun/2026:17:17:54 +0200] "GET /search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid HTTP/1.0" 200 173408 "http://localhost:8080/search?q=lucky+luke&media_type=comic" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    172.18.0.1 - - [10/Jun/2026:17:17:54 +0200] "GET /search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid HTTP/1.1" 200 15464 "http://localhost:8080/search?q=lucky+luke&media_type=comic" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    [2026-06-10 17:18:00 +0200] [41] [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb41191625w%22
-    [2026-06-10 17:18:00 +0200] [41] [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb41191625w%22
-    [2026-06-10 17:18:00 +0200] [41] [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb41191625w%22
-    [2026-06-10 17:18:00 +0200] [41] [ERROR] Bibliothèque nationale de France request error: HTTPSConnectionPool(host='catalogue.bnf.fr', port=443): Max retries exceeded with url: /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb41191625w%22 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
-    [2026-06-10 17:18:00 +0200] [41] [WARNING] BnF metadata error for 'cb41191625w': There was an error contacting the Bibliothèque nationale de France API: HTTPSConnectionPool(host='catalogue.bnf.fr', port=443): Max retries exceeded with url: /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb41191625w%22 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))). Check the logs for more details.
-    [2026-06-10 17:18:00 +0200] [41] [ERROR] bnf: Comic with ID cb41191625w not found
-    [2026-06-10 17:18:00 +0200] [41] [ERROR] Bibliothèque nationale de France error: Comic with ID cb41191625w not found
-    [2026-06-10 17:18:00 +0200] [41] [ERROR] Internal Server Error: /details/bnf/comic/cb41191625w/lucky-luke
-    172.18.0.1 - - [10/Jun/2026:17:18:00 +0200] "GET /details/bnf/comic/cb41191625w/lucky-luke HTTP/1.1" 500 4737 "http://localhost:8080/search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    127.0.0.1 - - [10/Jun/2026:17:18:00 +0200] "GET /details/bnf/comic/cb41191625w/lucky-luke HTTP/1.0" 500 4737 "http://localhost:8080/search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    [2026-06-10 17:18:03 +0200] [41] [WARNING] Not Found: /favicon.ico
-    127.0.0.1 - - [10/Jun/2026:17:18:03 +0200] "GET /favicon.ico HTTP/1.0" 404 3938 "http://localhost:8080/search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    172.18.0.1 - - [10/Jun/2026:17:18:03 +0200] "GET /favicon.ico HTTP/1.1" 404 1649 "http://localhost:8080/search?q=lucky%20luke&media_type=comic&source=bnf&layout=grid" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0"
-    [2026-06-10 17:18:04 +0200] [41] [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb42732025d%22
-    [2026-06-10 17:18:05 +0200] [41] [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb42732025d%22
-    [2026-06-10 17:18:05 +0200] [41] [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))': /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb42732025d%22
-    [2026-06-10 17:18:05 +0200] [41] [ERROR] Bibliothèque nationale de France request error: HTTPSConnectionPool(host='catalogue.bnf.fr', port=443): Max retries exceeded with url: /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb42732025d%22 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
-    [2026-06-10 17:18:05 +0200] [41] [WARNING] BnF metadata error for 'cb42732025d': There was an error contacting the Bibliothèque nationale de France API: HTTPSConnectionPool(host='catalogue.bnf.fr', port=443): Max retries exceeded with url: /api/SRU?version=1.2&operation=searchRetrieve&recordSchema=dublincore&maximumRecords=1&startRecord=1&query=bib.persistentId+adj+%22ark%3A%2F12148%2Fcb42732025d%22 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'))). Check the logs for more details.
-    [2026-06-10 17:18:05 +0200] [41] [ERROR] bnf: Comic with ID cb42732025d not found
-    [2026-06-10 17:18:05 +0200] [41] [ERROR] Bibliothèque nationale de France error: Comic with ID cb42732025d not found
-    [2026-06-10 17:18:05 +0200] [41] [ERROR] Internal Server Error: /details/bnf/comic/cb42732025d/lucky-luke-contre-joss-jamon-dessins-de-morris-scenario-de-r-goscinny
-
-Home page : if more than 15 items in a planning, they dont show up. Also tv shows planning, that do not have any seasons watched should go in the planning sections (Only with those criterias)
+- [ ] Searching on bnf works but no image
+- [ ] Vagrant soldier ares when saved shows as 1076/flagrant-delire-les-gendarmes-tome-1 on the grid. Other similar problems sometimes
 
 # 🟠 UI / UX Improvements
 
-### People Pages
-
-- [ ] Director  page movies per row , set to 8 by default
-- [X] Show full discography/bibliography where possible.
-
-Statistics
-
-World map should be an actual map with dots, like rateyourmusiuc. Also not sure all media types source the country.
-
----
-
-# 🟡 Statistics Expansion
-
 ### Time
 
-- [ ] Year statistics. From the media, not only consumption
-- [ ] Decade statistics.(Bar chart like senscritique maybe ?)From the media not only consumption
-- [ ] Media timeline (all time).
+- [ ] Year and decade statistics by release year: It is empty
 
-### Genres
+- Genres
 
-- [ ] Genre statistics for movies.
-- [ ] Genre statistics for TV.
-- [ ] Genre statistics for books.
-- [ ] Genre statistics for music.
-- [ ] Genre statistics for games.
+- [ ] Genre for comics
+- [ ] Tabs are there but no data
+- [ ] most watched directors / artists used to work but breaks after a redis flush maybe ? Needs a persistent data .And same when i go on a director page, it doesn't know i've watched the movies unless i've clicked on it
+
+Worl map should show the items when hovering on the circle (right now it shows country name + number o fitems)
+
+Awards progress should be openable when clicked (in the sam page, like a dropdown?)
 
 ---
 
@@ -87,16 +45,17 @@ World map should be an actual map with dots, like rateyourmusiuc. Also not sure 
 ### Collections
 
 - [ ] Collections filter by media type.
-- [ ] Multiple series/franchises per item.
-- [ ] worls maps vcountries name and
+- [ ] Multiple collections per item.
+- [ ] Dropped counts as completed. Same for directors
+- [ ] collections for BD(Comics)
 
 ### Planning
 
-- [ ] Planning button available on the grids.
+- [ ] Planning button available on the grids when searching.
 
 ### Backups
 
-- [ ] Weekly automatic backups.
+- [ ] Weekly automatic database backups : Mail ?
 
 ---
 
@@ -114,14 +73,14 @@ World map should be an actual map with dots, like rateyourmusiuc. Also not sure 
 
 ### Awards
 
-- [ ] fill in the list
+- [ ] see the films with something opening (same page)
 
 more festivals, cesar, sundance, etc
 
 ### Custom Awards
 
 - [ ] Personal GOTY collections (where i make my selection ).
-- [ ] Personal best of each year /decade by media type
+- [ ] Personal best of each year /decade by media type. Easily selectable between own media already rated
 - [ ] Personal best of by genre
 - [ ] Personal Oscars/Awards.
 - [ ] User-defined award lists.
@@ -137,4 +96,6 @@ more festivals, cesar, sundance, etc
 - [ ] Richer metadata throughout the application.
 - [ ] Images in new releases and indiciation if it's a season finale or somehting
 - [ ] time watched sums tv shows
+- [ ] ios app for local use ?
+- [ ] check features from https://github.com/dannyvfilms/Yamtrack
 - [ ]

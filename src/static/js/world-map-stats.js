@@ -187,7 +187,7 @@
           latitude: centroid[0],
           longitude: centroid[1],
           value: count,
-          // r scales with sqrt of count so large outliers don’t swamp the map
+          name: name,
           r: Math.max(4, Math.round(4 + 18 * Math.sqrt(count / maxVal)))
         });
       });
@@ -228,7 +228,7 @@
               callbacks: {
                 title: function() { return ''; },
                 label: function(ctx) {
-                  var name = ctx.label || '';
+                  var name = (ctx.raw && ctx.raw.name) || ctx.label || '';
                   var v = ctx.raw && ctx.raw.value != null ? ctx.raw.value : 0;
                   return name + ': ' + v + ' item' + (v !== 1 ? 's' : '');
                 }

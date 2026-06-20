@@ -17,6 +17,21 @@
     </a>
   </div>
 
+  {% if all_types %}
+  <div class="flex gap-2 mb-6 flex-wrap">
+    <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type=all"
+       class="px-3 py-1 rounded-full text-sm transition-colors {% if type_filter == 'all' %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
+      All
+    </a>
+    {% for mt in all_types %}
+    <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ mt }}"
+       class="px-3 py-1 rounded-full text-sm transition-colors {% if type_filter == mt %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
+      {{ mt|media_type_readable }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   {% if auto_collections.paginator.count or manual_collections.paginator.count or collab_collections.paginator.count %}
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
       <p class="text-sm text-gray-400">
@@ -27,7 +42,7 @@
           <span class="text-sm text-gray-400">Sort</span>
           <div class="flex rounded-md overflow-hidden border border-gray-700">
             {% for choice in sort_choices %}
-              <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ choice }}"
+              <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ choice }}&type={{ type_filter }}"
                  class="px-3 py-1.5 text-sm capitalize transition-colors {% if sort == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
                 {{ choice }}
               </a>
@@ -38,7 +53,7 @@
           <span class="text-sm text-gray-400">Per page</span>
           <div class="flex rounded-md overflow-hidden border border-gray-700">
             {% for choice in items_per_page_choices %}
-              <a href="?per_page={{ choice }}&columns={{ columns }}&sort={{ sort }}"
+              <a href="?per_page={{ choice }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}"
                  class="px-3 py-1.5 text-sm transition-colors {% if items_per_page == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
                 {{ choice }}
               </a>
@@ -49,7 +64,7 @@
           <span class="text-sm text-gray-400">Per line</span>
           <div class="flex rounded-md overflow-hidden border border-gray-700">
             {% for choice in columns_choices %}
-              <a href="?per_page={{ items_per_page }}&columns={{ choice }}&sort={{ sort }}"
+              <a href="?per_page={{ items_per_page }}&columns={{ choice }}&sort={{ sort }}&type={{ type_filter }}"
                  class="px-3 py-1.5 text-sm transition-colors {% if columns == choice %}bg-indigo-600 text-white{% else %}bg-[#2c3136] text-gray-300 hover:bg-[#39404b]{% endif %}">
                 {{ choice }}
               </a>
@@ -73,7 +88,7 @@
   {% if auto_collections.paginator.num_pages > 1 %}
     <div class="flex flex-wrap justify-center items-center -mt-4 mb-10 gap-x-2 gap-y-3">
       {% if auto_collections.has_previous %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&auto_page={{ auto_collections.previous_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&auto_page={{ auto_collections.previous_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
         </a>
@@ -81,7 +96,7 @@
       {% get_pagination_range auto_collections.number auto_collections.paginator.num_pages 2 as pages %}
       {% for page_num in pages %}
         {% if page_num %}
-          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&auto_page={{ page_num }}"
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&auto_page={{ page_num }}"
              class="w-10 h-10 rounded-md {% if auto_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
             {{ page_num }}
           </a>
@@ -92,7 +107,7 @@
         {% endif %}
       {% endfor %}
       {% if auto_collections.has_next %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&auto_page={{ auto_collections.next_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&auto_page={{ auto_collections.next_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
         </a>
@@ -111,7 +126,7 @@
   {% if manual_collections.paginator.num_pages > 1 %}
     <div class="flex flex-wrap justify-center items-center -mt-4 mb-10 gap-x-2 gap-y-3">
       {% if manual_collections.has_previous %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&manual_page={{ manual_collections.previous_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&manual_page={{ manual_collections.previous_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
         </a>
@@ -119,7 +134,7 @@
       {% get_pagination_range manual_collections.number manual_collections.paginator.num_pages 2 as pages %}
       {% for page_num in pages %}
         {% if page_num %}
-          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&manual_page={{ page_num }}"
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&manual_page={{ page_num }}"
              class="w-10 h-10 rounded-md {% if manual_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
             {{ page_num }}
           </a>
@@ -130,7 +145,7 @@
         {% endif %}
       {% endfor %}
       {% if manual_collections.has_next %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&manual_page={{ manual_collections.next_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&manual_page={{ manual_collections.next_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
         </a>
@@ -149,7 +164,7 @@
   {% if collab_collections.paginator.num_pages > 1 %}
     <div class="flex flex-wrap justify-center items-center mt-6 gap-x-2 gap-y-3">
       {% if collab_collections.has_previous %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&collab_page={{ collab_collections.previous_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&collab_page={{ collab_collections.previous_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
         </a>
@@ -157,7 +172,7 @@
       {% get_pagination_range collab_collections.number collab_collections.paginator.num_pages 2 as pages %}
       {% for page_num in pages %}
         {% if page_num %}
-          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&collab_page={{ page_num }}"
+          <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&collab_page={{ page_num }}"
              class="w-10 h-10 rounded-md {% if collab_collections.number == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
             {{ page_num }}
           </a>
@@ -168,7 +183,7 @@
         {% endif %}
       {% endfor %}
       {% if collab_collections.has_next %}
-        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&collab_page={{ collab_collections.next_page_number }}"
+        <a href="?per_page={{ items_per_page }}&columns={{ columns }}&sort={{ sort }}&type={{ type_filter }}&collab_page={{ collab_collections.next_page_number }}"
            class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
           {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
         </a>

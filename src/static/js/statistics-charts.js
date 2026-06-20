@@ -460,4 +460,36 @@ document.addEventListener("DOMContentLoaded", function () {
       scoreChartOptions
     );
   }
+
+  // Release Year Chart
+  const releaseYearDataEl = document.getElementById("release_year_chart_data");
+  if (releaseYearDataEl) {
+    const releaseYearData = JSON.parse(releaseYearDataEl.textContent);
+    const releaseYearOptions = JSON.parse(JSON.stringify(groupedBarChartConfig));
+    releaseYearOptions.scales.x.ticks = {
+      color: "#D1D5DB",
+      maxRotation: 90,
+      minRotation: 45,
+      autoSkip: true,
+      maxTicksLimit: 30,
+    };
+    initializeChartIfExists(
+      "releaseYearChart",
+      "bar",
+      processGroupedBarData(releaseYearData),
+      releaseYearOptions
+    );
+  }
+
+  // Release Decade Chart
+  const releaseDecadeDataEl = document.getElementById("release_decade_chart_data");
+  if (releaseDecadeDataEl) {
+    const releaseDecadeData = JSON.parse(releaseDecadeDataEl.textContent);
+    initializeChartIfExists(
+      "releaseDecadeChart",
+      "bar",
+      processGroupedBarData(releaseDecadeData),
+      groupedBarChartConfig
+    );
+  }
 });

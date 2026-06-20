@@ -298,6 +298,47 @@
     </div>
     {% endif %}
 
+    <!-- Media by Release Year / Decade -->
+    {% if release_year_chart_data or release_decade_chart_data %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Release Year -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Media by Release Year</h2>
+        <p class="text-sm text-gray-400 mb-4">Items in your library by their original release year</p>
+        {% if release_year_chart_data %}
+          <div class="h-72">
+            <canvas id="releaseYearChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Visit media detail pages to populate release year data.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Release Decade -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Media by Release Decade</h2>
+        <p class="text-sm text-gray-400 mb-4">Items in your library grouped by decade</p>
+        {% if release_decade_chart_data %}
+          <div class="h-72">
+            <canvas id="releaseDecadeChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Visit media detail pages to populate release decade data.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Activity History Section -->
     <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
       <h2 class="text-xl font-semibold mb-4 text-center">Activity History</h2>
@@ -862,6 +903,8 @@
   {{ score_distribution|json_script:"score_distribution" }}
   {% if year_chart_data %}{{ year_chart_data|json_script:"year_chart_data" }}{% endif %}
   {% if decade_chart_data %}{{ decade_chart_data|json_script:"decade_chart_data" }}{% endif %}
+  {% if release_year_chart_data %}{{ release_year_chart_data|json_script:"release_year_chart_data" }}{% endif %}
+  {% if release_decade_chart_data %}{{ release_decade_chart_data|json_script:"release_decade_chart_data" }}{% endif %}
 
   <script src="{% static 'js/statistics-charts.js' %}{% get_static_file_mtime 'js/statistics-charts.js' %}"></script>
   <script src="{% static 'js/world-map-stats.js' %}{% get_static_file_mtime 'js/world-map-stats.js' %}"></script>
