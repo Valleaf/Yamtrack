@@ -464,14 +464,19 @@ class SensCritiqueImporter:
         )
 
         if media_id and confidence >= HIGH_CONFIDENCE_THRESHOLD:
-            # High confidence → auto-import
-            top_image = candidates[0].get("image", "") if candidates else ""
+            # High confidence → auto-import. Use the verified provider title, not
+            # the raw SC CSV text: if the match is ever wrong, storing the SC title
+            # would silently mislabel the real media_id, and that mislabeling is
+            # permanent (Item.title is patched to provider truth on later saves,
+            # but only when it actually differs -- it can't self-correct against
+            # text we made up at import time). Provider truth, always.
+            top = candidates[0] if candidates else {}
             self._enqueue_item(
                 media_type=media_type,
                 media_id=media_id,
                 source=resolved_source,
-                title=title,
-                image=top_image,
+                title=top.get("title") or title,
+                image=top.get("image", ""),
                 score=score,
                 status=status,
                 notes=notes,

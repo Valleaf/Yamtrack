@@ -93,10 +93,15 @@ def _sync_collection(user, col_data, source_key):
             media_type=part["media_type"],
             defaults={"title": title, "image": image},
         )
-        # Backfill title/image if the stub was created with empty values
-        if not item_new and (not item.title or not item.image):
+        # Sync title to the provider-verified value if it differs (not just when
+        # empty) -- a stub Item can have a stale/wrong title left over from an
+        # earlier sync or an unrelated import match, and this collection part data
+        # is always freshly fetched from the source provider, so it's authoritative.
+        # Image is only backfilled when missing -- a placeholder is a worse signal
+        # than "different" so we don't want to flap between two valid covers.
+        if not item_new:
             update_fields = []
-            if not item.title and title:
+            if title and item.title != title:
                 item.title = title
                 update_fields.append("title")
             if not item.image and image:

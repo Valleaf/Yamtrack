@@ -1364,13 +1364,18 @@ def media_save(request):
                 "country": metadata.get("country", ""),
             },
         )
-        # Patch image/title/country if the item already existed with blank/placeholder values
+        # Patch image/country if the item already existed with blank/placeholder values.
+        # Title is always re-synced to the freshly-fetched provider metadata (not just
+        # when empty) -- a pre-existing Item can have a wrong title left over from a
+        # bad import match or stub creation, and since we already paid for a live
+        # metadata fetch for this exact media_id/source, it's always the source of
+        # truth. Mirrors the unconditional title overwrite in sync_metadata.
         update_fields = []
         real_image = metadata["image"] and metadata["image"] != settings.IMG_NONE
         if (not item.image or item.image == settings.IMG_NONE) and real_image:
             item.image = metadata["image"]
             update_fields.append("image")
-        if not item.title and metadata["title"]:
+        if metadata["title"] and item.title != metadata["title"]:
             item.title = metadata["title"]
             update_fields.append("title")
         if not item.country and metadata.get("country"):
