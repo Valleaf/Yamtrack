@@ -19,6 +19,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 
 from app import config, helpers, history_processor
 from app import statistics as stats
+from app.date_utils import get_release_year_from_metadata
 from app.forms import EpisodeForm, ManualItemForm, get_form_class
 from app.models import (
     TV,
@@ -838,7 +839,7 @@ def comic_person(request, person_id, name):  # noqa: ARG001
             "id": m["metadata"]["media_id"],
             "title": m["metadata"]["title"],
             "image": m["metadata"].get("image"),
-            "release_year": str(m["metadata"].get("details", {}).get("start_year") or ""),
+            "release_year": str(get_release_year_from_metadata(m["metadata"]) or ""),
             "tracked": True,
             "status": m["status"],
             "completed": m["status"] == Status.COMPLETED.value,
@@ -959,7 +960,7 @@ def manga_author_items(request, author_id, name):  # noqa: ARG001
             "id": m["metadata"]["media_id"],
             "title": m["metadata"]["title"],
             "image": m["metadata"].get("image"),
-            "release_year": str(m["metadata"].get("details", {}).get("year") or ""),
+            "release_year": str(get_release_year_from_metadata(m["metadata"]) or ""),
             "tracked": True,
             "status": m["status"],
             "completed": m["status"] == Status.COMPLETED.value,
@@ -1192,6 +1193,11 @@ def sync_metadata(request, source, media_type, media_id, season_number=None):
                 "country": metadata.get("country", ""),
             },
         )
+        if item.release_year is None:
+            release_year = get_release_year_from_metadata(metadata)
+            if release_year is not None:
+                item.release_year = release_year
+                item.save(update_fields=["release_year"])
         title = metadata["title"]
         if season_number:
             title += f" - Season {season_number}"
@@ -1362,11 +1368,13 @@ def media_save(request):
                 "title": metadata["title"],
                 "image": metadata["image"],
                 "country": metadata.get("country", ""),
+                "release_year": get_release_year_from_metadata(metadata),
             },
         )
-        # Patch image/country if the item already existed with blank/placeholder values.
-        # Title is always re-synced to the freshly-fetched provider metadata (not just
-        # when empty) -- a pre-existing Item can have a wrong title left over from a
+        # Patch image/country/release_year if the item already existed with
+        # blank/placeholder/unset values. Title is always re-synced to the
+        # freshly-fetched provider metadata (not just when empty) -- a
+        # pre-existing Item can have a wrong title left over from a
         # bad import match or stub creation, and since we already paid for a live
         # metadata fetch for this exact media_id/source, it's always the source of
         # truth. Mirrors the unconditional title overwrite in sync_metadata.
@@ -1381,6 +1389,11 @@ def media_save(request):
         if not item.country and metadata.get("country"):
             item.country = metadata["country"]
             update_fields.append("country")
+        if item.release_year is None:
+            release_year = get_release_year_from_metadata(metadata)
+            if release_year is not None:
+                item.release_year = release_year
+                update_fields.append("release_year")
         if update_fields:
             item.save(update_fields=update_fields)
         model = apps.get_model(app_label="app", model_name=media_type)

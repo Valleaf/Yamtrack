@@ -6,15 +6,8 @@
 - [ ] SensCritique review page not accessible / throws error.
 - [ ] Collection sync identity bugs.
 - [ ] Sync button shows error.
-- [ ] Removed collection items are re-added after future syncs.
-
-### Artwork & Metadata
-
-- [ ] Some games display wrong title in lists but correct title on detail page. Exemple : Need for speed most wanted shows Need for speed on grid
-- [ ] Searching on bnf works but no image
-- [ ] Vagrant soldier ares when saved shows as 1076/flagrant-delire-les-gendarmes-tome-1 on the grid. Other similar problems sometimes
-
-# 🟠 UI / UX Improvements
+- [ ] Removed collection items are re-added after future syncs.\
+- [ ] studios/artists button not working
 
 ### Time
 
@@ -96,9 +89,7 @@ more festivals, cesar, sundance, etc
 - [ ] ios app for local use ?
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack
 
-App : 
-
-
+App :
 
 You have full filesystem access to my Yamtrack fork.
 

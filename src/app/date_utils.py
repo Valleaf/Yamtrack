@@ -148,3 +148,68 @@ def parse_calendar_date(date_str):
     if result is None:
         raise ValueError(f"Invalid date format: {date_str}")
     return result
+
+
+# Provider "details" dicts store the release year under different keys
+# depending on the source:
+#   release_date     - TMDB movie, IGDB game, MusicBrainz album
+#   first_air_date   - TMDB tv
+#   publish_date     - OpenLibrary book, Hardcover book
+#   start_date       - MAL anime/manga, ComicVine issue/volume, BnF comic
+#   year / start_year - BGG boardgame (string), MangaUpdates manga (int)
+_RELEASE_YEAR_DETAIL_KEYS = (
+    "year",
+    "start_year",
+    "release_date",
+    "first_air_date",
+    "publish_date",
+    "start_date",
+)
+
+_MIN_RELEASE_YEAR = 1800
+_MAX_RELEASE_YEAR = 2200
+
+
+def _coerce_release_year(value):
+    """Coerce a details value (int year or date-like string) into a plausible year."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        year = value
+    elif isinstance(value, str) and len(value) >= 4:
+        try:
+            year = int(value[:4])
+        except ValueError:
+            return None
+    else:
+        return None
+
+    return year if _MIN_RELEASE_YEAR <= year <= _MAX_RELEASE_YEAR else None
+
+
+def get_release_year_from_metadata(metadata):
+    """
+    Extract the release year from cached provider metadata.
+
+    Checks every key any provider uses to store a release year/date in the
+    metadata "details" dict (see _RELEASE_YEAR_DETAIL_KEYS), so callers don't
+    need to know which key a given source uses. Values may be a 4-digit int
+    or a date-like string ("YYYY", "YYYY-MM-DD", etc).
+
+    Parameters
+    ----------
+    metadata : dict
+        Cached provider metadata for a media item (must be a dict; its
+        "details" key may be missing or empty).
+
+    Returns
+    -------
+    int | None
+        The release year, or None if it can't be determined.
+    """
+    details = metadata.get("details") or {}
+    for key in _RELEASE_YEAR_DETAIL_KEYS:
+        year = _coerce_release_year(details.get(key))
+        if year is not None:
+            return year
+    return None

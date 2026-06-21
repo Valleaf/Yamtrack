@@ -85,6 +85,14 @@ class Item(CalendarTriggerMixin, models.Model):
     title = models.TextField()
     image = models.URLField()  # if add default, custom media entry will show the value
     country = models.CharField(max_length=2, blank=True, default="")
+    release_year = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text=(
+            "Release year, denormalized from provider metadata at save/sync "
+            "time so stats queries never depend on the metadata cache being warm."
+        ),
+    )
     season_number = models.PositiveIntegerField(null=True, blank=True)
     episode_number = models.PositiveIntegerField(null=True, blank=True)
 

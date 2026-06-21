@@ -18,6 +18,7 @@ from django.db.models import (
 from django.utils import timezone
 
 from app import config
+from app.date_utils import get_release_year_from_metadata
 from app.models import (
     TV,
     BasicMedia,
@@ -979,33 +980,17 @@ def get_decade_chart_data(year_rows):
     }
 
 
-def _get_media_release_year(metadata: dict) -> "int | None":
-    """Extract the release year from cached provider metadata."""
-    details = metadata.get("details") or {}
-
-    for key in ("year", "start_year"):
-        val = details.get(key)
-        if isinstance(val, int) and 1800 <= val <= 2200:
-            return val
-
-    for key in ("release_date", "first_air_date", "publish_date"):
-        val = details.get(key)
-        if val and isinstance(val, str) and len(val) >= 4:
-            try:
-                year = int(val[:4])
-                if 1800 <= year <= 2200:
-                    return year
-            except (ValueError, TypeError):
-                pass
-
-    return None
-
-
 _RELEASE_YEAR_SKIP = frozenset({"season", "episode"})
 
 
 def get_release_year_distribution(user_media: dict) -> "dict[int, int]":
-    """Count tracked media items by their release year (cache-only, no live API calls).
+    """Count tracked media items by their release year.
+
+    Reads Item.release_year first (denormalized at save/sync time, so this
+    never depends on the metadata cache being warm). For any item where
+    it isn't set yet -- tracked before this field existed and not yet
+    covered by the backfill task -- falls back to cached provider metadata
+    so accuracy doesn't regress while the backfill runs.
 
     TV seasons and episodes are skipped — the parent TV show already covers them.
     Returns a {year: count} mapping.
@@ -1016,11 +1001,14 @@ def get_release_year_distribution(user_media: dict) -> "dict[int, int]":
         if media_type in _RELEASE_YEAR_SKIP:
             continue
         for media in media_list:
-            cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
-            metadata = cache.get(cache_key)
-            if metadata is None:
-                continue
-            year = _get_media_release_year(metadata)
+            year = media.item.release_year
+            if year is None:
+                cache_key = (
+                    f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+                )
+                metadata = cache.get(cache_key)
+                if metadata is not None:
+                    year = get_release_year_from_metadata(metadata)
             if year is not None:
                 year_counts[year] += 1
 

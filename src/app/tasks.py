@@ -66,3 +66,77 @@ def cleanup_user_messages():
     logger.info("Deleted %s old shown user messages.", deleted_count)
 
     return deleted_count
+
+
+@shared_task(name="Backfill release years")
+def backfill_release_years(progress_every=200):
+    """One-time backfill: populate Item.release_year for items tracked
+    before that field existed.
+
+    Walks every Item missing release_year (skipping seasons/episodes, which
+    don't carry their own release year, and manual entries, which have no
+    provider metadata to fetch), fetches metadata through the normal
+    provider dispatch -- so already-cached items resolve instantly and
+    everything else goes through each source's existing rate limiter --
+    and stores the extracted year directly on the row.
+
+    Safe to re-run: only items still missing release_year are touched.
+    Trigger manually with:
+        docker compose exec yamtrack python manage.py shell -c \\
+            "from app.tasks import backfill_release_years; backfill_release_years.delay()"
+    """
+    from app.date_utils import get_release_year_from_metadata  # noqa: PLC0415
+    from app.models import Item, MediaTypes, Sources  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    queryset = (
+        Item.objects.filter(release_year__isnull=True)
+        .exclude(media_type__in=(MediaTypes.SEASON.value, MediaTypes.EPISODE.value))
+        .exclude(source=Sources.MANUAL.value)
+    )
+
+    total = queryset.count()
+    updated = 0
+    no_year = 0
+    failed = 0
+
+    logger.info("Release year backfill: %s items to process", total)
+
+    for index, item in enumerate(queryset.iterator(chunk_size=progress_every), start=1):
+        try:
+            metadata = services.get_media_metadata(
+                item.media_type,
+                item.media_id,
+                item.source,
+            )
+            year = get_release_year_from_metadata(metadata)
+        except Exception:
+            failed += 1
+            logger.exception(
+                "Release year backfill failed for %s/%s/%s",
+                item.source,
+                item.media_type,
+                item.media_id,
+            )
+            continue
+
+        if year is None:
+            no_year += 1
+            continue
+
+        item.release_year = year
+        item.save(update_fields=["release_year"])
+        updated += 1
+
+        if index % progress_every == 0:
+            logger.info(
+                "Release year backfill: %s/%s processed "
+                "(updated=%s, no_year=%s, failed=%s)",
+                index, total, updated, no_year, failed,
+            )
+
+    logger.info(
+        "Release year backfill complete: %s processed, updated=%s, no_year=%s, failed=%s",
+        total, updated, no_year, failed,
+    )
+    return {"total": total, "updated": updated, "no_year": no_year, "failed": failed}

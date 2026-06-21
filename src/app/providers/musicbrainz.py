@@ -167,7 +167,7 @@ def search_artists(query: str, page: int = 1) -> dict:
 
 def album(mb_id: str) -> dict:
     """Fetch album metadata from MusicBrainz by release-group ID."""
-    cache_key = f"musicbrainz_album_{mb_id}"
+    cache_key = f"{Sources.MUSICBRAINZ.value}_{MediaTypes.MUSIC.value}_{mb_id}"
     cached = cache.get(cache_key)
     if cached:
         return cached
@@ -234,7 +234,7 @@ def album(mb_id: str) -> dict:
         },
     }
 
-    cache.set(cache_key, result, 3600)
+    cache.set(cache_key, result)
     return result
 
 
