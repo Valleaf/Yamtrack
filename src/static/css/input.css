@@ -203,3 +203,17 @@
   font-size: 15px;
   margin-top: 3px;
 }
+
+/* PWA safe-area support (notch / Dynamic Island / home indicator on iPhone) */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
