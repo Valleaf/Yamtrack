@@ -162,7 +162,8 @@ def _issue_comic(issue_id):
             "format": "json",
             "field_list": (
                 "id,name,issue_number,volume,site_detail_url,image,"
-                "description,cover_date,store_date,person_credits"
+                "description,cover_date,store_date,person_credits,"
+                "concept_credits"
             ),
         }
 
@@ -200,7 +201,7 @@ def _issue_comic(issue_id):
             "max_issue_number": None,
             "image": get_image(response),
             "synopsis": get_synopsis(response),
-            "genres": None,
+            "genres": get_issue_genres(response),
             "score": None,
             "score_count": None,
             "details": {
@@ -360,6 +361,19 @@ def get_genres(response):
     """Return the list of genres."""
     if "concepts" in response:
         return [concept["name"] for concept in response["concepts"][:5]]
+    return None
+
+
+def get_issue_genres(response):
+    """Return the list of genres for a single issue.
+
+    Issues expose concept tags under `concept_credits` -- volumes use the
+    differently-named `concepts` field (see `get_genres` above). Most
+    concept tagging on Comic Vine happens at the volume level, so this
+    is frequently empty even when the issue itself is well-documented.
+    """
+    if response.get("concept_credits"):
+        return [concept["name"] for concept in response["concept_credits"][:5]]
     return None
 
 

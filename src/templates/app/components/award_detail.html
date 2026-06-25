@@ -1,0 +1,29 @@
+<div class="rounded-xl bg-[#2a2f35] ring-1 ring-white/10 p-5 mt-6">
+  <div class="flex items-center justify-between mb-4 gap-3">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="text-xl">{{ award.icon }}</span>
+      <h3 class="text-lg font-semibold text-white truncate">{{ award.name }}</h3>
+      <span class="text-xs text-gray-500 shrink-0">{{ award.tracked_count }}/{{ award.total_count }} tracked</span>
+    </div>
+    <button type="button"
+            onclick="window.closeAwardDetail ? closeAwardDetail() : document.getElementById('award-detail-panel').innerHTML=''"
+            class="text-gray-400 hover:text-white text-sm shrink-0 cursor-pointer">
+      Close ✕
+    </button>
+  </div>
+
+  {% if award.entries %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto pr-1">
+      {% for winner in award.entries %}
+        <a href="{{ winner.link }}"
+           class="flex items-center gap-2 rounded-md px-3 py-2 text-sm ring-1 transition-colors hover:ring-indigo-400/40 {% if winner.tracked %}bg-emerald-500/10 ring-emerald-400/20{% else %}bg-[#1e2329] ring-white/5{% endif %}">
+          <span class="shrink-0">{% if winner.tracked %}✅{% else %}⬜{% endif %}</span>
+          <span class="flex-1 truncate {% if winner.tracked %}text-white{% else %}text-gray-400{% endif %}">{{ winner.title }}</span>
+          {% if winner.year %}<span class="shrink-0 text-xs text-gray-500">{{ winner.year }}</span>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-sm text-gray-400 text-center py-6">No winners configured for this award.</p>
+  {% endif %}
+</div>

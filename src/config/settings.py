@@ -223,7 +223,7 @@ REDIS_URL = config("REDIS_URL", default="redis://localhost:6379")
 KEY_PREFIX = f"{REDIS_PREFIX}" if REDIS_PREFIX else ""
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        "BACKEND": "app.cache_backends.PersistentRedisCache",
         "LOCATION": REDIS_URL,
         "TIMEOUT": CACHE_TIMEOUT,
         "VERSION": 16,

@@ -375,9 +375,13 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
 def _get_user_movie_directors(user):
     """Return tracked directors for the user's movie collection.
 
-    Cache-only: only movies whose metadata is already in Redis are included.
-    Movies will appear here automatically after the user visits their detail pages.
+    Reads cached metadata first; any movie missing from the cache is
+    fetched live (and cached) the same way the generic person-grouping
+    helper does for games/music/comics/books, so this page never silently
+    drops movies just because their detail page hasn't been visited yet.
     """
+    from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
+
     movies = BasicMedia.objects.get_media_list(
         user=user,
         media_type=MediaTypes.MOVIE.value,
@@ -385,15 +389,40 @@ def _get_user_movie_directors(user):
         sort_filter="title",
     )
 
-    directors = {}
-    total_movies = movies.count()
-    cached_movie_count = 0
-
     tmdb_movies = [m for m in movies if m.item.source == Sources.TMDB.value]
+    total_movies = len(tmdb_movies)
 
+    cached_metadata = {}
+    uncached = []
     for movie in tmdb_movies:
         cache_key = f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{movie.item.media_id}"
         metadata = cache.get(cache_key)
+        if metadata is not None:
+            cached_metadata[movie.item.media_id] = metadata
+        else:
+            uncached.append(movie)
+
+    if uncached:
+        def _fetch(movie):
+            try:
+                return movie.item.media_id, services.get_media_metadata(
+                    MediaTypes.MOVIE.value, movie.item.media_id, Sources.TMDB.value,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to fetch metadata for movie %s", movie.item.media_id,
+                )
+                return movie.item.media_id, None
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            for media_id, metadata in executor.map(_fetch, uncached):
+                if metadata is not None:
+                    cached_metadata[media_id] = metadata
+
+    directors = {}
+    cached_movie_count = 0
+    for movie in tmdb_movies:
+        metadata = cached_metadata.get(movie.item.media_id)
         if metadata is None:
             continue
 
@@ -414,7 +443,7 @@ def _get_user_movie_directors(user):
                     "metadata": metadata,
                     "item": movie.item,
                     "status": movie.status,
-                }
+                },
             )
 
     return directors, total_movies, cached_movie_count
@@ -1871,6 +1900,15 @@ def statistics(request):
     }
 
     return render(request, "app/statistics.html", context)
+
+
+@require_GET
+def award_progress_detail(request, award_slug):
+    """HTMX endpoint: full per-winner breakdown for one award category."""
+    detail = stats.get_award_winners_detail(request.user, award_slug)
+    if detail is None:
+        raise Http404("Award not found")
+    return render(request, "app/components/award_detail.html", {"award": detail})
 
 
 @require_GET

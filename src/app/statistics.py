@@ -15,6 +15,7 @@ from django.db.models import (
     Prefetch,
     Q,
 )
+from django.urls import reverse
 from django.utils import timezone
 
 from app import config
@@ -23,6 +24,7 @@ from app.models import (
     TV,
     BasicMedia,
     Episode,
+    Item,
     MediaManager,
     MediaTypes,
     Season,
@@ -680,6 +682,8 @@ def calculate_streaks(date_counts, end_date):
     return current_streak, longest_streak
 
 
+_MAX_COUNTRY_TITLES = 12
+
 # ── ISO 3166-1 alpha-2 → English country name ─────────────────────────────────
 _ISO_TO_NAME: dict[str, str] = {
     "AD": "Andorra", "AE": "United Arab Emirates", "AF": "Afghanistan",
@@ -739,16 +743,20 @@ _ISO_TO_NAME: dict[str, str] = {
 
 
 def get_country_distribution(user_media):
-    """Get media count by country name for each media type.
+    """Get media count and sample titles by country name for each media type.
 
     Reads the ISO 3166-1 alpha-2 code from Media.country (the field on each
     concrete media model row) and resolves it to a human-readable country name.
-    Returns: { media_type: { "United States": 5, "Japan": 3, ... }, ... }
+    Returns:
+        { media_type: { "United States": {"count": 5, "titles": [...]}, ... }, ... }
+    Titles are capped per country (see _MAX_COUNTRY_TITLES) so the page's
+    embedded JSON doesn't blow up for countries with huge libraries -- the
+    map tooltip shows a "+N more" suffix using the real count instead.
     """
     country_data_by_type = {}
 
     for media_type, media_list in user_media.items():
-        country_counts = defaultdict(int)
+        country_entries = defaultdict(lambda: {"count": 0, "titles": []})
 
         for media in media_list:
             code = (
@@ -759,11 +767,18 @@ def get_country_distribution(user_media):
             if not code or len(code) != 2:
                 continue
             name = _ISO_TO_NAME.get(code, code)
-            country_counts[name] += 1
+            entry = country_entries[name]
+            entry["count"] += 1
+            if len(entry["titles"]) < _MAX_COUNTRY_TITLES:
+                entry["titles"].append(str(media.item))
 
-        if country_counts:
+        if country_entries:
             country_data_by_type[media_type] = dict(
-                sorted(country_counts.items(), key=lambda x: x[1], reverse=True)
+                sorted(
+                    country_entries.items(),
+                    key=lambda x: x[1]["count"],
+                    reverse=True,
+                ),
             )
 
     return country_data_by_type
@@ -820,7 +835,7 @@ def get_media_by_type_country_data(user_media):
 # ── Genre / People / Time chart helpers ──────────────────────────────────────
 
 _GENRE_MEDIA_TYPES = frozenset({
-    "movie", "tv", "anime", "manga", "game", "book", "music",
+    "movie", "tv", "anime", "manga", "game", "book", "music", "comic",
 })
 
 
@@ -1105,6 +1120,7 @@ def get_awards_progress(user):
         offset = round(_DONUT_CIRCUMFERENCE * (1 - pct / 100), 2)
 
         result.append({
+            "slug": award["slug"],
             "name": award["name"],
             "icon": award["icon"],
             "tracked": tracked,
@@ -1114,6 +1130,104 @@ def get_awards_progress(user):
         })
 
     return result
+
+
+def get_award_winners_detail(user, award_slug):
+    """Return the full per-winner breakdown for one award category.
+
+    Used by the awards-progress "open on click" dropdown. Title lookups
+    never hit a live provider API (matching the no-live-calls-from-stats
+    rule): a winner's title comes from the shared Item row if anyone has
+    ever tracked it, then falls back to cached provider metadata, then to
+    a generic placeholder if neither is available.
+
+    Returns None if the slug doesn't match a configured award.
+    """
+    from app.awards_data import AWARDS  # noqa: PLC0415
+
+    award = next((a for a in AWARDS if a["slug"] == award_slug), None)
+    if award is None:
+        return None
+
+    source = award["source"]
+    media_type = award["media_type"]
+    id_key = f"{source}_id"
+
+    try:
+        model = apps.get_model("app", media_type)
+    except LookupError:
+        return None
+
+    winners = []
+    seen_ids = set()
+    for winner in award["winners"]:
+        media_id = winner.get(id_key)
+        if not media_id or str(media_id) in seen_ids:
+            continue
+        seen_ids.add(str(media_id))
+        winners.append({"media_id": str(media_id), "year": winner.get("year")})
+
+    media_ids = [w["media_id"] for w in winners]
+
+    # Item rows are shared across users -- if anyone has ever tracked a
+    # winner its title/image is already here, no cache or API call needed.
+    items_by_media_id = {
+        item.media_id: item
+        for item in Item.objects.filter(
+            source=source,
+            media_type=media_type,
+            media_id__in=media_ids,
+        )
+    }
+
+    # Which of those winners does *this* user actually track?
+    tracked_media_ids = set(
+        model.objects.filter(
+            user=user,
+            item__source=source,
+            item__media_type=media_type,
+            item__media_id__in=media_ids,
+        ).values_list("item__media_id", flat=True),
+    )
+
+    entries = []
+    for winner in winners:
+        media_id = winner["media_id"]
+        item = items_by_media_id.get(media_id)
+
+        if item is not None:
+            title = item.title
+        else:
+            cache_key = f"{source}_{media_type}_{media_id}"
+            metadata = cache.get(cache_key)
+            title = metadata["title"] if metadata else f"Unknown title (ID {media_id})"
+
+        entries.append({
+            "media_id": media_id,
+            "year": winner["year"],
+            "title": title,
+            "tracked": media_id in tracked_media_ids,
+            "link": reverse(
+                "media_details",
+                kwargs={
+                    "source": source,
+                    "media_type": media_type,
+                    "media_id": media_id,
+                    "title": app_tags.slug(title),
+                },
+            ),
+        })
+
+    entries.sort(key=lambda e: e["year"] or 0, reverse=True)
+
+    return {
+        "slug": award_slug,
+        "name": award["name"],
+        "icon": award["icon"],
+        "entries": entries,
+        "tracked_count": sum(1 for e in entries if e["tracked"]),
+        "total_count": len(entries),
+    }
 
 
 def get_list_progress(user):

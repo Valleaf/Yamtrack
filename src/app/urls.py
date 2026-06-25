@@ -104,5 +104,10 @@ urlpatterns = [
         name="search_parent_season",
     ),
     path("statistics", views.statistics, name="statistics"),
+    path(
+        "statistics/awards/<slug:award_slug>",
+        views.award_progress_detail,
+        name="award_progress_detail",
+    ),
     path("serviceworker.js", views.service_worker, name="service_worker"),
 ]

@@ -601,10 +601,10 @@
               {{ countries|to_json }}
             </script>
             <div id="country-list-{{ media_type }}" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {% for country, count in countries.items %}
+              {% for country, country_info in countries.items %}
                 <div class="flex items-center justify-between gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
                   <span class="truncate text-gray-300">{{ country }}</span>
-                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs text-gray-400">{{ count }}</span>
+                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs text-gray-400">{{ country_info.count }}</span>
                 </div>
               {% endfor %}
             </div>
@@ -748,7 +748,12 @@
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
         {% for entry in awards_progress %}
-          <div class="flex flex-col items-center gap-2">
+          <button type="button"
+                  data-award-slug="{{ entry.slug }}"
+                  hx-get="{% url 'award_progress_detail' entry.slug %}"
+                  hx-target="#award-detail-panel"
+                  hx-swap="innerHTML"
+                  class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
             <div class="relative w-28 h-28">
               <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
                 <circle cx="50" cy="50" r="40"
@@ -771,10 +776,50 @@
               </div>
             </div>
             <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
-          </div>
+          </button>
         {% endfor %}
       </div>
+      <div id="award-detail-panel"></div>
     </div>
+    <script>
+      (function () {
+        var panel = document.getElementById("award-detail-panel");
+        if (!panel) return;
+
+        function clearActiveButtons() {
+          document.querySelectorAll("[data-award-slug]").forEach(function (btn) {
+            btn.classList.remove("ring-indigo-400/40", "bg-white/[0.03]");
+          });
+        }
+
+        window.closeAwardDetail = function () {
+          panel.innerHTML = "";
+          delete panel.dataset.openSlug;
+          clearActiveButtons();
+        };
+
+        document.body.addEventListener("htmx:beforeRequest", function (evt) {
+          var btn = evt.detail.elt;
+          if (!btn || !btn.dataset || !btn.dataset.awardSlug) return;
+          if (panel.dataset.openSlug === btn.dataset.awardSlug) {
+            evt.preventDefault();
+            window.closeAwardDetail();
+          }
+        });
+
+        document.body.addEventListener("htmx:afterSwap", function (evt) {
+          if (evt.detail.target !== panel) return;
+          var btn = evt.detail.elt;
+          var slug = btn && btn.dataset ? btn.dataset.awardSlug : null;
+          clearActiveButtons();
+          if (slug) {
+            panel.dataset.openSlug = slug;
+            btn.classList.add("ring-indigo-400/40", "bg-white/[0.03]");
+          }
+          panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      })();
+    </script>
     {% endif %}
 
     <!-- Top Rated Media Section -->

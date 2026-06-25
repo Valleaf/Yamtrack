@@ -2135,3 +2135,26 @@ class ExternalListItem(models.Model):
         """Return the list name and rank."""
         return f"{self.external_list.name}: #{self.rank} ({self.media_id})"
 
+
+class PersistentCacheEntry(models.Model):
+    """Durable backing store for the Redis-backed Django cache.
+
+    Every cache.set() call also lands here (see app.cache_backends) so a
+    Redis FLUSHALL, container restart, or normal TTL expiry doesn't wipe
+    data that's meant to be durable -- provider metadata in particular,
+    which is what backs the director/artist/genre stats pages. On a Redis
+    miss, PersistentRedisCache reads this table and re-warms Redis.
+
+    The primary key is the same composite key Django's cache framework
+    would use internally (key_prefix:version:key), so entries here line up
+    1:1 with what would otherwise live only in Redis.
+    """
+
+    key = models.CharField(max_length=300, primary_key=True)
+    value = models.BinaryField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        """Return the cache key."""
+        return self.key
+

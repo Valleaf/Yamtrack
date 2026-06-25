@@ -9,6 +9,7 @@ from app.models import (
     ExternalList,
     ExternalListItem,
     Item,
+    PersistentCacheEntry,
     UserMessage,
 )
 
@@ -68,6 +69,19 @@ class ExternalListItemAdmin(admin.ModelAdmin):
     raw_id_fields = ["external_list"]
 
 
+@admin.register(PersistentCacheEntry)
+class PersistentCacheEntryAdmin(admin.ModelAdmin):
+    """Admin for the durable cache backing store.
+
+    Mostly useful for spot-checking what's persisted or manually evicting a
+    stuck/stale entry without waiting on a Redis TTL.
+    """
+
+    search_fields = ["key"]
+    list_display = ["key", "updated_at"]
+    readonly_fields = ["key", "value", "updated_at"]
+
+
 class MediaAdmin(admin.ModelAdmin):
     """Custom admin for regular media model with search and filter options."""
 
@@ -81,7 +95,7 @@ class MediaAdmin(admin.ModelAdmin):
 
 # Auto-register remaining models
 app_models = apps.get_app_config("app").get_models()
-SpecialModels = ["Item", "Episode", "BasicMedia", "UserMessage"]
+SpecialModels = ["Item", "Episode", "BasicMedia", "UserMessage", "PersistentCacheEntry"]
 for model in app_models:
     if (
         not model.__name__.startswith("Historical")

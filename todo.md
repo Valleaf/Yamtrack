@@ -5,9 +5,9 @@
 - [ ] FilmAffinity import does nothing.
 - [ ] SensCritique review page not accessible / throws error.
 - [ ] Collection sync identity bugs.
-- [ ] Sync button shows error.
-- [ ] Removed collection items are re-added after future syncs.\
 - [ ] studios/artists button not working
+- [ ] loading bnf sometimes crashes.
+- [ ] bnf images seem to not be stored ? Has to load everytime
 
 ### Time
 
@@ -16,14 +16,7 @@
 - Genres
 
 - [ ] Genre for comics
-- [ ] Tabs are there but no data
-- [ ] most watched directors / artists used to work but breaks after a redis flush maybe ? Needs a persistent data .And same when i go on a director page, it doesn't know i've watched the movies unless i've clicked on it
-
-Worl map should show the items when hovering on the circle (right now it shows country name + number o fitems)
-
-Awards progress should be openable when clicked (in the sam page, like a dropdown?)
-
----
+- [ ] genre Tabs are there  in statistics but no data
 
 # 🟢 Features
 
@@ -42,10 +35,13 @@ Dropped should count as completed for the collections and directors
 - Planning
 
 - [ ] Planning button available on the grids when searching.
+- [ ] Sort by end date by default
 
 ### Backups
 
 - [ ] Weekly automatic database backups : Mail ?
+
+Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime.
 
 ---
 
@@ -63,18 +59,15 @@ Dropped should count as completed for the collections and directors
 
 ### Awards
 
-- [ ] see the films with something opening (same page)
+- [ ] see the films with a click, with something opening underneath/side(same page)
 
 more festivals, cesar, sundance, etc
 
 ### Custom Awards
 
-- [ ] Personal GOTY collections (where i make my selection ).
-- [ ] Personal best of each year /decade by media type. Easily selectable between own media already rated
-- [ ] Personal best of by genre
-- [ ] Personal Oscars/Awards.
-- [ ] User-defined award lists.
-- [ ]
+- Personal best of each year /decade by media type. Easily selectable between own media already rated
+
+- [ ] Personal best of by genre]
 
 ---
 
@@ -89,3 +82,4 @@ more festivals, cesar, sundance, etc
 - [ ] ios app for local use ?
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack
 - [ ] App : Notifictations
+- [ ] auto global sync ? Monthly maybe

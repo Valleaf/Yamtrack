@@ -137,11 +137,17 @@
   }
 
   function buildDotMap(container, countryNameData) {
-    // Convert name-keyed data → alpha-2 keyed
+    // Convert name-keyed data → alpha-2 keyed, merging count + sample titles
     var alpha2Data = {};
     Object.keys(countryNameData).forEach(function(name) {
       var code = NAME_TO_A2[name];
-      if (code) alpha2Data[code] = (alpha2Data[code] || 0) + countryNameData[name];
+      if (!code) return;
+      var info = countryNameData[name] || {};
+      var count = info.count || 0;
+      var titles = info.titles || [];
+      if (!alpha2Data[code]) alpha2Data[code] = { count: 0, titles: [] };
+      alpha2Data[code].count += count;
+      alpha2Data[code].titles = alpha2Data[code].titles.concat(titles);
     });
 
     if (!Object.keys(alpha2Data).length) {
@@ -159,7 +165,9 @@
       delete chartInstances[canvasId];
     }
 
-    var maxVal = Math.max.apply(null, Object.values(alpha2Data).concat([1]));
+    var maxVal = Math.max.apply(null, Object.keys(alpha2Data).map(function(code) {
+      return alpha2Data[code].count;
+    }).concat([1]));
 
     getWorld().then(function(wd) {
       if (!window.ChartGeo || !window.ChartGeo.topojson) {
@@ -175,7 +183,8 @@
       Object.keys(alpha2Data).forEach(function(code) {
         var centroid = A2_CENTROID[code];
         if (!centroid) return;
-        var count = alpha2Data[code];
+        var info = alpha2Data[code];
+        var count = info.count;
         // resolve display name from NAME_TO_A2 reverse lookup
         var name = code;
         var allNames = Object.keys(NAME_TO_A2);
@@ -188,6 +197,7 @@
           longitude: centroid[1],
           value: count,
           name: name,
+          titles: info.titles,
           r: Math.max(4, Math.round(4 + 18 * Math.sqrt(count / maxVal)))
         });
       });
@@ -230,7 +240,14 @@
                 label: function(ctx) {
                   var name = (ctx.raw && ctx.raw.name) || ctx.label || '';
                   var v = ctx.raw && ctx.raw.value != null ? ctx.raw.value : 0;
-                  return name + ': ' + v + ' item' + (v !== 1 ? 's' : '');
+                  var titles = (ctx.raw && ctx.raw.titles) || [];
+                  var shown = titles.slice(0, 8);
+                  var lines = [name + ': ' + v + ' item' + (v !== 1 ? 's' : '')];
+                  shown.forEach(function(t) { lines.push('• ' + t); });
+                  if (v > shown.length) {
+                    lines.push('+ ' + (v - shown.length) + ' more');
+                  }
+                  return lines;
                 }
               }
             }

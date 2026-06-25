@@ -140,3 +140,80 @@ def backfill_release_years(progress_every=200):
         total, updated, no_year, failed,
     )
     return {"total": total, "updated": updated, "no_year": no_year, "failed": failed}
+
+
+@shared_task(name="Backfill people metadata cache")
+def backfill_people_metadata_cache(progress_every=200):
+    """One-time backfill: warm the provider-metadata cache for tracked
+    movies and music albums so the Statistics page's Top People section
+    (directors/actors/artists) has something to read.
+
+    get_people_stats() is intentionally cache-only -- no live API calls
+    from the stats page -- so any item whose metadata was never fetched
+    silently contributes nothing to the directors/actors/artists lists.
+    That's normally fine (visiting a detail page or the Movie Directors
+    tab warms it), but the SensCritique and FilmAffinity importers only
+    do a lightweight TMDB search match and create the Item directly --
+    they never call tmdb.movie(), so imported movies stay cache-cold
+    until someone happens to open them individually.
+
+    Walks every Movie/Music Item still missing a cache entry and fetches
+    it once through the normal provider dispatch, which caches as a side
+    effect (same trick backfill_release_years uses).
+
+    Safe to re-run: items already cached are skipped via a cache.get check.
+    Trigger manually with:
+        docker compose exec yamtrack python manage.py shell -c \\
+            "from app.tasks import backfill_people_metadata_cache; backfill_people_metadata_cache.delay()"
+    """
+    from django.core.cache import cache  # noqa: PLC0415
+    from django.db.models import Q  # noqa: PLC0415
+
+    from app.models import Item, MediaTypes, Sources  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    queryset = Item.objects.filter(
+        Q(media_type=MediaTypes.MOVIE.value, source=Sources.TMDB.value)
+        | Q(media_type=MediaTypes.MUSIC.value, source=Sources.MUSICBRAINZ.value),
+    )
+
+    total = queryset.count()
+    warmed = 0
+    already_cached = 0
+    failed = 0
+
+    logger.info("People metadata cache backfill: %s items to check", total)
+
+    for index, item in enumerate(queryset.iterator(chunk_size=progress_every), start=1):
+        cache_key = f"{item.source}_{item.media_type}_{item.media_id}"
+        if cache.get(cache_key) is not None:
+            already_cached += 1
+        else:
+            try:
+                services.get_media_metadata(item.media_type, item.media_id, item.source)
+                warmed += 1
+            except Exception:
+                failed += 1
+                logger.exception(
+                    "People metadata backfill failed for %s/%s/%s",
+                    item.source, item.media_type, item.media_id,
+                )
+
+        if index % progress_every == 0:
+            logger.info(
+                "People metadata cache backfill: %s/%s checked "
+                "(warmed=%s, already_cached=%s, failed=%s)",
+                index, total, warmed, already_cached, failed,
+            )
+
+    logger.info(
+        "People metadata cache backfill complete: %s checked, "
+        "warmed=%s, already_cached=%s, failed=%s",
+        total, warmed, already_cached, failed,
+    )
+    return {
+        "total": total,
+        "warmed": warmed,
+        "already_cached": already_cached,
+        "failed": failed,
+    }
