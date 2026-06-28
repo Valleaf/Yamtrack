@@ -25,12 +25,12 @@
 
 ### Planning
 
-- [ ] Planning button available on the quick menu of a media when on a grids or when searching etc.
 - [ ] Sort by end date by default
 
 ### Backups
 
 - [ ] Weekly automatic database backups : Mail ?
+- [ ] show country and genre in side details of medias
 
 Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime. Or another solution, maybe load while browsing, or another solution
 

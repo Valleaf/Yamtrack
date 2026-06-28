@@ -133,7 +133,7 @@ class User(AbstractUser):
     )
     tv_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     tv_status = models.CharField(
@@ -151,7 +151,7 @@ class User(AbstractUser):
     )
     season_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     season_status = models.CharField(
@@ -169,7 +169,7 @@ class User(AbstractUser):
     )
     movie_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     movie_status = models.CharField(
@@ -187,7 +187,7 @@ class User(AbstractUser):
     )
     anime_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     anime_status = models.CharField(
@@ -205,7 +205,7 @@ class User(AbstractUser):
     )
     manga_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     manga_status = models.CharField(
@@ -223,7 +223,7 @@ class User(AbstractUser):
     )
     game_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     game_status = models.CharField(
@@ -241,7 +241,7 @@ class User(AbstractUser):
     )
     book_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     book_status = models.CharField(
@@ -259,7 +259,7 @@ class User(AbstractUser):
     )
     comic_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     comic_status = models.CharField(
@@ -277,7 +277,7 @@ class User(AbstractUser):
     )
     boardgame_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     boardgame_status = models.CharField(
@@ -294,7 +294,7 @@ class User(AbstractUser):
     )
     music_sort = models.CharField(
         max_length=20,
-        default=MediaSortChoices.SCORE,
+        default=MediaSortChoices.END_DATE,
         choices=MediaSortChoices,
     )
     music_status = models.CharField(
