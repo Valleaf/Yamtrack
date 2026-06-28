@@ -54,6 +54,44 @@ def sync_external_lists():
     return synced
 
 
+@shared_task(name="Populate media country")
+def populate_media_country(media_pk):
+    """Fetch country of origin from provider metadata for one BasicMedia row.
+
+    Runs off the request path (queued from app.signals.populate_country_on_media_save)
+    so a slow or retried provider call never blocks a web request or holds its
+    DB connection open. Country is best-effort/optional, so any failure is
+    logged and swallowed rather than retried.
+    """
+    from app.models import BasicMedia  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    try:
+        instance = BasicMedia.objects.select_related("item").get(pk=media_pk)
+    except BasicMedia.DoesNotExist:
+        return
+
+    # may already have been populated (e.g. duplicate signal fire)
+    if instance.country:
+        return
+
+    try:
+        metadata = services.get_media_metadata(
+            instance.item.media_type,
+            instance.item.media_id,
+            instance.item.source,
+        )
+    except Exception as e:
+        # Silently ignore errors - country is optional
+        logger.debug("Failed to fetch country for media pk=%s: %s", media_pk, str(e))
+        return
+
+    country = metadata.get("details", {}).get("country") if metadata else None
+    if country:
+        BasicMedia.objects.filter(pk=media_pk).update(country=country)
+        logger.info("Updated country for media pk=%s: %s", media_pk, country)
+
+
 @shared_task(name="Cleanup user messages")
 def cleanup_user_messages():
     """Delete shown user messages older than the configured retention window."""

@@ -200,6 +200,7 @@ def collection_detail(request, collection_id):
         tracked = tracked_by_item_id.get(ci.item_id)
         ci.tracked = bool(tracked)
         ci.completed = bool(tracked and tracked.status == Status.COMPLETED.value)
+        ci.dropped = bool(tracked and tracked.status == Status.DROPPED.value)
 
     collection_items_page.object_list = page_items
 

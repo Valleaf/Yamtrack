@@ -564,6 +564,7 @@ def movie_director_filmography(request, director_id):
                 "tracked": bool(tracked_movie),
                 "status": movie_status,
                 "completed": movie_status == Status.COMPLETED.value,
+                "dropped": movie_status == Status.DROPPED.value,
                 "link": link,
                 "external": not bool(tracked_movie),
             }

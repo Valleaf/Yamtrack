@@ -1,6 +1,6 @@
 from django.urls import path, register_converter, include
 
-from app import converters, views
+from app import converters, image_proxy, views
 
 register_converter(converters.MediaTypeChecker, "media_type")
 register_converter(converters.SourceChecker, "source")
@@ -110,4 +110,5 @@ urlpatterns = [
         name="award_progress_detail",
     ),
     path("serviceworker.js", views.service_worker, name="service_worker"),
+    path("covers/<str:digest>", image_proxy.serve, name="cover_proxy"),
 ]

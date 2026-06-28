@@ -416,6 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
+  const scoreDistributionElement = document.getElementById("score_distribution");
   if (scoreDistributionElement) {
     const scoreData = JSON.parse(scoreDistributionElement.textContent);
     const scoreChartOptions = JSON.parse(JSON.stringify(barChartConfig)); // Deep clone

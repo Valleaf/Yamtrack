@@ -190,6 +190,14 @@ def api_request(
         if status_code == requests.codes.too_many_requests:
             seconds_to_wait = int(error_resp.headers.get("Retry-After", 5))
             logger.warning("Rate limited, waiting %s seconds", seconds_to_wait)
+            # Give the DB connection back to the pool for the duration of the
+            # wait. This call happens on a request thread, and the pool is
+            # small (default max_size=4) -- there's no reason to sit on a
+            # connection that isn't doing anything for several seconds.
+            # Django will transparently reconnect the next time a query runs.
+            from django.db import connection  # noqa: PLC0415
+
+            connection.close()
             time.sleep(seconds_to_wait + 3)
             logger.info("Retrying request")
             return api_request(

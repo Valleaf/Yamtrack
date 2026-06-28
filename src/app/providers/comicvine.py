@@ -191,6 +191,15 @@ def _issue_comic(issue_id):
         volume_id = volume.get("id")
         cover_date = response.get("cover_date") or ""
 
+        genres = get_issue_genres(response)
+        if not genres and volume_id:
+            # Most concept tagging on Comic Vine lives on the volume, not
+            # the issue (see get_issue_genres) -- fall back to it so an
+            # issue-tracked comic isn't left genre-less just because its
+            # own concept_credits happens to be empty, which is the
+            # common case.
+            genres = get_volume_genres(volume_id)
+
         data = {
             "media_id": f"i{issue_id}",
             "source": Sources.COMICVINE.value,
@@ -201,7 +210,7 @@ def _issue_comic(issue_id):
             "max_issue_number": None,
             "image": get_image(response),
             "synopsis": get_synopsis(response),
-            "genres": get_issue_genres(response),
+            "genres": genres,
             "score": None,
             "score_count": None,
             "details": {
@@ -370,11 +379,52 @@ def get_issue_genres(response):
     Issues expose concept tags under `concept_credits` -- volumes use the
     differently-named `concepts` field (see `get_genres` above). Most
     concept tagging on Comic Vine happens at the volume level, so this
-    is frequently empty even when the issue itself is well-documented.
+    is frequently empty even when the issue itself is well-documented --
+    see `get_volume_genres`, which `_issue_comic` falls back to for that
+    common case.
     """
     if response.get("concept_credits"):
         return [concept["name"] for concept in response["concept_credits"][:5]]
     return None
+
+
+def get_volume_genres(volume_id):
+    """Return the list of genres tagged on a volume, by id.
+
+    Used by `_issue_comic` as a fallback when an issue's own
+    `concept_credits` is empty -- see `get_issue_genres`'s docstring for
+    why that's the common case rather than the exception. This is a
+    dedicated lightweight request (field_list=concepts only) cached by
+    volume_id, so every issue in the same volume reuses one cache entry
+    instead of each paying for its own.
+    """
+    cache_key = f"{Sources.COMICVINE.value}_volume_genres_{volume_id}"
+    data = cache.get(cache_key)
+
+    if data is None:
+        params = {
+            "api_key": settings.COMICVINE_API,
+            "format": "json",
+            "field_list": "concepts",
+        }
+
+        try:
+            response = services.api_request(
+                Sources.COMICVINE.value,
+                "GET",
+                f"{base_url}/volume/4050-{volume_id}/",
+                params=params,
+                headers=headers,
+            )
+        except requests.exceptions.HTTPError as error:
+            handle_error(error)
+
+        # Cache [] (not None) for a confirmed-empty result so a repeat
+        # lookup for the same volume doesn't re-hit the API.
+        data = get_genres(response.get("results") or {}) or []
+        cache.set(cache_key, data)
+
+    return data or None
 
 
 def get_start_year(response):

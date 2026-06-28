@@ -122,7 +122,9 @@ class Collection(models.Model):
             qs = model.objects.filter(item_id__in=item_ids, user=user).select_related("item")
 
             tracked_ids = set(qs.values_list("item_id", flat=True))
-            completed_count = qs.filter(status=Status.COMPLETED.value).count()
+            completed_count = qs.filter(
+                status__in=[Status.COMPLETED.value, Status.DROPPED.value],
+            ).count()
             scores = [float(m.score) for m in qs if m.score is not None]
 
             type_stats[mt] = {

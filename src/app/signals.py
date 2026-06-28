@@ -43,26 +43,20 @@ def create_task_result_on_publish(sender=None, headers=None, body=None, **kwargs
 
 @receiver(post_save, sender='app.BasicMedia')
 def populate_country_on_media_save(sender, instance, created, **kwargs):  # noqa: ARG001
-    """Populate country field from provider metadata when media is created/updated."""
+    """Queue an async job to populate country from provider metadata.
+
+    This used to fetch metadata inline, synchronously, inside the post_save
+    signal -- meaning a slow/retried provider call (e.g. an IGDB token
+    refresh) blocked the whole request and held its DB connection the
+    entire time. With only one sync gunicorn worker, that froze the app
+    for every user and starved the DB pool, taking down /health/ with it.
+    Dispatching to Celery keeps the request fast and decouples provider
+    latency from the request/DB-connection lifecycle entirely.
+    """
     # Only populate if country is not already set
     if instance.country:
         return
-    
-    try:
-        from app import providers
-        
-        # Fetch metadata from provider to get country info
-        metadata = providers.services.get_media_metadata(
-            instance.item.media_type,
-            instance.item.media_id,
-            instance.item.source,
-        )
-        
-        if metadata and metadata.get("details", {}).get("country"):
-            instance.country = metadata["details"]["country"]
-            # Save without triggering this signal again
-            BasicMedia.objects.filter(pk=instance.pk).update(country=instance.country)
-            logger.info("Updated country for %s: %s", instance, instance.country)
-    except Exception as e:
-        # Silently ignore errors - country is optional
-        logger.debug("Failed to fetch country for %s: %s", instance, str(e))
+
+    from app.tasks import populate_media_country  # noqa: PLC0415
+
+    populate_media_country.delay(instance.pk)

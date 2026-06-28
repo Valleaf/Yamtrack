@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.test import TestCase
 
 from app.models import Episode, Item, MediaTypes, Sources
@@ -714,3 +715,92 @@ class Metadata(TestCase):
             hardcover.handle_error(error)
 
         self.assertEqual(cm.exception.provider, Sources.HARDCOVER.value)
+
+
+class ComicVineIssueGenreFallback(TestCase):
+    """Test the volume-genre fallback for issue-tracked ComicVine comics.
+
+    Most concept tagging on Comic Vine lives on the volume, not the
+    issue, so an issue's own `concept_credits` is frequently empty (see
+    comicvine.get_issue_genres's docstring). `_issue_comic` falls back to
+    the volume's `concepts` in that case -- these tests cover both
+    branches.
+    """
+
+    def setUp(self):
+        """Clear the cache so each test hits the mocked API fresh."""
+        cache.clear()
+
+    @staticmethod
+    def _volume_issues_response():
+        """Minimal /issues/ response for the comicvine_volume collection build."""
+        return {
+            "results": [
+                {
+                    "id": 1,
+                    "name": "Issue 1",
+                    "issue_number": "1",
+                    "image": {"medium_url": "https://example.com/issue1.jpg"},
+                    "cover_date": "2020-01-01",
+                    "store_date": "2020-01-01",
+                },
+            ],
+        }
+
+    @patch("app.providers.comicvine.services.api_request")
+    def test_falls_back_to_volume_genres_when_issue_has_none(self, mock_api_request):
+        """An issue with no concept_credits gets genres from its volume."""
+        issue_response = {
+            "results": {
+                "name": "Test Issue",
+                "issue_number": "5",
+                "volume": {"id": 800001, "name": "Test Volume"},
+                "cover_date": "2020-01-15",
+                "site_detail_url": "https://comicvine.gamespot.com/test/4000-900001/",
+                "image": {"medium_url": "https://example.com/cover.jpg"},
+                "description": "Test synopsis.",
+                "person_credits": [],
+                "concept_credits": [],
+            },
+        }
+        volume_genres_response = {
+            "results": {"concepts": [{"name": "Satire"}, {"name": "Western"}]},
+        }
+        mock_api_request.side_effect = [
+            issue_response,
+            volume_genres_response,
+            self._volume_issues_response(),
+        ]
+
+        response = comicvine.comic("i900001")
+
+        self.assertEqual(response["genres"], ["Satire", "Western"])
+        # issue fetch + volume-genre fallback + volume-issues (collection)
+        self.assertEqual(mock_api_request.call_count, 3)
+
+    @patch("app.providers.comicvine.services.api_request")
+    def test_uses_issue_genres_when_present(self, mock_api_request):
+        """An issue with its own concept_credits skips the volume lookup."""
+        issue_response = {
+            "results": {
+                "name": "Test Issue",
+                "issue_number": "6",
+                "volume": {"id": 800002, "name": "Test Volume"},
+                "cover_date": "2020-02-15",
+                "site_detail_url": "https://comicvine.gamespot.com/test/4000-900002/",
+                "image": {"medium_url": "https://example.com/cover2.jpg"},
+                "description": "Test synopsis.",
+                "person_credits": [],
+                "concept_credits": [{"name": "Action"}, {"name": "Adventure"}],
+            },
+        }
+        mock_api_request.side_effect = [
+            issue_response,
+            self._volume_issues_response(),
+        ]
+
+        response = comicvine.comic("i900002")
+
+        self.assertEqual(response["genres"], ["Action", "Adventure"])
+        # issue fetch + volume-issues (collection) -- no volume-genre call.
+        self.assertEqual(mock_api_request.call_count, 2)

@@ -184,73 +184,127 @@ class ProbeImageUrl(TestCase):
 
 
 class ResolveCover(TestCase):
-    """Test the BnF-first / Open-Library-fallback priority and caching."""
+    """Test the Open-Library / Hardcover / ComicVine fallback chain and caching.
+
+    BnF's own Service Couvertures API (get_bnf_cover) is intentionally not
+    part of this chain -- see the note above get_bnf_cover's definition.
+    A successful lookup is wrapped behind app.image_proxy, so assertions
+    resolve the returned `/covers/<digest>` path back to its source URL
+    via the imgproxy_src_ cache entry rather than comparing strings directly.
+    """
 
     def setUp(self):
         cache.clear()
 
-    @patch("app.providers.bnf.get_openlibrary_cover")
-    @patch("app.providers.bnf.get_bnf_cover")
-    def test_bnf_takes_priority(self, mock_bnf_cover, mock_ol_cover):
-        """When BnF has a cover, Open Library is never even attempted."""
-        mock_bnf_cover.return_value = "https://openapi.bnf.fr/cover.jpg"
-        identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": "ark:/12148/cb1x"}
-
-        result = bnf.resolve_cover(identifiers, validate=True)
-
-        self.assertEqual(result, "https://openapi.bnf.fr/cover.jpg")
-        mock_ol_cover.assert_not_called()
+    @staticmethod
+    def _source_url(public_url):
+        """Resolve a `/covers/<digest>` proxy path back to its source URL."""
+        digest = public_url.rsplit("/", 1)[-1]
+        return cache.get(f"imgproxy_src_{digest}")
 
     @patch("app.providers.bnf.get_openlibrary_cover")
-    @patch("app.providers.bnf.get_bnf_cover")
-    def test_falls_back_to_openlibrary(self, mock_bnf_cover, mock_ol_cover):
-        """When BnF has no cover, Open Library is tried next."""
-        mock_bnf_cover.return_value = None
+    def test_openlibrary_tried_first(self, mock_ol_cover):
+        """Open Library is the first source tried."""
         mock_ol_cover.return_value = "https://covers.openlibrary.org/b/isbn/x-L.jpg"
         identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
 
         result = bnf.resolve_cover(identifiers, validate=True)
 
-        self.assertEqual(result, "https://covers.openlibrary.org/b/isbn/x-L.jpg")
+        self.assertTrue(result.startswith("/covers/"))
+        self.assertEqual(
+            self._source_url(result), "https://covers.openlibrary.org/b/isbn/x-L.jpg",
+        )
 
+    @patch("app.providers.bnf.get_hardcover_cover")
     @patch("app.providers.bnf.get_openlibrary_cover")
-    @patch("app.providers.bnf.get_bnf_cover")
-    def test_no_cover_anywhere_returns_img_none(self, mock_bnf_cover, mock_ol_cover):
-        """When nothing has a cover, IMG_NONE is returned instead of breaking."""
-        mock_bnf_cover.return_value = None
+    def test_falls_back_to_hardcover(self, mock_ol_cover, mock_hc_cover):
+        """When Open Library has no cover, Hardcover is tried next."""
         mock_ol_cover.return_value = None
+        mock_hc_cover.return_value = "https://assets.hardcover.app/cover.jpg"
         identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
 
         result = bnf.resolve_cover(identifiers, validate=True)
 
+        self.assertEqual(
+            self._source_url(result), "https://assets.hardcover.app/cover.jpg",
+        )
+
+    @patch("app.providers.bnf.get_comicvine_cover")
+    @patch("app.providers.bnf.get_hardcover_cover")
+    @patch("app.providers.bnf.get_openlibrary_cover")
+    def test_falls_back_to_comicvine_when_validated(
+        self, mock_ol_cover, mock_hc_cover, mock_cv_cover,
+    ):
+        """With nothing from Open Library/Hardcover, ComicVine is tried last
+        -- but only when validate=True, since it needs a series name."""
+        mock_ol_cover.return_value = None
+        mock_hc_cover.return_value = None
+        mock_cv_cover.return_value = "https://comicvine.gamespot.com/cover.jpg"
+        identifiers = {"isbn10": None, "isbn13": None, "ean": None, "ark": "ark:/12148/cb1x"}
+
+        result = bnf.resolve_cover(
+            identifiers, series_name="Lucky Luke", series_volume="9", validate=True,
+        )
+
+        self.assertEqual(
+            self._source_url(result), "https://comicvine.gamespot.com/cover.jpg",
+        )
+        mock_cv_cover.assert_called_once_with("Lucky Luke", "9", None)
+
+    @patch("app.providers.bnf.get_comicvine_cover")
+    @patch("app.providers.bnf.get_hardcover_cover")
+    @patch("app.providers.bnf.get_openlibrary_cover")
+    def test_no_cover_anywhere_returns_img_none(
+        self, mock_ol_cover, mock_hc_cover, mock_cv_cover,
+    ):
+        """When nothing has a cover, IMG_NONE is returned instead of breaking."""
+        mock_ol_cover.return_value = None
+        mock_hc_cover.return_value = None
+        mock_cv_cover.return_value = None
+        identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
+
+        result = bnf.resolve_cover(identifiers, series_name="Some Series", validate=True)
+
         self.assertEqual(result, settings.IMG_NONE)
 
+    @patch("app.providers.bnf.get_hardcover_cover")
     @patch("app.providers.bnf.get_openlibrary_cover")
-    @patch("app.providers.bnf.get_bnf_cover")
-    def test_confirmed_empty_result_is_cached(self, mock_bnf_cover, mock_ol_cover):
+    def test_confirmed_empty_result_is_cached(self, mock_ol_cover, mock_hc_cover):
         """A confirmed-no-cover result is cached so the probe isn't repeated."""
-        mock_bnf_cover.return_value = None
         mock_ol_cover.return_value = None
+        mock_hc_cover.return_value = None
         identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
 
         bnf.resolve_cover(identifiers, validate=True)
         bnf.resolve_cover(identifiers, validate=True)
 
-        self.assertEqual(mock_bnf_cover.call_count, 1)
+        self.assertEqual(mock_ol_cover.call_count, 1)
+        self.assertEqual(mock_hc_cover.call_count, 1)
+
+    @patch("app.providers.bnf.get_openlibrary_cover")
+    def test_validated_result_is_proxied_and_stable(self, mock_ol_cover):
+        """A real cover is wrapped behind a stable local proxy URL, whether
+        served fresh or from the per-identifier cache."""
+        mock_ol_cover.return_value = "https://covers.openlibrary.org/b/isbn/x-L.jpg"
+        identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
+
+        first = bnf.resolve_cover(identifiers, validate=True)
+        second = bnf.resolve_cover(identifiers, validate=True)  # from cache
+
+        self.assertEqual(first, second)
         self.assertEqual(mock_ol_cover.call_count, 1)
 
     @patch("app.providers.bnf.get_openlibrary_cover")
-    @patch("app.providers.bnf.get_bnf_cover")
-    def test_unvalidated_path_skips_cache(self, mock_bnf_cover, mock_ol_cover):
-        """validate=False never reads or writes the cover cache."""
-        mock_bnf_cover.return_value = "https://openapi.bnf.fr/cover.jpg"
+    def test_unvalidated_path_skips_cache(self, mock_ol_cover):
+        """validate=False never reads or writes the per-identifier cover cache."""
+        mock_ol_cover.return_value = "https://covers.openlibrary.org/b/isbn/x-L.jpg"
         identifiers = {"isbn10": None, "isbn13": "978-2-205-00007-5", "ean": None, "ark": None}
 
         bnf.resolve_cover(identifiers, validate=False)
         bnf.resolve_cover(identifiers, validate=False)
 
-        self.assertEqual(mock_bnf_cover.call_count, 2)
-        mock_bnf_cover.assert_called_with(identifiers, validate=False)
+        self.assertEqual(mock_ol_cover.call_count, 2)
+        mock_ol_cover.assert_called_with(identifiers, validate=False)
 
     @patch("app.providers.bnf._probe_image_url")  # noqa: SLF001
     def test_get_bnf_cover_priority_order(self, mock_probe):
@@ -291,7 +345,9 @@ class DcToResultCoverIntegration(TestCase):
         result = bnf._dc_to_result(dc_el)  # noqa: SLF001
 
         mock_probe.assert_not_called()
-        self.assertIn("ISBN=978-2-205-00007-5", result["image"])
+        self.assertTrue(result["image"].startswith("/covers/"))
+        digest = result["image"].rsplit("/", 1)[-1]
+        self.assertIn("9782205000075", cache.get(f"imgproxy_src_{digest}"))
 
 
 class ComicDetailCoverIntegration(TestCase):
@@ -312,5 +368,13 @@ class ComicDetailCoverIntegration(TestCase):
 
         data = bnf.comic("cb12345678x")
 
-        self.assertIn("ISBN=978-2-205-00007-5", data["image"])
+        # Open Library is tried first and "succeeds" here since the HEAD
+        # probe is mocked to always look like a real image -- the
+        # displayed image is a local proxy URL, not the raw Open Library
+        # URL itself (see app.image_proxy).
+        self.assertTrue(data["image"].startswith("/covers/"))
+        digest = data["image"].rsplit("/", 1)[-1]
+        source_url = cache.get(f"imgproxy_src_{digest}")
+        self.assertIn("covers.openlibrary.org", source_url)
+        self.assertIn("9782205000075", source_url)
         self.assertEqual(data["details"]["isbn"], "978-2-205-00007-5")

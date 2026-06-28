@@ -7,11 +7,6 @@
 - [ ] Collection sync identity bugs.
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
-- [ ] bnf images seem to not be stored ? Has to load everytime
-
-### Time
-
-- [ ] Year and decade statistics by release year: It is empty
 
 - Genres
 
@@ -28,20 +23,16 @@
 - [ ] Filter books by genre.
 - [ ] Filter games by genre.
 
-### Collections
+### Planning
 
-Dropped should count as completed for the collections and directors
-
-- Planning
-
-- [ ] Planning button available on the grids when searching.
+- [ ] Planning button available on the quick menu of a media when on a grids or when searching etc.
 - [ ] Sort by end date by default
 
 ### Backups
 
 - [ ] Weekly automatic database backups : Mail ?
 
-Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime.
+Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime. Or another solution, maybe load while browsing, or another solution
 
 ---
 
@@ -56,10 +47,6 @@ Stats page is slow. Maybe compute the stats everyday and save them in a file or 
 - [ ] BFI Best Films.
 - [ ] 1001 Albums You Must Hear Before You Die.
 - [ ] Other popular curated lists.
-
-### Awards
-
-- [ ] see the films with a click, with something opening underneath/side(same page)
 
 more festivals, cesar, sundance, etc
 
@@ -77,9 +64,13 @@ more festivals, cesar, sundance, etc
 - [ ] calendar with images
 - [ ] Better visual indicators for ratings.
 - [ ] Richer metadata throughout the application.
-- [ ] Images in new releases and indiciation if it's a season finale or somehting
+- [ ] Images in new releases email and indiciation if it's a season finale or somehting
 - [ ] time watched sums tv shows
 - [ ] ios app for local use ?
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack
-- [ ] App : Notifictations
-- [ ] auto global sync ? Monthly maybe
+- [ ] Mobile App : Notifictations
+- [ ] auto global sync on all items ? Monthly maybe or something
+- [ ] CSS refont
+- [ ] When changing time range on stats, show a spinner or a loading or siomething
+- [ ] statistics : media by release year, filters with genre or all.
+- [ ] country map, also a ranking list on the side

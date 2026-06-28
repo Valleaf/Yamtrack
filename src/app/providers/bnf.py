@@ -21,7 +21,7 @@ from django.core.cache import cache
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 
-from app import helpers
+from app import helpers, image_proxy
 from app.models import MediaTypes, Sources
 from app.providers import comicvine, services
 
@@ -656,6 +656,19 @@ def get_comicvine_cover(
     return comicvine.get_image(cv_issue)
 
 
+def _public_cover_url(url: str | None) -> str:
+    """Return the URL to actually display for a resolved (or cached) cover.
+
+    Routes real covers through app.image_proxy: Open Library/Hardcover/
+    ComicVine don't reliably set the long-lived Cache-Control headers
+    TMDB/IGDB's media CDNs do, so without this every page view re-fetches
+    the same cover from scratch instead of the browser caching it.
+    """
+    if not url:
+        return settings.IMG_NONE
+    return image_proxy.proxy_url(url)
+
+
 def resolve_cover(
     identifiers: dict[str, str | None],
     *,
@@ -698,7 +711,7 @@ def resolve_cover(
     if validate and cache_key:
         cached = cache.get(cache_key)
         if cached is not None:
-            return cached if cached else settings.IMG_NONE
+            return _public_cover_url(cached)
 
     logger.debug(
         "Resolving cover for identifiers=%s (validate=%s)", identifiers, validate,
@@ -723,7 +736,7 @@ def resolve_cover(
         # re-probe an identifier we already know has no cover.
         cache.set(cache_key, url or "")
 
-    return url or settings.IMG_NONE
+    return _public_cover_url(url)
 
 
 def _dc_to_result(dc_el) -> dict | None:
