@@ -74,6 +74,26 @@
       <a href="{{ item|media_url }}" class="absolute inset-0"></a>
 
       <div class="relative flex items-center justify-center space-x-2.5">
+        {% if item.media_type != MediaTypes.EPISODE.value %}
+          {# Quick Add to Planning Button #}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="media_type" value="{{ item.media_type }}">
+            <input type="hidden" name="source" value="{{ item.source }}">
+            <input type="hidden" name="media_id" value="{{ item.media_id }}">
+            {% if item.season_number is not None %}
+              <input type="hidden" name="season_number" value="{{ item.season_number }}">
+            {% endif %}
+            {% if media %}
+              <input type="hidden" name="instance_id" value="{{ media.id }}">
+            {% endif %}
+            <button type="submit"
+                    formaction="{% url 'quick_plan' %}?next={{ request.get_full_path|urlencode }}"
+                    class="p-2.5 bg-sky-600 text-white rounded-full hover:bg-sky-500 hover:scale-110 hover:shadow-[0_0_15px_rgba(14,165,233,0.5)] transition-all duration-200 cursor-pointer"
+                    title="Add to Planning">{% include "app/icons/states/planning.svg" with classes="w-4 h-4" %}</button>
+          </form>
+        {% endif %}
+
         {% if item.media_type == MediaTypes.EPISODE.value %}
           <button @click="trackOpen = true"
                   class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full hover:scale-110 hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-200 cursor-pointer">

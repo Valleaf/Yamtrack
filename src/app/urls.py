@@ -69,6 +69,7 @@ urlpatterns = [
     # Include URLs from other modules here (e.g., api_urls)
     # path("api/v1/", include("rest_framework.routers.DefaultRouter")),
     path("media_save", views.media_save, name="media_save"),
+    path("quick_plan", views.quick_plan, name="quick_plan"),
     path("media_delete", views.media_delete, name="media_delete"),
     path(
         "user_messages/mark_shown",

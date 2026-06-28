@@ -1367,6 +1367,141 @@ def track_modal(
     )
 
 
+def _get_or_create_media_instance(
+    request,
+    media_type,
+    media_id,
+    source,
+    season_number,
+    instance_id,
+):
+    """Fetch an existing tracked instance, or build an unsaved one for a new item.
+
+    Shared by media_save and quick_plan so both entry points create/patch
+    Items identically and stay in sync as provider logic evolves.
+    """
+    if instance_id:
+        return BasicMedia.objects.get_media(
+            request.user,
+            media_type,
+            instance_id,
+        )
+
+    metadata = services.get_media_metadata(
+        media_type,
+        media_id,
+        source,
+        [season_number],
+    )
+    item, _ = Item.objects.get_or_create(
+        media_id=media_id,
+        source=source,
+        media_type=media_type,
+        season_number=season_number,
+        defaults={
+            "title": metadata["title"],
+            "image": metadata["image"],
+            "country": metadata.get("country", ""),
+            "release_year": get_release_year_from_metadata(metadata),
+        },
+    )
+    # Patch image/country/release_year if the item already existed with
+    # blank/placeholder/unset values. Title is always re-synced to the
+    # freshly-fetched provider metadata (not just when empty) -- a
+    # pre-existing Item can have a wrong title left over from a
+    # bad import match or stub creation, and since we already paid for a live
+    # metadata fetch for this exact media_id/source, it's always the source of
+    # truth. Mirrors the unconditional title overwrite in sync_metadata.
+    update_fields = []
+    real_image = metadata["image"] and metadata["image"] != settings.IMG_NONE
+    if (not item.image or item.image == settings.IMG_NONE) and real_image:
+        item.image = metadata["image"]
+        update_fields.append("image")
+    if metadata["title"] and item.title != metadata["title"]:
+        item.title = metadata["title"]
+        update_fields.append("title")
+    if not item.country and metadata.get("country"):
+        item.country = metadata["country"]
+        update_fields.append("country")
+    if item.release_year is None:
+        release_year = get_release_year_from_metadata(metadata)
+        if release_year is not None:
+            item.release_year = release_year
+            update_fields.append("release_year")
+    if update_fields:
+        item.save(update_fields=update_fields)
+    model = apps.get_model(app_label="app", model_name=media_type)
+    return model(item=item, user=request.user, country=metadata.get("country") or "")
+
+
+def _sync_media_collections(request, source, media_type, media_id):
+    """Auto-sync the relevant collection/series after a media item is saved.
+
+    Shared by media_save and quick_plan so both entry points trigger the
+    same downstream collection syncing.
+    """
+    # Auto-sync TMDB movie collections
+    if source == Sources.TMDB.value and media_type == MediaTypes.MOVIE.value:
+        try:
+            from app.providers.collections_providers import sync_tmdb_collection
+            # Bust cache so we always get fresh collection data
+            cache.delete(f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{media_id}")
+            movie_metadata = services.get_media_metadata(
+                media_type, media_id, source
+            )
+            sync_tmdb_collection(request.user, movie_metadata)
+        except Exception:
+            logger.exception("Failed to sync TMDB collection for %s", media_id)
+
+    # Auto-sync IGDB game series
+    if source == Sources.IGDB.value and media_type == MediaTypes.GAME.value:
+        try:
+            from app.providers.collections_providers import sync_igdb_collection
+            # Bust the cache first so we always get fresh collection data
+            cache.delete(f"{Sources.IGDB.value}_{MediaTypes.GAME.value}_{media_id}")
+            game_metadata = services.get_media_metadata(
+                media_type, media_id, source
+            )
+            sync_igdb_collection(request.user, game_metadata)
+        except Exception:
+            logger.exception("Failed to sync IGDB collection for %s", media_id)
+
+    # Auto-sync Hardcover book series
+    if source == Sources.HARDCOVER.value and media_type == MediaTypes.BOOK.value:
+        try:
+            from app.providers.collections_providers import sync_hardcover_series
+            book_metadata = services.get_media_metadata(
+                media_type, media_id, source
+            )
+            sync_hardcover_series(request.user, book_metadata)
+        except Exception:
+            logger.exception("Failed to sync Hardcover series for %s", media_id)
+
+    # Auto-sync BnF BD series
+    if source == Sources.BNF.value and media_type == MediaTypes.COMIC.value:
+        try:
+            from app.providers.collections_providers import sync_bnf_series
+            comic_metadata = services.get_media_metadata(
+                media_type, media_id, source
+            )
+            sync_bnf_series(request.user, comic_metadata)
+        except Exception:
+            logger.exception("Failed to sync BnF series for %s", media_id)
+
+    # Auto-sync ComicVine volume (issue-tracked comics only -- comic()
+    # only embeds "comicvine_volume" for "i<id>" media_ids; legacy
+    # volume-tracked comics have no such key, so this is a no-op for them)
+    if source == Sources.COMICVINE.value and media_type == MediaTypes.COMIC.value:
+        try:
+            from app.providers.collections_providers import sync_comicvine_volume
+            comic_metadata = services.get_media_metadata(
+                media_type, media_id, source
+            )
+            sync_comicvine_volume(request.user, comic_metadata)
+        except Exception:
+            logger.exception("Failed to sync ComicVine volume for %s", media_id)
+
+
 @require_POST
 def media_save(request):
     """Save or update media data to the database."""
@@ -1376,58 +1511,14 @@ def media_save(request):
     season_number = request.POST.get("season_number")
     instance_id = request.POST.get("instance_id")
 
-    if instance_id:
-        instance = BasicMedia.objects.get_media(
-            request.user,
-            media_type,
-            instance_id,
-        )
-    else:
-        metadata = services.get_media_metadata(
-            media_type,
-            media_id,
-            source,
-            [season_number],
-        )
-        item, _ = Item.objects.get_or_create(
-            media_id=media_id,
-            source=source,
-            media_type=media_type,
-            season_number=season_number,
-            defaults={
-                "title": metadata["title"],
-                "image": metadata["image"],
-                "country": metadata.get("country", ""),
-                "release_year": get_release_year_from_metadata(metadata),
-            },
-        )
-        # Patch image/country/release_year if the item already existed with
-        # blank/placeholder/unset values. Title is always re-synced to the
-        # freshly-fetched provider metadata (not just when empty) -- a
-        # pre-existing Item can have a wrong title left over from a
-        # bad import match or stub creation, and since we already paid for a live
-        # metadata fetch for this exact media_id/source, it's always the source of
-        # truth. Mirrors the unconditional title overwrite in sync_metadata.
-        update_fields = []
-        real_image = metadata["image"] and metadata["image"] != settings.IMG_NONE
-        if (not item.image or item.image == settings.IMG_NONE) and real_image:
-            item.image = metadata["image"]
-            update_fields.append("image")
-        if metadata["title"] and item.title != metadata["title"]:
-            item.title = metadata["title"]
-            update_fields.append("title")
-        if not item.country and metadata.get("country"):
-            item.country = metadata["country"]
-            update_fields.append("country")
-        if item.release_year is None:
-            release_year = get_release_year_from_metadata(metadata)
-            if release_year is not None:
-                item.release_year = release_year
-                update_fields.append("release_year")
-        if update_fields:
-            item.save(update_fields=update_fields)
-        model = apps.get_model(app_label="app", model_name=media_type)
-        instance = model(item=item, user=request.user, country=metadata.get("country") or "")
+    instance = _get_or_create_media_instance(
+        request,
+        media_type,
+        media_id,
+        source,
+        season_number,
+        instance_id,
+    )
 
     # Validate the form and save the instance if it's valid
     form_class = get_form_class(media_type)
@@ -1435,67 +1526,7 @@ def media_save(request):
     if form.is_valid():
         form.save()
         logger.info("%s saved successfully.", form.instance)
-
-        # Auto-sync TMDB movie collections
-        if source == Sources.TMDB.value and media_type == MediaTypes.MOVIE.value:
-            try:
-                from app.providers.collections_providers import sync_tmdb_collection
-                # Bust cache so we always get fresh collection data
-                cache.delete(f"{Sources.TMDB.value}_{MediaTypes.MOVIE.value}_{media_id}")
-                movie_metadata = services.get_media_metadata(
-                    media_type, media_id, source
-                )
-                sync_tmdb_collection(request.user, movie_metadata)
-            except Exception:
-                logger.exception("Failed to sync TMDB collection for %s", media_id)
-
-        # Auto-sync IGDB game series
-        if source == Sources.IGDB.value and media_type == MediaTypes.GAME.value:
-            try:
-                from app.providers.collections_providers import sync_igdb_collection
-                # Bust the cache first so we always get fresh collection data
-                cache.delete(f"{Sources.IGDB.value}_{MediaTypes.GAME.value}_{media_id}")
-                game_metadata = services.get_media_metadata(
-                    media_type, media_id, source
-                )
-                sync_igdb_collection(request.user, game_metadata)
-            except Exception:
-                logger.exception("Failed to sync IGDB collection for %s", media_id)
-
-        # Auto-sync Hardcover book series
-        if source == Sources.HARDCOVER.value and media_type == MediaTypes.BOOK.value:
-            try:
-                from app.providers.collections_providers import sync_hardcover_series
-                book_metadata = services.get_media_metadata(
-                    media_type, media_id, source
-                )
-                sync_hardcover_series(request.user, book_metadata)
-            except Exception:
-                logger.exception("Failed to sync Hardcover series for %s", media_id)
-
-        # Auto-sync BnF BD series
-        if source == Sources.BNF.value and media_type == MediaTypes.COMIC.value:
-            try:
-                from app.providers.collections_providers import sync_bnf_series
-                comic_metadata = services.get_media_metadata(
-                    media_type, media_id, source
-                )
-                sync_bnf_series(request.user, comic_metadata)
-            except Exception:
-                logger.exception("Failed to sync BnF series for %s", media_id)
-
-        # Auto-sync ComicVine volume (issue-tracked comics only -- comic()
-        # only embeds "comicvine_volume" for "i<id>" media_ids; legacy
-        # volume-tracked comics have no such key, so this is a no-op for them)
-        if source == Sources.COMICVINE.value and media_type == MediaTypes.COMIC.value:
-            try:
-                from app.providers.collections_providers import sync_comicvine_volume
-                comic_metadata = services.get_media_metadata(
-                    media_type, media_id, source
-                )
-                sync_comicvine_volume(request.user, comic_metadata)
-            except Exception:
-                logger.exception("Failed to sync ComicVine volume for %s", media_id)
+        _sync_media_collections(request, source, media_type, media_id)
     else:
         logger.error(form.errors.as_json())
         for field, errors in form.errors.items():
@@ -1504,6 +1535,41 @@ def media_save(request):
                     request,
                     f"{field.replace('_', ' ').title()}: {error}",
                 )
+
+    return helpers.redirect_back(request)
+
+
+@require_POST
+def quick_plan(request):
+    """Mark a media item as Planning directly from a grid/search quick-action.
+
+    Skips the track form entirely: updates an existing tracked instance's
+    status in place (leaving score/progress/dates/notes untouched), or
+    creates a new minimal entry with status=Planning for untracked items.
+    """
+    media_id = request.POST["media_id"]
+    source = request.POST["source"]
+    media_type = request.POST["media_type"]
+    season_number = request.POST.get("season_number")
+    instance_id = request.POST.get("instance_id")
+
+    if media_type == MediaTypes.EPISODE.value:
+        return HttpResponseBadRequest("Episodes don't have a Planning status.")
+
+    instance = _get_or_create_media_instance(
+        request,
+        media_type,
+        media_id,
+        source,
+        season_number,
+        instance_id,
+    )
+    instance.status = Status.PLANNING.value
+    instance.save()
+    logger.info("%s marked as Planning.", instance)
+    _sync_media_collections(request, source, media_type, media_id)
+
+    messages.success(request, f"{instance.item.title} added to Planning.")
 
     return helpers.redirect_back(request)
 
