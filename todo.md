@@ -64,7 +64,7 @@ more festivals, cesar, sundance, etc
 - [ ] calendar with images
 - [ ] Better visual indicators for ratings.
 - [ ] Richer metadata throughout the application.
-- [ ] Images in new releases email and indiciation if it's a season finale or somehting
+- [ ] Images in new releases email and indiciation if it's a season finale or somehting, Only send if it is season/series final actually.
 - [ ] time watched sums tv shows
 - [ ] ios app for local use ?
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack

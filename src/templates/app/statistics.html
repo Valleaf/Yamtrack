@@ -532,7 +532,8 @@
         <!-- Media-type tab buttons -->
         <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
           {% for media_type, info in genre_distribution.items %}
-            <button @click="selectTab('{{ media_type }}')"
+            <button data-genre-tab="{{ media_type }}"
+                    @click="selectTab('{{ media_type }}')"
                     :class="activeTab === '{{ media_type }}'
                               ? 'bg-indigo-600 text-white border-indigo-600'
                               : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
@@ -545,16 +546,35 @@
         <!-- Genre bars per media type -->
         {% for media_type, info in genre_distribution.items %}
           <div x-show="activeTab === '{{ media_type }}'" x-cloak>
-            <div class="space-y-3">
+            <div class="flex items-center gap-3 mb-3 text-xs text-gray-500 uppercase tracking-wide">
+              <div class="flex-1 text-right">Votes</div>
+              <div class="w-32 shrink-0 text-center">Genre</div>
+              <div class="flex-1 text-left">Avg. Score</div>
+            </div>
+            <div class="space-y-2">
               {% for entry in info.entries %}
-                <div class="space-y-1">
-                  <div class="flex justify-between text-sm">
-                    <span class="text-gray-300 truncate mr-4">{{ entry.name }}</span>
-                    <span class="text-gray-400 shrink-0">{{ entry.count }}</span>
+                <div class="flex items-center gap-3">
+                  <!-- Votes: number + bar anchored toward the genre label -->
+                  <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                    <span class="text-sm text-gray-400 w-10 text-right shrink-0">{{ entry.count }}</span>
+                    <div class="h-2 flex-1 min-w-0 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden flex justify-end">
+                      <div class="h-full rounded-full transition-all duration-500"
+                           style="width: {{ entry.bar_pct }}%; background-color: {{ info.color }};"></div>
+                    </div>
                   </div>
-                  <div class="h-2 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500"
-                         style="width: {{ entry.bar_pct }}%; background-color: {{ info.color }};"></div>
+
+                  <!-- Genre label -->
+                  <div class="w-32 shrink-0 text-center">
+                    <span class="text-sm text-gray-200 truncate block">{{ entry.name }}</span>
+                  </div>
+
+                  <!-- Average score: bar + number -->
+                  <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <div class="h-2 flex-1 min-w-0 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                           style="width: {{ entry.avg_bar_pct }}%; background-color: {{ info.color }};"></div>
+                    </div>
+                    <span class="text-sm text-gray-400 w-10 shrink-0">{% if entry.average_score is not None %}{{ entry.average_score }}{% else %}--{% endif %}</span>
                   </div>
                 </div>
               {% endfor %}
@@ -571,6 +591,25 @@
         </div>
       {% endif %}
     </div>
+
+    <script>
+      function genreTabs() {
+        return {
+          activeTab: null,
+          init() {
+            if (!this.activeTab) {
+              const firstBtn = this.$el.querySelector("[data-genre-tab]");
+              if (firstBtn) {
+                this.activeTab = firstBtn.dataset.genreTab;
+              }
+            }
+          },
+          selectTab(tab) {
+            this.activeTab = tab;
+          },
+        };
+      }
+    </script>
 
     <!-- World Map by Media Type Section -->
     <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">

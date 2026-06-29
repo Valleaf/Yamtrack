@@ -840,10 +840,12 @@ _GENRE_MEDIA_TYPES = frozenset({
 
 
 def get_genre_distribution(user_media):
-    """Return genre counts per media type using only cached provider metadata.
+    """Return genre counts and average score per media type using only cached metadata.
 
     Items whose metadata isn't already cached are silently skipped — no live
-    API calls are made from the statistics page.
+    API calls are made from the statistics page. Average score per genre only
+    counts media the user has actually scored; unscored items still count
+    toward the vote total but are excluded from the average.
     """
     genre_data = {}
 
@@ -852,6 +854,9 @@ def get_genre_distribution(user_media):
             continue
 
         genre_counts: dict[str, int] = defaultdict(int)
+        genre_score_sum: dict[str, Decimal] = defaultdict(Decimal)
+        genre_score_count: dict[str, int] = defaultdict(int)
+
         for media in media_list:
             cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
             metadata = cache.get(cache_key)
@@ -859,25 +864,46 @@ def get_genre_distribution(user_media):
                 continue
 
             for genre in (metadata.get("genres") or []):
-                if genre:
-                    genre_counts[str(genre)] += 1
+                if not genre:
+                    continue
+                genre_str = str(genre)
+                genre_counts[genre_str] += 1
+                if media.score is not None:
+                    genre_score_sum[genre_str] += media.score
+                    genre_score_count[genre_str] += 1
 
         if not genre_counts:
             continue
 
         sorted_genres = sorted(genre_counts.items(), key=lambda x: (-x[1], x[0]))[:15]
         max_count = sorted_genres[0][1] if sorted_genres else 1
-        genre_data[media_type] = {
-            "label": app_tags.media_type_readable(media_type),
-            "color": config.get_stats_color(media_type),
-            "entries": [
+
+        entries = []
+        for name, count in sorted_genres:
+            average_score = (
+                round(genre_score_sum[name] / genre_score_count[name], 2)
+                if genre_score_count[name]
+                else None
+            )
+            avg_bar_pct = (
+                max(round(float(average_score) / 10 * 100), 2)
+                if average_score is not None
+                else 0
+            )
+            entries.append(
                 {
                     "name": name,
                     "count": count,
                     "bar_pct": max(round(count / max_count * 100), 2),
-                }
-                for name, count in sorted_genres
-            ],
+                    "average_score": average_score,
+                    "avg_bar_pct": avg_bar_pct,
+                },
+            )
+
+        genre_data[media_type] = {
+            "label": app_tags.media_type_readable(media_type),
+            "color": config.get_stats_color(media_type),
+            "entries": entries,
         }
 
     return genre_data
