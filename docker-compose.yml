@@ -24,6 +24,7 @@ services:
         condition: service_started
     volumes:
       - yamtrack_data:/app/data
+      - ./backups:/yamtrack/backups
 
   db:
     image: postgres:16-alpine

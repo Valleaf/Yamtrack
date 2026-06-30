@@ -17,7 +17,7 @@ RUN sed 's/listen 8000;/listen 8000; listen [::]:8000;/' /etc/nginx/nginx.conf >
 
 WORKDIR /yamtrack
 
-RUN apk add --no-cache nginx shadow dos2unix \
+RUN apk add --no-cache nginx shadow dos2unix postgresql16-client \
     && pip install --no-cache-dir -r /requirements.txt \
     && pip install --no-cache-dir supervisor==4.3.0 \
     && rm -rf /root/.cache /tmp/* \

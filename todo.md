@@ -10,26 +10,10 @@
 
 - Genres
 
-- [ ] Genre for comics
-- [ ] genre Tabs are there  in statistics but no data
+- [ ] Genre for comics gives weird data
 
 # 🟢 Features
 
-### Filtering
-
-- [ ] Global filtering system.
-- [ ] Filter movies by genre.
-- [ ] Filter music by genre.
-- [ ] Filter books by genre.
-- [ ] Filter games by genre.
-
-### Planning
-
-- [ ] Sort by end date by default
-
-### Backups
-
-- [ ] Weekly automatic database backups : Mail ?
 - [ ] show country and genre in side details of medias
 
 Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime. Or another solution, maybe load while browsing, or another solution
@@ -74,3 +58,4 @@ more festivals, cesar, sundance, etc
 - [ ] When changing time range on stats, show a spinner or a loading or siomething
 - [ ] statistics : media by release year, filters with genre or all.
 - [ ] country map, also a ranking list on the side
+

@@ -538,6 +538,16 @@ USER_MESSAGE_RETENTION_DAYS = config(
     default=30,
     cast=int,
 )
+
+# Database backups
+# Postgres: pg_dump (custom format, compressed). SQLite: stdlib backup API.
+DB_BACKUP_ENABLED = config("DB_BACKUP_ENABLED", default=True, cast=bool)
+DB_BACKUP_DIR = Path(config("DB_BACKUP_DIR", default=str(BASE_DIR / "backups")))
+DB_BACKUP_RETENTION = config("DB_BACKUP_RETENTION", default=4, cast=int)
+DB_BACKUP_DAY_OF_WEEK = config("DB_BACKUP_DAY_OF_WEEK", default=0, cast=int)  # 0 = Sun
+DB_BACKUP_HOUR = config("DB_BACKUP_HOUR", default=3, cast=int)
+DB_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+
 CELERY_BEAT_SCHEDULE = {
     "reload_calendar": {
         "task": "Reload calendar",
@@ -558,6 +568,14 @@ CELERY_BEAT_SCHEDULE = {
     "sync_external_lists": {
         "task": "Sync external lists",
         "schedule": 60 * 60 * 24 * 7,  # weekly
+    },
+    "backup_database": {
+        "task": "Backup database",
+        "schedule": crontab(
+            day_of_week=DB_BACKUP_DAY_OF_WEEK,
+            hour=DB_BACKUP_HOUR,
+            minute=0,
+        ),
     },
 }
 

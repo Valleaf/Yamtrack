@@ -369,6 +369,8 @@ def enrich_season_with_tv_data(season_data, tv_data, media_id, season_number):
     season_data["tvdb_id"] = tv_data["tvdb_id"]
     season_data["external_links"] = tv_data["external_links"]
     season_data["genres"] = tv_data["genres"]
+    season_data["country"] = tv_data.get("country")
+    season_data["details"]["country"] = tv_data["details"].get("country")
     if season_data["synopsis"] == "No synopsis available.":
         season_data["synopsis"] = tv_data["synopsis"]
     return season_data

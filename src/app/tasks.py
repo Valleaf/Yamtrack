@@ -92,6 +92,22 @@ def populate_media_country(media_pk):
         logger.info("Updated country for media pk=%s: %s", media_pk, country)
 
 
+@shared_task(name="Backup database")
+def backup_database():
+    """Create a compressed database backup and prune old ones.
+
+    No-ops if DB_BACKUP_ENABLED is False, so the periodic schedule entry
+    can stay registered while the feature is toggled off via env var.
+    """
+    if not settings.DB_BACKUP_ENABLED:
+        logger.info("Database backup skipped: DB_BACKUP_ENABLED is False")
+        return
+
+    from django.core.management import call_command  # noqa: PLC0415
+
+    call_command("backup_db")
+
+
 @shared_task(name="Cleanup user messages")
 def cleanup_user_messages():
     """Delete shown user messages older than the configured retention window."""

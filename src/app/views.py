@@ -260,6 +260,21 @@ def media_search(request):
     return render(request, "app/search.html", context)
 
 
+def get_country_display(metadata):
+    """Resolve a media metadata dict's country to a human-readable name.
+
+    Skips resolution if the provider already supplies a readable name in
+    metadata["details"]["country"] (e.g. TMDB), since that's rendered
+    directly by the generic details loop in the template.
+    """
+    if metadata.get("details", {}).get("country"):
+        return None
+    country_code = metadata.get("country")
+    if not country_code:
+        return None
+    return stats._ISO_TO_NAME.get(country_code, country_code)
+
+
 @require_GET
 def media_details(request, source, media_type, media_id, title):  # noqa: ARG001 title for URL
     """Return the details page for a media item."""
@@ -368,6 +383,7 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "item_collections": item_collections,
         "tmdb_collection_obj": tmdb_collection_obj,
         "collection_banner": collection_banner,
+        "country_display": get_country_display(media_metadata),
     }
     return render(request, "app/media_details.html", context)
 
@@ -1149,6 +1165,7 @@ def season_details(request, source, media_id, title, season_number):  # noqa: AR
             season_metadata.get("providers"), request.user.watch_provider_region
         ),
         "watch_provider_region": request.user.watch_provider_region,
+        "country_display": get_country_display(season_metadata),
     }
     return render(request, "app/media_details.html", context)
 

@@ -15,3 +15,5 @@ requests.http
 TODO.txt
 .codex
 docker-compose.override.yml
+/backups
+src/backups
