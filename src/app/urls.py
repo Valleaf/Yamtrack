@@ -110,6 +110,11 @@ urlpatterns = [
         views.award_progress_detail,
         name="award_progress_detail",
     ),
+    path(
+        "statistics/lists/<slug:list_slug>",
+        views.list_progress_detail,
+        name="list_progress_detail",
+    ),
     path("serviceworker.js", views.service_worker, name="service_worker"),
     path("covers/<str:digest>", image_proxy.serve, name="cover_proxy"),
 ]

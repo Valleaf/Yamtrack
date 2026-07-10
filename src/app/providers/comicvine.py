@@ -366,10 +366,41 @@ def get_synopsis(response):
     return " ".join(text.split())
 
 
+# Comic Vine "concepts" is a flat folksonomy mixing genuine genres
+# (Romance, Western, Horror...) with imprints, franchises, holidays,
+# real-world hobbies, language editions, story formats, etc. -- see
+# https://comicvine.gamespot.com/concepts/. The API gives no field
+# distinguishing "this is a genre" from "this is an imprint", so taking
+# the raw top-N concepts (previous behaviour) surfaces nonsense like
+# "Viz imprint" or "Cycling" instead of actual genres. This allowlist
+# is the practical fix.
+_GENRE_CONCEPTS = {
+    "action", "adventure", "anthology", "biography", "children",
+    "comedy", "crime", "detective", "drama", "erotica", "fairy tale",
+    "fantasy", "funny animal", "historical", "horror", "humor",
+    "martial arts", "mature", "military", "mystery", "noir", "parody",
+    "pulp", "romance", "satire", "sci-fi", "science fiction",
+    "slice of life", "spy", "sports", "superhero", "supernatural",
+    "suspense", "thriller", "war", "western",
+}
+
+
+def _filter_genre_concepts(concepts, limit=5):
+    """Pick up to `limit` concept names, preferring recognized genres.
+
+    Falls back to the raw top-`limit` concepts when none match
+    `_GENRE_CONCEPTS` -- still better than returning nothing, since not
+    every genuine genre concept is in the allowlist yet.
+    """
+    names = [c["name"] for c in concepts if c.get("name")]
+    genre_names = [n for n in names if n.lower() in _GENRE_CONCEPTS]
+    return (genre_names or names)[:limit]
+
+
 def get_genres(response):
     """Return the list of genres."""
     if "concepts" in response:
-        return [concept["name"] for concept in response["concepts"][:5]]
+        return _filter_genre_concepts(response["concepts"])
     return None
 
 
@@ -384,7 +415,7 @@ def get_issue_genres(response):
     common case.
     """
     if response.get("concept_credits"):
-        return [concept["name"] for concept in response["concept_credits"][:5]]
+        return _filter_genre_concepts(response["concept_credits"])
     return None
 
 

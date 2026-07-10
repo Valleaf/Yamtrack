@@ -1257,45 +1257,36 @@ def get_award_winners_detail(user, award_slug):
 
 
 def get_list_progress(user):
-    """Return per-user progress for each configured ExternalList.
+    """Return per-user tracking progress for each configured curated list.
 
-    Returns a list of dicts sorted by descending completion percentage.
-    Each dict contains: name, tracked, total, percentage, dash_offset,
-    last_synced.
+    Mirrors get_awards_progress -- reads the static LISTS fixture instead
+    of a synced DB table. Returns a list of dicts, each containing: slug,
+    name, icon, tracked, total, percentage, dash_offset.
     """
-    from app.models import ExternalList  # noqa: PLC0415
-
-    lists = list(ExternalList.objects.prefetch_related("entries").order_by("name"))
-    if not lists:
-        return []
+    from app.external_lists_data import LISTS  # noqa: PLC0415
 
     result = []
-    for ext_list in lists:
-        list_media_ids = {str(e.media_id) for e in ext_list.entries.all()}
-        total = len(list_media_ids) or ext_list.item_count
+    for curated_list in LISTS:
+        source = curated_list["source"]
+        media_type = curated_list["media_type"]
+        id_key = f"{source}_id"
+        item_ids = {str(i[id_key]) for i in curated_list["items"] if i.get(id_key)}
+        total = len(item_ids)
 
         if not total:
-            result.append({
-                "name": ext_list.name,
-                "tracked": 0,
-                "total": 0,
-                "percentage": 0,
-                "dash_offset": _DONUT_CIRCUMFERENCE,
-                "last_synced": ext_list.last_synced,
-            })
             continue
 
         try:
-            model = apps.get_model("app", ext_list.media_type)
+            model = apps.get_model("app", media_type)
         except LookupError:
             continue
 
         tracked = (
             model.objects.filter(
                 user=user,
-                item__media_id__in=list_media_ids,
-                item__source=Sources.TMDB.value,
-                item__media_type=ext_list.media_type,
+                item__source=source,
+                item__media_type=media_type,
+                item__media_id__in=item_ids,
             )
             .values("item__media_id")
             .distinct()
@@ -1306,12 +1297,107 @@ def get_list_progress(user):
         offset = round(_DONUT_CIRCUMFERENCE * (1 - pct / 100), 2)
 
         result.append({
-            "name": ext_list.name,
+            "slug": curated_list["slug"],
+            "name": curated_list["name"],
+            "icon": curated_list["icon"],
             "tracked": tracked,
             "total": total,
             "percentage": pct,
             "dash_offset": offset,
-            "last_synced": ext_list.last_synced,
         })
 
-    return sorted(result, key=lambda x: (-x["percentage"], x["name"]))
+    return result
+
+
+def get_list_winners_detail(user, list_slug):
+    """Return the full per-entry breakdown for one curated list.
+
+    Used by the list-progress "open on click" dropdown. Same lookup
+    strategy as get_award_winners_detail: no live provider API calls,
+    title comes from the shared Item row, then cached provider metadata,
+    then a placeholder.
+
+    Returns None if the slug doesn't match a configured list.
+    """
+    from app.external_lists_data import LISTS  # noqa: PLC0415
+
+    curated_list = next((lst for lst in LISTS if lst["slug"] == list_slug), None)
+    if curated_list is None:
+        return None
+
+    source = curated_list["source"]
+    media_type = curated_list["media_type"]
+    id_key = f"{source}_id"
+
+    try:
+        model = apps.get_model("app", media_type)
+    except LookupError:
+        return None
+
+    entries_cfg = []
+    seen_ids = set()
+    for entry in curated_list["items"]:
+        media_id = entry.get(id_key)
+        if not media_id or str(media_id) in seen_ids:
+            continue
+        seen_ids.add(str(media_id))
+        entries_cfg.append({"media_id": str(media_id), "rank": entry.get("rank")})
+
+    media_ids = [e["media_id"] for e in entries_cfg]
+
+    items_by_media_id = {
+        item.media_id: item
+        for item in Item.objects.filter(
+            source=source,
+            media_type=media_type,
+            media_id__in=media_ids,
+        )
+    }
+
+    tracked_media_ids = set(
+        model.objects.filter(
+            user=user,
+            item__source=source,
+            item__media_type=media_type,
+            item__media_id__in=media_ids,
+        ).values_list("item__media_id", flat=True),
+    )
+
+    entries = []
+    for entry in entries_cfg:
+        media_id = entry["media_id"]
+        item = items_by_media_id.get(media_id)
+
+        if item is not None:
+            title = item.title
+        else:
+            cache_key = f"{source}_{media_type}_{media_id}"
+            metadata = cache.get(cache_key)
+            title = metadata["title"] if metadata else f"Unknown title (ID {media_id})"
+
+        entries.append({
+            "media_id": media_id,
+            "rank": entry["rank"],
+            "title": title,
+            "tracked": media_id in tracked_media_ids,
+            "link": reverse(
+                "media_details",
+                kwargs={
+                    "source": source,
+                    "media_type": media_type,
+                    "media_id": media_id,
+                    "title": app_tags.slug(title),
+                },
+            ),
+        })
+
+    entries.sort(key=lambda e: e["rank"] or 0)
+
+    return {
+        "slug": list_slug,
+        "name": curated_list["name"],
+        "icon": curated_list["icon"],
+        "entries": entries,
+        "tracked_count": sum(1 for e in entries if e["tracked"]),
+        "total_count": len(entries),
+    }

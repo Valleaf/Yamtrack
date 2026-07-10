@@ -110,12 +110,12 @@
   {% if show_type_tabs %}
   <div class="flex gap-2 mb-6 flex-wrap">
     <a href="?type=all&per_page={{ items_per_page }}&columns={{ columns }}"
-       class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == 'all' %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
+       class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == 'all' %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
       All
     </a>
     {% for mt in all_types %}
     <a href="?type={{ mt }}&per_page={{ items_per_page }}&columns={{ columns }}"
-       class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == mt %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
+       class="px-3 py-1 rounded-full text-sm transition-colors {% if media_type_filter == mt %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] text-gray-400 hover:text-white hover:bg-[#3a404a] ring-1 ring-white/5{% endif %}">
       {{ mt|title }}
     </a>
     {% endfor %}
@@ -133,7 +133,7 @@
           <div class="flex rounded-md overflow-hidden border border-gray-700">
             {% for choice in items_per_page_choices %}
               <a href="?type={{ media_type_filter }}&per_page={{ choice }}&columns={{ columns }}"
-                 class="px-3 py-1.5 text-sm transition-colors {% if items_per_page == choice %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30{% else %}bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 hover:bg-[#39404b]{% endif %}">
+                 class="px-3 py-1.5 text-sm transition-colors {% if items_per_page == choice %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 hover:bg-[#39404b]{% endif %}">
                 {{ choice }}
               </a>
             {% endfor %}
@@ -144,7 +144,7 @@
           <div class="flex rounded-md overflow-hidden border border-gray-700">
             {% for choice in columns_choices %}
               <a href="?type={{ media_type_filter }}&per_page={{ items_per_page }}&columns={{ choice }}"
-                 class="px-3 py-1.5 text-sm transition-colors {% if columns == choice %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30{% else %}bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 hover:bg-[#39404b]{% endif %}">
+                 class="px-3 py-1.5 text-sm transition-colors {% if columns == choice %}bg-indigo-600 shadow-md shadow-indigo-600/20 ring-1 ring-indigo-300/30 text-white{% else %}bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 hover:bg-[#39404b]{% endif %}">
                 {{ choice }}
               </a>
             {% endfor %}

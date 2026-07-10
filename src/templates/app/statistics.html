@@ -89,7 +89,24 @@
     </div>
   </div>
 
-  <div class="space-y-8">
+  <div class="space-y-8" x-data="{ statsTab: 'overview' }">
+
+    <!-- Top-level Tab Bar -->
+    <div class="flex items-center gap-1 border-b border-gray-700/60">
+      <button @click="statsTab = 'overview'"
+              :class="statsTab === 'overview' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer">
+        Overview
+      </button>
+      <button @click="statsTab = 'awards'"
+              :class="statsTab === 'awards' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer">
+        🏆 Awards & Lists
+      </button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div x-show="statsTab === 'overview'" x-cloak class="space-y-8">
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
@@ -741,126 +758,6 @@
     </div>
     {% endif %}
 
-    {% if list_progress %}
-    <!-- List Progress Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold">List Progress</h2>
-        <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">TMDB-backed</span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-        {% for entry in list_progress %}
-          <div class="flex flex-col items-center gap-2">
-            <div class="relative w-28 h-28">
-              <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="#374151"
-                        stroke-width="7"
-                        stroke-linecap="round" />
-                <circle cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="#38bdf8"
-                        stroke-width="7"
-                        stroke-linecap="round"
-                        stroke-dasharray="251.33"
-                        stroke-dashoffset="{{ entry.dash_offset }}" />
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span class="text-2xl font-bold leading-none">{{ entry.percentage }}%</span>
-                <span class="text-xs text-gray-400 mt-1">{{ entry.tracked }} of {{ entry.total }}</span>
-              </div>
-            </div>
-            <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% endif %}
-
-    {% if awards_progress %}
-    <!-- Awards Progress Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold">Awards Progress</h2>
-        <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Oscars · Cannes · GOTY</span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-        {% for entry in awards_progress %}
-          <button type="button"
-                  data-award-slug="{{ entry.slug }}"
-                  hx-get="{% url 'award_progress_detail' entry.slug %}"
-                  hx-target="#award-detail-panel"
-                  hx-swap="innerHTML"
-                  class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
-            <div class="relative w-28 h-28">
-              <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="#374151"
-                        stroke-width="7"
-                        stroke-linecap="round" />
-                <circle cx="50" cy="50" r="40"
-                        fill="none"
-                        stroke="#a78bfa"
-                        stroke-width="7"
-                        stroke-linecap="round"
-                        stroke-dasharray="251.33"
-                        stroke-dashoffset="{{ entry.dash_offset }}" />
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span class="text-2xl leading-none">{{ entry.icon }}</span>
-                <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
-                <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
-              </div>
-            </div>
-            <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
-          </button>
-        {% endfor %}
-      </div>
-      <div id="award-detail-panel"></div>
-    </div>
-    <script>
-      (function () {
-        var panel = document.getElementById("award-detail-panel");
-        if (!panel) return;
-
-        function clearActiveButtons() {
-          document.querySelectorAll("[data-award-slug]").forEach(function (btn) {
-            btn.classList.remove("ring-indigo-400/40", "bg-white/[0.03]");
-          });
-        }
-
-        window.closeAwardDetail = function () {
-          panel.innerHTML = "";
-          delete panel.dataset.openSlug;
-          clearActiveButtons();
-        };
-
-        document.body.addEventListener("htmx:beforeRequest", function (evt) {
-          var btn = evt.detail.elt;
-          if (!btn || !btn.dataset || !btn.dataset.awardSlug) return;
-          if (panel.dataset.openSlug === btn.dataset.awardSlug) {
-            evt.preventDefault();
-            window.closeAwardDetail();
-          }
-        });
-
-        document.body.addEventListener("htmx:afterSwap", function (evt) {
-          if (evt.detail.target !== panel) return;
-          var btn = evt.detail.elt;
-          var slug = btn && btn.dataset ? btn.dataset.awardSlug : null;
-          clearActiveButtons();
-          if (slug) {
-            panel.dataset.openSlug = slug;
-            btn.classList.add("ring-indigo-400/40", "bg-white/[0.03]");
-          }
-          panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        });
-      })();
-    </script>
-    {% endif %}
-
     <!-- Top Rated Media Section -->
     <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
@@ -969,7 +866,158 @@
       {% endif %}
     </div>
 
-  </div>
+    </div>{# end overview tab #}
+
+    <!-- Awards & Lists Tab -->
+    <div x-show="statsTab === 'awards'" x-cloak class="space-y-8">
+
+      <!-- List Progress -->
+      {% if list_progress %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold">List Progress</h2>
+          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Letterboxd · Sight & Sound · 1001 Albums</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+          {% for entry in list_progress %}
+            <button type="button"
+                    data-list-slug="{{ entry.slug }}"
+                    hx-get="{% url 'list_progress_detail' entry.slug %}"
+                    hx-target="#list-detail-panel"
+                    hx-swap="innerHTML"
+                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+              <div class="relative w-28 h-28">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"
+                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                </div>
+              </div>
+              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+            </button>
+          {% endfor %}
+        </div>
+        <div id="list-detail-panel"></div>
+      </div>
+      <script>
+        (function () {
+          var panel = document.getElementById("list-detail-panel");
+          if (!panel) return;
+          function clearActiveListButtons() {
+            document.querySelectorAll("[data-list-slug]").forEach(function (btn) {
+              btn.classList.remove("ring-sky-400/40", "bg-white/5");
+            });
+          }
+          window.closeListDetail = function () {
+            panel.innerHTML = "";
+            delete panel.dataset.openSlug;
+            clearActiveListButtons();
+          };
+          document.body.addEventListener("htmx:beforeRequest", function (evt) {
+            var btn = evt.detail.elt;
+            if (!btn || !btn.dataset || !btn.dataset.listSlug) return;
+            if (panel.dataset.openSlug === btn.dataset.listSlug) {
+              evt.preventDefault();
+              window.closeListDetail();
+            }
+          });
+          document.body.addEventListener("htmx:afterSwap", function (evt) {
+            if (evt.detail.target !== panel) return;
+            var btn = evt.detail.elt;
+            var slug = btn && btn.dataset ? btn.dataset.listSlug : null;
+            clearActiveListButtons();
+            if (slug) {
+              panel.dataset.openSlug = slug;
+              btn.classList.add("ring-sky-400/40", "bg-white/5");
+            }
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        })();
+      </script>
+      {% else %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
+        <p class="text-gray-400 text-sm">No curated lists configured yet. Add TMDB IDs to <code class="text-indigo-400">external_lists_data.py</code>.</p>
+      </div>
+      {% endif %}
+
+      <!-- Awards Progress -->
+      {% if awards_progress %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold">Awards Progress</h2>
+          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Óscars · César · Cannes · GOTY</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+          {% for entry in awards_progress %}
+            <button type="button"
+                    data-award-slug="{{ entry.slug }}"
+                    hx-get="{% url 'award_progress_detail' entry.slug %}"
+                    hx-target="#award-detail-panel"
+                    hx-swap="innerHTML"
+                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+              <div class="relative w-28 h-28">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"
+                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                </div>
+              </div>
+              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+            </button>
+          {% endfor %}
+        </div>
+        <div id="award-detail-panel"></div>
+      </div>
+      <script>
+        (function () {
+          var panel = document.getElementById("award-detail-panel");
+          if (!panel) return;
+          function clearActiveButtons() {
+            document.querySelectorAll("[data-award-slug]").forEach(function (btn) {
+              btn.classList.remove("ring-indigo-400/40", "bg-white/5");
+            });
+          }
+          window.closeAwardDetail = function () {
+            panel.innerHTML = "";
+            delete panel.dataset.openSlug;
+            clearActiveButtons();
+          };
+          document.body.addEventListener("htmx:beforeRequest", function (evt) {
+            var btn = evt.detail.elt;
+            if (!btn || !btn.dataset || !btn.dataset.awardSlug) return;
+            if (panel.dataset.openSlug === btn.dataset.awardSlug) {
+              evt.preventDefault();
+              window.closeAwardDetail();
+            }
+          });
+          document.body.addEventListener("htmx:afterSwap", function (evt) {
+            if (evt.detail.target !== panel) return;
+            var btn = evt.detail.elt;
+            var slug = btn && btn.dataset ? btn.dataset.awardSlug : null;
+            clearActiveButtons();
+            if (slug) {
+              panel.dataset.openSlug = slug;
+              btn.classList.add("ring-indigo-400/40", "bg-white/5");
+            }
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        })();
+      </script>
+      {% endif %}
+
+    </div>{# end awards tab #}
+
+  </div>{# end outer space-y-8 #}
 {% endblock content %}
 
 {% block js %}

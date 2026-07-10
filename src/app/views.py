@@ -1996,6 +1996,15 @@ def award_progress_detail(request, award_slug):
 
 
 @require_GET
+def list_progress_detail(request, list_slug):
+    """HTMX endpoint: full per-entry breakdown for one curated list."""
+    detail = stats.get_list_winners_detail(request.user, list_slug)
+    if detail is None:
+        raise Http404("List not found")
+    return render(request, "app/components/list_detail.html", {"curated_list": detail})
+
+
+@require_GET
 def service_worker():
     """Serve the service worker file."""
     sw_path = Path(settings.STATICFILES_DIRS[0]) / "js" / "serviceworker.js"

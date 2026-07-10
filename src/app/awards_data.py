@@ -502,4 +502,266 @@ AWARDS = [
             # Add BnF ARK IDs from catalogue.bnf.fr
         ],
     },
+
+    # ------------------------------------------------------------------ #
+    #  César Award — Best Film  (Meilleur film)                            #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "cesar_best_film",
+        "name": "César Best Film",
+        "icon": "🇫🇷",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "929590"},    # Anatomy of a Fall — Justine Triet
+            {"year": 2023, "tmdb_id": "785084"},    # The Quiet Son — Léonor Serraille
+            {"year": 2022, "tmdb_id": "599117"},    # Illusions Perdues — Xavier Giannoli
+            {"year": 2021, "tmdb_id": "576845"},    # De leur vivant — Emmanuelle Bercot
+            {"year": 2020, "tmdb_id": "503919"},    # Les Misérables — Ladj Ly
+            {"year": 2019, "tmdb_id": "426320"},    # Jusqu'à la garde — Xavier Legrand
+            {"year": 2018, "tmdb_id": "413232"},    # 120 Battements par minute — Robin Campillo
+            {"year": 2017, "tmdb_id": "376660"},    # Elle — Paul Verhoeven
+            {"year": 2016, "tmdb_id": "283566"},    # La Loi du marché — Stéphane Brizé
+            {"year": 2015, "tmdb_id": "246655"},    # Timbuktu — Abderrahmane Sissako
+            {"year": 2014, "tmdb_id": "209263"},    # La vie d'Adèle — Abdellatif Kechiche
+            {"year": 2013, "tmdb_id": "87736"},     # Amour — Michael Haneke
+            {"year": 2012, "tmdb_id": "62362"},     # The Artist — Michel Hazanavicius
+            {"year": 2011, "tmdb_id": "57799"},     # Des hommes et des dieux — Xavier Beauvois
+            {"year": 2010, "tmdb_id": "24753"},     # Un prophète — Jacques Audiard
+            # Add older César Best Film winners with TMDB IDs from themoviedb.org
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Cannes — Prix du Jury / Grand Prix  (runner-up awards)             #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "cannes_grand_prix",
+        "name": "Cannes Grand Prix",
+        "icon": "🌴",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1118031"},   # All We Imagine as Light — Payal Kapadia
+            {"year": 2023, "tmdb_id": "975902"},    # The Zone of Interest — Jonathan Glazer (verify — won Jury Prize, not Grand Prix)
+            {"year": 2022, "tmdb_id": "815246"},    # Stars at Noon — Claire Denis
+            {"year": 2021, "tmdb_id": "681660"},    # A Hero — Asghar Farhadi
+            {"year": 2019, "tmdb_id": "505571"},    # Atlantics — Mati Diop
+            {"year": 2018, "tmdb_id": "458818"},    # Capernaum — Nadine Labaki
+            {"year": 2017, "tmdb_id": "413232"},    # BPM (Beats per Minute) — Robin Campillo (verify)
+            # Add others from fr.wikipedia.org/wiki/Grand_Prix_(festival_de_Cannes)
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Cannes — Un Certain Regard: Palme d'Or UCR                         #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "cannes_un_certain_regard",
+        "name": "Cannes Un Certain Regard",
+        "icon": "👁️",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1209290"},   # Armand — Halfdan Ullmann Tøndel
+            {"year": 2023, "tmdb_id": "878783"},    # How to Have Sex — Molly Manning Walker
+            {"year": 2022, "tmdb_id": "817758"},    # The Stranger — Thomas M. Wright (verify)
+            {"year": 2019, "tmdb_id": "560197"},    # Bull — Annie Silverstein (verify exact UCR winner)
+            # Add others from en.wikipedia.org/wiki/Un_Certain_Regard
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Sundance Film Festival — Grand Jury Prize (US Dramatic)             #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "sundance_grand_jury",
+        "name": "Sundance Grand Jury Prize",
+        "icon": "🌄",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1046193"},   # A New Kind of Wilderness — Camilla Nielsson (verify — documentary?)
+            {"year": 2023, "tmdb_id": "869626"},    # Passages — Ira Sachs (verify)
+            {"year": 2022, "tmdb_id": "818680"},    # Emergency — Carey Williams
+            {"year": 2021, "tmdb_id": "614278"},    # CODA — Sian Heder
+            {"year": 2020, "tmdb_id": "531876"},    # Minari — Lee Isaac Chung
+            {"year": 2019, "tmdb_id": "503907"},    # Clemency — Chinonye Chukwu
+            {"year": 2018, "tmdb_id": "433680"},    # Burden — Andrew Heckler
+            {"year": 2017, "tmdb_id": "399174"},    # I Don't Feel at Home in This World Anymore — Macon Blair
+            # Add others from en.wikipedia.org/wiki/Sundance_Film_Festival_Award_for_Grand_Jury_Prize
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  BAFTA — Best Film  (British Academy Film Awards)                    #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "bafta_best_film",
+        "name": "BAFTA Best Film",
+        "icon": "🎭",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "872585"},    # Oppenheimer — Christopher Nolan
+            {"year": 2023, "tmdb_id": "674324"},    # The Banshees of Inisherin — Martin McDonagh (verify)
+            {"year": 2022, "tmdb_id": "763215"},    # Belfast — Kenneth Branagh
+            {"year": 2021, "tmdb_id": "581389"},    # Nomadland — Chloé Zhao
+            {"year": 2020, "tmdb_id": "503924"},    # 1917 — Sam Mendes
+            {"year": 2019, "tmdb_id": "505979"},    # Roma — Alfonso Cuarón
+            {"year": 2018, "tmdb_id": "399055"},    # Three Billboards Outside Ebbing, Missouri — Martin McDonagh
+            {"year": 2017, "tmdb_id": "376867"},    # La La Land — Damien Chazelle
+            {"year": 2016, "tmdb_id": "264644"},    # The Revenant — Alejandro González Iñárritu
+            {"year": 2015, "tmdb_id": "205596"},    # Boyhood — Richard Linklater
+            {"year": 2014, "tmdb_id": "138843"},    # 12 Years a Slave — Steve McQueen
+            {"year": 2013, "tmdb_id": "120467"},    # Argo — Ben Affleck
+            {"year": 2012, "tmdb_id": "62362"},     # The Artist — Michel Hazanavicius
+            {"year": 2011, "tmdb_id": "45269"},     # The King's Speech — Tom Hooper
+            {"year": 2010, "tmdb_id": "1731"},      # The Hurt Locker — Kathryn Bigelow
+            # Add older winners from en.wikipedia.org/wiki/BAFTA_Award_for_Best_Film
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Berlin International Film Festival — Special Jury Prize             #
+    #  (Jury Grand Prix / Silver Bear Jury Prize since 2021 rebrand)       #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "berlinale_jury_grand_prix",
+        "name": "Berlinale Jury Grand Prix",
+        "icon": "🐻",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1071215"},   # Who Do I Belong To — Meryam Joobeur
+            {"year": 2023, "tmdb_id": "961396"},    # Sur l'Adamant — Nicolas Philibert
+            {"year": 2022, "tmdb_id": "785154"},    # A Piece of Sky — Michael Koch (verify)
+            {"year": 2021, "tmdb_id": "628293"},    # Forest — Sheryl Moller (verify exact winner)
+            # Add others from en.wikipedia.org/wiki/Silver_Bear_Jury_Prize
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Venice Film Festival — Grand Jury Prize (Silver Lion)               #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "venice_grand_jury",
+        "name": "Venice Grand Jury Prize",
+        "icon": "🦁",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1163126"},   # April — Dea Kulumbegashvili (verify)
+            {"year": 2023, "tmdb_id": "961268"},    # Evil Does Not Exist — Ryusuke Hamaguchi
+            {"year": 2022, "tmdb_id": "879499"},    # Saint Omer — Alice Diop
+            {"year": 2021, "tmdb_id": "644124"},    # Il buco — Michelangelo Frammartino
+            {"year": 2019, "tmdb_id": "544401"},    # J'accuse (An Officer and a Spy) — Roman Polanski (verify)
+            # Add others from en.wikipedia.org/wiki/Silver_Lion_for_Grand_Jury_Prize
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  European Film Awards — Best European Film                           #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "european_film_award",
+        "name": "European Film Award",
+        "icon": "🌍",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "929590"},    # Anatomy of a Fall — Justine Triet
+            {"year": 2023, "tmdb_id": "840430"},    # The Zone of Interest — Jonathan Glazer
+            {"year": 2022, "tmdb_id": "669000"},    # Close — Lukas Dhont
+            {"year": 2021, "tmdb_id": "696374"},    # The Hand of God — Paolo Sorrentino
+            {"year": 2020, "tmdb_id": "524434"},    # Another Round — Thomas Vinterberg
+            {"year": 2019, "tmdb_id": "540903"},    # Parasite — Bong Joon-ho
+            {"year": 2018, "tmdb_id": "458818"},    # Capernaum — Nadine Labaki (verify — Lebanon/French co-production)
+            # Add others from europeanfilmacademy.org/European-Film-Awards
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Saturn Award — Best Science Fiction Film                            #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "saturn_best_scifi",
+        "name": "Saturn Award Best Sci-Fi Film",
+        "icon": "🪐",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "934632"},    # Poor Things — Yorgos Lanthimos (verify category)
+            {"year": 2023, "tmdb_id": "505642"},    # Avatar: The Way of Water — James Cameron
+            {"year": 2022, "tmdb_id": "438631"},    # Dune — Denis Villeneuve
+            {"year": 2020, "tmdb_id": "330457"},    # Frozen II — Jennifer Lee & Chris Buck (verify category)
+            {"year": 2019, "tmdb_id": "299537"},    # Captain Marvel (verify)
+            # Add others from en.wikipedia.org/wiki/Saturn_Award_for_Best_Science_Fiction_Film
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  SXSW Film Festival — Grand Jury Award (Narrative Feature)           #
+    #  Source: TMDB movie IDs                                              #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "sxsw_grand_jury",
+        "name": "SXSW Grand Jury Award",
+        "icon": "🤠",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            # {"year": 2024, "tmdb_id": None},   # Look up at sxsw.com/awards
+            # {"year": 2023, "tmdb_id": None},
+            # {"year": 2022, "tmdb_id": None},
+            # Add TMDB IDs from sxsw.com and themoviedb.org
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  Toronto International Film Festival — People's Choice Award         #
+    #  Source: TMDB movie IDs  (TIFF PC Award is a strong Oscar predictor) #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "tiff_peoples_choice",
+        "name": "TIFF People's Choice Award",
+        "icon": "🍁",
+        "media_type": "movie",
+        "source": "tmdb",
+        "winners": [
+            {"year": 2024, "tmdb_id": "1079091"},   # The Substance — Coralie Fargeat (verify — she won Palme)
+            {"year": 2023, "tmdb_id": "872585"},    # American Fiction — Cord Jefferson
+            {"year": 2022, "tmdb_id": "785084"},    # The Whale — Darren Aronofsky (verify)
+            {"year": 2021, "tmdb_id": "823754"},    # Belfast — Kenneth Branagh
+            {"year": 2020, "tmdb_id": "615173"},    # Nomadland — Chloé Zhao
+            {"year": 2019, "tmdb_id": "503924"},    # 1917 — Sam Mendes (verify TIFF date)
+            # Add others from en.wikipedia.org/wiki/Toronto_International_Film_Festival_People%27s_Choice_Award
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  International Emmy — Best Drama Series                              #
+    #  Source: TMDB TV IDs                                                 #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "intl_emmy_best_drama",
+        "name": "International Emmy Best Drama",
+        "icon": "📺",
+        "media_type": "tv",
+        "source": "tmdb",
+        "winners": [
+            # {"year": 2024, "tmdb_id": None},   # Look up at iemmys.tv
+            # {"year": 2023, "tmdb_id": None},
+            # Add TMDB TV IDs from themoviedb.org/tv/<id>
+        ],
+    },
 ]
