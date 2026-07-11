@@ -9,6 +9,7 @@ from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
+from django.conf import settings
 from django.core.cache import cache
 from django.db import models
 from django.db.models import (
@@ -34,6 +35,132 @@ from app.models import (
 from app.templatetags import app_tags
 
 logger = logging.getLogger(__name__)
+
+STATISTICS_CACHE_TIMEOUT = getattr(settings, "STATISTICS_CACHE_TIMEOUT", 60 * 60 * 24)
+_STATISTICS_CACHE_VERSION_KEY = "statistics:context:version:{user_id}"
+_STATISTICS_CONTEXT_CACHE_KEY = (
+    "statistics:context:{user_id}:{version}:{media_types}:{start_date}:{end_date}"
+)
+
+
+def invalidate_statistics_cache(user_id):
+    """Bump the per-user stats cache version so old contexts are ignored."""
+    cache.set(
+        _STATISTICS_CACHE_VERSION_KEY.format(user_id=user_id),
+        timezone.now().isoformat(),
+        timeout=None,
+    )
+
+
+def get_statistics_context(user, start_date, end_date):
+    """Return the rendered statistics context, caching expensive calculations."""
+    active_media_types = tuple(user.get_active_media_types())
+    cache_key = _get_statistics_context_cache_key(
+        user.id,
+        start_date,
+        end_date,
+        active_media_types,
+    )
+    cached_context = cache.get(cache_key)
+    if cached_context is not None:
+        logger.info("%s - Retrieved statistics context from cache", user)
+        return cached_context
+
+    context = build_statistics_context(user, start_date, end_date)
+    cache.set(cache_key, context, timeout=STATISTICS_CACHE_TIMEOUT)
+    return context
+
+
+def _get_statistics_context_cache_key(user_id, start_date, end_date, active_media_types):
+    version = cache.get(_STATISTICS_CACHE_VERSION_KEY.format(user_id=user_id))
+    if version is None:
+        version = timezone.now().isoformat()
+        cache.set(
+            _STATISTICS_CACHE_VERSION_KEY.format(user_id=user_id),
+            version,
+            timeout=None,
+        )
+
+    return _STATISTICS_CONTEXT_CACHE_KEY.format(
+        user_id=user_id,
+        version=version,
+        media_types="-".join(active_media_types),
+        start_date=_date_cache_part(start_date),
+        end_date=_date_cache_part(end_date),
+    )
+
+
+def _date_cache_part(value):
+    if value is None:
+        return "all"
+    return value.isoformat()
+
+
+def build_statistics_context(user, start_date, end_date):
+    """Calculate all statistics for the requested date range."""
+    user_media, media_count = get_user_media(
+        user,
+        start_date,
+        end_date,
+    )
+
+    media_type_distribution = get_media_type_distribution(
+        media_count,
+    )
+    score_distribution, top_rated = get_score_distribution(user_media)
+    status_distribution = get_status_distribution(user_media)
+    status_pie_chart_data = get_status_pie_chart_data(
+        status_distribution,
+    )
+    extended_statistics = get_extended_statistics(user_media)
+
+    # Timeline is always all-time regardless of the date filter so users
+    # can see their full media history even when stats are filtered by range.
+    if start_date is None and end_date is None:
+        timeline_media = user_media
+    else:
+        timeline_media, _ = get_user_media(user, None, None)
+    timeline = get_timeline(timeline_media)
+
+    activity_data = get_activity_data(user, start_date, end_date)
+
+    progress_distribution = get_progress_distribution(user_media)
+    country_distribution = get_country_distribution(user_media)
+    media_by_type_country = get_media_by_type_country_data(user_media)
+    genre_distribution = get_genre_distribution(user_media)
+    people_stats = get_people_stats(user_media)
+    year_chart_data = get_year_chart_data(extended_statistics["year_rows"])
+    decade_chart_data = get_decade_chart_data(extended_statistics["year_rows"])
+    release_year_dist = get_release_year_distribution(user_media)
+    release_year_chart_data = get_release_year_chart_data(release_year_dist)
+    release_decade_chart_data = get_release_decade_chart_data(release_year_dist)
+    list_progress = get_list_progress(user)
+    awards_progress = get_awards_progress(user)
+
+    return {
+        "start_date": start_date,
+        "end_date": end_date,
+        "media_count": media_count,
+        "activity_data": activity_data,
+        "media_type_distribution": media_type_distribution,
+        "score_distribution": score_distribution,
+        "top_rated": top_rated,
+        "status_distribution": status_distribution,
+        "status_pie_chart_data": status_pie_chart_data,
+        "extended_statistics": extended_statistics,
+        "timeline": timeline,
+        "progress_distribution": progress_distribution,
+        "country_distribution": country_distribution,
+        "media_by_type_country": media_by_type_country,
+        "genre_distribution": genre_distribution,
+        "people_stats": people_stats,
+        "year_chart_data": year_chart_data,
+        "decade_chart_data": decade_chart_data,
+        "release_year_chart_data": release_year_chart_data,
+        "release_decade_chart_data": release_decade_chart_data,
+        "list_progress": list_progress,
+        "awards_progress": awards_progress,
+    }
 
 
 def get_user_media(user, start_date, end_date):

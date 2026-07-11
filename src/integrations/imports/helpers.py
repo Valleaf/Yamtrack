@@ -14,6 +14,7 @@ from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from simple_history.utils import bulk_create_with_history, bulk_update_with_history
 
 import app
+from app import statistics as stats
 from app.models import MediaTypes
 
 logger = logging.getLogger(__name__)
@@ -192,6 +193,8 @@ def bulk_create_media(bulk_media_list, user):
             default_user=user,
         )
 
+    stats.invalidate_statistics_cache(user.id)
+
 
 def bulk_update_media(bulk_media_list, fields_by_media_type, user):
     """Bulk update media objects with history tracking."""
@@ -217,6 +220,8 @@ def bulk_update_media(bulk_media_list, fields_by_media_type, user):
             batch_size=500,
             default_user=user,
         )
+
+    stats.invalidate_statistics_cache(user.id)
 
 
 def create_import_schedule(

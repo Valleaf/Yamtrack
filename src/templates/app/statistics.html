@@ -89,22 +89,45 @@
     </div>
   </div>
 
-  <div class="space-y-8" x-data="{ statsTab: 'overview' }">
+  <div class="space-y-8"
+       x-data="{ statsTab: 'overview', selectStatsTab(tab) { this.statsTab = tab; this.$nextTick(() => { window.dispatchEvent(new Event('resize')); if (window.resizeChartsForTab) window.resizeChartsForTab(tab); if (window.showWorldMapForTab) window.showWorldMapForTab(tab); }); } }"
+       x-init="$nextTick(() => { if (window.resizeChartsForTab) window.resizeChartsForTab(statsTab); if (window.showWorldMapForTab) window.showWorldMapForTab(statsTab); })">
 
     <!-- Top-level Tab Bar -->
-    <div class="flex items-center gap-1 border-b border-gray-700/60">
-      <button @click="statsTab = 'overview'"
+    <div class="flex items-center gap-1 border-b border-gray-700/60 overflow-x-auto">
+      <button @click="selectStatsTab('overview')"
               :class="statsTab === 'overview' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
-              class="px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer">
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
         Overview
       </button>
-      <button @click="statsTab = 'awards'"
+      <button @click="selectStatsTab('activity')"
+              :class="statsTab === 'activity' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Activity
+      </button>
+      <button @click="selectStatsTab('ratings')"
+              :class="statsTab === 'ratings' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Ratings
+      </button>
+      <button @click="selectStatsTab('library')"
+              :class="statsTab === 'library' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Library
+      </button>
+      <button @click="selectStatsTab('people')"
+              :class="statsTab === 'people' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        People
+      </button>
+      <button @click="selectStatsTab('awards')"
               :class="statsTab === 'awards' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
-              class="px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer">
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
         🏆 Awards & Lists
       </button>
     </div>
 
+    <div class="space-y-8">
     <!-- Overview Tab -->
     <div x-show="statsTab === 'overview'" x-cloak class="space-y-8">
     <!-- Statistics Cards -->
@@ -162,9 +185,9 @@
           {% if activity_data.stats.most_active_day %}
             <p class="text-3xl font-bold tracking-tight text-white">
               {{ activity_data.stats.current_streak }} day{{ activity_data.stats.current_streak|pluralize }}
-              <p class="text-sm text-gray-500">
-                Longest: {{ activity_data.stats.longest_streak }} day{{ activity_data.stats.longest_streak|pluralize }}
-              </p>
+            </p>
+            <p class="text-sm text-gray-500">
+              Longest: {{ activity_data.stats.longest_streak }} day{{ activity_data.stats.longest_streak|pluralize }}
             </p>
           {% else %}
             <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
@@ -199,6 +222,43 @@
               {{ extended_statistics.summary.median_score }} <span class="text-lg text-gray-500">/ 10</span>
             </p>
             <p class="mt-1 text-sm text-gray-500">{{ extended_statistics.summary.scored_items }} rated item{{ extended_statistics.summary.scored_items|pluralize }}</p>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Unrated Items</h3>
+          {% if extended_statistics.summary.total_items %}
+            <p class="mt-2 text-3xl font-bold text-white">{{ extended_statistics.summary.unrated_items }}</p>
+            <p class="mt-1 text-sm text-gray-500">Still waiting for a score</p>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Highest Rated</h3>
+          {% if extended_statistics.summary.highest_rated %}
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.highest_rated.score|score_color }}">
+              {{ extended_statistics.summary.highest_rated.formatted_score }}
+            </p>
+            <a href="{{ extended_statistics.summary.highest_rated.item|media_url }}"
+               class="mt-1 block text-sm text-gray-500 hover:text-indigo-400 transition-colors line-clamp-1">
+              {{ extended_statistics.summary.highest_rated.item }}
+            </a>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Lowest Rated</h3>
+          {% if extended_statistics.summary.lowest_rated %}
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.lowest_rated.score|score_color }}">
+              {{ extended_statistics.summary.lowest_rated.formatted_score }}
+            </p>
+            <a href="{{ extended_statistics.summary.lowest_rated.item|media_url }}"
+               class="mt-1 block text-sm text-gray-500 hover:text-indigo-400 transition-colors line-clamp-1">
+              {{ extended_statistics.summary.lowest_rated.item }}
+            </a>
           {% else %}
             <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
           {% endif %}
@@ -274,9 +334,39 @@
       </div>
     </div>
 
+    {% if extended_statistics.source_rows %}
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
+      <h3 class="text-lg font-semibold mb-4 text-white">By Source</h3>
+      <table class="w-full text-sm">
+        <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <th class="pb-3 pr-4 font-medium">Source</th>
+            <th class="pb-3 px-4 text-right font-medium">Items</th>
+            <th class="pb-3 px-4 text-right font-medium">Share</th>
+            <th class="pb-3 pl-4 text-right font-medium">Average</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          {% for row in extended_statistics.source_rows %}
+            <tr class="hover:bg-white/[0.02] transition-colors">
+              <td class="py-3 pr-4 font-medium text-white">{{ row.source }}</td>
+              <td class="py-3 px-4 text-right text-gray-300">{{ row.count }}</td>
+              <td class="py-3 px-4 text-right text-gray-300">{{ row.percentage }}%</td>
+              <td class="py-3 pl-4 text-right">
+                {% if row.average_score is not None %}<span class="{{ row.average_score|score_color }}">{{ row.average_score }}</span>{% else %}<span class="text-gray-500">--</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    </div>{# end tab content sections #}
+    </div>{# end overview tab #}
+
     <!-- Year and Decade Activity -->
     {% if year_chart_data or decade_chart_data %}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div x-show="statsTab === 'activity'" x-cloak class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Year Activity -->
       <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-1">Year Activity</h2>
@@ -317,7 +407,7 @@
 
     <!-- Media by Release Year / Decade -->
     {% if release_year_chart_data or release_decade_chart_data %}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div x-show="statsTab === 'library'" x-cloak class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Release Year -->
       <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-1">Media by Release Year</h2>
@@ -357,7 +447,7 @@
     {% endif %}
 
     <!-- Activity History Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
+    <div x-show="statsTab === 'activity'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
       <h2 class="text-xl font-semibold mb-4 text-center">Activity History</h2>
       <div class="overflow-x-auto flex flex-col justify-center"
            x-data="{ graphTooWide: false }"
@@ -414,9 +504,34 @@
       </div>
     </div>
 
+    <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Rating Bands</h2>
+      {% if extended_statistics.summary.scored_items %}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {% for band in extended_statistics.rating_bands %}
+            <div class="rounded-lg bg-[#2a2f35] ring-1 ring-white/5 p-4">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <h3 class="text-sm font-medium text-gray-300">{{ band.label }}</h3>
+                  <p class="text-xs text-gray-500">{{ band.range }}</p>
+                </div>
+                <span class="text-xl font-bold text-white">{{ band.count }}</span>
+              </div>
+              <div class="mt-3 h-2 rounded-full bg-[#1e2329] overflow-hidden">
+                <div class="h-full {{ band.color }}" style="width: {{ band.bar_percentage }}%"></div>
+              </div>
+              <p class="mt-2 text-xs text-gray-500">{{ band.percentage }}% of rated items</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="py-8 text-center text-gray-400">Rate media items to see how your scores cluster.</p>
+      {% endif %}
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Media Type Distribution Section -->
-      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Media Type Distribution</h2>
 
         {% if media_type_distribution.labels %}
@@ -435,7 +550,7 @@
       </div>
 
       <!-- Status Distribution Section -->
-      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Status Distribution</h2>
 
         {% if status_pie_chart_data.labels %}
@@ -454,7 +569,7 @@
       </div>
 
       <!-- Status Distribution by Media Type Section -->
-      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Status Distribution by Media Type</h2>
 
         {% if media_type_distribution.labels %}
@@ -475,7 +590,7 @@
       </div>
 
       <!-- Score Distribution by Media Type Section -->
-      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <h2 class="text-xl font-semibold mb-4">Score Distribution by Media Type</h2>
 
         {% if score_distribution.total_scored %}
@@ -495,7 +610,7 @@
     </div>
 
     <!-- Progress Distribution Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+    <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4">Completion Progress</h2>
       
       {% if progress_distribution %}
@@ -539,7 +654,7 @@
 
     <!-- Genre Distribution Section -->
     <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6"
-         x-data="genreTabs()" x-init="init()">
+         x-show="statsTab === 'library'" x-cloak x-data="genreTabs()" x-init="init()">
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Genre Distribution</h2>
         <p class="text-sm text-gray-400">Most common genres across your tracked media</p>
@@ -629,7 +744,7 @@
     </script>
 
     <!-- World Map by Media Type Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+    <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Media by Country</h2>
         <p class="text-sm text-gray-400">Distribution of media by production country</p>
@@ -681,7 +796,7 @@
 
     <!-- Top People Section -->
     {% if people_stats.directors or people_stats.actors or people_stats.artists %}
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+    <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Top People</h2>
         <p class="text-sm text-gray-400">Most frequent directors, actors and artists in your library</p>
@@ -756,10 +871,15 @@
 
       </div>
     </div>
+    {% else %}
+    <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
+      <h2 class="text-xl font-semibold mb-2">Top People</h2>
+      <p class="text-gray-400 text-sm">Director, actor, and artist stats will appear here once provider metadata has been cached.</p>
+    </div>
     {% endif %}
 
     <!-- Top Rated Media Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+    <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
 
       {% if top_rated %}
@@ -780,7 +900,7 @@
     </div>
 
     <!-- Media Timeline Section -->
-    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
+    <div x-show="statsTab === 'activity'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
       <div class="flex items-center justify-between mb-6 md:mb-10">
         <h2 class="text-xl font-semibold">Media Timeline</h2>
         <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">All Time</span>
@@ -866,7 +986,7 @@
       {% endif %}
     </div>
 
-    </div>{# end overview tab #}
+    </div>{# end library/activity/ratings/people tab siblings #}
 
     <!-- Awards & Lists Tab -->
     <div x-show="statsTab === 'awards'" x-cloak class="space-y-8">

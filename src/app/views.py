@@ -1915,73 +1915,8 @@ def statistics(request):
                 datetime.combine(end_date, datetime.max.time()),
             )
 
-    # Get all user media data in a single operation
-    user_media, media_count = stats.get_user_media(
-        request.user,
-        start_date,
-        end_date,
-    )
-
-    # Calculate all statistics from the retrieved data
-    media_type_distribution = stats.get_media_type_distribution(
-        media_count,
-    )
-    score_distribution, top_rated = stats.get_score_distribution(user_media)
-    status_distribution = stats.get_status_distribution(user_media)
-    status_pie_chart_data = stats.get_status_pie_chart_data(
-        status_distribution,
-    )
-    extended_statistics = stats.get_extended_statistics(user_media)
-
-    # Timeline is always all-time regardless of the date filter so users
-    # can see their full media history even when stats are filtered by range.
-    if start_date is None and end_date is None:
-        timeline_media = user_media
-    else:
-        timeline_media, _ = stats.get_user_media(request.user, None, None)
-    timeline = stats.get_timeline(timeline_media)
-
-    activity_data = stats.get_activity_data(request.user, start_date, end_date)
-
-    # Enhanced visualisations
-    progress_distribution = stats.get_progress_distribution(user_media)
-    country_distribution = stats.get_country_distribution(user_media)
-    media_by_type_country = stats.get_media_by_type_country_data(user_media)
-    genre_distribution = stats.get_genre_distribution(user_media)
-    people_stats = stats.get_people_stats(user_media)
-    year_chart_data = stats.get_year_chart_data(extended_statistics["year_rows"])
-    decade_chart_data = stats.get_decade_chart_data(extended_statistics["year_rows"])
-    release_year_dist = stats.get_release_year_distribution(user_media)
-    release_year_chart_data = stats.get_release_year_chart_data(release_year_dist)
-    release_decade_chart_data = stats.get_release_decade_chart_data(release_year_dist)
-    list_progress = stats.get_list_progress(request.user)
-    awards_progress = stats.get_awards_progress(request.user)
-
-    context = {
-        "start_date": start_date,
-        "end_date": end_date,
-        "media_count": media_count,
-        "activity_data": activity_data,
-        "media_type_distribution": media_type_distribution,
-        "score_distribution": score_distribution,
-        "top_rated": top_rated,
-        "status_distribution": status_distribution,
-        "status_pie_chart_data": status_pie_chart_data,
-        "extended_statistics": extended_statistics,
-        "timeline": timeline,
-        "date_format_values": DateFormatChoices.values,
-        "progress_distribution": progress_distribution,
-        "country_distribution": country_distribution,
-        "media_by_type_country": media_by_type_country,
-        "genre_distribution": genre_distribution,
-        "people_stats": people_stats,
-        "year_chart_data": year_chart_data,
-        "decade_chart_data": decade_chart_data,
-        "release_year_chart_data": release_year_chart_data,
-        "release_decade_chart_data": release_decade_chart_data,
-        "list_progress": list_progress,
-        "awards_progress": awards_progress,
-    }
+    context = {**stats.get_statistics_context(request.user, start_date, end_date)}
+    context["date_format_values"] = DateFormatChoices.values
 
     return render(request, "app/statistics.html", context)
 

@@ -8,12 +8,6 @@
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
 
-- Genres
-
-- [ ] Genre for comics gives weird data
-
-Stats page is slow. Maybe compute the stats everyday and save them in a file or something ? That gets overwritten everytime. Or another solution, maybe load while browsing, or another solution
-
 ---
 
 # 🏆 Curated Lists & Awards in a new tab

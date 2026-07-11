@@ -2,12 +2,41 @@ import logging
 
 from celery import states
 from celery.signals import before_task_publish
+from django.db import transaction
 from django.db.backends.signals import connection_created
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django_celery_results.models import TaskResult
 
+from app import statistics as stats
+from app.models import (
+    Anime,
+    BoardGame,
+    Book,
+    Comic,
+    Episode,
+    Game,
+    Manga,
+    Movie,
+    Music,
+    Season,
+    TV,
+)
+
 logger = logging.getLogger(__name__)
+STATS_CACHE_MODELS = (
+    Anime,
+    BoardGame,
+    Book,
+    Comic,
+    Episode,
+    Game,
+    Manga,
+    Movie,
+    Music,
+    Season,
+    TV,
+)
 
 
 @receiver(connection_created)
@@ -60,3 +89,30 @@ def populate_country_on_media_save(sender, instance, created, **kwargs):  # noqa
     from app.tasks import populate_media_country  # noqa: PLC0415
 
     populate_media_country.delay(instance.pk)
+
+
+def invalidate_statistics_cache_on_change(sender, instance, **kwargs):  # noqa: ARG001
+    """Invalidate cached stats after tracked media changes."""
+    user_id = _get_statistics_user_id(instance)
+    if user_id is None:
+        return
+    transaction.on_commit(lambda: stats.invalidate_statistics_cache(user_id))
+
+
+def _get_statistics_user_id(instance):
+    if isinstance(instance, Episode):
+        return instance.related_season.user_id
+    return instance.user_id
+
+
+for model in STATS_CACHE_MODELS:
+    post_save.connect(
+        invalidate_statistics_cache_on_change,
+        sender=model,
+        dispatch_uid=f"invalidate_statistics_cache_save_{model.__name__}",
+    )
+    post_delete.connect(
+        invalidate_statistics_cache_on_change,
+        sender=model,
+        dispatch_uid=f"invalidate_statistics_cache_delete_{model.__name__}",
+    )

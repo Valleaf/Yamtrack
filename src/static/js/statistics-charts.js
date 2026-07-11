@@ -1,6 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
   Chart.register(ChartDataLabels);
 
+  // Registry of chart instances keyed by canvas id, plus which stats-tab each
+  // canvas lives in. Charts created while their tab is hidden (display:none)
+  // get initialized with a zero-size canvas by Chart.js and never recover on
+  // their own, so we explicitly resize them once their tab becomes visible.
+  window.yamtrackCharts = window.yamtrackCharts || {};
+  window.yamtrackChartTabs = {
+    mediaTypeChart: "library",
+    statusChart: "library",
+    statusStackedChart: "library",
+    scoreStackedChart: "ratings",
+    yearActivityChart: "activity",
+    decadeActivityChart: "activity",
+    releaseYearChart: "library",
+    releaseDecadeChart: "library",
+  };
+
+  // Called by the Alpine tab switcher (see statistics.html) whenever a tab
+  // becomes active, so charts inside it get a real width/height and redraw.
+  window.resizeChartsForTab = function (tab) {
+    Object.keys(window.yamtrackCharts).forEach(function (id) {
+      if (window.yamtrackChartTabs[id] !== tab) return;
+      var chart = window.yamtrackCharts[id];
+      if (!chart) return;
+      // resize() re-reads the (now-visible) container's dimensions.
+      chart.resize();
+      chart.update();
+    });
+  };
+
   // Custom external tooltip for bar charts
   function customBarTooltip(context) {
     // External custom tooltip
@@ -275,11 +304,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeChartIfExists(elementId, chartType, data, options) {
     const element = document.getElementById(elementId);
     if (element) {
-      return new Chart(element.getContext("2d"), {
+      const chart = new Chart(element.getContext("2d"), {
         type: chartType,
         data: data,
         options: options,
       });
+      window.yamtrackCharts[elementId] = chart;
+      return chart;
     }
     return null;
   }

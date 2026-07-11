@@ -278,8 +278,16 @@
 
     if (!mediaTypeButtons.length || !worldMapContainer) return;
 
+    var activeMediaType = null;
+    // Becomes true once the parent stats tab ('library') has been visible at
+    // least once with real dimensions; until then we don't build the chart,
+    // since Chart.js would read a zero-size container and never recover.
+    var tabIsVisible = false;
+
     loadGeo(function() {
       function showMap(mediaType) {
+        activeMediaType = mediaType;
+
         // Hide all map divs
         document.querySelectorAll('.world-map-view').forEach(function(el) {
           el.style.display = 'none';
@@ -289,6 +297,8 @@
         var mapEl = document.getElementById('map-' + mediaType);
         if (!mapEl) return;
         mapEl.style.display = 'block';
+
+        if (!tabIsVisible) return;
 
         // Only build once
         if (mapEl.dataset.built) return;
@@ -303,11 +313,12 @@
         buildDotMap(mapEl, countryData);
       }
 
-      // Activate first tab
+      // Activate first tab (button state only — build is deferred until the
+      // 'library' stats tab is actually visible, via showWorldMapForTab below).
       var firstBtn = mediaTypeButtons[0];
       if (firstBtn) {
         firstBtn.classList.add('bg-indigo-600/20', 'text-indigo-400', 'border-indigo-500');
-        showMap(firstBtn.dataset.mediaTypeBtn);
+        activeMediaType = firstBtn.dataset.mediaTypeBtn;
       }
 
       mediaTypeButtons.forEach(function(btn) {
@@ -319,6 +330,16 @@
           showMap(btn.dataset.mediaTypeBtn);
         });
       });
+
+      // Called by the Alpine tab switcher (see statistics.html) whenever a
+      // top-level stats tab becomes active. Only the 'library' tab contains
+      // the world map, and we only need to (re)build the map the first time
+      // that tab is actually shown with nonzero dimensions.
+      window.showWorldMapForTab = function(tab) {
+        if (tab !== 'library') return;
+        tabIsVisible = true;
+        if (activeMediaType) showMap(activeMediaType);
+      };
     });
   });
 })();

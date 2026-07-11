@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
 
 from app import statistics
@@ -29,6 +30,44 @@ class StatisticsDateCoercionTests(SimpleTestCase):
         statistics.add_year_stat(year_stats, media, "end_date", "completed")
 
         self.assertEqual(year_stats[2025]["completed"], 1)
+
+
+class StatisticsContextCacheTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="stats-cache",
+            password="testpassword",
+        )
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    @patch("app.statistics.build_statistics_context")
+    def test_statistics_context_is_cached_per_user_and_date_range(self, mock_build):
+        mock_build.return_value = {"media_count": {"total": 0}}
+
+        first_context = statistics.get_statistics_context(self.user, None, None)
+        second_context = statistics.get_statistics_context(self.user, None, None)
+
+        self.assertEqual(first_context, {"media_count": {"total": 0}})
+        self.assertEqual(second_context, {"media_count": {"total": 0}})
+        mock_build.assert_called_once_with(self.user, None, None)
+
+    @patch("app.statistics.build_statistics_context")
+    def test_statistics_context_invalidation_bumps_cached_version(self, mock_build):
+        mock_build.side_effect = [
+            {"media_count": {"total": 1}},
+            {"media_count": {"total": 2}},
+        ]
+
+        first_context = statistics.get_statistics_context(self.user, None, None)
+        statistics.invalidate_statistics_cache(self.user.id)
+        second_context = statistics.get_statistics_context(self.user, None, None)
+
+        self.assertEqual(first_context, {"media_count": {"total": 1}})
+        self.assertEqual(second_context, {"media_count": {"total": 2}})
+        self.assertEqual(mock_build.call_count, 2)
 
 
 class StatisticsDateFilteringTests(TestCase):
