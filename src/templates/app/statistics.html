@@ -125,6 +125,11 @@
               class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
         🏆 Awards & Lists
       </button>
+      <button @click="selectStatsTab('bestof')"
+              :class="statsTab === 'bestof' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        ⭐ Best Of
+      </button>
     </div>
 
     <div class="space-y-8">
@@ -1136,6 +1141,115 @@
       {% endif %}
 
     </div>{# end awards tab #}
+
+    <!-- Best Of Tab -->
+    <div x-show="statsTab === 'bestof'" x-cloak
+         class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6"
+         x-data="personalBest()" x-init="init()">
+
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Personal Best</h2>
+        <p class="text-sm text-gray-400">Your top 10 rated media per type, grouped by release year or decade</p>
+      </div>
+
+      {% if personal_best.media_types %}
+        <!-- Granularity + Period + Media Type controls -->
+        <div class="flex flex-wrap items-center gap-4 mb-6 border-b border-gray-700 pb-4">
+          <!-- Year / Decade toggle -->
+          <div class="flex rounded-lg ring-1 ring-white/10 overflow-hidden">
+            <button @click="setGranularity('year')"
+                    :class="granularity === 'year' ? 'bg-indigo-600 text-white' : 'bg-[#2a2f35] text-gray-300 hover:text-white'"
+                    class="px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer">Year</button>
+            <button @click="setGranularity('decade')"
+                    :class="granularity === 'decade' ? 'bg-indigo-600 text-white' : 'bg-[#2a2f35] text-gray-300 hover:text-white'"
+                    class="px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer">Decade</button>
+          </div>
+
+          <!-- Period select -->
+          <select x-model="selectedPeriod"
+                  class="bg-[#2a2f35] ring-1 ring-white/10 text-gray-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-indigo-500">
+            <template x-for="period in periods" :key="period">
+              <option :value="period" x-text="granularity === 'decade' ? period + 's' : period"></option>
+            </template>
+          </select>
+
+          <!-- Media type filter -->
+          <div class="flex flex-wrap gap-2">
+            <button @click="activeMediaType = 'all'"
+                    :class="activeMediaType === 'all' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border cursor-pointer">All</button>
+            {% for media_type, label in personal_best.media_types %}
+              <button @click="activeMediaType = '{{ media_type }}'"
+                      :class="activeMediaType === '{{ media_type }}' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
+                      class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border cursor-pointer">{{ label }}</button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Year periods -->
+        {% for entry in personal_best.year_periods %}
+          <div x-show="granularity === 'year' && String(selectedPeriod) === '{{ entry.period }}'" x-cloak class="space-y-6">
+            {% for group in entry.groups %}
+              <div x-show="activeMediaType === 'all' || activeMediaType === '{{ group.media_type }}'" x-cloak>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">{{ group.label }}</h3>
+                <div class="media-grid">
+                  {% for media in group.media_list %}
+                    {% include "app/components/media_card.html" with media=media item=media.item title=media.item from_grid=True secondary_color=True %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <!-- Decade periods -->
+        {% for entry in personal_best.decade_periods %}
+          <div x-show="granularity === 'decade' && String(selectedPeriod) === '{{ entry.period }}'" x-cloak class="space-y-6">
+            {% for group in entry.groups %}
+              <div x-show="activeMediaType === 'all' || activeMediaType === '{{ group.media_type }}'" x-cloak>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">{{ group.label }}</h3>
+                <div class="media-grid">
+                  {% for media in group.media_list %}
+                    {% include "app/components/media_card.html" with media=media item=media.item title=media.item from_grid=True secondary_color=True %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No rated media with a known release year</h3>
+          <p class="text-gray-400 text-center max-w-md">Rate media items and make sure their release year is populated to see your personal bests here.</p>
+        </div>
+      {% endif %}
+    </div>{# end best of tab #}
+
+    <script>
+      function personalBest() {
+        return {
+          granularity: 'year',
+          periods: [],
+          selectedPeriod: null,
+          activeMediaType: 'all',
+          yearPeriods: [{% for entry in personal_best.year_periods %}'{{ entry.period }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+          decadePeriods: [{% for entry in personal_best.decade_periods %}'{{ entry.period }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+          init() {
+            this.setGranularity('year');
+          },
+          setGranularity(g) {
+            this.granularity = g;
+            this.periods = g === 'year' ? this.yearPeriods : this.decadePeriods;
+            if (this.periods.length) {
+              this.selectedPeriod = this.periods[0];
+            }
+          },
+        };
+      }
+    </script>
 
   </div>{# end outer space-y-8 #}
 {% endblock content %}

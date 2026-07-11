@@ -114,13 +114,15 @@ def build_statistics_context(user, start_date, end_date):
     )
     extended_statistics = get_extended_statistics(user_media)
 
-    # Timeline is always all-time regardless of the date filter so users
-    # can see their full media history even when stats are filtered by range.
+    # Timeline and Personal Best are always all-time and independent of the
+    # date filter (timeline shows full history regardless of range; personal
+    # best is keyed by release year/decade, not consumption date) -- they
+    # share one unfiltered fetch instead of querying the DB twice.
     if start_date is None and end_date is None:
-        timeline_media = user_media
+        all_time_media = user_media
     else:
-        timeline_media, _ = get_user_media(user, None, None)
-    timeline = get_timeline(timeline_media)
+        all_time_media, _ = get_user_media(user, None, None)
+    timeline = get_timeline(all_time_media)
 
     activity_data = get_activity_data(user, start_date, end_date)
 
@@ -136,6 +138,7 @@ def build_statistics_context(user, start_date, end_date):
     release_decade_chart_data = get_release_decade_chart_data(release_year_dist)
     list_progress = get_list_progress(user)
     awards_progress = get_awards_progress(user)
+    personal_best = get_personal_best(all_time_media)
 
     return {
         "start_date": start_date,
@@ -160,6 +163,7 @@ def build_statistics_context(user, start_date, end_date):
         "release_decade_chart_data": release_decade_chart_data,
         "list_progress": list_progress,
         "awards_progress": awards_progress,
+        "personal_best": personal_best,
     }
 
 
@@ -1225,6 +1229,97 @@ def get_release_decade_chart_data(year_dist: "dict[int, int]") -> "dict | None":
                 "background_color": "rgba(99, 102, 241, 0.85)",
             }
         ],
+    }
+
+
+_PERSONAL_BEST_SKIP = frozenset({"season", "episode"})
+
+
+def get_personal_best(user_media: dict) -> dict:
+    """Return the user's rated items per media type, grouped by release year and decade.
+
+    Grouping key is the item's *release* year (Item.release_year, falling back
+    to cached provider metadata -- same lookup strategy as
+    get_release_year_distribution), never the consumption/tracked date. Only
+    scored items are eligible, since "personal best" is meaningless without a
+    rating. TV seasons and episodes are skipped -- the parent TV show already
+    represents them.
+
+    Buckets are returned as flat, pre-sorted lists (rather than nested dicts)
+    so the template can iterate them directly without needing a dynamic
+    dict-by-key lookup filter.
+
+    Returns:
+        {
+            "year_periods": [
+                {
+                    "period": year,
+                    "groups": [{"media_type": ..., "label": ..., "media_list": [...]}, ...],
+                },
+                ...
+            ],  # sorted by year desc
+            "decade_periods": [ ... same shape, "period" is the decade start year ... ],
+            "media_types": [(media_type, label), ...] present across any bucket,
+        }
+    """
+    year_buckets: dict[int, dict[str, list]] = defaultdict(lambda: defaultdict(list))
+    decade_buckets: dict[int, dict[str, list]] = defaultdict(lambda: defaultdict(list))
+    media_types_seen: set[str] = set()
+
+    for media_type, media_list in user_media.items():
+        if media_type in _PERSONAL_BEST_SKIP:
+            continue
+
+        for media in media_list:
+            if media.score is None:
+                continue
+
+            year = media.item.release_year
+            if year is None:
+                cache_key = (
+                    f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+                )
+                metadata = cache.get(cache_key)
+                if metadata is not None:
+                    year = get_release_year_from_metadata(metadata)
+            if year is None:
+                continue
+
+            decade = (year // 10) * 10
+            year_buckets[year][media_type].append(media)
+            decade_buckets[decade][media_type].append(media)
+            media_types_seen.add(media_type)
+
+    def _build_periods(buckets):
+        periods = []
+        for period in sorted(buckets.keys(), reverse=True):
+            by_type = buckets[period]
+            groups = []
+            for media_type in sorted(by_type.keys(), key=app_tags.media_type_readable):
+                items = sorted(
+                    by_type[media_type],
+                    key=lambda m: (-float(m.score), str(m.item)),
+                )
+                groups.append({
+                    "media_type": media_type,
+                    "label": app_tags.media_type_readable(media_type),
+                    "media_list": items,
+                })
+            periods.append({"period": period, "groups": groups})
+        return periods
+
+    year_periods = _build_periods(year_buckets)
+    decade_periods = _build_periods(decade_buckets)
+
+    media_types = sorted(
+        ((mt, app_tags.media_type_readable(mt)) for mt in media_types_seen),
+        key=lambda x: x[1],
+    )
+
+    return {
+        "year_periods": year_periods,
+        "decade_periods": decade_periods,
+        "media_types": media_types,
     }
 
 

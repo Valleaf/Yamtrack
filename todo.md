@@ -7,6 +7,7 @@
 - [ ] Collection sync identity bugs.
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
+- [ ] faster statistics
 
 ---
 
@@ -16,7 +17,7 @@
 
 - [ ] Letterboxd Top 250.
 - [ ] Show list on click
-- [ ] Sight & Sound Top 250.ats + c
+- [ ] Sight & Sound Top 250.
 - [ ] Edgar Wright's 100 Favorites.
 - [ ] BFI Best Films.
 - [ ] 1001 Albums You Must Hear Before You Die.
