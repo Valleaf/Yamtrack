@@ -26,20 +26,13 @@
 
 more festivals, cesar, sundance, etc
 
-### Custom Awards
-
-- Personal best of each year /decade by media type. Easily selectable between own media already rated. On The stats page
-
-- [ ] Personal best of by genre]
-
----
-
 # 🔵 Nice To Have
 
-- [ ] calendar with images
+- [ ] calendar with images, seems to sometimes work and sometimes not
 - [ ] Images in new releases email and indiciation if it's a season finale or somehting, Only send if it is season/series final actually.
 - [ ] check features from https://github.com/dannyvfilms/Yamtrack
 - [ ] Mobile App : Notifictations
 - [ ] auto global sync on all items ? Monthly maybe or something
 - [ ] CSS refont
 - [ ] country map, also a ranking list on the side
+- [ ] better css for collection , and overall

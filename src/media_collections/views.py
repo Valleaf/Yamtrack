@@ -36,6 +36,19 @@ DEFAULT_COLLECTION_COLUMNS = 12
 COLLECTION_SORT_CHOICES = ("name", "items", "tracked", "completed")
 DEFAULT_COLLECTION_SORT = "name"
 
+ITEM_SORT_CHOICES = ("date_added", "title", "release_year")
+DEFAULT_ITEM_SORT = "release_year"
+ITEM_SORT_ORDER_BY = {
+    "date_added": ("date_added",),
+    "title": ("item__title",),
+    "release_year": ("item__release_year", "item__title"),
+}
+ITEM_SORT_LABELS = {
+    "date_added": "Date Added (Oldest)",
+    "title": "Title (A-Z)",
+    "release_year": "Release Year (Oldest)",
+}
+
 
 def _get_items_per_page(request):
     try:
@@ -84,6 +97,13 @@ def _prepare_collection_cards(collections, user, sort):
 def _paginate(items, request, page_param):
     paginator = Paginator(items, _get_items_per_page(request))
     return paginator.get_page(request.GET.get(page_param, 1))
+
+
+def _get_item_sort(request):
+    sort = request.GET.get("item_sort", DEFAULT_ITEM_SORT)
+    if sort not in ITEM_SORT_CHOICES:
+        return DEFAULT_ITEM_SORT
+    return sort
 
 
 # ---------------------------------------------------------------------------
@@ -169,10 +189,11 @@ def collection_detail(request, collection_id):
     media_type_filter = request.GET.get("type", "all")
     stats = collection.get_stats(request.user)
 
+    item_sort = _get_item_sort(request)
     collection_items = (
         CollectionItem.objects.filter(collection=collection)
         .select_related("item")
-        .order_by("date_added")
+        .order_by(*ITEM_SORT_ORDER_BY[item_sort])
     )
     if media_type_filter != "all":
         collection_items = collection_items.filter(item__media_type=media_type_filter)
@@ -225,6 +246,8 @@ def collection_detail(request, collection_id):
         "can_edit": _user_can_edit(request.user, collection),
         "source_label": col_providers.get_source_label(collection.source) if collection.source else "",
         "sources": col_providers.SOURCE_CHOICES,
+        "item_sort": item_sort,
+        "item_sort_options": [(choice, ITEM_SORT_LABELS[choice]) for choice in ITEM_SORT_CHOICES],
     })
 
 
