@@ -38,13 +38,13 @@ logger = logging.getLogger(__name__)
 
 STATISTICS_CACHE_TIMEOUT = getattr(settings, "STATISTICS_CACHE_TIMEOUT", 60 * 60 * 24)
 _STATISTICS_CACHE_VERSION_KEY = "statistics:context:version:{user_id}"
-_STATISTICS_CONTEXT_CACHE_KEY = (
-    "statistics:context:{user_id}:{version}:{media_types}:{start_date}:{end_date}"
+_STATISTICS_SECTION_CACHE_KEY = (
+    "statistics:section:{section}:{user_id}:{version}:{media_types}:{start_date}:{end_date}"
 )
 
 
 def invalidate_statistics_cache(user_id):
-    """Bump the per-user stats cache version so old contexts are ignored."""
+    """Bump the per-user stats cache version so old cached sections are ignored."""
     cache.set(
         _STATISTICS_CACHE_VERSION_KEY.format(user_id=user_id),
         timezone.now().isoformat(),
@@ -52,26 +52,7 @@ def invalidate_statistics_cache(user_id):
     )
 
 
-def get_statistics_context(user, start_date, end_date):
-    """Return the rendered statistics context, caching expensive calculations."""
-    active_media_types = tuple(user.get_active_media_types())
-    cache_key = _get_statistics_context_cache_key(
-        user.id,
-        start_date,
-        end_date,
-        active_media_types,
-    )
-    cached_context = cache.get(cache_key)
-    if cached_context is not None:
-        logger.info("%s - Retrieved statistics context from cache", user)
-        return cached_context
-
-    context = build_statistics_context(user, start_date, end_date)
-    cache.set(cache_key, context, timeout=STATISTICS_CACHE_TIMEOUT)
-    return context
-
-
-def _get_statistics_context_cache_key(user_id, start_date, end_date, active_media_types):
+def _get_statistics_version(user_id):
     version = cache.get(_STATISTICS_CACHE_VERSION_KEY.format(user_id=user_id))
     if version is None:
         version = timezone.now().isoformat()
@@ -80,8 +61,12 @@ def _get_statistics_context_cache_key(user_id, start_date, end_date, active_medi
             version,
             timeout=None,
         )
+    return version
 
-    return _STATISTICS_CONTEXT_CACHE_KEY.format(
+
+def _get_section_cache_key(section, user_id, start_date, end_date, active_media_types, version):
+    return _STATISTICS_SECTION_CACHE_KEY.format(
+        section=section,
         user_id=user_id,
         version=version,
         media_types="-".join(active_media_types),
@@ -96,74 +81,161 @@ def _date_cache_part(value):
     return value.isoformat()
 
 
-def build_statistics_context(user, start_date, end_date):
-    """Calculate all statistics for the requested date range."""
-    user_media, media_count = get_user_media(
-        user,
-        start_date,
-        end_date,
-    )
+# Sections that only need `user_media` (the date-range-filtered queryset dict)
+# to compute. Each is cached and recomputed independently, so a slow or
+# failing section never blanks out the rest of the page, and only the
+# sections actually missing from cache get recomputed on a partial hit.
+_USER_MEDIA_SECTIONS = {
+    "media_type_distribution": lambda user_media, media_count: get_media_type_distribution(media_count),
+    "progress_distribution": lambda user_media, media_count: get_progress_distribution(user_media),
+    "country_distribution": lambda user_media, media_count: get_country_distribution(user_media),
+    "media_by_type_country": lambda user_media, media_count: get_media_by_type_country_data(user_media),
+    "genre_distribution": lambda user_media, media_count: get_genre_distribution(user_media),
+    "people_stats": lambda user_media, media_count: get_people_stats(user_media),
+}
 
-    media_type_distribution = get_media_type_distribution(
-        media_count,
-    )
-    score_distribution, top_rated = get_score_distribution(user_media)
-    status_distribution = get_status_distribution(user_media)
-    status_pie_chart_data = get_status_pie_chart_data(
-        status_distribution,
-    )
-    extended_statistics = get_extended_statistics(user_media)
+
+def get_statistics_context(user, start_date, end_date):
+    """Return the rendered statistics context, assembled from independently cached sections.
+
+    Each section is cached under its own key so a cold or failing section
+    never blanks out the rest of the page, and a partial cache hit only
+    recomputes what's actually missing instead of rebuilding everything.
+    """
+    active_media_types = tuple(user.get_active_media_types())
+    version = _get_statistics_version(user.id)
+
+    def section_key(section):
+        return _get_section_cache_key(
+            section, user.id, start_date, end_date, active_media_types, version,
+        )
+
+    context = {"start_date": start_date, "end_date": end_date}
+    missing_sections = []
+
+    all_section_names = [
+        "media_count", "activity_data", *_USER_MEDIA_SECTIONS.keys(),
+        "score_distribution", "top_rated", "status_distribution",
+        "status_pie_chart_data", "extended_statistics", "timeline",
+        "year_chart_data", "decade_chart_data", "release_year_chart_data",
+        "release_decade_chart_data", "list_progress", "awards_progress",
+        "personal_best",
+    ]
+    for section in all_section_names:
+        cached_value = cache.get(section_key(section))
+        if cached_value is None:
+            missing_sections.append(section)
+        else:
+            context[section] = cached_value["value"]
+
+    if missing_sections:
+        logger.info(
+            "%s - Rebuilding statistics sections: %s", user, missing_sections,
+        )
+        rebuilt = build_statistics_sections(
+            user, start_date, end_date, missing_sections,
+        )
+        for section, value in rebuilt.items():
+            cache.set(
+                section_key(section),
+                {"value": value},
+                timeout=STATISTICS_CACHE_TIMEOUT,
+            )
+            context[section] = value
+    else:
+        logger.info("%s - Retrieved statistics context from cache", user)
+
+    return context
+
+
+def build_statistics_sections(user, start_date, end_date, sections=None):
+    """Compute the requested statistics sections (all of them if unspecified).
+
+    Shares the underlying queries (user_media, all_time_media, extended_statistics)
+    across whichever sections were actually requested, so a partial rebuild
+    doesn't refetch data that isn't needed for the missing sections -- but
+    since most sections derive from the same one or two querysets, this is
+    mainly about avoiding duplicate work on a full (cold-cache) build.
+    """
+    want = set(sections) if sections is not None else None
+
+    def needed(*names):
+        return want is None or any(n in want for n in names)
+
+    result = {}
+
+    user_media, media_count = get_user_media(user, start_date, end_date)
+    if needed("media_count"):
+        result["media_count"] = media_count
+
+    for section, fn in _USER_MEDIA_SECTIONS.items():
+        if needed(section):
+            result[section] = fn(user_media, media_count)
+
+    if needed("score_distribution", "top_rated"):
+        score_distribution, top_rated = get_score_distribution(user_media)
+        result["score_distribution"] = score_distribution
+        result["top_rated"] = top_rated
+
+    if needed("status_distribution", "status_pie_chart_data"):
+        status_distribution = get_status_distribution(user_media)
+        result["status_distribution"] = status_distribution
+        result["status_pie_chart_data"] = get_status_pie_chart_data(status_distribution)
+
+    extended_statistics = None
+    if needed("extended_statistics", "year_chart_data", "decade_chart_data"):
+        extended_statistics = get_extended_statistics(user_media)
+        if needed("extended_statistics"):
+            result["extended_statistics"] = extended_statistics
+        if needed("year_chart_data"):
+            result["year_chart_data"] = get_year_chart_data(extended_statistics["year_rows"])
+        if needed("decade_chart_data"):
+            result["decade_chart_data"] = get_decade_chart_data(extended_statistics["year_rows"])
+
+    if needed("release_year_chart_data", "release_decade_chart_data"):
+        release_year_dist = get_release_year_distribution(user_media)
+        if needed("release_year_chart_data"):
+            result["release_year_chart_data"] = get_release_year_chart_data(release_year_dist)
+        if needed("release_decade_chart_data"):
+            result["release_decade_chart_data"] = get_release_decade_chart_data(release_year_dist)
 
     # Timeline and Personal Best are always all-time and independent of the
     # date filter (timeline shows full history regardless of range; personal
     # best is keyed by release year/decade, not consumption date) -- they
     # share one unfiltered fetch instead of querying the DB twice.
-    if start_date is None and end_date is None:
-        all_time_media = user_media
-    else:
-        all_time_media, _ = get_user_media(user, None, None)
-    timeline = get_timeline(all_time_media)
+    if needed("timeline", "personal_best"):
+        if start_date is None and end_date is None:
+            all_time_media = user_media
+        else:
+            all_time_media, _ = get_user_media(user, None, None)
+        if needed("timeline"):
+            result["timeline"] = get_timeline(all_time_media)
+        if needed("personal_best"):
+            result["personal_best"] = get_personal_best(all_time_media)
 
-    activity_data = get_activity_data(user, start_date, end_date)
+    if needed("activity_data"):
+        result["activity_data"] = get_activity_data(user, start_date, end_date)
 
-    progress_distribution = get_progress_distribution(user_media)
-    country_distribution = get_country_distribution(user_media)
-    media_by_type_country = get_media_by_type_country_data(user_media)
-    genre_distribution = get_genre_distribution(user_media)
-    people_stats = get_people_stats(user_media)
-    year_chart_data = get_year_chart_data(extended_statistics["year_rows"])
-    decade_chart_data = get_decade_chart_data(extended_statistics["year_rows"])
-    release_year_dist = get_release_year_distribution(user_media)
-    release_year_chart_data = get_release_year_chart_data(release_year_dist)
-    release_decade_chart_data = get_release_decade_chart_data(release_year_dist)
-    list_progress = get_list_progress(user)
-    awards_progress = get_awards_progress(user)
-    personal_best = get_personal_best(all_time_media)
+    if needed("list_progress"):
+        result["list_progress"] = get_list_progress(user)
 
+    if needed("awards_progress"):
+        result["awards_progress"] = get_awards_progress(user)
+
+    return result
+
+
+def build_statistics_context(user, start_date, end_date):
+    """Calculate all statistics for the requested date range, uncached.
+
+    Kept for callers that want a full synchronous rebuild without going
+    through the per-section cache (e.g. the Celery warm-up task).
+    """
+    sections = build_statistics_sections(user, start_date, end_date)
     return {
         "start_date": start_date,
         "end_date": end_date,
-        "media_count": media_count,
-        "activity_data": activity_data,
-        "media_type_distribution": media_type_distribution,
-        "score_distribution": score_distribution,
-        "top_rated": top_rated,
-        "status_distribution": status_distribution,
-        "status_pie_chart_data": status_pie_chart_data,
-        "extended_statistics": extended_statistics,
-        "timeline": timeline,
-        "progress_distribution": progress_distribution,
-        "country_distribution": country_distribution,
-        "media_by_type_country": media_by_type_country,
-        "genre_distribution": genre_distribution,
-        "people_stats": people_stats,
-        "year_chart_data": year_chart_data,
-        "decade_chart_data": decade_chart_data,
-        "release_year_chart_data": release_year_chart_data,
-        "release_decade_chart_data": release_decade_chart_data,
-        "list_progress": list_progress,
-        "awards_progress": awards_progress,
-        "personal_best": personal_best,
+        **sections,
     }
 
 

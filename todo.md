@@ -7,7 +7,8 @@
 - [ ] Collection sync identity bugs.
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
-- [ ] faster statistics
+- [ ] faster statistics. Maybe save them in a way ? Also half of them dont load anymore
+- [ ] collection sorting. date by default (Oldest first)
 
 ---
 

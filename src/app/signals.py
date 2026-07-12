@@ -92,11 +92,41 @@ def populate_country_on_media_save(sender, instance, created, **kwargs):  # noqa
 
 
 def invalidate_statistics_cache_on_change(sender, instance, **kwargs):  # noqa: ARG001
-    """Invalidate cached stats after tracked media changes."""
+    """Invalidate cached stats after tracked media changes and schedule a background rebuild.
+
+    The rebuild runs a short delay out (see _STATS_WARM_COUNTDOWN_SECONDS) so
+    a burst of saves -- a bulk import, a rewatch marathon -- collapses into
+    one rebuild instead of one per save. Each call stamps a fresh "latest
+    scheduled task" token; app.tasks.warm_statistics_cache checks that token
+    when it finally runs and skips itself if a later save has since
+    superseded it, so only the last-scheduled run in a burst actually pays
+    for the rebuild.
+    """
     user_id = _get_statistics_user_id(instance)
     if user_id is None:
         return
-    transaction.on_commit(lambda: stats.invalidate_statistics_cache(user_id))
+
+    def _invalidate_and_schedule_warm():
+        stats.invalidate_statistics_cache(user_id)
+
+        from django.core.cache import cache  # noqa: PLC0415
+
+        from app.tasks import warm_statistics_cache  # noqa: PLC0415
+
+        result = warm_statistics_cache.apply_async(
+            args=[user_id],
+            countdown=_STATS_WARM_COUNTDOWN_SECONDS,
+        )
+        cache.set(
+            f"statistics:warm-token:{user_id}",
+            result.id,
+            timeout=_STATS_WARM_COUNTDOWN_SECONDS + 60,
+        )
+
+    transaction.on_commit(_invalidate_and_schedule_warm)
+
+
+_STATS_WARM_COUNTDOWN_SECONDS = 30
 
 
 def _get_statistics_user_id(instance):

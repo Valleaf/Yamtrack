@@ -196,6 +196,46 @@ def backfill_release_years(progress_every=200):
     return {"total": total, "updated": updated, "no_year": no_year, "failed": failed}
 
 
+@shared_task(bind=True, name="Warm statistics cache")
+def warm_statistics_cache(self, user_id):
+    """Rebuild and cache the all-time statistics context for one user.
+
+    Queued with a short countdown from app.signals whenever tracked media
+    changes, so the expensive per-section computation happens in the
+    background instead of on a user's next page load. Only warms the
+    all-time (no date range) view, since that's what the page opens to by
+    default; any other date range the user picks still computes on first
+    request as before.
+
+    Debounced by task id: app.signals stamps a "latest scheduled task"
+    token in cache each time it schedules this task. A burst of saves (e.g.
+    a CSV import) each schedule a run ~30s out and overwrite that token, so
+    when an earlier-scheduled run finally executes it checks whether it's
+    still the one the token points to -- if a later save superseded it,
+    it skips, and only the last-scheduled run (which fires after the burst
+    settles) actually rebuilds.
+    """
+    from django.contrib.auth import get_user_model  # noqa: PLC0415
+    from django.core.cache import cache  # noqa: PLC0415
+
+    from app import statistics as stats  # noqa: PLC0415
+
+    token_key = f"statistics:warm-token:{user_id}"
+    current_token = cache.get(token_key)
+    if current_token is not None and current_token != self.request.id:
+        logger.debug("Statistics warm-up for user %s superseded, skipping", user_id)
+        return
+
+    User = get_user_model()  # noqa: N806
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return
+
+    stats.get_statistics_context(user, None, None)
+    logger.info("Warmed statistics cache for %s", user)
+
+
 @shared_task(name="Backfill people metadata cache")
 def backfill_people_metadata_cache(progress_every=200):
     """One-time backfill: warm the provider-metadata cache for tracked
