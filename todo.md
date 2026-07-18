@@ -7,10 +7,9 @@
 - [ ] Collection sync identity bugs.
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
-- [ ] faster statistics. Maybe save them in a way ? Also half of them dont load anymore
-- [ ] collection sorting. date by default (Oldest first)
-
----
+- [ ] faster statistics. Maybe save them in a way ? And maybe open the page, add a spinner and load etc. Very slow at the moment.
+- [ ] artists page is empty. Also from an album i should be able to click on the artist and get to that page.
+- [ ] release mail does not show image (For instance movie hope by Na Hong-jin 2026, no img ) and missing a linebreak before "Enjoy your media"
 
 # 🏆 Curated Lists & Awards in a new tab
 

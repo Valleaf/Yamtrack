@@ -1,4 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
+function initYamtrackStatisticsCharts() {
+  // Destroy any charts from a previous HTMX-loaded fragment before
+  // re-initializing, so re-rendering the stats content (e.g. after
+  // changing the date range) doesn't leak Chart.js instances bound to
+  // canvases that no longer exist.
+  if (window.yamtrackCharts) {
+    Object.values(window.yamtrackCharts).forEach(function (chart) {
+      if (chart && typeof chart.destroy === "function") chart.destroy();
+    });
+  }
+
   Chart.register(ChartDataLabels);
 
   // Registry of chart instances keyed by canvas id, plus which stats-tab each
@@ -523,5 +533,12 @@ document.addEventListener("DOMContentLoaded", function () {
       processGroupedBarData(releaseDecadeData),
       groupedBarChartConfig
     );
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initYamtrackStatisticsCharts);
+document.body.addEventListener("htmx:afterSwap", function (evt) {
+  if (evt.detail.target && evt.detail.target.id === "statistics-content-wrapper") {
+    initYamtrackStatisticsCharts();
   }
 });

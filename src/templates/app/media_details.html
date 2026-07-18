@@ -580,7 +580,11 @@
           {% for key, value in media.details.items %}
             <div class="mb-4">
               <h3 class="text-sm font-semibold text-gray-400">{{ key|no_underscore|upper }}</h3>
-              {% if value|is_list %}
+              {% if key == "artists" and media.artist_links %}
+                <p class="text-gray-200">
+                  {% for artist in media.artist_links %}<a href="{% url 'music_artist' artist_id=artist.id name=artist.name|default:'unknown'|slugify|default:'unknown' %}" class="hover:text-indigo-500 hover:underline">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                </p>
+              {% elif value|is_list %}
                 {% for item in value %}<p class="text-gray-200">{{ item|iso_date_format:request.user }}</p>{% endfor %}
               {% else %}
                 <p class="text-gray-200">{{ value|default_if_none:"Unknown"|iso_date_format:request.user }}</p>

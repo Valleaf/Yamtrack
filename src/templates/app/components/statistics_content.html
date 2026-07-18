@@ -1,0 +1,1177 @@
+{% load static %}
+{% load app_tags %}
+
+<div id="statistics-content"
+     class="space-y-8"
+       x-data="{ statsTab: 'overview', selectStatsTab(tab) { this.statsTab = tab; this.$nextTick(() => { window.dispatchEvent(new Event('resize')); if (window.resizeChartsForTab) window.resizeChartsForTab(tab); if (window.showWorldMapForTab) window.showWorldMapForTab(tab); }); } }"
+       x-init="$nextTick(() => { if (window.resizeChartsForTab) window.resizeChartsForTab(statsTab); if (window.showWorldMapForTab) window.showWorldMapForTab(statsTab); })">
+
+    <!-- Top-level Tab Bar -->
+    <div class="flex items-center gap-1 border-b border-gray-700/60 overflow-x-auto">
+      <button @click="selectStatsTab('overview')"
+              :class="statsTab === 'overview' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Overview
+      </button>
+      <button @click="selectStatsTab('activity')"
+              :class="statsTab === 'activity' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Activity
+      </button>
+      <button @click="selectStatsTab('ratings')"
+              :class="statsTab === 'ratings' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Ratings
+      </button>
+      <button @click="selectStatsTab('library')"
+              :class="statsTab === 'library' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        Library
+      </button>
+      <button @click="selectStatsTab('people')"
+              :class="statsTab === 'people' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        People
+      </button>
+      <button @click="selectStatsTab('awards')"
+              :class="statsTab === 'awards' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        🏆 Awards & Lists
+      </button>
+      <button @click="selectStatsTab('bestof')"
+              :class="statsTab === 'bestof' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        ⭐ Best Of
+      </button>
+    </div>
+
+    <div class="space-y-8">
+    <!-- Overview Tab -->
+    <div x-show="statsTab === 'overview'" x-cloak class="space-y-8">
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
+        <div class="bg-indigo-500/15 ring-1 ring-indigo-400/20 p-4 rounded-full mr-4">
+          {% include "app/icons/states/completed.svg" with classes="w-8 h-8 text-indigo-400" %}
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-gray-400">Completed Items</h3>
+          {% if media_count.total %}
+            <p class="text-3xl font-bold tracking-tight text-white">
+              {{ status_distribution.total_completed }} <span class="text-gray-500 text-lg">/ {{ media_count.total }}</span>
+            </p>
+          {% else %}
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
+        <div class="bg-yellow-600/20 p-4 rounded-full mr-4">
+          {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-yellow-400" %}
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-gray-400">Average Rating</h3>
+          {% if score_distribution.total_scored %}
+            <p class="text-3xl font-bold tracking-tight {{ score_distribution.average_score|score_color }}">
+              {{ score_distribution.average_score }} <span class="text-gray-500 text-lg">/ 10</span>
+            </p>
+          {% else %}
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
+        <div class="bg-emerald-600/20 p-4 rounded-full mr-4">
+          {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-emerald-400" %}
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-gray-400">Most Active Day</h3>
+          {% if activity_data.stats.most_active_day %}
+            <p class="text-3xl font-bold tracking-tight text-white">{{ activity_data.stats.most_active_day }}</p>
+            <p class="text-sm text-gray-500">{{ activity_data.stats.most_active_day_percentage }}% of activity</p>
+          {% else %}
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="bg-[#1e2329] rounded-xl p-6 flex items-center ring-1 ring-white/5 shadow-md hover:shadow-lg transition-all duration-200">
+        <div class="bg-red-600/20 p-4 rounded-full mr-4">
+          {% include "app/icons/flame.svg" with classes="w-8 h-8 text-red-400" %}
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-gray-400">Current Streak</h3>
+          {% if activity_data.stats.most_active_day %}
+            <p class="text-3xl font-bold tracking-tight text-white">
+              {{ activity_data.stats.current_streak }} day{{ activity_data.stats.current_streak|pluralize }}
+            </p>
+            <p class="text-sm text-gray-500">
+              Longest: {{ activity_data.stats.longest_streak }} day{{ activity_data.stats.longest_streak|pluralize }}
+            </p>
+          {% else %}
+            <p class="text-3xl font-bold tracking-tight text-white text-gray-500">--</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Extended Statistics Section -->
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-semibold text-white">Extended Statistics</h2>
+        <p class="text-sm text-gray-400">A report-style breakdown of your filtered library.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Completion Rate</h3>
+          {% if extended_statistics.summary.total_items %}
+            <p class="mt-2 text-3xl font-bold">{{ extended_statistics.summary.completion_percentage }}%</p>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ extended_statistics.summary.completed_items }} / {{ extended_statistics.summary.total_items }} completed
+            </p>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Median Rating</h3>
+          {% if extended_statistics.summary.median_score is not None %}
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.median_score|score_color }}">
+              {{ extended_statistics.summary.median_score }} <span class="text-lg text-gray-500">/ 10</span>
+            </p>
+            <p class="mt-1 text-sm text-gray-500">{{ extended_statistics.summary.scored_items }} rated item{{ extended_statistics.summary.scored_items|pluralize }}</p>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Unrated Items</h3>
+          {% if extended_statistics.summary.total_items %}
+            <p class="mt-2 text-3xl font-bold text-white">{{ extended_statistics.summary.unrated_items }}</p>
+            <p class="mt-1 text-sm text-gray-500">Still waiting for a score</p>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Highest Rated</h3>
+          {% if extended_statistics.summary.highest_rated %}
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.highest_rated.score|score_color }}">
+              {{ extended_statistics.summary.highest_rated.formatted_score }}
+            </p>
+            <a href="{{ extended_statistics.summary.highest_rated.item|media_url }}"
+               class="mt-1 block text-sm text-gray-500 hover:text-indigo-400 transition-colors line-clamp-1">
+              {{ extended_statistics.summary.highest_rated.item }}
+            </a>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-5">
+          <h3 class="text-sm font-medium text-gray-400">Lowest Rated</h3>
+          {% if extended_statistics.summary.lowest_rated %}
+            <p class="mt-2 text-3xl font-bold {{ extended_statistics.summary.lowest_rated.score|score_color }}">
+              {{ extended_statistics.summary.lowest_rated.formatted_score }}
+            </p>
+            <a href="{{ extended_statistics.summary.lowest_rated.item|media_url }}"
+               class="mt-1 block text-sm text-gray-500 hover:text-indigo-400 transition-colors line-clamp-1">
+              {{ extended_statistics.summary.lowest_rated.item }}
+            </a>
+          {% else %}
+            <p class="mt-2 text-3xl font-bold text-gray-500">--</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] gap-6">
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
+          <h3 class="text-lg font-semibold mb-4 text-white">By Media Type</h3>
+          {% if extended_statistics.media_type_rows %}
+            <table class="w-full text-sm">
+              <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <th class="pb-3 pr-4 font-medium">Type</th>
+                  <th class="pb-3 px-4 text-right font-medium">Total</th>
+                  <th class="pb-3 px-4 text-right font-medium">Completed</th>
+                  <th class="pb-3 px-4 text-right font-medium">Rated</th>
+                  <th class="pb-3 px-4 text-right font-medium">Average</th>
+                  <th class="pb-3 pl-4 font-medium">Top Rated</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                {% for row in extended_statistics.media_type_rows %}
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="py-3 pr-4 font-medium text-white">{{ row.label }}</td>
+                    <td class="py-3 px-4 text-right text-gray-300">{{ row.total }}</td>
+                    <td class="py-3 px-4 text-right text-gray-300">{{ row.completed }} <span class="text-gray-500">({{ row.completion_percentage }}%)</span></td>
+                    <td class="py-3 px-4 text-right text-gray-300">{{ row.scored }} <span class="text-gray-500">({{ row.rated_percentage }}%)</span></td>
+                    <td class="py-3 px-4 text-right">
+                      {% if row.average_score is not None %}<span class="{{ row.average_score|score_color }}">{{ row.average_score }}</span>{% else %}<span class="text-gray-500">--</span>{% endif %}
+                    </td>
+                    <td class="py-3 pl-4 text-gray-300">
+                      {% if row.best_media %}
+                        <a href="{{ row.best_media.item|media_url }}"
+                           class="line-clamp-1 transition-colors hover:text-indigo-400">{{ row.best_media.item }}</a>
+                      {% else %}
+                        <span class="text-gray-500">--</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="py-10 text-center text-gray-400">No media data available for this range.</p>
+          {% endif %}
+        </div>
+
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
+        <h3 class="text-lg font-semibold mb-4 text-white">By Year</h3>
+        {% if extended_statistics.year_rows %}
+          <table class="w-full text-sm">
+            <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+              <tr class="hover:bg-white/[0.02] transition-colors">
+                <th class="pb-3 pr-4 font-medium">Year</th>
+                <th class="pb-3 px-4 text-right font-medium">Started</th>
+                <th class="pb-3 pl-4 text-right font-medium">Completed</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              {% for row in extended_statistics.year_rows %}
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="py-3 pr-4 font-medium text-white">{{ row.year }}</td>
+                  <td class="py-3 px-4 text-right text-gray-300">{{ row.started }}</td>
+                  <td class="py-3 pl-4 text-right text-gray-300">{{ row.completed }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="py-10 text-center text-gray-400">Add start or finish dates to see yearly activity.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if extended_statistics.source_rows %}
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 overflow-x-auto">
+      <h3 class="text-lg font-semibold mb-4 text-white">By Source</h3>
+      <table class="w-full text-sm">
+        <thead class="text-left text-gray-500 uppercase tracking-wide border-b border-white/5">
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <th class="pb-3 pr-4 font-medium">Source</th>
+            <th class="pb-3 px-4 text-right font-medium">Items</th>
+            <th class="pb-3 px-4 text-right font-medium">Share</th>
+            <th class="pb-3 pl-4 text-right font-medium">Average</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          {% for row in extended_statistics.source_rows %}
+            <tr class="hover:bg-white/[0.02] transition-colors">
+              <td class="py-3 pr-4 font-medium text-white">{{ row.source }}</td>
+              <td class="py-3 px-4 text-right text-gray-300">{{ row.count }}</td>
+              <td class="py-3 px-4 text-right text-gray-300">{{ row.percentage }}%</td>
+              <td class="py-3 pl-4 text-right">
+                {% if row.average_score is not None %}<span class="{{ row.average_score|score_color }}">{{ row.average_score }}</span>{% else %}<span class="text-gray-500">--</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    </div>{# end tab content sections #}
+    </div>{# end overview tab #}
+
+    <!-- Year and Decade Activity -->
+    {% if year_chart_data or decade_chart_data %}
+    <div x-show="statsTab === 'activity'" x-cloak class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Year Activity -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Year Activity</h2>
+        <p class="text-sm text-gray-400 mb-4">Items started and completed per year</p>
+        {% if year_chart_data %}
+          <div class="h-72">
+            <canvas id="yearActivityChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Add start or finish dates to see yearly activity.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Decade Activity -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Decade Activity</h2>
+        <p class="text-sm text-gray-400 mb-4">Items started and completed per decade</p>
+        {% if decade_chart_data %}
+          <div class="h-72">
+            <canvas id="decadeActivityChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Add start or finish dates to see decade activity.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Media by Release Year / Decade -->
+    {% if release_year_chart_data or release_decade_chart_data %}
+    <div x-show="statsTab === 'library'" x-cloak class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Release Year -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Media by Release Year</h2>
+        <p class="text-sm text-gray-400 mb-4">Items in your library by their original release year</p>
+        {% if release_year_chart_data %}
+          <div class="h-72">
+            <canvas id="releaseYearChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Visit media detail pages to populate release year data.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Release Decade -->
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-1">Media by Release Decade</h2>
+        <p class="text-sm text-gray-400 mb-4">Items in your library grouped by decade</p>
+        {% if release_decade_chart_data %}
+          <div class="h-72">
+            <canvas id="releaseDecadeChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/calendar.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <p class="text-gray-400 text-center max-w-md">Visit media detail pages to populate release decade data.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Activity History Section -->
+    <div x-show="statsTab === 'activity'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
+      <h2 class="text-xl font-semibold mb-4 text-center">Activity History</h2>
+      <div class="overflow-x-auto flex flex-col justify-center"
+           x-data="{ graphTooWide: false }"
+           x-init="$nextTick(() => { const graphWidth = $refs.graphContainer.scrollWidth; const parentWidth = $el.clientWidth; graphTooWide = graphWidth > parentWidth; })"
+           :class="graphTooWide ? 'items-start' : 'items-center'">
+
+        <div class="p-4" x-ref="graphContainer">
+          <!-- Months row -->
+          <div class="flex mb-2 pl-[36.68px]">
+            {% for month, week_count in activity_data.months %}
+              <div class="text-xs text-gray-400"
+                   style="width: calc({{ week_count }} * 1rem + ({{ week_count }} * 0.25rem))">{{ month }}</div>
+            {% endfor %}
+          </div>
+
+          <!-- Graph wrapper -->
+          <div class="flex">
+            <!-- Weekday labels -->
+            <div class="flex flex-col justify-between pr-2 text-sm text-gray-400">
+              <div class="h-4 flex items-center">Mon</div>
+              <div class="h-4"></div>
+              <div class="h-4 flex items-center">Wed</div>
+              <div class="h-4"></div>
+              <div class="h-4 flex items-center">Fri</div>
+              <div class="h-4"></div>
+              <div class="h-4 flex items-center">Sun</div>
+            </div>
+
+            <!-- Weeks grid -->
+            <div class="flex gap-1">
+              {% for week in activity_data.calendar_weeks %}
+                <div class="flex flex-col gap-1">
+                  {% for day in week %}
+                    <div class="w-4 h-4 rounded-sm transition-colors duration-200 hover:scale-125 hover:ring-2 hover:ring-white/40 transition-all duration-150 {% if day.level == 0 %}bg-[#2f353e]{% elif day.level == 1 %}bg-indigo-700{% elif day.level == 2 %}bg-indigo-600{% elif day.level == 3 %}bg-indigo-500{% elif day.level == 4 %}bg-indigo-400{% endif %}"
+                         title="{{ day.date }}: {{ day.count }} activit{{ day.count|pluralize:"y,ies" }}"></div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex items-center gap-2 pl-6 text-xs text-gray-400"
+             :class="graphTooWide ? 'mb-5 mt-2' : 'mt-4'">
+          <span>Less</span>
+          <div class="w-4 h-4 rounded-sm bg-[#2f353e]"></div>
+          <div class="w-4 h-4 rounded-sm bg-indigo-700"></div>
+          <div class="w-4 h-4 rounded-sm bg-indigo-600"></div>
+          <div class="w-4 h-4 rounded-sm bg-indigo-500"></div>
+          <div class="w-4 h-4 rounded-sm bg-indigo-400"></div>
+          <span>More</span>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Rating Bands</h2>
+      {% if extended_statistics.summary.scored_items %}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {% for band in extended_statistics.rating_bands %}
+            <div class="rounded-lg bg-[#2a2f35] ring-1 ring-white/5 p-4">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <h3 class="text-sm font-medium text-gray-300">{{ band.label }}</h3>
+                  <p class="text-xs text-gray-500">{{ band.range }}</p>
+                </div>
+                <span class="text-xl font-bold text-white">{{ band.count }}</span>
+              </div>
+              <div class="mt-3 h-2 rounded-full bg-[#1e2329] overflow-hidden">
+                <div class="h-full {{ band.color }}" style="width: {{ band.bar_percentage }}%"></div>
+              </div>
+              <p class="mt-2 text-xs text-gray-500">{{ band.percentage }}% of rated items</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="py-8 text-center text-gray-400">Rate media items to see how your scores cluster.</p>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Media Type Distribution Section -->
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Media Type Distribution</h2>
+
+        {% if media_type_distribution.labels %}
+          <div class="h-80 flex justify-center items-center">
+            <canvas id="mediaTypeChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/piechart.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <h3 class="text-lg font-medium mb-2">No media types to display</h3>
+            <p class="text-gray-400 text-center max-w-md">Add different types of media to see their distribution.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Status Distribution Section -->
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Status Distribution</h2>
+
+        {% if status_pie_chart_data.labels %}
+          <div class="h-80 flex justify-center items-center">
+            <canvas id="statusChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <h3 class="text-lg font-medium mb-2">No status data to display</h3>
+            <p class="text-gray-400 text-center max-w-md">Track media items with different statuses to see their distribution.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Status Distribution by Media Type Section -->
+      <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Status Distribution by Media Type</h2>
+
+        {% if media_type_distribution.labels %}
+          <div class="h-80 flex justify-center items-center">
+            <canvas id="statusStackedChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/bars-pyramid.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <h3 class="text-lg font-medium mb-2">No data available</h3>
+            <p class="text-gray-400 text-center max-w-md">
+              Add media items with different statuses to see their distribution by type.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Score Distribution by Media Type Section -->
+      <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Score Distribution by Media Type</h2>
+
+        {% if score_distribution.total_scored %}
+          <div class="h-80 flex justify-center items-center">
+            <canvas id="scoreStackedChart"></canvas>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-16">
+            <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
+            </div>
+            <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
+            <p class="text-gray-400 text-center max-w-md">Rate your media items to see score distribution statistics.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Progress Distribution Section -->
+    <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Completion Progress</h2>
+      
+      {% if progress_distribution %}
+        <div class="space-y-3">
+          {% for progress_label, count in progress_distribution.items %}
+            {% if count > 0 %}
+              <div class="space-y-1">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-300">{{ progress_label }}</span>
+                  <span class="text-gray-400">{{ count }} item{{ count|pluralize }}</span>
+                </div>
+                <div class="h-2 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden">
+                  {% if progress_label == "Not Started" %}
+                    <div class="h-full bg-gray-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "1-25%" %}
+                    <div class="h-full bg-red-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "26-50%" %}
+                    <div class="h-full bg-orange-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "51-75%" %}
+                    <div class="h-full bg-yellow-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% elif progress_label == "76-99%" %}
+                    <div class="h-full bg-emerald-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% else %}
+                    <div class="h-full bg-indigo-500" style="width: {% widthratio count media_count.total 100 %}%"></div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/bars-increasing.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No progress data</h3>
+          <p class="text-gray-400 text-center max-w-md">Track your media to see completion progress statistics.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Genre Distribution Section -->
+    <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6"
+         x-show="statsTab === 'library'" x-cloak x-data="genreTabs()" x-init="init()">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Genre Distribution</h2>
+        <p class="text-sm text-gray-400">Most common genres across your tracked media</p>
+      </div>
+
+      {% if genre_distribution %}
+        <!-- Media-type tab buttons -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
+          {% for media_type, info in genre_distribution.items %}
+            <button data-genre-tab="{{ media_type }}"
+                    @click="selectTab('{{ media_type }}')"
+                    :class="activeTab === '{{ media_type }}'
+                              ? 'bg-indigo-600 text-white border-indigo-600'
+                              : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border cursor-pointer">
+              {{ info.label }}
+            </button>
+          {% endfor %}
+        </div>
+
+        <!-- Genre bars per media type -->
+        {% for media_type, info in genre_distribution.items %}
+          <div x-show="activeTab === '{{ media_type }}'" x-cloak>
+            <div class="flex items-center gap-3 mb-3 text-xs text-gray-500 uppercase tracking-wide">
+              <div class="flex-1 text-right">Votes</div>
+              <div class="w-32 shrink-0 text-center">Genre</div>
+              <div class="flex-1 text-left">Avg. Score</div>
+            </div>
+            <div class="space-y-2">
+              {% for entry in info.entries %}
+                <div class="flex items-center gap-3">
+                  <!-- Votes: number + bar anchored toward the genre label -->
+                  <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                    <span class="text-sm text-gray-400 w-10 text-right shrink-0">{{ entry.count }}</span>
+                    <div class="h-2 flex-1 min-w-0 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden flex justify-end">
+                      <div class="h-full rounded-full transition-all duration-500"
+                           style="width: {{ entry.bar_pct }}%; background-color: {{ info.color }};"></div>
+                    </div>
+                  </div>
+
+                  <!-- Genre label -->
+                  <div class="w-32 shrink-0 text-center">
+                    <span class="text-sm text-gray-200 truncate block">{{ entry.name }}</span>
+                  </div>
+
+                  <!-- Average score: bar + number -->
+                  <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <div class="h-2 flex-1 min-w-0 bg-[#2a2f35] ring-1 ring-white/5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                           style="width: {{ entry.avg_bar_pct }}%; background-color: {{ info.color }};"></div>
+                    </div>
+                    <span class="text-sm text-gray-400 w-10 shrink-0">{% if entry.average_score is not None %}{{ entry.average_score }}{% else %}--{% endif %}</span>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/piechart.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No genre data available</h3>
+          <p class="text-gray-400 text-center max-w-md">Genre metadata will appear here as you track media from supported providers.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <script>
+      function genreTabs() {
+        return {
+          activeTab: null,
+          init() {
+            if (!this.activeTab) {
+              const firstBtn = this.$el.querySelector("[data-genre-tab]");
+              if (firstBtn) {
+                this.activeTab = firstBtn.dataset.genreTab;
+              }
+            }
+          },
+          selectTab(tab) {
+            this.activeTab = tab;
+          },
+        };
+      }
+    </script>
+
+    <!-- World Map by Media Type Section -->
+    <div x-show="statsTab === 'library'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Media by Country</h2>
+        <p class="text-sm text-gray-400">Distribution of media by production country</p>
+      </div>
+
+      {% if country_distribution %}
+        <!-- Media Type Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
+          {% for media_type, countries in country_distribution.items %}
+            <button data-media-type-btn="{{ media_type }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-600 hover:border-indigo-500 hover:text-indigo-400">
+              {{ media_type|upper }}
+            </button>
+          {% endfor %}
+        </div>
+
+        <!-- World Map Container -->
+        <div id="world-map-container" class="space-y-4">
+          {% for media_type, countries in country_distribution.items %}
+            <div id="map-{{ media_type }}" class="world-map-view">
+              <!-- Map will be rendered here by JavaScript -->
+            </div>
+            <!-- Hidden JSON data for each media type -->
+            <script id="country-data-{{ media_type }}" type="application/json">
+              {{ countries|to_json }}
+            </script>
+            <div id="country-list-{{ media_type }}" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {% for country, country_info in countries.items %}
+                <div class="flex items-center justify-between gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
+                  <span class="truncate text-gray-300">{{ country }}</span>
+                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs text-gray-400">{{ country_info.count }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7m0 0l6-3m-6 3v13m6-13l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.553.894L15 13"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium mb-2">No geographic data available</h3>
+          <p class="text-gray-400 text-center max-w-md">Country metadata will appear here as media is tracked from providers.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Top People Section -->
+    {% if people_stats.directors or people_stats.actors or people_stats.artists %}
+    <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Top People</h2>
+        <p class="text-sm text-gray-400">Most frequent directors, actors and artists in your library</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Directors -->
+        {% if people_stats.directors %}
+        <div>
+          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Directors</h3>
+          <div class="space-y-2">
+            {% for person in people_stats.directors %}
+            <a href="{% url 'movie_director' person.id person.name|slug %}"
+               class="flex items-center gap-3 group py-1">
+              {% if person.image %}
+                <img src="{{ person.image }}" alt="{{ person.name }}"
+                     class="w-8 h-8 rounded-full object-cover bg-[#2a2f35] shrink-0">
+              {% else %}
+                <div class="w-8 h-8 rounded-full bg-[#2a2f35] shrink-0 flex items-center justify-center text-gray-500 text-xs font-bold">
+                  {{ person.name|first|upper }}
+                </div>
+              {% endif %}
+              <span class="text-sm text-gray-300 group-hover:text-indigo-400 transition-colors flex-1 truncate">{{ person.name }}</span>
+              <span class="text-xs font-medium text-gray-500 shrink-0 bg-[#2a2f35] px-2 py-0.5 rounded">{{ person.count }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Actors -->
+        {% if people_stats.actors %}
+        <div>
+          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Actors</h3>
+          <div class="space-y-2">
+            {% for person in people_stats.actors %}
+            <div class="flex items-center gap-3 py-1">
+              {% if person.image %}
+                <img src="{{ person.image }}" alt="{{ person.name }}"
+                     class="w-8 h-8 rounded-full object-cover bg-[#2a2f35] shrink-0">
+              {% else %}
+                <div class="w-8 h-8 rounded-full bg-[#2a2f35] shrink-0 flex items-center justify-center text-gray-500 text-xs font-bold">
+                  {{ person.name|first|upper }}
+                </div>
+              {% endif %}
+              <span class="text-sm text-gray-300 flex-1 truncate">{{ person.name }}</span>
+              <span class="text-xs font-medium text-gray-500 shrink-0 bg-[#2a2f35] px-2 py-0.5 rounded">{{ person.count }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Artists -->
+        {% if people_stats.artists %}
+        <div>
+          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Artists</h3>
+          <div class="space-y-2">
+            {% for person in people_stats.artists %}
+            <a href="{% url 'music_artist' person.id person.name|slug %}"
+               class="flex items-center gap-3 group py-1">
+              <div class="w-8 h-8 rounded-full bg-[#2a2f35] shrink-0 flex items-center justify-center text-gray-500 text-xs font-bold">
+                {{ person.name|first|upper }}
+              </div>
+              <span class="text-sm text-gray-300 group-hover:text-indigo-400 transition-colors flex-1 truncate">{{ person.name }}</span>
+              <span class="text-xs font-medium text-gray-500 shrink-0 bg-[#2a2f35] px-2 py-0.5 rounded">{{ person.count }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+    {% else %}
+    <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
+      <h2 class="text-xl font-semibold mb-2">Top People</h2>
+      <p class="text-gray-400 text-sm">Director, actor, and artist stats will appear here once provider metadata has been cached.</p>
+    </div>
+    {% endif %}
+
+    <!-- Top Rated Media Section -->
+    <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Top Rated Media</h2>
+
+      {% if top_rated %}
+        <div class="media-grid">
+          {% for media in top_rated %}
+            {% include "app/components/media_card.html" with media=media item=media.item title=media.item from_grid=True secondary_color=True %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No ratings yet</h3>
+          <p class="text-gray-400 text-center max-w-md">Rate your media items to see score distribution statistics.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Media Timeline Section -->
+    <div x-show="statsTab === 'activity'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6 max-w-[calc(100svw-4rem)]">
+      <div class="flex items-center justify-between mb-6 md:mb-10">
+        <h2 class="text-xl font-semibold">Media Timeline</h2>
+        <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">All Time</span>
+      </div>
+
+      {% if timeline %}
+        <div class="relative flex justify-center">
+          <div class="absolute top-0 bottom-0 w-px bg-indigo-500/50 hidden md:block"></div>
+
+          <div class="w-full space-y-10 md:space-y-20">
+            {% for month_year, media_list in timeline.items %}
+              <div class="relative">
+
+                <h3 class="text-lg font-medium text-center md:hidden md:text-left md:absolute md:top-0 md:left-1/2 md:transform md:translate-y-0 md:-translate-x-1/2 md:whitespace-nowrap">
+                  {{ month_year }}
+                </h3>
+
+                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10 hidden md:block">
+                  <div class="w-3 h-3 rounded-full bg-indigo-500 mx-auto mb-2"></div>
+                  <div class="absolute top-1.5 left-1/2 flex -translate-y-1/2">
+                    {% if forloop.counter|divisibleby:2 %}
+                      {# to the left #}
+                      <div class="h-px w-40 bg-indigo-500/50 transform -translate-x-full"></div>
+                      <div class="absolute -top-7 right-46 whitespace-nowrap">
+                        <h3 class="text-lg font-medium">{{ month_year }}</h3>
+                      </div>
+                    {% else %}
+                      {# to the right #}
+                      <div class="h-px w-40 bg-indigo-500/50"></div>
+                      <div class="absolute -top-7 left-4 whitespace-nowrap">
+                        <h3 class="text-lg font-medium">{{ month_year }}</h3>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 md:w-[calc(50%-2rem)] lg:w-[calc(50%-1rem)] {% if forloop.counter|divisibleby:2 %}md:mr-auto md:ml-0{% else %}md:ml-auto md:mr-0{% endif %}">
+                  {% for media in media_list %}
+                    <div class="bg-[#2a2f35] ring-1 ring-white/5 p-4 rounded-lg hover:ring-2 hover:ring-indigo-500 transition-all duration-200">
+                      <div class="flex items-start gap-4">
+                        <div class="shrink-0 order-0">
+                          <a href="{{ media.item|media_url }}">
+                            <img alt="{{ media.item }}"
+                                 class="lazyload w-16 h-24 rounded-md bg-[#3e454d] {% if media.item.image != IMG_NONE %}object-cover{% endif %} hover:opacity-80 transition-opacity"
+                                 src="{{ IMG_NONE }}"
+                                 data-src="{{ media.item.image }}">
+                          </a>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <h4 class="font-medium">
+                            <a href="{{ media.item|media_url }}"
+                               class="hover:text-indigo-400 transition-colors line-clamp-2">{{ media.item }}</a>
+                          </h4>
+                          <div class="text-sm text-gray-400 mt-1">
+                            <p>
+                              {% if media.start_date %}{{ media.start_date|datetime_format:user }}{% endif %}
+                              {% if media.start_date and media.end_date %}-{% endif %}
+                              {% if media.end_date %}{{ media.end_date|datetime_format:user }}{% endif %}
+                            </p>
+                          </div>
+                          {% if media.score|show_media_score:user %}
+                            <div class="flex items-center text-sm text-yellow-400 mt-2">
+                              {% include "app/icons/star.svg" with classes="w-4 h-4 mr-1 fill-current" %}
+                              <span>{{ media.formatted_score }}</span>
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/clock.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">Your timeline is empty</h3>
+          <p class="text-gray-400 text-center max-w-md">Consume media items to see them appear on your timeline.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    </div>{# end library/activity/ratings/people tab siblings #}
+
+    <!-- Awards & Lists Tab -->
+    <div x-show="statsTab === 'awards'" x-cloak class="space-y-8">
+
+      <!-- List Progress -->
+      {% if list_progress %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold">List Progress</h2>
+          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Letterboxd · Sight & Sound · 1001 Albums</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+          {% for entry in list_progress %}
+            <button type="button"
+                    data-list-slug="{{ entry.slug }}"
+                    hx-get="{% url 'list_progress_detail' entry.slug %}"
+                    hx-target="#list-detail-panel"
+                    hx-swap="innerHTML"
+                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+              <div class="relative w-28 h-28">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"
+                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                </div>
+              </div>
+              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+            </button>
+          {% endfor %}
+        </div>
+        <div id="list-detail-panel"></div>
+      </div>
+      <script>
+        (function () {
+          var panel = document.getElementById("list-detail-panel");
+          if (!panel) return;
+          function clearActiveListButtons() {
+            document.querySelectorAll("[data-list-slug]").forEach(function (btn) {
+              btn.classList.remove("ring-sky-400/40", "bg-white/5");
+            });
+          }
+          window.closeListDetail = function () {
+            panel.innerHTML = "";
+            delete panel.dataset.openSlug;
+            clearActiveListButtons();
+          };
+          document.body.addEventListener("htmx:beforeRequest", function (evt) {
+            var btn = evt.detail.elt;
+            if (!btn || !btn.dataset || !btn.dataset.listSlug) return;
+            if (panel.dataset.openSlug === btn.dataset.listSlug) {
+              evt.preventDefault();
+              window.closeListDetail();
+            }
+          });
+          document.body.addEventListener("htmx:afterSwap", function (evt) {
+            if (evt.detail.target !== panel) return;
+            var btn = evt.detail.elt;
+            var slug = btn && btn.dataset ? btn.dataset.listSlug : null;
+            clearActiveListButtons();
+            if (slug) {
+              panel.dataset.openSlug = slug;
+              btn.classList.add("ring-sky-400/40", "bg-white/5");
+            }
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        })();
+      </script>
+      {% else %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
+        <p class="text-gray-400 text-sm">No curated lists configured yet. Add TMDB IDs to <code class="text-indigo-400">external_lists_data.py</code>.</p>
+      </div>
+      {% endif %}
+
+      <!-- Awards Progress -->
+      {% if awards_progress %}
+      <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold">Awards Progress</h2>
+          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Óscars · César · Cannes · GOTY</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+          {% for entry in awards_progress %}
+            <button type="button"
+                    data-award-slug="{{ entry.slug }}"
+                    hx-get="{% url 'award_progress_detail' entry.slug %}"
+                    hx-target="#award-detail-panel"
+                    hx-swap="innerHTML"
+                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+              <div class="relative w-28 h-28">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"
+                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                </div>
+              </div>
+              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+            </button>
+          {% endfor %}
+        </div>
+        <div id="award-detail-panel"></div>
+      </div>
+      <script>
+        (function () {
+          var panel = document.getElementById("award-detail-panel");
+          if (!panel) return;
+          function clearActiveButtons() {
+            document.querySelectorAll("[data-award-slug]").forEach(function (btn) {
+              btn.classList.remove("ring-indigo-400/40", "bg-white/5");
+            });
+          }
+          window.closeAwardDetail = function () {
+            panel.innerHTML = "";
+            delete panel.dataset.openSlug;
+            clearActiveButtons();
+          };
+          document.body.addEventListener("htmx:beforeRequest", function (evt) {
+            var btn = evt.detail.elt;
+            if (!btn || !btn.dataset || !btn.dataset.awardSlug) return;
+            if (panel.dataset.openSlug === btn.dataset.awardSlug) {
+              evt.preventDefault();
+              window.closeAwardDetail();
+            }
+          });
+          document.body.addEventListener("htmx:afterSwap", function (evt) {
+            if (evt.detail.target !== panel) return;
+            var btn = evt.detail.elt;
+            var slug = btn && btn.dataset ? btn.dataset.awardSlug : null;
+            clearActiveButtons();
+            if (slug) {
+              panel.dataset.openSlug = slug;
+              btn.classList.add("ring-indigo-400/40", "bg-white/5");
+            }
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        })();
+      </script>
+      {% endif %}
+
+    </div>{# end awards tab #}
+
+    <!-- Best Of Tab -->
+    <div x-show="statsTab === 'bestof'" x-cloak
+         class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6"
+         x-data="personalBest()" x-init="init()">
+
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Personal Best</h2>
+        <p class="text-sm text-gray-400">Your top 10 rated media per type, grouped by release year or decade</p>
+      </div>
+
+      {% if personal_best.media_types %}
+        <!-- Granularity + Period + Media Type controls -->
+        <div class="flex flex-wrap items-center gap-4 mb-6 border-b border-gray-700 pb-4">
+          <!-- Year / Decade toggle -->
+          <div class="flex rounded-lg ring-1 ring-white/10 overflow-hidden">
+            <button @click="setGranularity('year')"
+                    :class="granularity === 'year' ? 'bg-indigo-600 text-white' : 'bg-[#2a2f35] text-gray-300 hover:text-white'"
+                    class="px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer">Year</button>
+            <button @click="setGranularity('decade')"
+                    :class="granularity === 'decade' ? 'bg-indigo-600 text-white' : 'bg-[#2a2f35] text-gray-300 hover:text-white'"
+                    class="px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer">Decade</button>
+          </div>
+
+          <!-- Period select -->
+          <select x-model="selectedPeriod"
+                  class="bg-[#2a2f35] ring-1 ring-white/10 text-gray-200 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-indigo-500">
+            <template x-for="period in periods" :key="period">
+              <option :value="period" x-text="granularity === 'decade' ? period + 's' : period"></option>
+            </template>
+          </select>
+
+          <!-- Media type filter -->
+          <div class="flex flex-wrap gap-2">
+            <button @click="activeMediaType = 'all'"
+                    :class="activeMediaType === 'all' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border cursor-pointer">All</button>
+            {% for media_type, label in personal_best.media_types %}
+              <button @click="activeMediaType = '{{ media_type }}'"
+                      :class="activeMediaType === '{{ media_type }}' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-300 border-gray-600 hover:border-indigo-500 hover:text-indigo-400'"
+                      class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border cursor-pointer">{{ label }}</button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Year periods -->
+        {% for entry in personal_best.year_periods %}
+          <div x-show="granularity === 'year' && String(selectedPeriod) === '{{ entry.period }}'" x-cloak class="space-y-6">
+            {% for group in entry.groups %}
+              <div x-show="activeMediaType === 'all' || activeMediaType === '{{ group.media_type }}'" x-cloak>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">{{ group.label }}</h3>
+                <div class="media-grid">
+                  {% for media in group.media_list %}
+                    {% include "app/components/media_card.html" with media=media item=media.item title=media.item from_grid=True secondary_color=True %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <!-- Decade periods -->
+        {% for entry in personal_best.decade_periods %}
+          <div x-show="granularity === 'decade' && String(selectedPeriod) === '{{ entry.period }}'" x-cloak class="space-y-6">
+            {% for group in entry.groups %}
+              <div x-show="activeMediaType === 'all' || activeMediaType === '{{ group.media_type }}'" x-cloak>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">{{ group.label }}</h3>
+                <div class="media-grid">
+                  {% for media in group.media_list %}
+                    {% include "app/components/media_card.html" with media=media item=media.item title=media.item from_grid=True secondary_color=True %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="bg-[#2a2f35] ring-1 ring-white/5 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            {% include "app/icons/ribbon.svg" with classes="w-8 h-8 text-gray-400" %}
+          </div>
+          <h3 class="text-lg font-medium mb-2">No rated media with a known release year</h3>
+          <p class="text-gray-400 text-center max-w-md">Rate media items and make sure their release year is populated to see your personal bests here.</p>
+        </div>
+      {% endif %}
+    </div>{# end best of tab #}
+
+    <script>
+      function personalBest() {
+        return {
+          granularity: 'year',
+          periods: [],
+          selectedPeriod: null,
+          activeMediaType: 'all',
+          yearPeriods: [{% for entry in personal_best.year_periods %}'{{ entry.period }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+          decadePeriods: [{% for entry in personal_best.decade_periods %}'{{ entry.period }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+          init() {
+            this.setGranularity('year');
+          },
+          setGranularity(g) {
+            this.granularity = g;
+            this.periods = g === 'year' ? this.yearPeriods : this.decadePeriods;
+            if (this.periods.length) {
+              this.selectedPeriod = this.periods[0];
+            }
+          },
+        };
+      }
+    </script>
+
+  </div>{# end outer space-y-8 #}
+
+<!-- JSON data for charts -->
+{{ media_type_distribution|json_script:"media_type_distribution" }}
+{{ status_pie_chart_data|json_script:"status_pie_chart_data" }}
+{{ status_distribution|json_script:"status_distribution" }}
+{{ score_distribution|json_script:"score_distribution" }}
+{% if year_chart_data %}{{ year_chart_data|json_script:"year_chart_data" }}{% endif %}
+{% if decade_chart_data %}{{ decade_chart_data|json_script:"decade_chart_data" }}{% endif %}
+{% if release_year_chart_data %}{{ release_year_chart_data|json_script:"release_year_chart_data" }}{% endif %}
+{% if release_decade_chart_data %}{{ release_decade_chart_data|json_script:"release_decade_chart_data" }}{% endif %}

@@ -31,29 +31,29 @@ You can try the app at [yamtrack.fuzzygrim.com](https://yamtrack.fuzzygrim.com) 
 
 ## 📱 Screenshots
 
-| Homepage                                                                                       | Calendar                                                                                    |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/homepage.png?v2" alt="Homepage" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/calendar.png" alt="calendar" /> |
+| Homepage | Calendar |
+| -------- | -------- |
+|          |          |
 
-| Media List Grid                                                                                    | Media List Table                                                                                     |
-| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/medialist_grid.png" alt="List Grid" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/medialist_table.png" alt="List Table" /> |
+| Media List Grid | Media List Table |
+| --------------- | ---------------- |
+|                 |                  |
 
-| Media Details                                                                                         | Tracking                                                                                    |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/media_details.png" alt="Media Details" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/tracking.png" alt="Tracking" /> |
+| Media Details | Tracking |
+| ------------- | -------- |
+|               |          |
 
-| Season Details                                                                                          | Tracking Episodes                                                                                            |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/season_details.png" alt="Season Details" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/tracking_episode.png" alt="Tracking Episodes" /> |
+| Season Details | Tracking Episodes |
+| -------------- | ----------------- |
+|                |                   |
 
-| Lists                                                                                 | Statistics                                                                                      |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/lists.png" alt="Lists" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/statistics.png" alt="Statistics" /> |
+| Lists | Statistics |
+| ----- | ---------- |
+|       |            |
 
-| Create Manual Entries                                                                                         | Import Data                                                                                       |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/create_custom.png" alt="Create Manual Entries" /> | <img src="https://cdn.fuzzygrim.com/file/fuzzygrim/yamtrack/import_data.png" alt="Import Data" /> |
+| Create Manual Entries | Import Data |
+| --------------------- | ----------- |
+|                       |             |
 
 ## 🐳 Installing with Docker
 

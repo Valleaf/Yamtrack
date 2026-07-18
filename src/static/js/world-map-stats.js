@@ -272,7 +272,7 @@
     document.head.appendChild(s);
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  function initYamtrackWorldMapStats() {
     var mediaTypeButtons = document.querySelectorAll('[data-media-type-btn]');
     var worldMapContainer = document.getElementById('world-map-container');
 
@@ -341,5 +341,12 @@
         if (activeMediaType) showMap(activeMediaType);
       };
     });
+  }
+
+  document.addEventListener('DOMContentLoaded', initYamtrackWorldMapStats);
+  document.body.addEventListener('htmx:afterSwap', function (evt) {
+    if (evt.detail.target && evt.detail.target.id === 'statistics-content-wrapper') {
+      initYamtrackWorldMapStats();
+    }
   });
 })();

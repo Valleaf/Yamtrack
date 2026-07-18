@@ -609,7 +609,7 @@ def movie_director_filmography(request, director_id):
 
 
 @require_GET
-def music_artist(request, artist_id):
+def music_artist(request, artist_id, name):  # noqa: ARG001 name for URL
     """Return the MusicBrainz artist page."""
     from app.providers import musicbrainz
     artist_data = musicbrainz.artist(artist_id)
@@ -827,7 +827,7 @@ def music_artist_bio(request, artist_id):
 def music_artists(request):
     """List view: tracked music grouped by artist."""
     persons, total_count, cached_count = _get_media_by_person(
-        request.user, MediaTypes.MUSIC.value, "artists", Sources.MUSICBRAINZ.value
+        request.user, MediaTypes.MUSIC.value, "artist_links", Sources.MUSICBRAINZ.value
     )
     artist_list = _build_person_list(persons, total_count)
     return render(request, "app/persons_list.html", {
@@ -1885,40 +1885,66 @@ def delete_history_record(request, media_type, history_id):
         return HttpResponse("Record not found", status=404)
 
 
-@require_GET
-def statistics(request):
-    """Return the statistics page."""
-    # Set default date range to last year
-    timeformat = "%Y-%m-%d"
-    today = timezone.localdate()
-    one_year_ago = today.replace(year=today.year - 1)
-
-    # Get date parameters with defaults
-    start_date_str = request.GET.get("start-date") or one_year_ago.strftime(timeformat)
-    end_date_str = request.GET.get("end-date") or today.strftime(timeformat)
+def _parse_statistics_date_range(request):
+    """Parse start-date/end-date query params, defaulting to All Time."""
+    start_date_str = request.GET.get("start-date") or "all"
+    end_date_str = request.GET.get("end-date") or "all"
 
     if start_date_str == "all" and end_date_str == "all":
-        start_date = None
-        end_date = None
-    else:
-        start_date = parse_date(start_date_str)
-        end_date = parse_date(end_date_str)
+        return None, None
 
-        if start_date and end_date:
-            # Convert to datetime with timezone awareness
-            start_date = timezone.make_aware(
-                datetime.combine(start_date, datetime.min.time()),
-            )
+    start_date = parse_date(start_date_str)
+    end_date = parse_date(end_date_str)
 
-            # End date should be end of day
-            end_date = timezone.make_aware(
-                datetime.combine(end_date, datetime.max.time()),
-            )
+    if start_date and end_date:
+        # Convert to datetime with timezone awareness
+        start_date = timezone.make_aware(
+            datetime.combine(start_date, datetime.min.time()),
+        )
 
-    context = {**stats.get_statistics_context(request.user, start_date, end_date)}
-    context["date_format_values"] = DateFormatChoices.values
+        # End date should be end of day
+        end_date = timezone.make_aware(
+            datetime.combine(end_date, datetime.max.time()),
+        )
+
+    return start_date, end_date
+
+
+@require_GET
+def statistics(request):
+    """Return the statistics page shell.
+
+    The shell renders immediately without touching the (potentially slow,
+    cache-cold) statistics computation -- the actual content is loaded
+    right after via HTMX from `statistics_content`, so a cold cache shows
+    a spinner instead of blocking the whole page load.
+    """
+    start_date, end_date = _parse_statistics_date_range(request)
+
+    context = {
+        "date_format_values": DateFormatChoices.values,
+        "start_date": start_date,
+        "end_date": end_date,
+        "start_date_param": request.GET.get("start-date") or "all",
+        "end_date_param": request.GET.get("end-date") or "all",
+    }
 
     return render(request, "app/statistics.html", context)
+
+
+@require_GET
+def statistics_content(request):
+    """HTMX endpoint: the actual (potentially expensive) statistics content.
+
+    Loaded by the statistics page shell right after initial render, so a
+    cache-cold computation shows a spinner in place instead of blocking
+    the whole page.
+    """
+    start_date, end_date = _parse_statistics_date_range(request)
+
+    context = {**stats.get_statistics_context(request.user, start_date, end_date)}
+
+    return render(request, "app/components/statistics_content.html", context)
 
 
 @require_GET

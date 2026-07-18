@@ -24,7 +24,7 @@
     {% if persons %}
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
         {% for person in persons %}
-          <a href="{% url detail_url_name person.id person.name|slugify %}"
+          <a href="{% url detail_url_name person.id person.name|default:'unknown'|slugify|default:'unknown' %}"
              class="group flex flex-col items-center gap-3 rounded-xl bg-[#2a2f35] p-4 hover:bg-[#343a40] ring-1 ring-white/5 hover:ring-white/10 transition-all duration-200 text-center">
             {# Portrait #}
             {% if person.image %}

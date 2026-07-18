@@ -584,7 +584,7 @@ def send_user_notification(user, urls, title, body, attach_url=None):
     for url in urls:
         apobj.add(url)
 
-    kwargs = {"title": title, "body": body}
+    kwargs = {"title": title, "body": body, "body_format": apprise.NotifyFormat.TEXT}
 
     if attach_url:
         attach = apprise.AppriseAttachment()
