@@ -338,6 +338,18 @@ TZ = zoneinfo.ZoneInfo(TIME_ZONE)
 
 IMG_NONE = "https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg"
 
+# Web Push (mobile/PWA notifications).
+# Generate a keypair once with: vapid --gen (pywebpush) or
+#   python -c "from py_vapid import Vapid02; v = Vapid02(); v.generate_keys(); print(v.private_key_bytes()); print(v.public_key_bytes())"
+# and set WEBPUSH_VAPID_PRIVATE_KEY / WEBPUSH_VAPID_PUBLIC_KEY (base64url, no
+# padding) as env vars. Push notifications are silently disabled -- the
+# subscribe endpoint returns a clear error -- until both are set, so this is
+# safe to leave unconfigured on existing deployments.
+WEBPUSH_VAPID_PRIVATE_KEY = config("WEBPUSH_VAPID_PRIVATE_KEY", default="")
+WEBPUSH_VAPID_PUBLIC_KEY = config("WEBPUSH_VAPID_PUBLIC_KEY", default="")
+WEBPUSH_VAPID_ADMIN_EMAIL = config("WEBPUSH_VAPID_ADMIN_EMAIL", default="admin@yamtrack.local")
+WEBPUSH_ENABLED = bool(WEBPUSH_VAPID_PRIVATE_KEY and WEBPUSH_VAPID_PUBLIC_KEY)
+
 REQUEST_TIMEOUT = 120  # seconds
 REQUESTS_VERIFY_SSL = config("REQUESTS_VERIFY_SSL", default=True, cast=bool)
 PER_PAGE = 24

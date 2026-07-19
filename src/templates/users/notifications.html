@@ -1,6 +1,6 @@
 {% extends "users/base.html" %}
 
-{% load widget_tweaks %}
+{% load static widget_tweaks %}
 
 {% block title %}
   Notifications - Yamtrack
@@ -124,6 +124,66 @@
           </button>
         </div>
       </form>
+    </div>
+
+    {# Mobile / Push Notifications #}
+    <div class="bg-[#2a2f35] rounded-lg p-6">
+      <div class="flex items-center mb-4">
+        {% include "app/icons/bell-ringing.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
+        <h2 class="text-xl font-semibold">Push Notifications</h2>
+      </div>
+
+      {% if webpush_enabled %}
+        <p class="text-gray-400 mb-5 text-sm">
+          Get notifications directly on this device or browser — no external service required.
+          Works best when Yamtrack is installed as an app (Add to Home Screen).
+        </p>
+
+        <div class="bg-[#39404b] p-4 rounded-md flex items-center justify-between">
+          <div>
+            <label for="id_webpush_enabled" class="text-sm font-medium text-gray-200">
+              Enable push on this device
+            </label>
+            <p id="webpush-status" class="text-xs text-gray-400 mt-1"></p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input class="sr-only peer"
+                   type="checkbox"
+                   id="id_webpush_enabled"
+                   data-vapid-public-key="{{ vapid_public_key }}"
+                   data-subscribe-url="{% url 'webpush_subscribe' %}"
+                   data-unsubscribe-url="{% url 'webpush_unsubscribe' %}">
+            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
+            </div>
+          </label>
+        </div>
+
+        {% if push_subscriptions %}
+          <div class="mt-4 space-y-2">
+            <h3 class="text-sm font-medium text-gray-300">Registered devices</h3>
+            {% for subscription in push_subscriptions %}
+              <div class="flex items-center justify-between bg-[#39404b] px-3 py-2 rounded-md text-sm">
+                <span class="text-gray-300 truncate">{{ subscription.user_agent|default:"Unknown device" }}</span>
+                <form method="post" action="{% url 'webpush_remove_subscription' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="subscription_id" value="{{ subscription.id }}">
+                  <button type="submit" class="text-gray-400 hover:text-red-400 cursor-pointer" title="Remove device">
+                    {% include "app/icons/x.svg" with classes="w-4 h-4" %}
+                  </button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <script src="{% static 'js/webpush-subscribe.js' %}"></script>
+      {% else %}
+        <p class="text-gray-400 text-sm">
+          Push notifications aren't configured on this server yet. An admin needs to set
+          <code class="bg-[#39404b] px-1 py-0.5 rounded">WEBPUSH_VAPID_PUBLIC_KEY</code> and
+          <code class="bg-[#39404b] px-1 py-0.5 rounded">WEBPUSH_VAPID_PRIVATE_KEY</code> to enable this.
+        </p>
+      {% endif %}
     </div>
 
     {# Excluded Media Items #}

@@ -17,3 +17,4 @@ TODO.txt
 docker-compose.override.yml
 /backups
 src/backups
+docker-compose.yml

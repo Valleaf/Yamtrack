@@ -4366,3 +4366,11 @@
     }
   }
 }
+
+/* Media-by-country tabs: avoid a flash of all media types' maps/rankings
+   stacked together before world-map-stats.js runs and hides all but the
+   active one. Hand-patched -- see input.css for the source rule. */
+.world-map-view,
+.country-rank-view {
+  display: none;
+}

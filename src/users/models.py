@@ -107,6 +107,46 @@ class TimeFormatChoices(models.TextChoices):
     HOUR_12 = "g:i A", "2:30 PM (12-hour)"
 
 
+class PushSubscription(models.Model):
+    """A single browser/device Web Push subscription for a user.
+
+    A user can have several of these (phone, desktop browser, etc.) since
+    each device/browser registers its own endpoint with its own push
+    service. `endpoint` is the push service URL assigned by the browser
+    (e.g. Chrome/FCM, Mozilla autopush, or the OS-level push relay used by
+    the installed PWA on Android/iOS) and is unique per subscription, so
+    it doubles as the natural dedupe key -- re-subscribing the same
+    device just updates the existing row instead of creating a duplicate.
+    """
+
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="push_subscriptions",
+    )
+    endpoint = models.URLField(max_length=500, unique=True)
+    p256dh_key = models.CharField(
+        max_length=255,
+        help_text="Client public key, base64url-encoded (from PushSubscription.getKey('p256dh'))",
+    )
+    auth_key = models.CharField(
+        max_length=255,
+        help_text="Client auth secret, base64url-encoded (from PushSubscription.getKey('auth'))",
+    )
+    user_agent = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """Meta options for the model."""
+
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        """Return a short human-readable identifier."""
+        return f"{self.user.username} - {self.user_agent or self.endpoint[:40]}"
+
+
 class User(AbstractUser):
     """Custom user model."""
 

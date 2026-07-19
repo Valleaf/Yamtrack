@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.db.models import Field
 
-from users.models import User
+from users.models import PushSubscription, User
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -68,3 +68,14 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.unregister(Group)
+
+
+@admin.register(PushSubscription)
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    """Admin interface for Web Push subscriptions (read-only, debugging aid)."""
+
+    list_display = ("user", "user_agent", "created_at", "last_used_at")
+    list_filter = ("user",)
+    search_fields = ("user__username", "endpoint", "user_agent")
+    readonly_fields = ("endpoint", "p256dh_key", "auth_key", "created_at", "last_used_at")
+

@@ -26,13 +26,15 @@ def send_releases():
     now = timezone.now()
     thirty_minutes_ago = now - timezone.timedelta(minutes=30)
 
-    # Get users who should receive notifications
+    # Get users who should receive notifications (either via Apprise URLs
+    # or a registered Web Push device -- either is sufficient).
     users = (
         get_user_model()
         .objects.filter(
-            ~Q(notification_urls=""),
-            release_notifications_enabled=True,
+            Q(release_notifications_enabled=True)
+            & (~Q(notification_urls="") | Q(push_subscriptions__isnull=False)),
         )
+        .distinct()
         .prefetch_related("notification_excluded_items")
     )
 
@@ -97,13 +99,15 @@ def send_daily_digest():
     today_start_utc = today_start.astimezone(UTC)
     today_end_utc = today_end.astimezone(UTC)
 
-    # Get users who have enabled daily digest
+    # Get users who have enabled daily digest (either via Apprise URLs
+    # or a registered Web Push device -- either is sufficient).
     users = (
         get_user_model()
         .objects.filter(
-            ~Q(notification_urls=""),
-            daily_digest_enabled=True,
+            Q(daily_digest_enabled=True)
+            & (~Q(notification_urls="") | Q(push_subscriptions__isnull=False)),
         )
+        .distinct()
         .prefetch_related("notification_excluded_items")
     )
 
@@ -171,6 +175,10 @@ def filter_to_season_finales(events_dict):
 def deliver_release_notifications(user_releases, users):
     """Deliver one notification per event to each user, with the item image attached.
 
+    Sends via Apprise (if the user has URLs configured) and/or Web Push (if
+    the user has any registered devices) -- independent channels, so a user
+    can have either, both, or neither configured.
+
     Args:
         user_releases: Mapping of user_id -> list[Event]
         users: QuerySet of User objects
@@ -189,14 +197,54 @@ def deliver_release_notifications(user_releases, users):
         urls = [
             url.strip() for url in user.notification_urls.splitlines() if url.strip()
         ]
-        if not urls:
+        has_push = user.push_subscriptions.exists()
+        if not urls and not has_push:
             continue
 
         for event in releases:
             title = "🔔 YamTrack: New Release!"
             body = format_single_release(event)
             image_url = event.item.image or None
-            send_user_notification(user, urls, title, body, attach_url=image_url)
+
+            if urls:
+                send_user_notification(user, urls, title, body, attach_url=image_url)
+
+            if has_push:
+                send_webpush_release(user, title, event, image_url)
+
+
+def send_webpush_release(user, title, event, image_url):
+    """Send a single release event to a user's Web Push devices.
+
+    Kept as its own thin wrapper (rather than inlined) so failures here
+    never interrupt the Apprise send loop above, and so it's easy to find
+    when tracing why a push did or didn't go out.
+
+    Args:
+        user: User object
+        title: Notification title
+        event: Event object for the single release
+        image_url: Optional poster image URL
+    """
+    from users.webpush import send_webpush_to_user  # noqa: PLC0415
+
+    try:
+        target_url = app_tags.media_url(event.item)
+    except Exception:
+        # Fall back to the app root rather than lose the notification
+        # entirely over a URL-building edge case.
+        target_url = "/"
+
+    try:
+        send_webpush_to_user(
+            user,
+            title=title,
+            body=str(event),
+            url=target_url,
+            icon=image_url,
+        )
+    except Exception:
+        logger.exception("Error sending push notification to %s", user.username)
 
 
 def format_single_release(event):
@@ -489,6 +537,9 @@ def is_user_tracking_item(user, item, user_tracking_data):
 def deliver_notifications(user_releases, users, title):
     """Deliver notifications to users using calendar logic.
 
+    Sends via Apprise (if configured) and/or Web Push (if the user has any
+    registered devices) -- independent channels.
+
     Args:
         user_releases: Dictionary mapping user IDs to lists of events
         users: QuerySet of User objects
@@ -510,14 +561,47 @@ def deliver_notifications(user_releases, users, title):
         urls = [
             url.strip() for url in user.notification_urls.splitlines() if url.strip()
         ]
-        if not urls:
+        has_push = user.push_subscriptions.exists()
+        if not urls and not has_push:
             continue
 
         # Format notification
         notification_body = format_notification(releases=releases)
 
         # Send notification
-        send_user_notification(user, urls, title, notification_body)
+        if urls:
+            send_user_notification(user, urls, title, notification_body)
+
+        if has_push:
+            send_webpush_digest(user, title, releases)
+
+
+def send_webpush_digest(user, title, releases):
+    """Send a daily-digest push summarizing today's releases.
+
+    Web Push notifications don't support long multi-line bodies well
+    (unlike Apprise/Discord/etc), so this collapses the digest down to a
+    short count-based summary rather than reusing format_notification's
+    full text.
+
+    Args:
+        user: User object
+        title: Notification title
+        releases: List of Event objects for today
+    """
+    from users.webpush import send_webpush_to_user  # noqa: PLC0415
+
+    count = len(releases)
+    item_label = "item" if count == 1 else "items"
+    if count == 1:
+        body = str(releases[0])
+    else:
+        body = f"{count} {item_label} releasing today. Open Yamtrack to see the full list."
+
+    try:
+        send_webpush_to_user(user, title=title, body=body, url="/calendar")
+    except Exception:
+        logger.exception("Error sending digest push notification to %s", user.username)
 
 
 def format_notification(releases):

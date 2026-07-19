@@ -16,8 +16,10 @@
           <a href="{{ release.item|media_url }}" class="block">
             <div class="flex items-center gap-3 p-2 rounded-md hover:bg-[#454d5a] transition-colors">
               <img alt="{{ release }}"
-                   class="w-10 h-10 object-cover rounded-md shrink-0"
-                   src="{{ release.item.image }}">
+                   class="lazyload w-10 h-10 rounded-md shrink-0 bg-[#3e454d] {% if release.item.image != IMG_NONE %}object-cover{% endif %}"
+                   data-src="{{ release.item.image }}"
+                   src="{{ IMG_NONE }}"
+                   onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
               <div class="flex-1 min-w-0">
                 <h4 class="font-medium text-sm line-clamp-1">{{ release.item }}</h4>
                 <div class="flex items-center">

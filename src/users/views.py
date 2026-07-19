@@ -1,3 +1,4 @@
+import json
 import logging
 
 import apprise
@@ -7,6 +8,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.core.cache import cache
 from django.db import IntegrityError
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import pluralize
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
@@ -15,7 +17,7 @@ from django_celery_beat.models import PeriodicTask
 from app.models import Item, MediaTypes
 from app.providers import tmdb
 from users.forms import NotificationSettingsForm, PasswordChangeForm, UserUpdateForm
-from users.models import DateFormatChoices, QuickWatchDateChoices, TimeFormatChoices
+from users.models import DateFormatChoices, PushSubscription, QuickWatchDateChoices, TimeFormatChoices
 
 logger = logging.getLogger(__name__)
 
@@ -100,8 +102,68 @@ def notifications(request):
         "users/notifications.html",
         {
             "form": form,
+            "webpush_enabled": settings.WEBPUSH_ENABLED,
+            "vapid_public_key": settings.WEBPUSH_VAPID_PUBLIC_KEY,
+            "push_subscriptions": request.user.push_subscriptions.all(),
         },
     )
+
+
+@require_POST
+def webpush_subscribe(request):
+    """Register (or refresh) a browser/device's Web Push subscription.
+
+    Called from the client after a successful `PushManager.subscribe()`.
+    Keyed on `endpoint` so re-subscribing the same device updates its
+    existing row instead of creating a duplicate.
+    """
+    if not settings.WEBPUSH_ENABLED:
+        return JsonResponse({"error": "Push notifications are not configured on this server."}, status=400)
+
+    try:
+        payload = json.loads(request.body)
+        endpoint = payload["endpoint"]
+        p256dh_key = payload["keys"]["p256dh"]
+        auth_key = payload["keys"]["auth"]
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid subscription payload."}, status=400)
+
+    user_agent = request.META.get("HTTP_USER_AGENT", "")[:255]
+
+    PushSubscription.objects.update_or_create(
+        endpoint=endpoint,
+        defaults={
+            "user": request.user,
+            "p256dh_key": p256dh_key,
+            "auth_key": auth_key,
+            "user_agent": user_agent,
+        },
+    )
+
+    logger.info("Registered push subscription for %s", request.user.username)
+    return JsonResponse({"status": "subscribed"})
+
+
+@require_POST
+def webpush_unsubscribe(request):
+    """Remove a browser/device's Web Push subscription."""
+    try:
+        payload = json.loads(request.body)
+        endpoint = payload["endpoint"]
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid payload."}, status=400)
+
+    deleted, _ = request.user.push_subscriptions.filter(endpoint=endpoint).delete()
+    return JsonResponse({"status": "unsubscribed", "deleted": deleted})
+
+
+@require_POST
+def webpush_remove_subscription(request):
+    """Remove a subscription by ID from the notification settings page."""
+    subscription_id = request.POST.get("subscription_id")
+    request.user.push_subscriptions.filter(id=subscription_id).delete()
+    messages.success(request, "Device removed.")
+    return redirect("notifications")
 
 
 @require_GET
@@ -172,39 +234,60 @@ def include_item(request):
 
 @require_GET
 def test_notification(request):
-    """Send a test notification to the user."""
-    try:
-        # Create Apprise instance
-        apobj = apprise.Apprise()
+    """Send a test notification to the user (Apprise URLs and/or Web Push)."""
+    notification_urls = [
+        url.strip()
+        for url in request.user.notification_urls.splitlines()
+        if url.strip()
+    ]
+    has_push_subscriptions = request.user.push_subscriptions.exists()
 
-        # Add all notification URLs
-        notification_urls = [
-            url.strip()
-            for url in request.user.notification_urls.splitlines()
-            if url.strip()
-        ]
-        if not notification_urls:
-            messages.error(request, "No notification URLs configured.")
-            return redirect("notifications")
+    if not notification_urls and not has_push_subscriptions:
+        messages.error(request, "No notification URLs or push devices configured.")
+        return redirect("notifications")
 
-        for url in notification_urls:
-            apobj.add(url)
+    any_success = False
 
-        # Send test notification
-        result = apobj.notify(
-            title="YamTrack Test Notification",
-            body=(
-                "This is a test notification from YamTrack. "
-                "If you're seeing this, your notifications are working correctly!"
-            ),
-        )
+    if notification_urls:
+        try:
+            apobj = apprise.Apprise()
+            for url in notification_urls:
+                apobj.add(url)
 
-        if result:
-            messages.success(request, "Test notification sent successfully!")
+            result = apobj.notify(
+                title="YamTrack Test Notification",
+                body=(
+                    "This is a test notification from YamTrack. "
+                    "If you're seeing this, your notifications are working correctly!"
+                ),
+            )
+
+            if result:
+                any_success = True
+            else:
+                messages.error(request, "Failed to send test Apprise notification.")
+        except Exception:
+            logger.exception("Error sending notification")
+            messages.error(request, "Error sending test Apprise notification.")
+
+    if has_push_subscriptions:
+        from users.webpush import send_webpush_to_user  # noqa: PLC0415
+
+        if not settings.WEBPUSH_ENABLED:
+            messages.error(request, "Push notifications are not configured on this server.")
         else:
-            messages.error(request, "Failed to send test notification.")
-    except Exception:
-        logger.exception("Error sending notification")
+            sent = send_webpush_to_user(
+                request.user,
+                title="YamTrack Test Notification",
+                body="If you're seeing this, push notifications are working correctly!",
+            )
+            if sent:
+                any_success = True
+            else:
+                messages.error(request, "Failed to send test push notification.")
+
+    if any_success:
+        messages.success(request, "Test notification sent successfully!")
 
     return redirect("notifications")
 

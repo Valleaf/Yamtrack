@@ -679,8 +679,8 @@
           {% endfor %}
         </div>
 
-        <!-- World Map Container -->
-        <div id="world-map-container" class="space-y-4">
+        <!-- World Map + Ranking Container -->
+        <div id="world-map-container" class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
           {% for media_type, countries in country_distribution.items %}
             <div id="map-{{ media_type }}" class="world-map-view">
               <!-- Map will be rendered here by JavaScript -->
@@ -689,11 +689,22 @@
             <script id="country-data-{{ media_type }}" type="application/json">
               {{ countries|to_json }}
             </script>
-            <div id="country-list-{{ media_type }}" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <!-- Fallback flat list, only shown if the geo chart library fails to load -->
+            <div id="country-list-{{ media_type }}" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 xl:col-span-2">
               {% for country, country_info in countries.items %}
                 <div class="flex items-center justify-between gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
                   <span class="truncate text-gray-300">{{ country }}</span>
                   <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs text-gray-400">{{ country_info.count }}</span>
+                </div>
+              {% endfor %}
+            </div>
+            <!-- Always-visible ranking list alongside the map -->
+            <div id="country-rank-{{ media_type }}" class="country-rank-view max-h-[480px] overflow-y-auto pr-1 space-y-1.5">
+              {% for country, country_info in countries.items %}
+                <div class="flex items-center gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
+                  <span class="w-5 shrink-0 text-xs font-medium text-gray-500">{{ forloop.counter }}</span>
+                  <span class="flex-1 truncate text-gray-300">{{ country }}</span>
+                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs font-medium text-indigo-300">{{ country_info.count }}</span>
                 </div>
               {% endfor %}
             </div>

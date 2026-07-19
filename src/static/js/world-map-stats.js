@@ -292,11 +292,18 @@
         document.querySelectorAll('.world-map-view').forEach(function(el) {
           el.style.display = 'none';
         });
+        // Hide all ranking list divs, then show the one for this media type
+        document.querySelectorAll('.country-rank-view').forEach(function(el) {
+          el.style.display = 'none';
+        });
         hideCountryLists();
 
         var mapEl = document.getElementById('map-' + mediaType);
         if (!mapEl) return;
         mapEl.style.display = 'block';
+
+        var rankEl = document.getElementById('country-rank-' + mediaType);
+        if (rankEl) rankEl.style.display = 'block';
 
         if (!tabIsVisible) return;
 

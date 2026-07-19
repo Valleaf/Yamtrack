@@ -17,6 +17,13 @@ urlpatterns = [
         name="include_notification_item",
     ),
     path("test_notification", views.test_notification, name="test_notification"),
+    path("notifications/webpush/subscribe", views.webpush_subscribe, name="webpush_subscribe"),
+    path("notifications/webpush/unsubscribe", views.webpush_unsubscribe, name="webpush_unsubscribe"),
+    path(
+        "notifications/webpush/remove",
+        views.webpush_remove_subscription,
+        name="webpush_remove_subscription",
+    ),
     path("settings/preferences", views.preferences, name="preferences"),
     path("settings/integrations", views.integrations, name="integrations"),
     path("settings/import", views.import_data, name="import_data"),

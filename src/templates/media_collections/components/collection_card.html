@@ -1,10 +1,11 @@
 <a href="{% url 'collection_detail' collection.id %}"
    class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors ring-1 {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}ring-emerald-500/40{% else %}ring-white/5{% endif %}">
   <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
-    <img src="{{ collection.image }}"
+    <img src="{{ IMG_NONE }}"
+         data-src="{{ collection.image }}"
          alt="{{ collection.name }}"
-         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-         onerror="this.src='https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-38-picture-grey-c2ebdbb057f2a7614185931650f8cee23fa137b93812ccb132b9df511df1cfac.svg'">
+         class="lazyload w-full h-full {% if collection.image != IMG_NONE %}object-cover{% endif %} group-hover:scale-105 transition-transform duration-200"
+         onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
     {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}
       <div class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 backdrop-blur-md text-[11px] font-medium px-2 py-1 shadow-sm">
         {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
