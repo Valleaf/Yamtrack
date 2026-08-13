@@ -77,6 +77,23 @@ def calendar(request):
 
     # Get today's date for highlighting
     today = timezone.localdate()
+    upcoming_releases = Event.objects.get_user_events(
+        request.user,
+        today,
+        today + timedelta(days=90),
+    )
+    upcoming_release_groups = []
+    releases_by_type = {}
+    for release in upcoming_releases:
+        media_type = release.item.media_type
+        if media_type not in releases_by_type:
+            releases_by_type[media_type] = []
+        releases_by_type[media_type].append(release)
+    for media_type, releases_for_type in releases_by_type.items():
+        upcoming_release_groups.append({
+            "media_type": media_type,
+            "releases": releases_for_type,
+        })
 
     context = {
         "calendar": calendar_format,
@@ -90,6 +107,8 @@ def calendar(request):
         "release_dict": release_dict,
         "today": today,
         "view_type": view_type,
+        "upcoming_releases": upcoming_releases,
+        "upcoming_release_groups": upcoming_release_groups,
     }
     return render(request, "events/calendar.html", context)
 

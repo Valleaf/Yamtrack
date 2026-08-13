@@ -19,7 +19,7 @@
 - [ ] country map, also a ranking list on the side
 - [ ] bd collection ,order by series position
 - [ ] options to look for posters (auto web search with options to select for user ))for collections
-- [ ] On the calendar page, underneath the calendar, a list of next releases like RateYourMusic for albums by bands that are in the library
+- [ ] Music releases on the calendar page
 - [ ] Statistics loading everytime they're opened. And it's long. Alternative to store them, maybe recalculate them every once in a while
 - [ ] where is my data extract
 - [ ] Tiny bit of margin on the left and right side (Very small)

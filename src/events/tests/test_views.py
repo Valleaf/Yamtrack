@@ -263,6 +263,8 @@ class CalendarViewTests(TestCase):
         self.assertEqual(len(release_dict[20]), 1)  # One event on the 20th
         self.assertContains(response, "https://example.com/image1.jpg")
         self.assertContains(response, "https://example.com/image2.jpg")
+        self.assertIn("upcoming_releases", response.context)
+        self.assertEqual(len(response.context["upcoming_release_groups"]), 2)
 
     @patch("events.tasks.reload_calendar.delay")
     def test_reload_calendar(self, mock_reload_task):
