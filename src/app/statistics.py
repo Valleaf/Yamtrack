@@ -37,7 +37,10 @@ from app.templatetags import app_tags
 logger = logging.getLogger(__name__)
 
 STATISTICS_CACHE_TIMEOUT = getattr(settings, "STATISTICS_CACHE_TIMEOUT", 60 * 60 * 24)
-_STATISTICS_CACHE_VERSION_KEY = "statistics:context:version:{user_id}"
+# Bump this when the shape of a cached statistics section changes. In
+# particular, actor entries gained their watched-film list after the first
+# version of the people-stats cache was deployed.
+_STATISTICS_CACHE_VERSION_KEY = "statistics:v2:context:version:{user_id}"
 _STATISTICS_SECTION_CACHE_KEY = (
     "statistics:section:{section}:{user_id}:{version}:{media_types}:{start_date}:{end_date}"
 )
@@ -1144,9 +1147,29 @@ def get_people_stats(user_media):
                 continue
             entry = actors.setdefault(
                 pid,
-                {"id": pid, "name": person["name"], "image": person.get("image"), "count": 0},
+                {
+                    "id": pid,
+                    "name": person["name"],
+                    "image": person.get("image"),
+                    "count": 0,
+                    "films": [],
+                },
             )
             entry["count"] += 1
+            entry["films"].append(
+                {
+                    "title": media.item.title,
+                    "link": reverse(
+                        "media_details",
+                        kwargs={
+                            "source": media.item.source,
+                            "media_type": media.item.media_type,
+                            "media_id": media.item.media_id,
+                            "title": app_tags.slug(media.item.title),
+                        },
+                    ),
+                },
+            )
 
     for media in user_media.get("music", []):
         cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"

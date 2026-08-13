@@ -32,6 +32,25 @@ class StatisticsDateCoercionTests(SimpleTestCase):
         self.assertEqual(year_stats[2025]["completed"], 1)
 
 
+class PeopleStatisticsTests(SimpleTestCase):
+    @patch("app.statistics.cache.get")
+    def test_actor_stats_include_watched_films(self, mock_cache_get):
+        media = MagicMock()
+        media.item.source = Sources.TMDB.value
+        media.item.media_type = MediaTypes.MOVIE.value
+        media.item.media_id = "42"
+        media.item.title = "A Watched Film"
+        mock_cache_get.return_value = {
+            "cast": [{"id": 7, "name": "Actor One"}],
+        }
+
+        result = statistics.get_people_stats({"movie": [media]})
+
+        self.assertEqual(result["actors"][0]["count"], 1)
+        self.assertEqual(result["actors"][0]["films"][0]["title"], "A Watched Film")
+        self.assertIn("/details/tmdb/movie/42/", result["actors"][0]["films"][0]["link"])
+
+
 class StatisticsContextCacheTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(

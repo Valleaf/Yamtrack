@@ -24,8 +24,7 @@
 - [ ] options to look for posters (auto web search with options to select for user ))for collections
 - [ ] Music on the calendar ? (And notifs)
 - [ ] show actors in tv shows
-- [X] calendar wrong ? Futurama not appearing
-- [ ] statistics infinite loading
+- [ ] Statistics loading everytime they're opened. And it's long. Alternative to store them, maybe recalculate them every once in a while
 - [ ] where is my data extract
 
 Lists :

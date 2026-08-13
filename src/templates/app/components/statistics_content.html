@@ -762,7 +762,9 @@
           <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Actors</h3>
           <div class="space-y-2">
             {% for person in people_stats.actors %}
-            <div class="flex items-center gap-3 py-1">
+            <div x-data="{ showActorFilms: false }"
+                 @keydown.escape.window="showActorFilms = false"
+                 class="flex items-center gap-3 py-1">
               {% if person.image %}
                 <img src="{{ person.image }}" alt="{{ person.name }}"
                      class="w-8 h-8 rounded-full object-cover bg-[#2a2f35] shrink-0">
@@ -771,8 +773,39 @@
                   {{ person.name|first|upper }}
                 </div>
               {% endif %}
-              <span class="text-sm text-gray-300 flex-1 truncate">{{ person.name }}</span>
+              <button type="button"
+                      @click="showActorFilms = true"
+                      class="text-left text-sm text-gray-300 flex-1 truncate hover:text-indigo-400 transition-colors cursor-pointer"
+                      title="Show watched films">
+                {{ person.name }}
+              </button>
               <span class="text-xs font-medium text-gray-500 shrink-0 bg-[#2a2f35] px-2 py-0.5 rounded">{{ person.count }}</span>
+
+              <div x-cloak x-show="showActorFilms" x-transition.opacity
+                   @click.self="showActorFilms = false"
+                   class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+                <div role="dialog" aria-modal="true" aria-labelledby="actor-films-{{ person.id }}"
+                     class="w-full max-w-lg rounded-xl bg-[#1e2329] p-6 shadow-2xl ring-1 ring-white/10">
+                  <div class="flex items-start justify-between gap-4 mb-4">
+                    <div>
+                      <p class="text-xs uppercase tracking-wide text-indigo-400">Actors</p>
+                      <h4 id="actor-films-{{ person.id }}" class="text-lg font-semibold text-white">Films with {{ person.name }}</h4>
+                    </div>
+                    <button type="button" @click="showActorFilms = false"
+                            class="rounded-md p-1 text-gray-400 hover:bg-white/10 hover:text-white cursor-pointer"
+                            aria-label="Close watched films">&times;</button>
+                  </div>
+                  {% if person.films %}
+                    <ul class="max-h-[60vh] space-y-1 overflow-y-auto pr-1">
+                      {% for film in person.films %}
+                        <li><a href="{{ film.link }}" class="block rounded-md px-3 py-2 text-gray-300 hover:bg-white/5 hover:text-indigo-400">{{ film.title }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p class="text-sm text-gray-400">No film titles are available in the cached metadata yet.</p>
+                  {% endif %}
+                </div>
+              </div>
             </div>
             {% endfor %}
           </div>
