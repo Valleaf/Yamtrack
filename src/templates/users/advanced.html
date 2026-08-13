@@ -2,6 +2,7 @@
 
 {% load socialaccount %}
 {% load static %}
+{% load app_tags %}
 
 {% block title %}
   Advanced - Yamtrack
@@ -26,6 +27,19 @@
           <br>
           Normally these lists are refreshed automatically once a week. Use this after adding a new list via the admin panel.
         </p>
+        <div class="mb-4 rounded-md bg-[#2a2f35] px-3 py-2 text-sm">
+          {% if external_lists_sync_status.enabled %}
+            <p class="text-emerald-400">Automatic sync configured</p>
+            <p class="mt-1 text-gray-400">Runs weekly.</p>
+            {% if external_lists_sync_status.last_run %}
+              <p class="mt-1 text-gray-500">Last run: {{ external_lists_sync_status.last_run|datetime_format:user }}</p>
+            {% elif not external_lists_sync_status.registered %}
+              <p class="mt-1 text-amber-400">No Celery Beat record found yet; ensure the beat service is running.</p>
+            {% endif %}
+          {% else %}
+            <p class="text-amber-400">Automatic sync is disabled.</p>
+          {% endif %}
+        </div>
         <form method="post" action="{% url 'sync_external_lists' %}">
           {% csrf_token %}
           <button type="submit"
@@ -50,6 +64,19 @@
           while for large libraries since it goes through the same rate limiters as everything
           else — check the container logs for progress.
         </p>
+        <div class="mb-4 rounded-md bg-[#2a2f35] px-3 py-2 text-sm">
+          {% if media_sync_status.enabled %}
+            <p class="text-emerald-400">Automatic sync configured</p>
+            <p class="mt-1 text-gray-400">Monthly on day {{ media_sync_status.day }} at {{ media_sync_status.hour }}:00.</p>
+            {% if media_sync_status.last_run %}
+              <p class="mt-1 text-gray-500">Last run: {{ media_sync_status.last_run|datetime_format:user }}</p>
+            {% elif not media_sync_status.registered %}
+              <p class="mt-1 text-amber-400">No Celery Beat record found yet; ensure the beat service is running.</p>
+            {% endif %}
+          {% else %}
+            <p class="text-amber-400">Automatic sync is not configured.</p>
+          {% endif %}
+        </div>
         <form method="post" action="{% url 'sync_all_tracked_media' %}">
           {% csrf_token %}
           <button type="submit"

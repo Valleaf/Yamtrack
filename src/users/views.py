@@ -395,7 +395,22 @@ def export_data(request):
 @require_GET
 def advanced(request):
     """Render the advanced settings page."""
-    return render(request, "users/advanced.html")
+    sync_task = PeriodicTask.objects.filter(task="Sync all tracked media").first()
+    external_lists_task = PeriodicTask.objects.filter(task="Sync external lists").first()
+    return render(request, "users/advanced.html", {
+        "external_lists_sync_status": {
+            "enabled": external_lists_task.enabled if external_lists_task else True,
+            "last_run": external_lists_task.last_run_at if external_lists_task else None,
+            "registered": external_lists_task is not None,
+        },
+        "media_sync_status": {
+            "enabled": sync_task.enabled if sync_task else settings.MEDIA_SYNC_DAY_OF_MONTH is not None,
+            "day": settings.MEDIA_SYNC_DAY_OF_MONTH,
+            "hour": settings.MEDIA_SYNC_HOUR,
+            "last_run": sync_task.last_run_at if sync_task else None,
+            "registered": sync_task is not None,
+        },
+    })
 
 
 @require_GET

@@ -15,7 +15,6 @@
 
   [ ] check features from https://github.com/dannyvfilms/Yamtrack
 
-- [ ] auto global sync , is it running ?
 - [ ] CSS refont for collections, give me options. Description of the series, summary, sub series, timeline, group items that are just regional differences (for games mainly),etc
 - [ ] country map, also a ranking list on the side
 - [ ] bd collection ,order by series position
