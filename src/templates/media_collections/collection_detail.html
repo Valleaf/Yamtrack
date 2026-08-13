@@ -204,6 +204,7 @@
         {% if can_edit %}
         <form method="post" action="{% url 'collection_item_toggle' %}" class="mt-2">
           {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <input type="hidden" name="collection_id" value="{{ collection.id }}">
           <input type="hidden" name="source" value="{{ item.source }}">
           <input type="hidden" name="media_type" value="{{ item.media_type }}">
