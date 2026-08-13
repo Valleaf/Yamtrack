@@ -456,7 +456,7 @@ def tv_with_seasons(media_id, season_numbers):
 
     cached_seasons, uncached_seasons = get_cached_seasons(media_id, season_numbers)
 
-    if tv_data is None and not uncached_seasons:
+    if (tv_data is None or "cast" not in tv_data) and not uncached_seasons:
         tv_data = tv(media_id)
 
     if uncached_seasons:
@@ -483,7 +483,7 @@ def tv(media_id):
         url = f"{base_url}/tv/{media_id}"
         params = {
             **base_params,
-            "append_to_response": "recommendations,external_ids,watch/providers",
+            "append_to_response": "recommendations,external_ids,watch/providers,credits",
         }
 
         try:
@@ -507,6 +507,16 @@ def process_tv(response):
     num_episodes = response["number_of_episodes"]
     next_episode = response.get("next_episode_to_air")
     last_episode = response.get("last_episode_to_air")
+    cast = response.get("credits", {}).get("cast", [])
+    filtered_cast = [
+        {
+            "id": member.get("id"),
+            "name": member.get("name"),
+            "character": member.get("character"),
+            "image": get_image_url(member.get("profile_path")),
+        }
+        for member in cast[:30]
+    ]
     return {
         "media_id": response["id"],
         "source": Sources.TMDB.value,
@@ -532,6 +542,8 @@ def process_tv(response):
             "country": get_country(response["production_countries"]),
             "languages": get_languages(response["spoken_languages"]),
         },
+        "cast": filtered_cast,
+        "total_cast_count": len(cast),
         "related": {
             "seasons": get_related(
                 response["seasons"],

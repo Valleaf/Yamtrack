@@ -73,6 +73,7 @@ class Metadata(TestCase):
         self.assertEqual(response["details"]["first_air_date"], "2008-01-20")
         self.assertEqual(response["details"]["status"], "Ended")
         self.assertEqual(response["details"]["episodes"], 62)
+        self.assertIsInstance(response["cast"], list)
 
     @patch("app.providers.tmdb.timezone.localdate")
     @patch("app.providers.tmdb.services.api_request")
