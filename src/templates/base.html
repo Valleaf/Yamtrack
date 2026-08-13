@@ -32,6 +32,41 @@
           href="{% static 'css/main.css' %}{% get_static_file_mtime 'css/main.css' %}">
 
     <script src="{% static 'js/libraries/htmx-2.0.4.min.js' %}"></script>
+    <script>
+      // Global HTMX failure handler: without this, a failed hx-get (504 from
+      // a slow upstream, 500 from an exception, a dropped connection) leaves
+      // whatever was already in the target -- e.g. a loading spinner -- in
+      // place forever with zero feedback to the user. This replaces the
+      // target's content with an inline error + retry button on any
+      // non-2xx response or network-level failure.
+      document.body.addEventListener('htmx:responseError', (evt) => {
+        const target = evt.detail.target;
+        if (!target) return;
+        const status = evt.detail.xhr ? evt.detail.xhr.status : '';
+        target.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-16 text-center">
+            <p class="text-gray-400 mb-4">Something went wrong loading this content${status ? ` (${status})` : ''}.</p>
+            <button type="button"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-md transition-colors cursor-pointer"
+                    onclick="location.reload()">
+              Retry
+            </button>
+          </div>`;
+      });
+      document.body.addEventListener('htmx:sendError', (evt) => {
+        const target = evt.detail.target;
+        if (!target) return;
+        target.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-16 text-center">
+            <p class="text-gray-400 mb-4">Couldn't reach the server. Check your connection and try again.</p>
+            <button type="button"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-md transition-colors cursor-pointer"
+                    onclick="location.reload()">
+              Retry
+            </button>
+          </div>`;
+      });
+    </script>
     <script defer src="{% static 'js/libraries/alpinejs-3.14.9.min.js' %}"></script>
     <script src="{% static 'js/libraries/lazysizes-5.3.2.min.js' %}" async></script>
 

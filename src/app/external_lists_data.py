@@ -1205,7 +1205,7 @@ LISTS = [
         "icon": "🛰️",
         "media_type": "book",
         "source": "hardcover",
-        "winners": [
+        "items": [
             {"rank": 1, "hardcover_id": 140091},   # Arthur C. Clarke - Prelude to Space
             {"rank": 2, "hardcover_id": 132834},   # Arthur C. Clarke - The Sands of Mars
             {"rank": 3, "hardcover_id": 208343},   # Arthur C. Clarke - Islands in the Sky
@@ -1257,7 +1257,7 @@ LISTS = [
         "icon": "📖",
         "media_type": "book",
         "source": "hardcover",
-        "winners": [
+        "items": [
             {"rank": 1, "hardcover_id": 441091},   # George R. Stewart - Earth Abides
             {"rank": 2, "hardcover_id": 32296},   # Alfred Bester - The Demolished Man
             {"rank": 3, "hardcover_id": 267204},   # Ursula K. Le Guin - The Dispossessed
