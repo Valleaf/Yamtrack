@@ -29,6 +29,14 @@ def _user_can_edit(user, collection):
     return collection.owner == user
 
 
+def _safe_next_url(request):
+    """Return an internal redirect target supplied by a collection form."""
+    next_url = request.POST.get("next", "")
+    if next_url.startswith("/") and not next_url.startswith("//"):
+        return next_url
+    return None
+
+
 COLLECTION_ITEMS_PER_PAGE_CHOICES = (6, 12, 24, 48, 96)
 DEFAULT_COLLECTION_ITEMS_PER_PAGE = 96
 COLLECTION_COLUMNS_CHOICES = (3, 4, 5, 6, 8, 12, 24)
@@ -339,6 +347,9 @@ def edit(request, collection_id):
         collection.description = request.POST.get("description", collection.description).strip()
         collection.save()
         messages.success(request, "Collection updated.")
+        next_url = _safe_next_url(request)
+        if next_url:
+            return redirect(next_url)
         return redirect("collection_detail", collection_id=collection_id)
 
     return render(request, "media_collections/edit.html", {
@@ -470,6 +481,9 @@ def sync_from_source(request, collection_id):
         logger.exception("Sync failed")
         messages.error(request, f"Sync failed: {exc}")
 
+    next_url = _safe_next_url(request)
+    if next_url:
+        return redirect(next_url)
     return redirect("collection_detail", collection_id=collection_id)
 
 

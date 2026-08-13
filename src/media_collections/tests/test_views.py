@@ -50,6 +50,7 @@ class CollectionDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["items_per_page"], 6)
         self.assertEqual(len(response.context["collection_items"]), 6)
+        self.assertContains(response, "Add to Planned")
 
     def test_collection_detail_accepts_page_size_choice(self):
         self._add_items(60)

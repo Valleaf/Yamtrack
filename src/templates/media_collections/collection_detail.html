@@ -26,6 +26,7 @@
       {% if collection.source and collection.source != "manual" and collection.source_id %}
       <form method="post" action="{% url 'collection_sync' collection.id %}">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
         <button type="submit"
                 class="flex items-center px-3 py-2 bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 rounded-md hover:bg-[#39404b] transition-colors text-sm">
           {% include "app/icons/arrows-up-down.svg" with classes="w-4 h-4 mr-1" %}
@@ -33,7 +34,7 @@
         </button>
       </form>
       {% endif %}
-      <a href="{% url 'collection_edit' collection.id %}"
+      <a href="{% url 'collection_edit' collection.id %}?next={{ request.get_full_path|urlencode }}"
          class="flex items-center px-3 py-2 bg-[#2c3136] hover:bg-[#3a404a] text-gray-200 hover:text-white shadow-sm ring-1 ring-white/5 rounded-md hover:bg-[#39404b] transition-colors text-sm">
         {% include "app/icons/edit.svg" with classes="w-4 h-4 mr-1" %}
         Edit
@@ -200,6 +201,23 @@
         <p class="text-sm font-medium text-white truncate">{{ item.title }}</p>
         {% if ci.notes %}
           <p class="text-xs text-gray-500 truncate mt-1">{{ ci.notes }}</p>
+        {% endif %}
+        {% if not ci.tracked %}
+          <form method="post" action="{% url 'quick_plan' %}?next={{ request.get_full_path|urlencode }}">
+            {% csrf_token %}
+            <input type="hidden" name="media_type" value="{{ item.media_type }}">
+            <input type="hidden" name="source" value="{{ item.source }}">
+            <input type="hidden" name="media_id" value="{{ item.media_id }}">
+            {% if item.season_number is not None %}
+              <input type="hidden" name="season_number" value="{{ item.season_number }}">
+            {% endif %}
+            <button type="submit"
+                    class="mt-2 w-full rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-500 transition-colors cursor-pointer">
+              Add to Planned
+            </button>
+          </form>
+        {% else %}
+          <p class="mt-2 text-xs text-emerald-400">Tracked</p>
         {% endif %}
         {% if can_edit %}
         <form method="post" action="{% url 'collection_item_toggle' %}" class="mt-2">

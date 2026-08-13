@@ -19,6 +19,7 @@
   <div class="bg-[#1e2329] rounded-lg p-6">
     <form method="post">
       {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
       <div class="mb-5">
         <label class="block text-sm font-medium text-gray-300 mb-2" for="id_name">Name *</label>
         <input type="text" name="name" id="id_name"
@@ -36,7 +37,11 @@
                 class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium">
           Save
         </button>
+        {% if request.GET.next %}
+        <a href="{{ request.GET.next }}"
+        {% else %}
         <a href="{% url 'collection_detail' collection.id %}"
+        {% endif %}
            class="px-6 py-2 bg-[#2c3136] text-gray-300 rounded-md hover:bg-[#39404b] transition-colors">
           Cancel
         </a>
