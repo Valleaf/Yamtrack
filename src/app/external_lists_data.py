@@ -1195,4 +1195,193 @@ LISTS = [
             {"rank": 1001, "musicbrainz_id": "e46c2970-bc74-3f6e-add9-fcf8e87a5c4f"},   # Klaxons - Myths of the Near Future
         ],
     },
+        # ------------------------------------------------------------------ #
+    #  Arthur C. Clarke — Novels (publication order)                       #
+    #  Populate hardcover_id from hardcover.app (numeric book ID in URL).  #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "arthur_c_clarke_novels",
+        "name": "Arthur C. Clarke — Novels",
+        "icon": "🛰️",
+        "media_type": "book",
+        "source": "hardcover",
+        "winners": [
+            {"rank": 1, "hardcover_id": 140091},   # Arthur C. Clarke - Prelude to Space
+            {"rank": 2, "hardcover_id": 132834},   # Arthur C. Clarke - The Sands of Mars
+            {"rank": 3, "hardcover_id": 208343},   # Arthur C. Clarke - Islands in the Sky
+            {"rank": 4, "hardcover_id": 595362},   # Arthur C. Clarke - Against the Fall of Night
+            {"rank": 5, "hardcover_id": 184949},   # Arthur C. Clarke - Childhood's End
+            {"rank": 6, "hardcover_id": 468156},   # Arthur C. Clarke - Earthlight
+            {"rank": 7, "hardcover_id": 427323},   # Arthur C. Clarke - The City and the Stars
+            {"rank": 8, "hardcover_id": 38240},   # Arthur C. Clarke - The Deep Range
+            {"rank": 9, "hardcover_id": 457124},   # Arthur C. Clarke - A Fall of Moondust
+            {"rank": 10, "hardcover_id": 359731},   # Arthur C. Clarke - Dolphin Island
+            {"rank": 11, "hardcover_id": 919836},   # Arthur C. Clarke - Glide Path
+            {"rank": 12, "hardcover_id": 374134},   # Arthur C. Clarke - 2001: A Space Odyssey
+            {"rank": 13, "hardcover_id": 4720},   # Arthur C. Clarke - Rendezvous with Rama
+            {"rank": 14, "hardcover_id": 384512},   # Arthur C. Clarke - Imperial Earth
+            {"rank": 15, "hardcover_id": 14254},   # Arthur C. Clarke - The Fountains of Paradise
+            {"rank": 16, "hardcover_id": 445066},   # Arthur C. Clarke - 2010: Odyssey Two
+            {"rank": 17, "hardcover_id": 437937},   # Arthur C. Clarke - The Songs of Distant Earth
+            {"rank": 18, "hardcover_id": 17728},   # Arthur C. Clarke - 2061: Odyssey Three
+            {"rank": 19, "hardcover_id": 215563},   # Arthur C. Clarke - Cradle
+            {"rank": 20, "hardcover_id": 445036},   # Arthur C. Clarke - Rama II
+            {"rank": 21, "hardcover_id": 919790},   # Arthur C. Clarke - The Ghost from the Grand Banks
+            {"rank": 22, "hardcover_id": 13293},   # Arthur C. Clarke - The Garden of Rama
+            {"rank": 23, "hardcover_id": 330303},   # Arthur C. Clarke - The Hammer of God
+            {"rank": 24, "hardcover_id": 324325},   # Arthur C. Clarke - Rama Revealed
+            {"rank": 25, "hardcover_id": 919788},   # Arthur C. Clarke - Richter 10
+            {"rank": 26, "hardcover_id": 39696},   # Arthur C. Clarke - 3001: The Final Odyssey
+            {"rank": 27, "hardcover_id": 356520},   # Arthur C. Clarke - The Trigger
+            {"rank": 28, "hardcover_id": 432794},   # Arthur C. Clarke - The Light of Other Days
+            {"rank": 29, "hardcover_id": 446216},   # Arthur C. Clarke - Time's Eye
+            {"rank": 30, "hardcover_id": 446085},   # Arthur C. Clarke - Sunstorm
+            {"rank": 31, "hardcover_id": 385359},   # Arthur C. Clarke - Firstborn
+            {"rank": 32, "hardcover_id": 270360},   # Arthur C. Clarke - The Last Theorem
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  SF Masterworks (Gollancz/Millennium) — series order not preserved;  #
+    #  "year" here is left None since this is a reprint series, not an     #
+    #  award — sort/display by title or original pub year once resolved.  #
+    #  NOTE: verified complete only through the Jan-2016 sfgateway.com     #
+    #  checkpoint (138 titles below). Series continued to ~199 titles      #
+    #  through 2025 — see "later additions, unverified" block at bottom    #
+    #  for known but unconfirmed entries to check manually.               #
+    #  Populate hardcover_id from hardcover.app (numeric book ID in URL).  #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "sf_masterworks",
+        "name": "SF Masterworks",
+        "icon": "📖",
+        "media_type": "book",
+        "source": "hardcover",
+        "winners": [
+            {"rank": 1, "hardcover_id": 441091},   # George R. Stewart - Earth Abides
+            {"rank": 2, "hardcover_id": 32296},   # Alfred Bester - The Demolished Man
+            {"rank": 3, "hardcover_id": 267204},   # Ursula K. Le Guin - The Dispossessed
+            {"rank": 4, "hardcover_id": 433144},   # Kurt Vonnegut - The Sirens of Titan
+            {"rank": 5, "hardcover_id": 458016},   # Michael Moorcock - Behold the Man
+            {"rank": 6, "hardcover_id": 457683},   # Frederik Pohl - Man Plus
+            {"rank": 7, "hardcover_id": 84476},   # Brian W. Aldiss - Non-Stop
+            {"rank": 8, "hardcover_id": 458284},   # Ward Moore - Bring the Jubilee
+            {"rank": 9, "hardcover_id": 270051},   # Ursula K. Le Guin - The Lathe of Heaven
+            {"rank": 10, "hardcover_id": 547019},   # John Sladek - The Complete Roderick
+            {"rank": 11, "hardcover_id": 1343693},   # Michael Moorcock - The Dancers at the End of Time
+            {"rank": 12, "hardcover_id": 373933},   # Frederik Pohl - The Space Merchants
+            {"rank": 13, "hardcover_id": 427450},   # Larry Niven - Ringworld
+            {"rank": 14, "hardcover_id": 484180},   # Geoff Ryman - The Child Garden
+            {"rank": 15, "hardcover_id": 468386},   # Walter Tevis - Mockingbird
+            {"rank": 16, "hardcover_id": 312460},   # Frank Herbert - Dune
+            {"rank": 17, "hardcover_id": 1989646},   # Robert A. Heinlein - The Moon is a Harsh Mistress
+            {"rank": 18, "hardcover_id": 427359},   # Alfred Bester - The Stars My Destination
+            {"rank": 19, "hardcover_id": 482086},   # Cordwainer Smith - The Rediscovery of Man
+            {"rank": 20, "hardcover_id": 97435},   # Frederik Pohl - Gateway
+            {"rank": 21, "hardcover_id": 458243},   # Gene Wolfe - The Fifth Head of Cerberus
+            {"rank": 22, "hardcover_id": 113324},   # James Blish - Cities in Flight
+            {"rank": 23, "hardcover_id": 427389},   # Joe Haldeman - The Forever War
+            {"rank": 24, "hardcover_id": 268150},   # Philip K. Dick - Do Androids Dream of Electric Sheep?
+            {"rank": 25, "hardcover_id": 255573},   # Richard Matheson - I Am Legend
+            {"rank": 26, "hardcover_id": 109204},   # Roger Zelazny - Lord of Light
+            {"rank": 27, "hardcover_id": 430657},   # Samuel R. Delany - Babel-17
+            {"rank": 28, "hardcover_id": 253601},   # Philip K. Dick - Ubik
+            {"rank": 29, "hardcover_id": 3680},   # Philip K. Dick - The Three Stigmata of Palmer Eldritch
+            {"rank": 30, "hardcover_id": 435385},   # Christopher Priest - Inverted World
+            {"rank": 31, "hardcover_id": 341002},   # Philip K. Dick - Time Out Of Joint
+            {"rank": 32, "hardcover_id": 150638},   # Philip K. Dick - The Simulacra
+            {"rank": 33, "hardcover_id": 107110},   # Philip K. Dick - Flow My Tears, the Policeman Said
+            {"rank": 34, "hardcover_id": 457364},   # Philip K. Dick - Valis
+            {"rank": 35, "hardcover_id": 427315},   # Kurt Vonnegut - Cat's Cradle
+            {"rank": 36, "hardcover_id": 184949},   # Arthur C. Clarke - Childhood's End
+            {"rank": 37, "hardcover_id": 1152022},   # H. G. Wells - H. G. Wells : The Island of Doctor Moreau
+            {"rank": 38, "hardcover_id": 69589},   # H. G. Wells - The Time Machine
+            {"rank": 39, "hardcover_id": 428029},   # Samuel R. Delany - Dhalgren
+            {"rank": 40, "hardcover_id": 771358},   # Brian W. Aldiss - Helliconia Spring
+            {"rank": 41, "hardcover_id": 1192615},   # H. G. Wells - H.G. Wells Seven Novels, Complete & Unabridged The Time Machine, Island of Dr. Moreau, Invisible Man, First Men In The Moon, Food of the Gods, In the Days of the Comet and War of the Worlds
+            {"rank": 42, "hardcover_id": 1070095},   # Jack Finney - The Body Snatchers
+            {"rank": 43, "hardcover_id": 243617},   # Joanna Russ - The Female Man
+            {"rank": 44, "hardcover_id": 68049},   # M.J. Engh - Arslan
+            {"rank": 45, "hardcover_id": 461566},   # M. John Harrison - The Centauri Device
+            {"rank": 46, "hardcover_id": 194655},   # Poul Anderson - Tau Zero
+            {"rank": 47, "hardcover_id": 341721},   # William Gibson - The Difference Engine
+            {"rank": 48, "hardcover_id": 427346},   # Christopher Priest - The Prestige
+            {"rank": 49, "hardcover_id": 481950},   # Brian W. Aldiss - Greybeard
+            {"rank": 50, "hardcover_id": 137617},   # Philip K. Dick - Martian Time-Slip
+            {"rank": 51, "hardcover_id": 474644},   # Olaf Stapledon - Sirius
+            {"rank": 52, "hardcover_id": 427460},   # Dan Simmons - Hyperion
+            {"rank": 53, "hardcover_id": 427323},   # Arthur C. Clarke - The City and the Stars
+            {"rank": 54, "hardcover_id": 373370},   # Clifford D. Simak - City
+            {"rank": 55, "hardcover_id": 474595},   # Frank Herbert - Hellstrom's Hive
+            {"rank": 56, "hardcover_id": 151204},   # William Tenn - Ofmen and monsters
+            {"rank": 57, "hardcover_id": 458195},   # Gregory Benford - Timescape
+            {"rank": 58, "hardcover_id": 458013},   # Keith Roberts - Pavane
+            {"rank": 59, "hardcover_id": 458317},   # Robert Silverberg - Dying Inside
+            {"rank": 60, "hardcover_id": 116508},   # Sheri S. Tepper - Grass
+            {"rank": 61, "hardcover_id": 428012},   # Theodore Sturgeon - More Than Human
+            {"rank": 62, "hardcover_id": 456904},   # Christopher Priest - The Affirmation
+            {"rank": 63, "hardcover_id": 1400317},   # Karel Čapek - R.U.R. & War with the Newts
+            {"rank": 64, "hardcover_id": 461477},   # Jack Vance - Emphyrio
+            {"rank": 65, "hardcover_id": 439930},   # Olaf Stapledon - Star Maker
+            {"rank": 66, "hardcover_id": 483040},   # Robert Silverberg - The Book of Skulls
+            {"rank": 67, "hardcover_id": 300455},   # Cecelia Holland - Floating worlds
+            {"rank": 68, "hardcover_id": 214074},   # Greg Bear - Blood Music
+            {"rank": 69, "hardcover_id": 439979},   # Algis Budrys - Rogue Moon
+            {"rank": 70, "hardcover_id": 435683},   # Harlan Ellison - Dangerous Visions
+            {"rank": 71, "hardcover_id": 4720},   # Arthur C. Clarke - Rendezvous with Rama
+            {"rank": 72, "hardcover_id": 19115},   # Greg Bear - Eon
+            {"rank": 73, "hardcover_id": 88382},   # Olaf Stapledon - Odd John
+            {"rank": 74, "hardcover_id": 14254},   # Arthur C. Clarke - The Fountains of Paradise
+            {"rank": 75, "hardcover_id": 376843},   # Olaf Stapledon - Last and First Men
+            {"rank": 76, "hardcover_id": 369986},   # Dan Simmons - The Fall of Hyperion
+            {"rank": 77, "hardcover_id": 427798},   # Douglas Adams - The Hitchhiker's Guide to the Galaxy
+            {"rank": 78, "hardcover_id": 243782},   # Kate Wilhelm - Where Late the Sweet Birds Sang
+            {"rank": 79, "hardcover_id": 350457},   # Arkady Strugatsky - Roadside Picnic
+            {"rank": 94, "hardcover_id": 1153086},   # George Turner - The Sea and Summer
+            {"rank": 95, "hardcover_id": 429439},   # Sheri S. Tepper - The Gate to Women's Country
+            {"rank": 96, "hardcover_id": 1133629},   # H. G. Wells - H.G. Wells Collection, Over 50 Works: The War of the Worlds, The Invisible Man, Time Machine, Island of Dr. Moreau, Little Wars, World Set Free, Tales of Space and Time, When the Sleeper Wakes & MORE!
+            {"rank": 97, "hardcover_id": 581235},   # Walter M. Miller, Jr. - A Canticle for Leibowitz
+            {"rank": 98, "hardcover_id": 216723},   # Connie Willis - To Say Nothing of the Dog
+            {"rank": 99, "hardcover_id": 168465},   # Eric Frank Russell - Wasp
+            {"rank": 100, "hardcover_id": 53731},   # Isaac Asimov - The Gods Themselves
+            {"rank": 101, "hardcover_id": 2215277},   # James Morrow - This Is the Way the World Ends
+            {"rank": 102, "hardcover_id": 1192615},   # H. G. Wells - H.G. Wells Seven Novels, Complete & Unabridged The Time Machine, Island of Dr. Moreau, Invisible Man, First Men In The Moon, Food of the Gods, In the Days of the Comet and War of the Worlds
+            {"rank": 103, "hardcover_id": 469098},   # John Crowley - The Deep
+            {"rank": 104, "hardcover_id": 938582},   # Connie Willis - Time is the Fire: The Best of Connie Willis
+            {"rank": 105, "hardcover_id": 94217},   # Michael  Bishop - No Enemy But Time
+            {"rank": 106, "hardcover_id": 332660},   # Alastair Reynolds - Revelation Space
+            {"rank": 107, "hardcover_id": 215074},   # Robert A. Heinlein - Double Star
+            {"rank": 108, "hardcover_id": 457124},   # Arthur C. Clarke - A Fall of Moondust
+            {"rank": 109, "hardcover_id": 166526},   # Philip K. Dick - A Maze of Death
+            {"rank": 110, "hardcover_id": 28354},   # Philip K. Dick - The Penultimate Truth
+            {"rank": 111, "hardcover_id": 373733},   # Jack Womack - Random Acts of Senseless Violence
+            {"rank": 112, "hardcover_id": 1021238},   # Michael Bishop - Transfigurations
+            {"rank": 113, "hardcover_id": 384991},   # Douglas Adams - The Restaurant at the End of the Universe
+            {"rank": 114, "hardcover_id": 278749},   # Robert A. Heinlein - The Door into Summer
+            {"rank": 115, "hardcover_id": 375813},   # Douglas Adams - Life, the Universe and Everything
+            {"rank": 116, "hardcover_id": 48953},   # Philip K. Dick - Dr Bloodmoney
+            {"rank": 117, "hardcover_id": 784306},   # J. T. Reason - The human contribution
+            {"rank": 118, "hardcover_id": 461438},   # Leigh Brackett - The Long Tomorrow
+            {"rank": 119, "hardcover_id": 923782},   # Gottfried August Bürger - Leonora. A tale, translated and altered from the German ... by J. T. Stanley ... A new edition. [With a frontispiece and two vignettes engraved after designs by William Blake.] Ger.&Eng
+            {"rank": 120, "hardcover_id": 46573},   # Frederik Pohl - Jem
+            {"rank": 121, "hardcover_id": 457626},   # Richard Matheson - The Shrinking Man
+            {"rank": 122, "hardcover_id": 469084},   # James Blish - A Case of Conscience
+            {"rank": 123, "hardcover_id": 154457},   # James Tiptree Jr. - Her Smoke Rose Up Forever
+            {"rank": 124, "hardcover_id": 152062},   # Philip K. Dick - A Scanner Darkly
+            {"rank": 125, "hardcover_id": 234907},   # John Brunner - Stand on Zanzibar
+            {"rank": 126, "hardcover_id": 474576},   # Hal Clement - Mission of Gravity
+            {"rank": 127, "hardcover_id": 648866},   # Ursula K. Le Guin - The Word for World is Forest
+            {"rank": 128, "hardcover_id": 522659},   # Arkady Strugatsky - Hard to Be a God
+            {"rank": 129, "hardcover_id": 85029},   # Robert Silverberg - Downward to the Earth
+            {"rank": 130, "hardcover_id": 469190},   # Jack Vance - Night Lamp
+            {"rank": 131, "hardcover_id": 547252},   # Lucius Shepard - LIFE DURING WARTIME
+            {"rank": 132, "hardcover_id": 547261},   # Walter M. Miller, Jr. - Dark Benediction
+            {"rank": 133, "hardcover_id": 9878},   # Ursula K. Le Guin - The Wind's Twelve Quarters
+            {"rank": 134, "hardcover_id": 1154397},   # George R.R. Martin - A Game of Thrones: The Story Continues The Complete Box Set of All 7 Books by Martin, George R. R. ( AUTHOR ) Jul-12-2012 Paperback
+            {"rank": 135, "hardcover_id": 458254},   # Samuel R. Delany - Nova
+            {"rank": 136, "hardcover_id": 428648},   # Walter Tevis - The Man Who Fell to Earth
+            {"rank": 137, "hardcover_id": 381999},   # John Wyndham - The Day of the Triffids
+            {"rank": 138, "hardcover_id": 427468},   # Vernor Vinge - A Fire Upon the Deep
+        ],
+    },
 ]

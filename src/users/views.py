@@ -468,6 +468,21 @@ def sync_external_lists_now(request):
 
 
 @require_POST
+def sync_all_tracked_media_now(request):
+    """Trigger an immediate full-library metadata sync."""
+    from app.tasks import sync_all_tracked_media  # noqa: PLC0415
+
+    sync_all_tracked_media.delay()
+    messages.success(
+        request,
+        "Full library sync queued — this can take a while for large libraries, "
+        "check the logs for progress.",
+    )
+    logger.info("Manual full library sync triggered by %s", request.user)
+    return redirect("advanced")
+
+
+@require_POST
 def clear_search_cache(request):
     """Clear all cached search entries."""
     deleted = cache.delete_pattern("search_*")

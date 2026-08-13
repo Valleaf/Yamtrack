@@ -52,24 +52,38 @@ ITEM_SORT_LABELS = {
 
 def _get_items_per_page(request):
     try:
-        per_page = int(request.GET.get("per_page", DEFAULT_COLLECTION_ITEMS_PER_PAGE))
+        raw = request.GET.get("per_page")
+        per_page = int(raw) if raw is not None else None
     except (TypeError, ValueError):
-        return DEFAULT_COLLECTION_ITEMS_PER_PAGE
+        per_page = None
 
-    if per_page not in COLLECTION_ITEMS_PER_PAGE_CHOICES:
-        return DEFAULT_COLLECTION_ITEMS_PER_PAGE
-    return per_page
+    if per_page is not None and per_page not in COLLECTION_ITEMS_PER_PAGE_CHOICES:
+        per_page = None
+
+    if request.user.is_authenticated:
+        if per_page is not None:
+            return int(request.user.update_preference("collection_items_per_page", per_page))
+        return request.user.collection_items_per_page
+
+    return per_page if per_page is not None else DEFAULT_COLLECTION_ITEMS_PER_PAGE
 
 
 def _get_columns(request):
     try:
-        columns = int(request.GET.get("columns", DEFAULT_COLLECTION_COLUMNS))
+        raw = request.GET.get("columns")
+        columns = int(raw) if raw is not None else None
     except (TypeError, ValueError):
-        return DEFAULT_COLLECTION_COLUMNS
+        columns = None
 
-    if columns not in COLLECTION_COLUMNS_CHOICES:
-        return DEFAULT_COLLECTION_COLUMNS
-    return columns
+    if columns is not None and columns not in COLLECTION_COLUMNS_CHOICES:
+        columns = None
+
+    if request.user.is_authenticated:
+        if columns is not None:
+            return int(request.user.update_preference("collection_columns", columns))
+        return request.user.collection_columns
+
+    return columns if columns is not None else DEFAULT_COLLECTION_COLUMNS
 
 
 def _get_collection_sort(request):

@@ -5,12 +5,13 @@ One-off, manually-launched helper for populating
 `src/app/external_lists_data.py`.
 
 It does NOT call the Yamtrack app, the Docker container, or Django at all --
-it's a standalone script that queries the TMDB and MusicBrainz public APIs
-directly, given a list of titles, and prints ready-to-paste Python dict
-literals in the exact shape `external_lists_data.py` expects:
+it's a standalone script that queries the TMDB, MusicBrainz, and Hardcover
+public APIs directly, given a list of titles, and prints ready-to-paste
+Python dict literals in the exact shape `external_lists_data.py` expects:
 
     {"rank": 1, "tmdb_id": 238},        # The Godfather
     {"rank": 2, "musicbrainz_id": "..."} # some album
+    {"rank": 3, "hardcover_id": 12345}   # some book
 
 It never writes to external_lists_data.py itself -- you review the printed
 output and paste it in by hand. This matches the project's "hand-resolved,
@@ -24,6 +25,7 @@ Run from anywhere (no venv/Django needed, just the stdlib):
     python resolve_external_lists.py --list sight_sound_top250 --type movie
     python resolve_external_lists.py --list 1001_albums --type music
     python resolve_external_lists.py --titles-file my_titles.txt --type movie
+    python resolve_external_lists.py --titles-file clarke_titles.txt --type book
     python resolve_external_lists.py --list bfi_best_films --interactive
 
 TMDB needs an API key. Provide it via:
@@ -33,6 +35,13 @@ TMDB needs an API key. Provide it via:
 
 MusicBrainz needs no key, but its API asks for a descriptive User-Agent
 and a courtesy rate limit (this script sleeps ~1.1s between calls).
+
+Hardcover needs a bearer token. Provide it via:
+    - env var HARDCOVER_TOKEN, or
+    - --hardcover-token on the command line, or
+    - it will prompt you once at runtime.
+(This is the same JWT already used elsewhere in the project, e.g.
+docker-compose.override.yml, for the BnF/Hardcover cover-resolution chain.)
 
 TITLE FILE FORMAT
 ------------------
@@ -51,6 +60,11 @@ ignore the artist segment if present (TMDB search doesn't need it, but
 supplying "Director - Title (Year)" won't break anything -- the "Director -"
 prefix is simply parsed off and unused for movie mode).
 
+For books, the same "Artist - " slot is used for the AUTHOR, e.g.
+"Arthur C. Clarke - Rendezvous with Rama (1973)". Same as music, this is
+optional but strongly recommended -- it narrows down author name matches
+and disambiguates common book titles.
+
 Lines starting with # are treated as comments and skipped.
 
 BUILT-IN TITLE SEEDS
@@ -65,9 +79,9 @@ want a different/longer cut of a list, supply your own titles with
 OUTPUT
 ------
 For each title:
-    - auto-picks the best match and prints the dict line (for music, this
-      prefers a candidate whose artist matches the supplied artist, when
-      one was given), OR
+    - auto-picks the best match and prints the dict line (for music and
+      books, this prefers a candidate whose artist/author matches the
+      supplied artist/author, when one was given), OR
     - with --interactive, shows the top 5 candidates and lets you pick,
       skip, or enter an ID manually.
 Ambiguous/no-match titles are always flagged for manual attention even
@@ -88,6 +102,7 @@ import json
 
 TMDB_BASE = "https://api.themoviedb.org/3"
 MUSICBRAINZ_BASE = "https://musicbrainz.org/ws/2"
+HARDCOVER_BASE = "https://api.hardcover.app/v1/graphql"
 USER_AGENT = "yamtrack-fork-external-lists-resolver/1.0 (manual one-off script)"
 
 # Known top-N titles already seeded as comments in external_lists_data.py,
@@ -135,6 +150,13 @@ def http_get_json(url: str, headers: dict | None = None) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
+def http_post_json(url: str, payload: dict, headers: dict | None = None) -> dict:
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=headers or {}, method="POST")
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
 def parse_entry(raw: str) -> tuple[str | None, str, str | None]:
     """Parse a title-file line into (artist, title, year).
 
@@ -143,6 +165,9 @@ def parse_entry(raw: str) -> tuple[str | None, str, str | None]:
     is present. Splits only on the FIRST " - " so titles containing
     " - " themselves (e.g. "Speakerboxxx/The Love Below") are safe as
     long as they don't also start with an "Artist - " pattern.
+
+    For books, this same (artist, title, year) shape is reused with
+    "artist" holding the author name -- see run_books().
     """
     text = raw.strip()
 
@@ -184,9 +209,9 @@ def tmdb_search(title: str, year: str | None, api_key: str) -> list[dict]:
 
 def _names_match(a: str, b: str) -> bool:
     """Loose case-insensitive comparison, ignoring 'The ' prefixes and
-    punctuation, to match artist names across minor formatting
+    punctuation, to match artist/author names across minor formatting
     differences (e.g. 'The Beatles' vs 'Beatles', 'Guns N' Roses' vs
-    'Guns N Roses').
+    'Guns N Roses', 'Arthur C. Clarke' vs 'Arthur C Clarke').
     """
     def norm(s: str) -> str:
         s = s.lower().strip()
@@ -229,6 +254,96 @@ def musicbrainz_search(title: str, artist: str | None = None) -> list[dict]:
     return out
 
 
+def hardcover_search(title: str, author: str | None, token: str) -> list[dict]:
+    """Query Hardcover's GraphQL API for candidate books matching title
+    (and optionally author). Uses an exact-ish title filter first (fast,
+    precise); falls back to Hardcover's fuzzy `search()` field if that
+    comes back empty, since exact title matching is brittle against
+    subtitle/edition variance (e.g. "Rendezvous with Rama" vs "Rendezvous
+    with Rama (Rama, #1)").
+    """
+    headers = {
+        "Authorization": token if token.lower().startswith("bearer ") else f"Bearer {token}",
+        "Content-Type": "application/json",
+        "User-Agent": USER_AGENT,
+    }
+
+    where = {"title": {"_eq": title}}
+    if author:
+        where = {
+            "_and": [
+                {"title": {"_eq": title}},
+                {"contributions": {"author": {"name": {"_eq": author}}}},
+            ],
+        }
+
+    query = """
+    query BooksLookup($where: books_bool_exp!) {
+        books(where: $where, limit: 5, order_by: {users_count: desc}) {
+            id
+            title
+            release_date
+            contributions {
+                author {
+                    name
+                }
+            }
+        }
+    }
+    """
+    data = http_post_json(
+        HARDCOVER_BASE,
+        {"query": query, "variables": {"where": where}},
+        headers=headers,
+    )
+    results = (data.get("data") or {}).get("books") or []
+
+    if not results:
+        # Fall back to fuzzy full-text search, which tolerates subtitle/
+        # edition noise that an exact _eq title filter won't.
+        search_query = """
+        query SearchBooks($q: String!) {
+            search(query: $q, query_type: "book", per_page: 5) {
+                results
+            }
+        }
+        """
+        fuzzy_q = f"{author} {title}" if author else title
+        data = http_post_json(
+            HARDCOVER_BASE,
+            {"query": search_query, "variables": {"q": fuzzy_q}},
+            headers=headers,
+        )
+        raw = (data.get("data") or {}).get("search") or {}
+        hits = (raw.get("results") or {}).get("hits") or []
+        out = []
+        for hit in hits[:5]:
+            doc = hit.get("document", hit)
+            out.append({
+                "id": doc.get("id"),
+                "title": doc.get("title"),
+                "author": (doc.get("author_names") or [""])[0] if doc.get("author_names") else "",
+                "year": str(doc.get("release_year") or ""),
+                "url": f"https://hardcover.app/books/{doc.get('slug', '')}",
+            })
+        return out
+
+    out = []
+    for b in results:
+        b_author = ""
+        if b.get("contributions"):
+            first = b["contributions"][0] or {}
+            b_author = (first.get("author") or {}).get("name", "")
+        out.append({
+            "id": b["id"],
+            "title": b.get("title"),
+            "author": b_author,
+            "year": (b.get("release_date") or "")[:4],
+            "url": f"https://hardcover.app/books/{b['id']}",
+        })
+    return out
+
+
 def get_tmdb_key(cli_key: str | None) -> str:
     key = cli_key or os.environ.get("TMDB_API")
     if key:
@@ -238,6 +353,17 @@ def get_tmdb_key(cli_key: str | None) -> str:
         print("No TMDB API key provided, aborting.", file=sys.stderr)
         sys.exit(1)
     return key
+
+
+def get_hardcover_token(cli_token: str | None) -> str:
+    token = cli_token or os.environ.get("HARDCOVER_TOKEN")
+    if token:
+        return token
+    token = input("Enter your Hardcover API bearer token: ").strip()
+    if not token:
+        print("No Hardcover token provided, aborting.", file=sys.stderr)
+        sys.exit(1)
+    return token
 
 
 def load_titles(args) -> list[str]:
@@ -263,6 +389,11 @@ def format_movie_entry(rank: int, tmdb_id: int, title: str) -> str:
 def format_music_entry(rank: int, mbid: str, title: str, artist: str) -> str:
     label = f"{artist} - {title}" if artist else title
     return f'            {{"rank": {rank}, "musicbrainz_id": "{mbid}"}},   # {label}'
+
+
+def format_book_entry(rank: int, hardcover_id: int, title: str, author: str) -> str:
+    label = f"{author} - {title}" if author else title
+    return f'            {{"rank": {rank}, "hardcover_id": {hardcover_id}}},   # {label}'
 
 
 def run_movies(titles: list[str], api_key: str, interactive: bool) -> list[str]:
@@ -389,9 +520,89 @@ def run_music(titles: list[str], interactive: bool) -> list[str]:
     return lines
 
 
+def run_books(titles: list[str], token: str, interactive: bool) -> list[str]:
+    lines = []
+    unresolved = []
+    auto_disambiguated = 0
+    for rank, raw in enumerate(titles, start=1):
+        author, title, _year = parse_entry(raw)
+        try:
+            candidates = hardcover_search(title, author, token)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  [{rank}] ERROR searching '{raw}': {exc}", file=sys.stderr)
+            unresolved.append(raw)
+            time.sleep(0.5)
+            continue
+
+        if not candidates:
+            print(f"  [{rank}] NO MATCH: '{raw}'", file=sys.stderr)
+            lines.append(f'            # {{"rank": {rank}, "hardcover_id": None}},   # NO MATCH: {raw}')
+            unresolved.append(raw)
+            time.sleep(0.5)
+            continue
+
+        # If an author was supplied, prefer a candidate whose author
+        # credit actually matches it -- same logic as music's artist
+        # matching, mainly to cut down false positives on common titles.
+        chosen = candidates[0]
+        author_matched = False
+        if author:
+            for c in candidates:
+                if c.get("author") and _names_match(c["author"], author):
+                    chosen = c
+                    author_matched = True
+                    break
+
+        if interactive:
+            print(f"\n[{rank}] '{raw}' candidates:")
+            for i, c in enumerate(candidates):
+                marker = " <-- author match" if author and c.get("author") and _names_match(c["author"], author) else ""
+                print(f"    {i + 1}. {c.get('author', '?')} - {c['title']} ({c.get('year', '?')}){marker}  {c.get('url', '')}")
+            print("    s. skip / enter manual id")
+            default = str(candidates.index(chosen) + 1) if author_matched else "1"
+            sel = input(f"  Pick [{default}]: ").strip() or default
+            if sel.lower() == "s":
+                manual = input("  Manual hardcover_id (blank to skip): ").strip()
+                if not manual:
+                    unresolved.append(raw)
+                    time.sleep(0.5)
+                    continue
+                chosen = {"id": int(manual), "title": raw, "author": author or ""}
+            else:
+                idx = int(sel) - 1
+                chosen = candidates[idx]
+        elif author_matched:
+            auto_disambiguated += 1
+        elif len(candidates) > 1 or author:
+            reason = "no author-matched candidate" if author else "no author supplied"
+            print(
+                f"  [{rank}] AMBIGUOUS ({reason}, picked top result) for '{raw}': "
+                + ", ".join(f"{c.get('author', '?')} - {c['title']} ({c.get('year', '?')})" for c in candidates),
+                file=sys.stderr,
+            )
+
+        try:
+            hid = int(chosen["id"])
+        except (TypeError, ValueError):
+            print(f"  [{rank}] ERROR: non-numeric hardcover id for '{raw}': {chosen.get('id')}", file=sys.stderr)
+            lines.append(f'            # {{"rank": {rank}, "hardcover_id": None}},   # BAD ID: {raw}')
+            unresolved.append(raw)
+            time.sleep(0.5)
+            continue
+
+        lines.append(format_book_entry(rank, hid, chosen.get("title", raw), chosen.get("author", "")))
+        time.sleep(0.5)  # be polite to Hardcover
+
+    if unresolved:
+        print(f"\n{len(unresolved)} unresolved titles -- see NO MATCH / ERROR lines above.", file=sys.stderr)
+    if auto_disambiguated:
+        print(f"{auto_disambiguated} titles auto-resolved via author match.", file=sys.stderr)
+    return lines
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve titles to TMDB/MusicBrainz IDs for external_lists_data.py",
+        description="Resolve titles to TMDB/MusicBrainz/Hardcover IDs for external_lists_data.py",
     )
     parser.add_argument(
         "--list",
@@ -401,14 +612,19 @@ def main():
     parser.add_argument(
         "--titles-file",
         help="Path to a text file, one title per line (optionally "
-        "'Artist - Title (Year)'). Overrides bundled seed titles.",
+        "'Artist - Title (Year)' or 'Author - Title (Year)' for books). "
+        "Overrides bundled seed titles.",
     )
     parser.add_argument(
         "--type",
-        choices=["movie", "music"],
+        choices=["movie", "music", "book"],
         help="Media type to resolve against. Inferred from --list if omitted.",
     )
     parser.add_argument("--tmdb-key", help="TMDB v3 API key (else uses TMDB_API env var, else prompts).")
+    parser.add_argument(
+        "--hardcover-token",
+        help="Hardcover API bearer token (else uses HARDCOVER_TOKEN env var, else prompts).",
+    )
     parser.add_argument(
         "--interactive",
         action="store_true",
@@ -421,7 +637,7 @@ def main():
 
     media_type = args.type or (LIST_MEDIA_TYPE.get(args.list) if args.list else None)
     if not media_type:
-        parser.error("Could not infer --type; specify --type movie|music explicitly")
+        parser.error("Could not infer --type; specify --type movie|music|book explicitly")
 
     titles = load_titles(args)
     print(f"Resolving {len(titles)} titles as '{media_type}'...\n", file=sys.stderr)
@@ -429,6 +645,9 @@ def main():
     if media_type == "movie":
         api_key = get_tmdb_key(args.tmdb_key)
         lines = run_movies(titles, api_key, args.interactive)
+    elif media_type == "book":
+        token = get_hardcover_token(args.hardcover_token)
+        lines = run_books(titles, token, args.interactive)
     else:
         lines = run_music(titles, args.interactive)
 

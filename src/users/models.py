@@ -408,6 +408,16 @@ class User(AbstractUser):
         choices=CalendarLayoutChoices,
     )
 
+    # Collection preferences
+    collection_items_per_page = models.PositiveSmallIntegerField(
+        default=96,
+        help_text="Number of items per page on collection pages",
+    )
+    collection_columns = models.PositiveSmallIntegerField(
+        default=12,
+        help_text="Number of grid columns on collection pages",
+    )
+
     # Lists preferences
     lists_sort = models.CharField(
         max_length=20,
@@ -529,6 +539,14 @@ class User(AbstractUser):
             models.CheckConstraint(
                 name="calendar_layout_valid",
                 condition=models.Q(calendar_layout__in=CalendarLayoutChoices.values),
+            ),
+            models.CheckConstraint(
+                name="collection_items_per_page_valid",
+                condition=models.Q(collection_items_per_page__in=[6, 12, 24, 48, 96]),
+            ),
+            models.CheckConstraint(
+                name="collection_columns_valid",
+                condition=models.Q(collection_columns__in=[3, 4, 5, 6, 8, 12, 24]),
             ),
             models.CheckConstraint(
                 name="lists_sort_valid",

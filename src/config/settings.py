@@ -560,6 +560,9 @@ DB_BACKUP_DAY_OF_WEEK = config("DB_BACKUP_DAY_OF_WEEK", default=0, cast=int)  # 
 DB_BACKUP_HOUR = config("DB_BACKUP_HOUR", default=3, cast=int)
 DB_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 
+MEDIA_SYNC_DAY_OF_MONTH = config("MEDIA_SYNC_DAY_OF_MONTH", default=1, cast=int)
+MEDIA_SYNC_HOUR = config("MEDIA_SYNC_HOUR", default=4, cast=int)
+
 CELERY_BEAT_SCHEDULE = {
     "reload_calendar": {
         "task": "Reload calendar",
@@ -580,6 +583,18 @@ CELERY_BEAT_SCHEDULE = {
     "sync_external_lists": {
         "task": "Sync external lists",
         "schedule": 60 * 60 * 24 * 7,  # weekly
+    },
+    "sync_all_tracked_media": {
+        "task": "Sync all tracked media",
+        # Monthly full-library refresh of titles/artwork/release years.
+        # Runs off-peak by default (day 1, 4am); configurable since a
+        # large library can mean a lot of provider calls even with the
+        # rate limiters, so an admin may want it further off-hours.
+        "schedule": crontab(
+            day_of_month=MEDIA_SYNC_DAY_OF_MONTH,
+            hour=MEDIA_SYNC_HOUR,
+            minute=0,
+        ),
     },
     "backup_database": {
         "task": "Backup database",

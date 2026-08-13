@@ -8,30 +8,28 @@
 - [ ] studios/artists button not working
 - [ ] loading bnf sometimes crashes.
 - [ ] faster statistics. Maybe save them in a way ? And maybe open the page, add a spinner and load etc. Very slow at the moment.
-- [ ] artists page is empty. Also from an album i should be able to click on the artist and get to that page.
-- [ ] release mail does not show image (For instance movie hope by Na Hong-jin 2026, no img ) and missing a linebreak before "Enjoy your media"
 
-# 🏆 Curated Lists & Awards in a new tab
-
-### External Lists
-
-- [ ] Letterboxd Top 250.
-- [ ] Show list on click
-- [ ] Sight & Sound Top 250.
-- [ ] Edgar Wright's 100 Favorites.
-- [ ] BFI Best Films.
-- [ ] 1001 Albums You Must Hear Before You Die.
-- [ ] Other popular curated lists.
-
-more festivals, cesar, sundance, etc
-
-# 🔵 Nice To Have
+- 🔵 Nice To Have
+  - On stats, most watched actors, on hover show the films
 
 - [ ] calendar with images, seems to sometimes work and sometimes not
-- [ ] Images in new releases email and indiciation if it's a season finale or somehting, Only send if it is season/series final actually.
-- [ ] check features from https://github.com/dannyvfilms/Yamtrack
-- [ ] Mobile App : Notifictations
-- [ ] auto global sync on all items ? Monthly maybe or something
-- [ ] CSS refont
-- [ ] country map, also a ranking list on the side
-- [ ] better css for collection , and overall
+- [ ] [ ] check features from https://github.com/dannyvfilms/Yamtrack
+- [ ] [ ] auto global sync , is it running ?
+- [ ] CSS refont for collections, give me options. Description of the series, summary, sub series, timeline, group items that are just regional differences (for games mainly),etc
+- [ ] [ ] country map, also a ranking list on the side
+- [ ] better css for collection , completed is not clear enough
+- [ ] bd collection ,order by series
+- [ ] colleciton, save line and page choice
+- [ ] actions from collections choice
+- [ ] options to look for posters (auto web search with options to select for user ))for collections
+- [ ] Music on the calendar ? (And notifs)
+- [ ] show actors in tv shows
+- [X] calendar wrong ? Futurama not appearing
+- [ ] statistics infinite loading
+- [ ] where is my data extract
+
+Lists :
+
+arthur c clarke
+
+sf masterworks

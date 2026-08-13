@@ -231,7 +231,7 @@ MEDIA_TYPE_CONFIG = {
             <circle cx="6" cy="18" r="3"/>
             <circle cx="18" cy="16" r="3"/>""",
         "unit": ("#", "Listen"),
-        "date_key": "year",
+        "date_key": "release_date",
     },
 }
 

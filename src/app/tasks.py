@@ -196,6 +196,125 @@ def backfill_release_years(progress_every=200):
     return {"total": total, "updated": updated, "no_year": no_year, "failed": failed}
 
 
+@shared_task(name="Sync all tracked media")
+def sync_all_tracked_media(progress_every=50):
+    """Refresh provider metadata for every tracked, non-manual item.
+
+    The per-item "Sync" button on a detail page (app.views.sync_metadata)
+    does this one item at a time; this task is the bulk equivalent, meant
+    to run on a schedule (see CELERY_BEAT_SCHEDULE) so titles, artwork,
+    and release-year data stay current without anyone having to click
+    through their whole library by hand.
+
+    Scope: TV, movie, anime, manga, game, book, comic, boardgame, and
+    music Items that have at least one tracking row (BasicMedia via any
+    of the per-media-type models) -- i.e. actually tracked, not just
+    referenced (season/episode Items are refreshed as a side effect of
+    their parent TV item's fetch_releases() call, same as the manual
+    sync button). Manual entries are skipped since they have no provider
+    to sync against.
+
+    Deliberately reuses services.get_media_metadata rather than calling
+    provider APIs directly, so it goes through the same rate limiters as
+    everything else and benefits from any items that are already cache-warm.
+
+    Safe to re-run; every run is a full pass, not a delta. Trigger
+    manually with:
+        docker compose exec yamtrack python manage.py shell -c \\
+            "from app.tasks import sync_all_tracked_media; sync_all_tracked_media.delay()"
+    """
+    from app.date_utils import get_release_year_from_metadata  # noqa: PLC0415
+    from app.models import Item, MediaTypes, Sources  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    # Media types with their own top-level Item + tracking model. Seasons
+    # and episodes are intentionally excluded -- they're refreshed when
+    # their parent TV item's fetch_releases() runs below, same as the
+    # manual per-item sync button does for a TV show's seasons.
+    trackable_media_types = [
+        MediaTypes.TV.value,
+        MediaTypes.MOVIE.value,
+        MediaTypes.ANIME.value,
+        MediaTypes.MANGA.value,
+        MediaTypes.GAME.value,
+        MediaTypes.BOOK.value,
+        MediaTypes.COMIC.value,
+        MediaTypes.BOARDGAME.value,
+        MediaTypes.MUSIC.value,
+    ]
+
+    queryset = (
+        Item.objects.filter(media_type__in=trackable_media_types)
+        .exclude(source=Sources.MANUAL.value)
+        .distinct()
+    )
+
+    total = queryset.count()
+    updated = 0
+    unchanged = 0
+    failed = 0
+
+    logger.info("Full media sync: %s items to process", total)
+
+    for index, item in enumerate(queryset.iterator(chunk_size=progress_every), start=1):
+        try:
+            metadata = services.get_media_metadata(
+                item.media_type,
+                item.media_id,
+                item.source,
+            )
+        except Exception:
+            failed += 1
+            logger.exception(
+                "Full media sync failed for %s/%s/%s",
+                item.source, item.media_type, item.media_id,
+            )
+            continue
+
+        update_fields = []
+
+        if metadata.get("title") and metadata["title"] != item.title:
+            item.title = metadata["title"]
+            update_fields.append("title")
+
+        if metadata.get("image") and metadata["image"] != item.image:
+            item.image = metadata["image"]
+            update_fields.append("image")
+
+        country = metadata.get("country", "")
+        if country and country != item.country:
+            item.country = country
+            update_fields.append("country")
+
+        if item.release_year is None:
+            release_year = get_release_year_from_metadata(metadata)
+            if release_year is not None:
+                item.release_year = release_year
+                update_fields.append("release_year")
+
+        if update_fields:
+            item.save(update_fields=update_fields)
+            updated += 1
+        else:
+            unchanged += 1
+
+        # Picks up new seasons/episodes/releases for TV shows the same way
+        # the manual sync button does; cheap no-op for other media types.
+        item.fetch_releases(delay=True)
+
+        if index % progress_every == 0:
+            logger.info(
+                "Full media sync: %s/%s processed (updated=%s, unchanged=%s, failed=%s)",
+                index, total, updated, unchanged, failed,
+            )
+
+    logger.info(
+        "Full media sync complete: %s processed, updated=%s, unchanged=%s, failed=%s",
+        total, updated, unchanged, failed,
+    )
+    return {"total": total, "updated": updated, "unchanged": unchanged, "failed": failed}
+
+
 @shared_task(bind=True, name="Warm statistics cache")
 def warm_statistics_cache(self, user_id):
     """Rebuild and cache the all-time statistics context for one user.

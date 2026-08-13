@@ -1,35 +1,34 @@
 <a href="{% url 'collection_detail' collection.id %}"
-   class="group bg-[#1e2329] rounded-lg overflow-hidden hover:bg-[#2c3136] transition-colors ring-1 {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}ring-emerald-500/40{% else %}ring-white/5{% endif %}">
-  <div class="aspect-square relative overflow-hidden bg-[#2c3136]">
+   class="group block">
+  <div class="relative aspect-[2/3] rounded overflow-hidden bg-[#23272e] shadow-sm shadow-black/40 group-hover:shadow-lg group-hover:shadow-black/50 transition-shadow duration-200 {% if collection.card_stats.total and collection.card_stats.completed_pct == 100 %}ring-2 ring-emerald-400/70 shadow-emerald-500/20{% endif %}">
     <img src="{{ IMG_NONE }}"
          data-src="{{ collection.image }}"
          alt="{{ collection.name }}"
-         class="lazyload w-full h-full {% if collection.image != IMG_NONE %}object-cover{% endif %} group-hover:scale-105 transition-transform duration-200"
+         class="lazyload w-full h-full {% if collection.image != IMG_NONE %}object-cover{% endif %}"
          onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
-    {% if collection.card_stats.completed_pct == 100 and collection.card_stats.total %}
-      <div class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 backdrop-blur-md text-[11px] font-medium px-2 py-1 shadow-sm">
+    <div class="absolute inset-0 rounded ring-1 ring-inset ring-white/[0.06] pointer-events-none"></div>
+    {% if collection.card_stats.total and collection.card_stats.completed_pct == 100 %}
+      <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-emerald-500/30 to-transparent pointer-events-none"></div>
+      <div class="absolute top-1.5 right-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-500 text-white ring-1 ring-emerald-300/50 text-[10px] font-bold px-2 py-0.5 shadow-md shadow-emerald-900/40">
         {% include "app/icons/states/completed.svg" with classes="w-3 h-3" %}
         Complete
       </div>
     {% endif %}
   </div>
-  <div class="p-3">
-    <p class="text-sm font-medium text-white truncate">{{ collection.name }}</p>
-    <p class="text-xs text-gray-400 mt-1">
+  <div class="mt-2.5">
+    <p class="text-[13.5px] font-semibold text-gray-100 leading-tight truncate">{{ collection.name }}</p>
+    <p class="text-[11.5px] text-gray-500 mt-0.5 mb-1.5">
       {{ collection.card_stats.total }} item{{ collection.card_stats.total|pluralize }}
       {% if collection.source and collection.source != "manual" %}
-        &middot; <span class="text-indigo-400">{{ collection.source|cut:"_collection"|upper }}</span>
+        &middot; <span class="text-indigo-400 font-medium">{{ collection.source|cut:"_collection"|upper }}</span>
       {% endif %}
     </p>
-    {% if collection.card_stats.total %}
-      <div class="mt-3 space-y-1.5">
-        <div class="flex items-center justify-between text-[11px] text-gray-400">
-          <span>Completed</span>
-          <span>{{ collection.card_stats.completed_pct }}%</span>
+    {% if collection.card_stats.total and collection.card_stats.completed_pct != 100 %}
+      <div class="flex items-center gap-1.5">
+        <div class="flex-1 h-[3px] rounded-full bg-[#262b32] overflow-hidden">
+          <div class="h-full rounded-full bg-emerald-400" style="width: {{ collection.card_stats.completed_pct }}%"></div>
         </div>
-        <div class="h-1.5 overflow-hidden rounded-full bg-[#2a2f35]">
-          <div class="h-full rounded-full bg-indigo-500" style="width: {{ collection.card_stats.completed_pct }}%"></div>
-        </div>
+        <span class="text-[10.5px] text-gray-500 tabular-nums shrink-0">{{ collection.card_stats.completed_pct }}%</span>
       </div>
     {% endif %}
   </div>

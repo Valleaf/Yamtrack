@@ -12,7 +12,7 @@
 //
 // Bump CACHE_NAME whenever PRECACHE_URLS changes so stale entries get purged
 // on the next activate.
-const CACHE_NAME = 'yamtrack-v3';
+const CACHE_NAME = 'yamtrack-v4';
 const OFFLINE_URL = '/static/offline.html';
 
 const PRECACHE_URLS = [

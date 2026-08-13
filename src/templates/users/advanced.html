@@ -37,6 +37,32 @@
       </div>
 
       <div class="bg-[#39404b] p-5 rounded-lg mb-6">
+        <div class="flex items-center mb-3">
+          {% include "app/icons/vertical-sliders.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
+          <h3 class="text-base font-medium">Sync All Tracked Media</h3>
+        </div>
+        <p class="text-gray-400 mb-4 text-sm">
+          Refreshes titles, artwork, and release years for every tracked item from their
+          original providers — the same thing the “Sync” button on a detail page does, just for
+          your whole library at once.
+          <br>
+          Runs automatically once a month, but you can trigger it manually here. Can take a
+          while for large libraries since it goes through the same rate limiters as everything
+          else — check the container logs for progress.
+        </p>
+        <form method="post" action="{% url 'sync_all_tracked_media' %}">
+          {% csrf_token %}
+          <button type="submit"
+                  class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
+            {% include "app/icons/vertical-sliders.svg" with classes="w-4 h-4 mr-2" %}
+            Sync All Now
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-[#39404b] p-5 rounded-lg mb-6">
+        <div class="flex items-center mb-3">
+          {% include "app/icons/trashcan.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
           <h3 class="text-base font-medium">Clear Search Cache</h3>
         </div>
         <p class="text-gray-400 mb-4 text-sm">

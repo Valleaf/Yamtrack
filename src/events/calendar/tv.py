@@ -294,16 +294,20 @@ def process_season_episodes(item, metadata, events_bulk):
 
 
 def get_episode_datetime(episode, season_number, episode_number, tvmaze_map):
-    """Determine the most accurate air datetime for an episode."""
-    tvmaze_key = f"{season_number}_{episode_number}"
-    tvmaze_airstamp = tvmaze_map.get(tvmaze_key)
+    """Determine the most accurate air datetime for an episode.
 
-    if tvmaze_airstamp:
-        return datetime.fromisoformat(tvmaze_airstamp)
-
+    TVMaze and TMDB do not always number seasons the same way (e.g. shows
+    with a production-order vs. broadcast-order split, like Futurama).
+    Blindly trusting a TVMaze episode filed under the same season/episode
+    number as TMDB can silently attach a completely unrelated, stale date.
+    To guard against this, the TVMaze date is only used when it roughly
+    agrees with TMDB's own air_date for that episode; otherwise TMDB's
+    date is used as the source of truth.
+    """
+    tmdb_date = None
     if episode["air_date"]:
         try:
-            return date_parser(episode["air_date"])
+            tmdb_date = date_parser(episode["air_date"])
         except ValueError:
             logger.warning(
                 "Invalid air date for S%sE%s from TMDB: %s",
@@ -311,6 +315,30 @@ def get_episode_datetime(episode, season_number, episode_number, tvmaze_map):
                 episode_number,
                 episode["air_date"],
             )
+
+    tvmaze_key = f"{season_number}_{episode_number}"
+    tvmaze_airstamp = tvmaze_map.get(tvmaze_key)
+
+    if tvmaze_airstamp:
+        tvmaze_datetime = datetime.fromisoformat(tvmaze_airstamp)
+
+        max_days_apart = 30
+        if tmdb_date is None or abs(
+            (tvmaze_datetime.date() - tmdb_date.date()).days,
+        ) <= max_days_apart:
+            return tvmaze_datetime
+
+        logger.warning(
+            "TVMaze/TMDB season mismatch for S%sE%s: "
+            "TVMaze=%s TMDB=%s - using TMDB date",
+            season_number,
+            episode_number,
+            tvmaze_datetime,
+            tmdb_date,
+        )
+
+    if tmdb_date:
+        return tmdb_date
 
     return datetime.min.replace(tzinfo=ZoneInfo("UTC"))
 
