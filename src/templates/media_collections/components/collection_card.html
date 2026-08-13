@@ -19,16 +19,18 @@
     <p class="text-[13.5px] font-semibold text-gray-100 leading-tight truncate">{{ collection.name }}</p>
     <p class="text-[11.5px] text-gray-500 mt-0.5 mb-1.5">
       {{ collection.card_stats.total }} item{{ collection.card_stats.total|pluralize }}
+      &middot; {{ collection.card_stats.tracked }}/{{ collection.card_stats.total }} tracked
+      &middot; {{ collection.card_stats.completed }} complete
       {% if collection.source and collection.source != "manual" %}
         &middot; <span class="text-indigo-400 font-medium">{{ collection.source|cut:"_collection"|upper }}</span>
       {% endif %}
     </p>
-    {% if collection.card_stats.total and collection.card_stats.completed_pct != 100 %}
+    {% if collection.card_stats.total %}
       <div class="flex items-center gap-1.5">
         <div class="flex-1 h-[3px] rounded-full bg-[#262b32] overflow-hidden">
-          <div class="h-full rounded-full bg-emerald-400" style="width: {{ collection.card_stats.completed_pct }}%"></div>
+          <div class="h-full rounded-full {% if collection.card_stats.completed_pct == 100 %}bg-emerald-400{% else %}bg-indigo-400{% endif %}" style="width: {{ collection.card_stats.completed_pct }}%"></div>
         </div>
-        <span class="text-[10.5px] text-gray-500 tabular-nums shrink-0">{{ collection.card_stats.completed_pct }}%</span>
+        <span class="text-[10.5px] {% if collection.card_stats.completed_pct == 100 %}text-emerald-400{% else %}text-gray-500{% endif %} tabular-nums shrink-0">{{ collection.card_stats.completed_pct }}%</span>
       </div>
     {% endif %}
   </div>
