@@ -52,6 +52,15 @@ class CollectionDetailViewTests(TestCase):
         self.assertEqual(len(response.context["collection_items"]), 6)
         self.assertContains(response, "Add to Planned")
 
+    def test_collection_detail_accepts_series_position_sort(self):
+        self._add_items(2)
+        response = self.client.get(
+            reverse("collection_detail", kwargs={"collection_id": self.collection.id})
+            + "?item_sort=series_position"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["item_sort"], "series_position")
+
     def test_collection_detail_accepts_page_size_choice(self):
         self._add_items(60)
 

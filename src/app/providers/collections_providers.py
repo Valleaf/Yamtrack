@@ -7,6 +7,14 @@ from app.providers import services, tmdb
 
 logger = logging.getLogger(__name__)
 
+
+def _series_position(value):
+    try:
+        position = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    return position if position >= 0 else None
+
 SOURCE_CHOICES = [
     ("manual", "Manual"),
     ("tmdb_collection", "TMDB Collection"),
@@ -109,11 +117,15 @@ def _sync_collection(user, col_data, source_key):
                 update_fields.append("image")
             if update_fields:
                 item.save(update_fields=update_fields)
-        _, item_created = CollectionItem.objects.get_or_create(
+        series_position = _series_position(part.get("series_position"))
+        collection_item, item_created = CollectionItem.objects.get_or_create(
             collection=collection,
             item=item,
-            defaults={"notes": ""},
+            defaults={"notes": "", "series_position": series_position},
         )
+        if not item_created and collection_item.series_position != series_position:
+            collection_item.series_position = series_position
+            collection_item.save(update_fields=["series_position"])
         if item_created:
             added += 1
 
@@ -487,6 +499,7 @@ def _fetch_bnf_series(series_name: str) -> dict | None:
             "media_type": MediaTypes.COMIC.value,
             "title": r["title"],
             "image": r.get("image", ""),
+            "series_position": r.get("series_position"),
         }
         for r in records
     ]

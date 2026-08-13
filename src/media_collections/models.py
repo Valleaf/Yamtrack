@@ -159,6 +159,7 @@ class CollectionItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
     notes = models.CharField(max_length=255, blank=True, default="")
+    series_position = models.PositiveIntegerField(null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:

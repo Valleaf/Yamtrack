@@ -756,6 +756,7 @@ def _dc_to_result(dc_el) -> dict | None:
     ark_short = ark.split("/")[-1]  # e.g. cb12345678x — no slashes, URL-safe
     identifiers = extract_identifiers(dc_el)
     creator = _get_first(dc_el, "creator")
+    _, series_position = _extract_series_info(dc_el)
     return {
         "media_id": ark_short,
         "source": Sources.BNF.value,
@@ -768,6 +769,7 @@ def _dc_to_result(dc_el) -> dict | None:
         # Extra fields used by the import confidence scorer
         "creator": creator,
         "subtitle": creator or None,
+        "series_position": series_position,
     }
 
 

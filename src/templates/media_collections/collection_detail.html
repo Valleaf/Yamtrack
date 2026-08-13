@@ -199,6 +199,9 @@
       </a>
       <div class="p-3">
         <p class="text-sm font-medium text-white truncate">{{ item.title }}</p>
+        {% if item.media_type == "comic" and ci.series_position %}
+          <p class="text-xs text-indigo-300 mt-1">Issue {{ ci.series_position }}</p>
+        {% endif %}
         {% if ci.notes %}
           <p class="text-xs text-gray-500 truncate mt-1">{{ ci.notes }}</p>
         {% endif %}

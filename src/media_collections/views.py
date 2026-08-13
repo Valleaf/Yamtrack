@@ -3,8 +3,9 @@ import logging
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -44,17 +45,19 @@ DEFAULT_COLLECTION_COLUMNS = 12
 COLLECTION_SORT_CHOICES = ("name", "items", "tracked", "completed")
 DEFAULT_COLLECTION_SORT = "name"
 
-ITEM_SORT_CHOICES = ("date_added", "title", "release_year")
+ITEM_SORT_CHOICES = ("date_added", "title", "release_year", "series_position")
 DEFAULT_ITEM_SORT = "release_year"
 ITEM_SORT_ORDER_BY = {
     "date_added": ("date_added",),
     "title": ("item__title",),
     "release_year": ("item__release_year", "item__title"),
+    "series_position": ("series_position", "item__title"),
 }
 ITEM_SORT_LABELS = {
     "date_added": "Date Added (Oldest)",
     "title": "Title (A-Z)",
     "release_year": "Release Year (Oldest)",
+    "series_position": "Series Position",
 }
 
 
@@ -126,6 +129,35 @@ def _get_item_sort(request):
     if sort not in ITEM_SORT_CHOICES:
         return DEFAULT_ITEM_SORT
     return sort
+
+
+def _series_position(value):
+    try:
+        position = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    return position if position >= 0 else None
+
+
+def _backfill_series_positions(collection):
+    """Fill missing BD positions from already-cached provider metadata."""
+    items = CollectionItem.objects.filter(
+        collection=collection,
+        series_position__isnull=True,
+        item__media_type="comic",
+        item__source__in=("bnf", "comicvine"),
+    ).select_related("item")
+    for collection_item in items:
+        metadata = cache.get(
+            f"{collection_item.item.source}_{collection_item.item.media_type}_{collection_item.item.media_id}"
+        )
+        position = _series_position(
+            (metadata or {}).get("details", {}).get("series_position")
+            or (metadata or {}).get("series_position")
+        )
+        if position is not None:
+            collection_item.series_position = position
+            collection_item.save(update_fields=["series_position"])
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +242,7 @@ def collection_detail(request, collection_id):
 
     media_type_filter = request.GET.get("type", "all")
     stats = collection.get_stats(request.user)
+    _backfill_series_positions(collection)
 
     item_sort = _get_item_sort(request)
     collection_items = (
@@ -217,6 +250,11 @@ def collection_detail(request, collection_id):
         .select_related("item")
         .order_by(*ITEM_SORT_ORDER_BY[item_sort])
     )
+    if item_sort == "series_position":
+        collection_items = collection_items.order_by(
+            F("series_position").asc(nulls_last=True),
+            "item__title",
+        )
     if media_type_filter != "all":
         collection_items = collection_items.filter(item__media_type=media_type_filter)
 
@@ -420,11 +458,18 @@ def _sync_items(collection, items):
             if update_fields:
                 item.save(update_fields=update_fields)
 
-        _, created = CollectionItem.objects.get_or_create(
+        series_position = _series_position(entry.get("series_position"))
+        collection_item, created = CollectionItem.objects.get_or_create(
             collection=collection,
             item=item,
-            defaults={"notes": ""},
+            defaults={
+                "notes": "",
+                "series_position": series_position,
+            },
         )
+        if not created and collection_item.series_position != series_position:
+            collection_item.series_position = series_position
+            collection_item.save(update_fields=["series_position"])
         if created:
             added += 1
 
