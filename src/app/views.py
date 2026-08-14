@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from urllib.parse import urlencode
 
 from django.apps import apps
 from django.conf import settings
@@ -1945,6 +1946,16 @@ def statistics_content(request):
     context = {**stats.get_statistics_context(request.user, start_date, end_date)}
 
     return render(request, "app/components/statistics_content.html", context)
+
+
+@require_POST
+def statistics_refresh(request):
+    """Invalidate this user's statistics cache before the next HTMX load."""
+    stats.invalidate_statistics_cache(request.user.id)
+    start_date = request.POST.get("start-date", "all")
+    end_date = request.POST.get("end-date", "all")
+    query = urlencode({"start-date": start_date, "end-date": end_date})
+    return redirect(f"{reverse('statistics')}?{query}")
 
 
 @require_GET

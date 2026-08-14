@@ -106,6 +106,7 @@ urlpatterns = [
     ),
     path("statistics", views.statistics, name="statistics"),
     path("statistics/content", views.statistics_content, name="statistics_content"),
+    path("statistics/refresh", views.statistics_refresh, name="statistics_refresh"),
     path(
         "statistics/awards/<slug:award_slug>",
         views.award_progress_detail,

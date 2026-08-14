@@ -33,9 +33,26 @@
   clip-path: inset(0 50% 0 0);
 }
 
+/* Keep content clear of the sidebar and viewport edges on every layout. */
+.main-content {
+  padding-inline: 1.25rem !important;
+}
+
+@media (width >= 40rem) {
+  .main-content {
+    padding-inline: 1.5rem !important;
+  }
+}
+
+@media (width >= 64rem) {
+  .main-content {
+    padding-inline: 2.5rem !important;
+  }
+}
+
 
 .media-grid {
-  @apply grid grid-cols-2 xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4;
+  @apply grid grid-cols-2 xs:grid-cols-[repeat(auto-fit,minmax(160px,220px))] justify-start gap-4;
 }
 
 .collection-grid {
@@ -230,4 +247,29 @@
 }
 .safe-right {
   padding-right: env(safe-area-inset-right);
+}
+
+/* Keep the mobile navigation out of the document flow at narrow widths.
+   The explicit translate declaration also covers browsers/builds where the
+   generated Tailwind utility uses the separate `translate` property. */
+.responsive-main {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (width < 64rem) {
+  .mobile-sidebar {
+    position: fixed !important;
+    translate: -100% 0 !important;
+  }
+
+  .mobile-sidebar.mobile-sidebar-open {
+    translate: 0 0 !important;
+  }
+}
+
+@media (width >= 64rem) {
+  .mobile-sidebar {
+    translate: 0 0;
+  }
 }

@@ -21,10 +21,11 @@
 - [ ] Music releases on the calendar page
 - [ ] Statistics loading everytime they're opened. And it's long. Alternative to store them, maybe recalculate them every once in a while
 - [ ] where is my data extract
-- [ ] Tiny bit of margin on the left and right side (Very small)
 
 Lists :
 
 arthur c clarke
 
 sf masterworks
+
+and more lists
