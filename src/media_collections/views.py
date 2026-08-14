@@ -383,7 +383,8 @@ def edit(request, collection_id):
     if request.method == "POST":
         collection.name = request.POST.get("name", collection.name).strip()
         collection.description = request.POST.get("description", collection.description).strip()
-        collection.save()
+        collection.poster_url = request.POST.get("poster_url", "").strip()
+        collection.save(update_fields=["name", "description", "poster_url"])
         messages.success(request, "Collection updated.")
         next_url = _safe_next_url(request)
         if next_url:
@@ -518,9 +519,15 @@ def sync_from_source(request, collection_id):
             messages.error(request, "Source returned no data.")
         else:
             added = _sync_items(collection, data["items"])
+            update_fields = []
             if data.get("name"):
                 collection.name = data["name"]
-                collection.save(update_fields=["name"])
+                update_fields.append("name")
+            if data.get("description"):
+                collection.description = data["description"]
+                update_fields.append("description")
+            if update_fields:
+                collection.save(update_fields=update_fields)
             messages.success(request, f"Sync complete: {added} new items added.")
     except Exception as exc:
         logger.exception("Sync failed")

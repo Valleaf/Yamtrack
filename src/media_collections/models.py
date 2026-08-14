@@ -46,6 +46,7 @@ class Collection(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    poster_url = models.URLField(blank=True, default="")
     source = models.CharField(max_length=50, blank=True, default="manual")
     source_id = models.CharField(max_length=255, blank=True, default="")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -71,6 +72,8 @@ class Collection(models.Model):
 
     @property
     def image(self):
+        if self.poster_url:
+            return self.poster_url
         first = self.collectionitem_set.select_related("item").first()
         return first.item.image if first else settings.IMG_NONE
 

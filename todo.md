@@ -17,8 +17,7 @@
 
 - [ ] CSS refont for collections, give me options. Description of the series, summary, sub series, timeline, group items that are just regional differences (for games mainly),etc
 - [ ] country map, also a ranking list on the side
-- [ ] options to look for posters (auto web search with options to select for user ))for collections
-- [ ] Music releases on the calendar page
+- [ ] [ ] Music releases on the calendar page
 - [ ] Statistics loading everytime they're opened. And it's long. Alternative to store them, maybe recalculate them every once in a while
 - [ ] where is my data extract
 
