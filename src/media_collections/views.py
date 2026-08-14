@@ -393,6 +393,7 @@ def edit(request, collection_id):
 
     return render(request, "media_collections/edit.html", {
         "collection": collection,
+        "poster_choices": collection.collectionitem_set.select_related("item").order_by("date_added"),
     })
 
 
