@@ -279,7 +279,11 @@ def extract_identifiers(dc_el) -> dict[str, str | None]:
                 isbn13 = isbn13 or raw
             else:
                 ean = ean or digits_only
-        elif re.fullmatch(r"\d{9}[\dX]", digits_only, re.IGNORECASE) and not isbn10:
+        # BnF occasionally emits a shortened registration-group form such as
+        # ``2-205-0000-X`` (9 characters after separators are removed), so
+        # accept both the canonical 10-character ISBN-10 and that observed
+        # catalogue variant.
+        elif re.fullmatch(r"\d{8,9}[\dX]", digits_only, re.IGNORECASE) and not isbn10:
             isbn10 = raw.upper()
 
     for desc in _get_all(dc_el, "description"):
@@ -363,11 +367,23 @@ def _probe_image_url(url: str) -> bool:
         return False
 
     content_length = resp.headers.get("Content-Length")
-    if content_length is not None and int(content_length) < _MIN_VALID_IMAGE_BYTES:
-        logger.debug(
-            "Cover probe placeholder-sized (%s bytes) for %s", content_length, url,
-        )
-        return False
+    if content_length is not None:
+        try:
+            if int(content_length) < _MIN_VALID_IMAGE_BYTES:
+                logger.debug(
+                    "Cover probe placeholder-sized (%s bytes) for %s",
+                    content_length,
+                    url,
+                )
+                return False
+        except (TypeError, ValueError):
+            # A malformed header should not make metadata loading fail. The
+            # content type and HTTP status still provide useful validation.
+            logger.debug(
+                "Cover probe received invalid Content-Length (%r) for %s",
+                content_length,
+                url,
+            )
 
     return True
 

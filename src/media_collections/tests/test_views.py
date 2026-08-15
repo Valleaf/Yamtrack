@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from unittest.mock import patch
 
 from app.models import Item, MediaTypes, Sources
+from app.providers import collections_providers
 from media_collections.models import (
     Collection,
     CollectionItem,
@@ -48,8 +50,8 @@ class CollectionDetailViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["items_per_page"], 6)
-        self.assertEqual(len(response.context["collection_items"]), 6)
+        self.assertEqual(response.context["items_per_page"], 96)
+        self.assertEqual(len(response.context["collection_items"]), 60)
         self.assertContains(response, "Add to Planned")
 
     def test_collection_detail_accepts_series_position_sort(self):
@@ -83,7 +85,7 @@ class CollectionDetailViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["items_per_page"], 6)
+        self.assertEqual(response.context["items_per_page"], 96)
 
     def test_collection_detail_accepts_column_choice(self):
         self._add_items(8)
@@ -96,8 +98,115 @@ class CollectionDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["columns"], 4)
 
+    @patch("app.providers.tmdb.search")
+    def test_poster_search_returns_selectable_candidates(self, mock_search):
+        mock_search.return_value = {
+            "results": [
+                {
+                    "title": "Candidate Poster",
+                    "year": "2020",
+                    "image": "https://image.example/poster.jpg",
+                },
+            ],
+        }
+
+        response = self.client.get(
+            reverse("collection_poster_search", kwargs={"collection_id": self.collection.id}),
+            {"q": "candidate"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["results"][0]["image"], "https://image.example/poster.jpg")
+        self.assertEqual(mock_search.call_count, 2)
+
+    @patch("app.providers.tmdb.search")
+    def test_poster_search_skips_short_queries(self, mock_search):
+        response = self.client.get(
+            reverse("collection_poster_search", kwargs={"collection_id": self.collection.id}),
+            {"q": "x"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"results": []})
+        mock_search.assert_not_called()
+
+    @patch("app.providers.collections_providers.services.api_request")
+    def test_hardcover_series_source_fetches_book_items(self, mock_request):
+        mock_request.return_value = {
+            "data": {
+                "series_by_pk": {
+                    "id": 123,
+                    "name": "Barry Trotter",
+                    "book_series": [
+                        {
+                            "position": 1,
+                            "book": {
+                                "id": 456,
+                                "title": "Barry Trotter and the Shameless Parody",
+                                "cached_image": "https://image.example/barry.jpg",
+                            },
+                        },
+                    ],
+                },
+            },
+        }
+
+        result = collections_providers.fetch("hardcover_series", "123")
+
+        self.assertEqual(result["name"], "Barry Trotter")
+        self.assertEqual(result["items"][0]["media_id"], "456")
+        self.assertEqual(result["items"][0]["series_position"], 1)
+        mock_request.assert_called_once()
+
+    @patch("app.providers.collections_providers.services.api_request")
+    def test_hardcover_series_source_search_returns_series(self, mock_request):
+        mock_request.return_value = {
+            "data": {
+                "search": {
+                    "results": {
+                        "hits": [
+                            {"document": {
+                                "id": 123,
+                                "name": "Barry Trotter",
+                                "cached_image": "https://image.example/series.jpg",
+                            }},
+                        ],
+                    },
+                },
+            },
+        }
+
+        result = collections_providers.search("hardcover_series", "Barry")
+
+        self.assertEqual(result, [{
+            "id": "123",
+            "name": "Barry Trotter",
+            "image": "https://image.example/series.jpg",
+            "year": None,
+        }])
+
+    @patch("media_collections.views.col_providers.search")
+    def test_source_search_renders_selection_controls_for_collection_modal(self, mock_search):
+        mock_search.return_value = [{
+            "id": "123",
+            "name": "Barry Trotter",
+            "image": "",
+            "year": None,
+        }]
+
+        response = self.client.get(
+            reverse("collection_search_source"),
+            {"source": "hardcover_series", "q": "Barry"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn("col-name-input", content)
+        self.assertIn("source-search-results", content)
+        self.assertIn("Barry Trotter", content)
+
     def test_collections_overview_uses_default_page_size(self):
-        for index in range(8):
+        for index in range(100):
             Collection.objects.create(
                 name=f"Auto Collection {index}",
                 owner=self.user,
@@ -108,9 +217,9 @@ class CollectionDetailViewTests(TestCase):
         response = self.client.get(reverse("media_collections"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["items_per_page"], 6)
-        self.assertEqual(response.context["columns"], 6)
-        self.assertEqual(len(response.context["auto_collections"]), 6)
+        self.assertEqual(response.context["items_per_page"], 96)
+        self.assertEqual(response.context["columns"], 12)
+        self.assertEqual(len(response.context["auto_collections"]), 96)
         self.assertTrue(response.context["auto_collections"].has_next())
 
     def test_removed_source_item_is_not_readded_on_sync(self):

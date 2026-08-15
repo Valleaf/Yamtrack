@@ -2,17 +2,17 @@
   sc_review_card.html — included by senscritique_review.html
 
   Context variables:
-    item  – enriched pending-review dict (includes _idx, _cands_id, candidates_json)
+    item  – enriched pending-review dict (includes review_idx, candidates_id, candidates_json)
     tier  – "medium" | "low" | "none"
 
   Features:
     • Candidate picker  – click to swap which API match to import
     • Manual re-search  – AJAX query to /import/senscritique/search/
-    • Hidden inputs     – candidate_idx_{_idx} / manual_* track the user's choice
+    • Hidden inputs     – candidate_idx_{review_idx} / manual_* track the user's choice
 #}
 
 {# ── Safe JSON data blob for Alpine initialisation ─────────────────────────── #}
-<script id="{{ item._cands_id }}" type="application/json">{{ item.candidates_json|safe }}</script>
+<script id="{{ item.candidates_id }}" type="application/json">{{ item.candidates_json|safe }}</script>
 
 {# ── Alpine component ─────────────────────────────────────────────────────── #}
 <div class="flex gap-3 flex-1 min-w-0"
@@ -32,7 +32,7 @@
        searchError: false,
 
        init() {
-         const el = document.getElementById('{{ item._cands_id }}');
+         const el = document.getElementById('{{ item.candidates_id }}');
          try { this.candidates = el ? JSON.parse(el.textContent) : []; } catch(e) { this.candidates = []; }
          this.searchQuery = this.$el.dataset.originalTitle || '';
        },
@@ -84,14 +84,14 @@
   {# ── Hidden form inputs (submitted with the Confirm form) ───────────────── #}
   {# candidate_idx: which item from the original candidates list was chosen    #}
   <input type="hidden"
-         name="candidate_idx_{{ item._idx }}"
+         name="candidate_idx_{{ item.review_idx }}"
          :value="manualSelection ? -1 : selectedIdx">
   {# manual_*: set only when the user picked a result from the re-search box   #}
-  <input type="hidden" name="manual_media_id_{{ item._idx }}"
+  <input type="hidden" name="manual_media_id_{{ item.review_idx }}"
          :value="manualSelection ? (manualSelection.media_id || '') : ''">
-  <input type="hidden" name="manual_source_{{ item._idx }}"
+  <input type="hidden" name="manual_source_{{ item.review_idx }}"
          :value="manualSelection ? (manualSelection.source || '') : ''">
-  <input type="hidden" name="manual_title_{{ item._idx }}"
+  <input type="hidden" name="manual_title_{{ item.review_idx }}"
          :value="manualSelection ? (manualSelection.title || '') : ''">
 
   {# ── Poster ─────────────────────────────────────────────────────────────── #}

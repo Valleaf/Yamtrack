@@ -27,7 +27,31 @@ You can try the app at [yamtrack.fuzzygrim.com](https://yamtrack.fuzzygrim.com) 
 - 🔑 Flexible authentication options including OIDC and 100+ social providers (Google, GitHub, Discord, etc.) via django-allauth.
 - 🦀 Integration with [Jellyfin](https://jellyfin.org/), [Plex](https://plex.tv/) and [Emby](https://emby.media/) to automatically track new media watched.
 - 📥 Import from [Trakt](https://trakt.tv/), [Simkl](https://simkl.com/), [MyAnimeList](https://myanimelist.net/), [AniList](https://anilist.co/) and [Kitsu](https://kitsu.app/) with support for periodic automatic imports.
-- 📊 Export all your tracked media to a CSV file and import it back.
+- 📊 Export all your tracked media to CSV or structured JSON; CSV exports can be imported back.
+- 📥 Import FilmAffinity ratings and custom lists from raw HTML files or the complete ZIP export.
+
+### Collection and planning features
+
+- 🗂️ Build mixed-media collections from supported providers, with descriptions, custom posters, parent/sub-series relationships, and a franchise timeline.
+- 📚 Search and sync Hardcover book series directly from the collection picker, including series positions.
+- 🖼️ Search TMDB poster candidates from the collection editor and select one without leaving the page.
+- 🎮 Optionally group clearly labelled regional or platform editions of games while keeping the original items available.
+- 📐 Choose collection page size, grid columns, sorting, and item ordering; preferences are saved per user.
+- 🗺️ Explore country coverage with a ranked, expandable title list.
+- 🗓️ See artwork and upcoming releases—including music releases—on the calendar.
+- 🏠 Choose which In Progress and Planning sections appear on the home page.
+
+### Statistics and curated lists
+
+- ⚡ Statistics are cached and can be refreshed manually instead of rebuilding on every page visit.
+- 📚 Track progress through curated lists including Sight & Sound, Letterboxd, Arthur C. Clarke, SF Masterworks, AFI, IMDb, 1001 Albums, and PC Gamer snapshots.
+- 🔗 Curated-list details link back to their source when available.
+
+For this fork, collection edits and preference changes are applied through the normal web UI. After pulling source changes into a Docker deployment, rebuild the image so templates, migrations, and Python code are loaded:
+
+```bash
+docker compose up --build -d
+```
 
 ## 📱 Screenshots
 

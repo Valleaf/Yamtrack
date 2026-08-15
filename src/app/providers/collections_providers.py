@@ -37,6 +37,8 @@ def fetch(source, source_id):
         return _fetch_tmdb_collection(source_id)
     if source == "igdb_collection":
         return _fetch_igdb_collection(source_id)
+    if source == "hardcover_series":
+        return _fetch_hardcover_series(source_id)
     if source == "comicvine_arc":
         return _fetch_comicvine_arc(source_id)
     if source == "comicvine_volume":
@@ -53,6 +55,8 @@ def search(source, query):
         return _search_tmdb_collection(query)
     if source == "igdb_collection":
         return _search_igdb_collection(query)
+    if source == "hardcover_series":
+        return _search_hardcover_series(query)
     if source == "comicvine_arc":
         return _search_comicvine_arc(query)
     if source == "bnf_series":
@@ -321,6 +325,122 @@ def _search_igdb_collection(query):
         }
         for item in (response or [])
     ]
+
+
+def _fetch_hardcover_series(source_id):
+    """Fetch a Hardcover series and normalize its books for collection sync."""
+    from django.conf import settings as django_settings
+
+    from app.providers.hardcover import base_url
+
+    query = """
+    query GetSeries($series_id: Int!) {
+      series_by_pk(id: $series_id) {
+        id
+        name
+        book_series(
+          where: {book: {compilation: {_eq: false}}}
+          order_by: [{position: asc}, {book: {users_read_count: desc}}]
+        ) {
+          position
+          book {
+            id
+            title
+            cached_image(path: "url")
+          }
+        }
+      }
+    }
+    """
+    response = services.api_request(
+        Sources.HARDCOVER.value,
+        "POST",
+        base_url,
+        params={"query": query, "variables": {"series_id": int(source_id)}},
+        headers={"Authorization": django_settings.HARDCOVER_API},
+    )
+    series = (response.get("data") or {}).get("series_by_pk")
+    if not series:
+        return None
+
+    seen_positions = set()
+    parts = []
+    for entry in series.get("book_series") or []:
+        book = entry.get("book") or {}
+        if not book or book.get("id") is None:
+            continue
+        position = _series_position(entry.get("position"))
+        position_key = position if position is not None else book["id"]
+        if position_key in seen_positions:
+            continue
+        seen_positions.add(position_key)
+        parts.append({
+            "source": Sources.HARDCOVER.value,
+            "media_id": str(book["id"]),
+            "media_type": MediaTypes.BOOK.value,
+            "title": book.get("title", ""),
+            "image": book.get("cached_image") or "",
+            "series_position": position,
+        })
+
+    return {
+        "name": series.get("name", ""),
+        "description": "",
+        "source_id": str(series["id"]),
+        "items": parts,
+    }
+
+
+def _search_hardcover_series(query):
+    """Search Hardcover's series index for the collection picker."""
+    from django.conf import settings as django_settings
+
+    from app.providers.hardcover import base_url
+
+    search_query = """
+    query SearchSeries($query: String!, $per_page: Int!, $page: Int!) {
+      search(
+        query: $query,
+        query_type: "Series",
+        per_page: $per_page,
+        page: $page,
+      ) {
+        results
+      }
+    }
+    """
+    try:
+        response = services.api_request(
+            Sources.HARDCOVER.value,
+            "POST",
+            base_url,
+            params={
+                "query": search_query,
+                "variables": {"query": query, "per_page": 10, "page": 1},
+            },
+            headers={"Authorization": django_settings.HARDCOVER_API},
+        )
+    except Exception:
+        logger.exception("Hardcover series search failed")
+        return []
+
+    search_data = ((response or {}).get("data") or {}).get("search") or {}
+    hits = ((search_data.get("results") or {}).get("hits") or [])
+    results = []
+    seen_ids = set()
+    for hit in hits:
+        document = hit.get("document") or {}
+        series_id = document.get("id")
+        if series_id is None or str(series_id) in seen_ids:
+            continue
+        seen_ids.add(str(series_id))
+        results.append({
+            "id": str(series_id),
+            "name": document.get("name") or document.get("title") or "",
+            "image": document.get("cached_image") or document.get("image") or "",
+            "year": None,
+        })
+    return results
 
 
 _COMICVINE_BASE_URL = "https://comicvine.gamespot.com/api"

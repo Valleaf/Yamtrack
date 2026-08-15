@@ -476,6 +476,19 @@ def export_csv(request):
     return response
 
 
+@require_GET
+def export_json(request):
+    """View for exporting all media data as a streaming JSON array."""
+    now = timezone.localtime()
+    response = StreamingHttpResponse(
+        streaming_content=exports.generate_json(request.user),
+        content_type="application/json; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="yamtrack_{now}.json"'},
+    )
+    logger.info("User %s started JSON export", request.user.username)
+    return response
+
+
 @login_not_required
 @csrf_exempt
 @require_POST
@@ -627,8 +640,8 @@ def senscritique_review(request):
     pending_with_idx = [
         {
             **item,
-            "_idx": global_idx_map[id(item)],
-            "_cands_id": f"sc-cands-{global_idx_map[id(item)]}",
+            "review_idx": global_idx_map[id(item)],
+            "candidates_id": f"sc-cands-{global_idx_map[id(item)]}",
             # Safe JSON for <script type="application/json"> embedding:
             # escape <, >, & so the script tag can never be injected.
             "candidates_json": (
@@ -806,28 +819,28 @@ def import_filmaffinity_html(request):
 
     mode = request.POST.get("mode", "new")
     overwrite = mode == "overwrite"
-    filename = html_file.name.lower()
-
-    # Detect whether this is a ratings file or a list file
-    if "list" in filename:
-        import_type = "list"
-    else:
-        import_type = "ratings"
-
     try:
-        html_content = html_file.read().decode("utf-8", errors="replace")
+        from integrations.imports.filmaffinity import extract_html_files
+        uploaded_files = extract_html_files(html_file.name, html_file.read())
     except Exception:
-        messages.error(request, "Could not read the file.")
+        messages.error(request, "Could not read the FilmAffinity HTML or ZIP export.")
         return redirect("import_data")
 
     from integrations.imports.filmaffinity import import_from_filmaffinity_html
-    import_from_filmaffinity_html.delay(
-        user_id=request.user.id,
-        html_content=html_content,
-        overwrite=overwrite,
-        import_type=import_type,
-    )
-    label = "list" if import_type == "list" else "ratings"
-    messages.info(request, f"FilmAffinity {label} import started. This may take a few minutes.")
-    return redirect("import_data")
+    queued = 0
+    for filename, html_content in uploaded_files:
+        lower_filename = filename.lower()
+        file_import_type = "list" if "list" in lower_filename else "ratings"
+        import_from_filmaffinity_html.delay(
+            user_id=request.user.id,
+            html_content=html_content,
+            overwrite=overwrite,
+            import_type=file_import_type,
+        )
+        queued += 1
 
+    if not queued:
+        messages.error(request, "The FilmAffinity archive contained no HTML export files.")
+        return redirect("import_data")
+    messages.info(request, f"FilmAffinity import started for {queued} HTML file(s). This may take a few minutes.")
+    return redirect("import_data")

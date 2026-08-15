@@ -68,7 +68,12 @@ def home(request):
         return render(request, "app/components/home_grid.html", context)
 
     home_sections = []
-    for status in (Status.IN_PROGRESS.value, Status.PLANNING.value):
+    statuses = []
+    if request.user.show_home_in_progress:
+        statuses.append(Status.IN_PROGRESS.value)
+    if request.user.show_home_planning:
+        statuses.append(Status.PLANNING.value)
+    for status in statuses:
         media_types = BasicMedia.objects.get_home_status(
             user=request.user,
             status=status,

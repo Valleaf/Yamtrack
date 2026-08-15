@@ -7,12 +7,23 @@
       <button type="button"
               class="w-full flex items-center gap-3 px-3 py-2 bg-[#2c3136] hover:bg-[#39404b] text-left transition-colors"
               onclick="
-                document.getElementById('id_source_id').value = '{{ result.id }}';
-                document.getElementById('id_name').value = '{{ result.name|escapejs }}';
-                document.getElementById('selected-name').textContent = '{{ result.name|escapejs }}';
-                document.getElementById('selected-collection').classList.remove('hidden');
-                document.getElementById('search-results').innerHTML = '';
-                document.getElementById('collection-search').value = '{{ result.name|escapejs }}';
+                const idInput = document.querySelector('input[name=source_id]');
+                const nameInput = document.getElementById('col-name-input') || document.getElementById('id_name');
+                if (idInput) idInput.value = '{{ result.id }}';
+                if (nameInput) nameInput.value = '{{ result.name|escapejs }}';
+                const alpineRoot = this.closest('[x-data]');
+                if (alpineRoot && alpineRoot._x_dataStack) {
+                  alpineRoot._x_dataStack[0].sourceId = '{{ result.id }}';
+                  alpineRoot._x_dataStack[0].selectedName = '{{ result.name|escapejs }}';
+                }
+                const selectedName = document.getElementById('selected-name');
+                const selectedCollection = document.getElementById('selected-collection');
+                if (selectedName) selectedName.textContent = '{{ result.name|escapejs }}';
+                if (selectedCollection) selectedCollection.classList.remove('hidden');
+                const results = document.getElementById('search-results') || document.getElementById('source-search-results');
+                if (results) results.innerHTML = '';
+                const searchInput = document.getElementById('collection-search') || document.getElementById('source-search-input');
+                if (searchInput) searchInput.value = '{{ result.name|escapejs }}';
               ">
         {% if result.image %}
         <img src="{{ result.image }}" alt="{{ result.name }}"

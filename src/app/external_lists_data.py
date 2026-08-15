@@ -181,6 +181,92 @@ LISTS = [
     },
 
     # ------------------------------------------------------------------ #
+    #  AFI's 100 Years...100 Movies (1998 snapshot, top 20)              #
+    #  TMDB IDs are stable; the source list is a historical snapshot.     #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "afi_100_movies_top20",
+        "name": "AFI 100 Years...100 Movies (Top 20)",
+        "source_url": "https://www.afi.com/afis-100-years-100-movies/",
+        "icon": "🎬",
+        "media_type": "movie",
+        "source": "tmdb",
+        "items": [
+            {"rank": 1, "tmdb_id": 15},       # Citizen Kane
+            {"rank": 2, "tmdb_id": 238},      # The Godfather
+            {"rank": 3, "tmdb_id": 289},      # Casablanca
+            {"rank": 4, "tmdb_id": 769},      # Raging Bull
+            {"rank": 5, "tmdb_id": 872},      # Singin' in the Rain
+            {"rank": 6, "tmdb_id": 770},      # Gone with the Wind
+            {"rank": 7, "tmdb_id": 10911},    # Lawrence of Arabia
+            {"rank": 8, "tmdb_id": 424},      # Schindler's List
+            {"rank": 9, "tmdb_id": 426},      # Vertigo
+            {"rank": 10, "tmdb_id": 630},     # The Wizard of Oz
+            {"rank": 11, "tmdb_id": 901},     # City Lights
+            {"rank": 12, "tmdb_id": 3114},    # The Searchers
+            {"rank": 13, "tmdb_id": 11},      # Star Wars
+            {"rank": 14, "tmdb_id": 539},     # Psycho
+            {"rank": 15, "tmdb_id": 62},      # 2001: A Space Odyssey
+            {"rank": 16, "tmdb_id": 599},     # Sunset Boulevard
+            {"rank": 17, "tmdb_id": 37247},   # The Graduate
+            {"rank": 18, "tmdb_id": 962},     # The General
+            {"rank": 19, "tmdb_id": 654},     # On the Waterfront
+            {"rank": 20, "tmdb_id": 1585},    # It's a Wonderful Life
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  IMDb Top 250 (snapshot, top 10)                                    #
+    #  Rankings change; this intentionally records a dated-style sample. #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "imdb_top250_top10",
+        "name": "IMDb Top 250 (Top 10 snapshot)",
+        "icon": "⭐",
+        "source_url": "https://www.imdb.com/chart/top/",
+        "media_type": "movie",
+        "source": "tmdb",
+        "items": [
+            {"rank": 1, "tmdb_id": 278},       # The Shawshank Redemption
+            {"rank": 2, "tmdb_id": 238},       # The Godfather
+            {"rank": 3, "tmdb_id": 155},       # The Dark Knight
+            {"rank": 4, "tmdb_id": 240},       # The Godfather Part II
+            {"rank": 5, "tmdb_id": 389},       # 12 Angry Men
+            {"rank": 6, "tmdb_id": 122},       # The Lord of the Rings: Return of the King
+            {"rank": 7, "tmdb_id": 424},       # Schindler's List
+            {"rank": 8, "tmdb_id": 120},       # The Lord of the Rings: Fellowship
+            {"rank": 9, "tmdb_id": 680},       # Pulp Fiction
+            {"rank": 10, "tmdb_id": 121},      # The Lord of the Rings: Two Towers
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
+    #  PC Gamer Top 100 (2025 snapshot, top 10)                           #
+    #  Steam app IDs are used because they are stable and already match    #
+    #  Yamtrack's Steam game provider.                                     #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "pcgamer_top100_2025_top10",
+        "name": "PC Gamer Top 100 (2025 top 10)",
+        "icon": "🎮",
+        "source_url": "https://www.pcgamer.com/games/the-top-100-pc-games-2025/",
+        "media_type": "game",
+        "source": "steam",
+        "items": [
+            {"rank": 1, "steam_id": 1086940},    # Baldur's Gate 3
+            {"rank": 2, "steam_id": 632470},     # Disco Elysium
+            {"rank": 3, "steam_id": 975370},     # Dwarf Fortress
+            {"rank": 4, "steam_id": 1158310},    # Crusader Kings III
+            {"rank": 5, "steam_id": 413150},     # Stardew Valley
+            {"rank": 6, "steam_id": 333640},     # Caves of Qud
+            {"rank": 7, "steam_id": 2379780},    # Balatro
+            {"rank": 8, "steam_id": 292030},     # The Witcher 3: Wild Hunt
+            {"rank": 9, "steam_id": 1245620},    # Elden Ring
+            {"rank": 10, "steam_id": 1174180},   # Red Dead Redemption 2
+        ],
+    },
+
+    # ------------------------------------------------------------------ #
     #  1001 Albums You Must Hear Before You Die                            #
     #  Source: https://1001albumsgenerator.com/ or the book's official list#
     #  Uses MusicBrainz release-group MBIDs (matches the music tracker)    #
@@ -1201,6 +1287,7 @@ LISTS = [
     # ------------------------------------------------------------------ #
     {
         "slug": "arthur_c_clarke_novels",
+        "source_url": "https://www.isfdb.org/cgi-bin/pe.cgi?Arthur_C._Clarke",
         "name": "Arthur C. Clarke — Novels",
         "icon": "🛰️",
         "media_type": "book",
@@ -1253,6 +1340,7 @@ LISTS = [
     # ------------------------------------------------------------------ #
     {
         "slug": "sf_masterworks",
+        "source_url": "https://www.sfgateway.com/series/sf-masterworks/",
         "name": "SF Masterworks",
         "icon": "📖",
         "media_type": "book",

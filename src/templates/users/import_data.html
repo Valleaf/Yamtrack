@@ -463,15 +463,14 @@
             <input type="hidden" name="mode" x-model="importMode">
             <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
                    :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'">
-              <input name="fa_html" accept=".html" class="hidden" type="file"
+              <input name="fa_html" accept=".html,.htm,.zip" class="hidden" type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
               Upload HTML file
             </label>
           </form>
           <p class="text-xs text-gray-500 mt-2">
-            Ratings: upload <code class="text-indigo-400">html/movie-ratings.html</code><br>
-            Lists: upload any <code class="text-indigo-400">html/list/list-N.html</code>
+            Upload <code class="text-indigo-400">movie-ratings.html</code>, a <code class="text-indigo-400">list-N.html</code>, or the complete FilmAffinity <code class="text-indigo-400">.zip</code> export.
           </p>
         </div>
       

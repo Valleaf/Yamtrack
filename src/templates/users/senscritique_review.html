@@ -95,14 +95,13 @@
                 class="text-gray-400 hover:text-gray-200 transition-colors cursor-pointer">
           Deselect all
         </button>
-        <form method="post" action="{% url 'senscritique_discard' %}" class="ml-auto">
-          {% csrf_token %}
-          <button type="submit"
-                  class="text-red-400 hover:text-red-300 transition-colors text-sm cursor-pointer"
-                  onclick="return confirm('Discard all pending items?')">
-            Discard all
-          </button>
-        </form>
+        <button type="submit"
+                formaction="{% url 'senscritique_discard' %}"
+                formmethod="post"
+                class="ml-auto text-red-400 hover:text-red-300 transition-colors text-sm cursor-pointer"
+                onclick="return confirm('Discard all pending items?')">
+          Discard all
+        </button>
       </div>
       <div class="flex items-center gap-3">
         {% if total_pages > 1 %}
@@ -126,7 +125,7 @@
             <div class="flex items-center pt-1 flex-shrink-0">
               <input type="checkbox"
                      name="confirmed"
-                     value="{{ item._idx }}"
+                     value="{{ item.review_idx }}"
                      x-model="checked"
                      checked
                      class="w-5 h-5 rounded bg-[#39404b] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer">
@@ -142,7 +141,7 @@
             <div class="flex items-center pt-1 flex-shrink-0">
               <input type="checkbox"
                      name="confirmed"
-                     value="{{ item._idx }}"
+                     value="{{ item.review_idx }}"
                      x-model="checked"
                      class="w-5 h-5 rounded bg-[#39404b] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer">
             </div>
@@ -157,7 +156,7 @@
             <div class="flex items-center pt-1 flex-shrink-0">
               <input type="checkbox"
                      name="confirmed"
-                     value="{{ item._idx }}"
+                     value="{{ item.review_idx }}"
                      x-model="checked"
                      disabled
                      title="No match found — use Search manually to find one"

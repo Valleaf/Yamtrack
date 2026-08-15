@@ -39,6 +39,12 @@
     <div class="space-y-15">
       {% for section in home_sections %}
         {% include "app/components/home_section.html" with section=section %}
+      {% empty %}
+        <div class="mx-auto max-w-xl rounded-xl border border-dashed border-gray-700 bg-[#1e2329] px-6 py-10 text-center">
+          <h2 class="text-lg font-semibold text-white">Home sections are hidden</h2>
+          <p class="mt-2 text-sm text-gray-400">Enable In Progress or Planning from your preferences to show media here.</p>
+          <a href="{% url 'preferences' %}" class="mt-5 inline-flex rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">Open preferences</a>
+        </div>
       {% endfor %}
     </div>
   </div>

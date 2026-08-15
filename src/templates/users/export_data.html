@@ -12,11 +12,18 @@
     </div>
     <p class="text-gray-400 mb-5 text-sm">Back up your data or export it for use with other services.</p>
     <p class="text-sm text-gray-400 mb-4">Your export will include all your media items.</p>
-    <form method="get" action="{% url 'export_csv' %}">
-      {% csrf_token %}
-      <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-        Export as CSV
-      </button>
-    </form>
+    <div class="flex flex-wrap gap-3">
+      <form method="get" action="{% url 'export_csv' %}">
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
+          Export as CSV
+        </button>
+      </form>
+      <form method="get" action="{% url 'export_json' %}">
+        <button class="px-4 py-2 bg-[#39404b] text-gray-200 rounded-md hover:bg-[#454d5a] transition-colors text-sm cursor-pointer">
+          Export as JSON
+        </button>
+      </form>
+    </div>
+    <p class="mt-4 text-xs text-gray-500">JSON preserves media type and separates item metadata from tracking data.</p>
   </div>
 {% endblock settings_content %}

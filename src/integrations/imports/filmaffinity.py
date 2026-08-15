@@ -23,6 +23,8 @@ TV episodes and music videos are resolved as-is (TMDB handles them).
 
 import logging
 import re
+import zipfile
+from io import BytesIO
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
@@ -42,6 +44,29 @@ SPANISH_MONTHS = {
     "mayo": "05", "junio": "06", "julio": "07", "agosto": "08",
     "septiembre": "09", "octubre": "10", "noviembre": "11", "diciembre": "12",
 }
+
+
+def extract_html_files(filename: str, raw_content: bytes) -> list[tuple[str, str]]:
+    """Extract FilmAffinity HTML files from either a raw HTML upload or ZIP."""
+    raw_stream = BytesIO(raw_content)
+    if not zipfile.is_zipfile(raw_stream):
+        return [(filename, raw_content.decode("utf-8", errors="replace"))]
+
+    files = []
+    total_bytes = 0
+    with zipfile.ZipFile(raw_stream) as archive:
+        for info in archive.infolist():
+            if info.is_dir() or not info.filename.lower().endswith((".html", ".htm")):
+                continue
+            total_bytes += info.file_size
+            if total_bytes > 50 * 1024 * 1024:
+                raise ValueError("FilmAffinity archive is too large to process.")
+            files.append((info.filename, archive.read(info)))
+
+    return [
+        (name, content.decode("utf-8", errors="replace"))
+        for name, content in files
+    ]
 
 
 def parse_title_year(raw: str) -> tuple[str, int | None]:

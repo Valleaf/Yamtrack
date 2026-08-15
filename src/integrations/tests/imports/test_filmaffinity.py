@@ -1,7 +1,9 @@
 """Tests for FilmAffinity HTML import (ratings + lists)."""
 
 import unittest.mock
+from io import BytesIO
 from unittest.mock import patch
+from zipfile import ZipFile
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -10,6 +12,7 @@ from app.models import Item, Movie, Status
 from integrations.imports.filmaffinity import (
     FilmAffinityRatingsImporter,
     FilmAffinityListImporter,
+    extract_html_files,
     import_from_filmaffinity_html,
     parse_ratings_html,
     parse_list_html,
@@ -130,6 +133,20 @@ class TestParseRatingsHTML(TestCase):
 
 
 class TestParseListHTML(TestCase):
+    def test_extracts_html_from_zip_export(self):
+        archive = BytesIO()
+        with ZipFile(archive, "w") as zip_file:
+            zip_file.writestr("html/movie-ratings.html", RATINGS_HTML)
+            zip_file.writestr("html/list/list-1.html", LIST_HTML)
+            zip_file.writestr("readme.txt", "not an HTML export")
+
+        files = extract_html_files("filmaffinity-export.zip", archive.getvalue())
+
+        self.assertEqual([name for name, _ in files], [
+            "html/movie-ratings.html",
+            "html/list/list-1.html",
+        ])
+
     def test_extracts_list_name(self):
         name, _ = parse_list_html(LIST_HTML)
         self.assertEqual(name, "Mis favoritas")

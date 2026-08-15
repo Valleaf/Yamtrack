@@ -163,6 +163,8 @@ class User(AbstractUser):
         default=HomeSortChoices.UPCOMING,
         choices=HomeSortChoices,
     )
+    show_home_in_progress = models.BooleanField(default=True)
+    show_home_planning = models.BooleanField(default=True)
 
     # Media type preferences: TV Shows
     tv_enabled = models.BooleanField(default=True)

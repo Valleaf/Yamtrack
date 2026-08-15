@@ -329,6 +329,8 @@ def preferences(request):
         "hide_completed_recommendations" in request.POST
     )
     request.user.hide_zero_rating = "hide_zero_rating" in request.POST
+    request.user.show_home_in_progress = "show_home_in_progress" in request.POST
+    request.user.show_home_planning = "show_home_planning" in request.POST
     request.user.date_format = request.POST.get(
         "date_format",
         DateFormatChoices.ISO,

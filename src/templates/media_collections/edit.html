@@ -33,6 +33,27 @@
                   class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none">{{ collection.description }}</textarea>
       </div>
       <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-300 mb-2" for="id_parent_collection">Parent collection</label>
+        <select name="parent_collection_id" id="id_parent_collection"
+                class="w-full px-4 py-2 bg-[#2c3136] border border-[#39404b] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="">No parent collection</option>
+          {% for parent in parent_choices %}
+            <option value="{{ parent.id }}" {% if collection.parent_collection_id == parent.id %}selected{% endif %}>{{ parent.name }}</option>
+          {% endfor %}
+        </select>
+        <p class="mt-1 text-xs text-gray-500">Use this for sub-series grouped under a larger franchise.</p>
+      </div>
+      <div class="mb-6 rounded-lg bg-[#252b32] p-4 ring-1 ring-white/5">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="group_regional_variants" class="mt-1 h-4 w-4 rounded border-gray-600 bg-[#2c3136] text-indigo-600 focus:ring-indigo-500"
+                 {% if collection.group_regional_variants %}checked{% endif %}>
+          <span>
+            <span class="block text-sm font-medium text-gray-200">Group regional game editions</span>
+            <span class="mt-1 block text-xs text-gray-500">Groups matching game titles and clearly labelled editions such as “(Europe)” or “[USA]”. Movies, books, and other media stay separate.</span>
+          </span>
+        </label>
+      </div>
+      <div class="mb-6">
         <label class="block text-sm font-medium text-gray-300 mb-2" for="id_poster_url">
           Custom poster URL <span class="text-gray-500 font-normal">(optional)</span>
         </label>
@@ -54,6 +75,35 @@
           {% endfor %}
         </select>
         {% endif %}
+      </div>
+      <div class="mb-6 rounded-lg bg-[#252b32] p-4 ring-1 ring-white/5"
+           x-data="{ query: '{{ collection.name|escapejs }}', loading: false, error: '', results: [] }">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-gray-200">Find a poster online</p>
+            <p class="mt-1 text-xs text-gray-500">Search TMDB, then click a result to use it for this collection.</p>
+          </div>
+          <button type="button"
+                  @click="loading = true; error = ''; fetch('{% url 'collection_poster_search' collection.id %}?q=' + encodeURIComponent(query)).then(r => r.json()).then(data => { results = data.results || []; error = data.error || ''; }).catch(() => error = 'Poster search is temporarily unavailable.').finally(() => loading = false)"
+                  class="shrink-0 rounded-md bg-[#39404b] px-3 py-2 text-xs font-medium text-gray-200 hover:bg-[#454d5a]">
+            <span x-show="!loading">Search</span>
+            <span x-show="loading" x-cloak>Searching…</span>
+          </button>
+        </div>
+        <input type="search" x-model="query"
+               class="mt-3 w-full rounded-md border border-[#39404b] bg-[#2c3136] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               placeholder="Collection or series name">
+        <p x-show="error" x-text="error" class="mt-2 text-xs text-red-400"></p>
+        <div x-show="results.length" x-cloak class="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <template x-for="result in results" :key="result.image">
+            <button type="button" @click="document.getElementById('id_poster_url').value = result.image"
+                    class="group text-left rounded-md bg-[#1e2329] p-1 ring-1 ring-white/5 hover:ring-indigo-400/60">
+              <img :src="result.image" :alt="result.title" class="aspect-[2/3] w-full rounded object-cover">
+              <span class="mt-1 block truncate px-1 text-[10px] text-gray-300" x-text="result.title"></span>
+              <span x-show="result.year" class="block px-1 text-[10px] text-gray-500" x-text="result.year"></span>
+            </button>
+          </template>
+        </div>
       </div>
       <div class="flex gap-3">
         <button type="submit"

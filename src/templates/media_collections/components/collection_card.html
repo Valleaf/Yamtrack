@@ -1,3 +1,5 @@
+{% load app_tags %}
+
 <div class="group block">
   <div class="relative aspect-[2/3] rounded overflow-hidden bg-[#23272e] shadow-sm shadow-black/40 group-hover:shadow-lg group-hover:shadow-black/50 transition-shadow duration-200 {% if collection.card_stats.total and collection.card_stats.completed_pct == 100 %}ring-2 ring-emerald-400/70 shadow-emerald-500/20{% endif %}">
     <a href="{% url 'collection_detail' collection.id %}" class="block h-full">
@@ -36,6 +38,26 @@
         <span class="text-[10.5px] {% if collection.card_stats.completed_pct == 100 %}text-emerald-400{% else %}text-gray-500{% endif %} tabular-nums shrink-0">{{ collection.card_stats.completed_pct }}%</span>
       </div>
     {% endif %}
+
+    <details class="mt-2 rounded-md bg-[#23272e] px-2.5 py-2 text-[11px] text-gray-400">
+      <summary class="cursor-pointer select-none text-gray-300 hover:text-white">Show details</summary>
+      <div class="mt-2 space-y-2 border-t border-white/5 pt-2">
+        {% if collection.description %}
+          <p class="leading-relaxed">{{ collection.description }}</p>
+        {% else %}
+          <p class="italic text-gray-500">No series description available.</p>
+        {% endif %}
+        {% if collection.card_stats.by_type %}
+          <div class="flex flex-wrap gap-1.5">
+            {% for media_type, type_stats in collection.card_stats.by_type.items %}
+              <span class="rounded bg-[#39404b] px-1.5 py-0.5 text-gray-300">
+                {{ media_type|media_type_readable }}: {{ type_stats.total }}
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </details>
 
     {% if collection.owner_id == request.user.id %}
       <div class="mt-2 flex items-center gap-2 text-[11px]">

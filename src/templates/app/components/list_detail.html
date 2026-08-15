@@ -5,6 +5,10 @@
       <h3 class="text-lg font-semibold text-white truncate">{{ curated_list.name }}</h3>
       <span class="text-xs text-gray-500 shrink-0">{{ curated_list.tracked_count }}/{{ curated_list.total_count }} tracked</span>
     </div>
+    {% if curated_list.source_url %}
+      <a href="{{ curated_list.source_url }}" target="_blank" rel="noopener noreferrer"
+         class="text-xs text-indigo-300 hover:text-indigo-200 hover:underline shrink-0">Source ↗</a>
+    {% endif %}
     <button type="button"
             onclick="window.closeListDetail ? closeListDetail() : document.getElementById('list-detail-panel').innerHTML=''"
             class="text-gray-400 hover:text-white text-sm shrink-0 cursor-pointer">

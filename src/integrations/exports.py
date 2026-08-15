@@ -1,5 +1,7 @@
 import csv
+import json
 import logging
+from datetime import date, datetime
 
 from django.apps import apps
 from django.db.models import Field, Prefetch
@@ -18,19 +20,27 @@ class Echo:
         return value
 
 
-def generate_rows(user):
-    """Generate CSV rows."""
-    pseudo_buffer = Echo()
-    writer = csv.writer(pseudo_buffer, quoting=csv.QUOTE_ALL)
+def _json_value(value):
+    """Return a stable JSON representation for model field values."""
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    return str(value)
 
-    # Get fields
+
+def _export_fields():
+    """Return the shared item/tracking field layout used by exports."""
     fields = {
         "item": get_model_fields(Item),
         "track": get_track_fields(),
     }
+    return fields
 
-    # Yield header row
-    yield writer.writerow(fields["item"] + fields["track"])
+
+def _iter_records(user):
+    """Yield normalized media records for streaming export formats."""
+    fields = _export_fields()
 
     prefetch_config = {
         MediaTypes.TV.value: Prefetch(
@@ -48,7 +58,6 @@ def generate_rows(user):
         ),
     }
 
-    # Yield data rows
     for media_type in MediaTypes.values:
         model = apps.get_model("app", media_type)
 
@@ -66,20 +75,52 @@ def generate_rows(user):
         logger.debug("Streaming %ss to CSV", media_type)
 
         for media in queryset.iterator(chunk_size=500):
-            row = [getattr(media.item, field, "") for field in fields["item"]] + [
-                getattr(media, field, "") for field in fields["track"]
-            ]
+            item_data = {
+                field: _json_value(getattr(media.item, field, ""))
+                for field in fields["item"]
+            }
+            track_data = {
+                field: _json_value(getattr(media, field, ""))
+                for field in fields["track"]
+            }
 
             if media_type == MediaTypes.GAME.value:
-                # calculate index of progress field
-                progress_index = fields["track"].index("progress")
-                row[progress_index + len(fields["item"])] = helpers.minutes_to_hhmm(
+                track_data["progress"] = helpers.minutes_to_hhmm(
                     media.progress,
                 )
 
-            yield writer.writerow(row)
+            yield {
+                "media_type": media_type,
+                "item": item_data,
+                "tracking": track_data,
+            }
 
         logger.debug("Finished streaming %ss to CSV", media_type)
+
+
+def generate_rows(user):
+    """Generate CSV rows."""
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer, quoting=csv.QUOTE_ALL)
+    fields = _export_fields()
+
+    yield writer.writerow(fields["item"] + fields["track"])
+    for record in _iter_records(user):
+        row = [record["item"].get(field, "") for field in fields["item"]]
+        row += [record["tracking"].get(field, "") for field in fields["track"]]
+        yield writer.writerow(row)
+
+
+def generate_json(user):
+    """Generate a streaming JSON array of normalized media records."""
+    yield "["
+    first = True
+    for record in _iter_records(user):
+        if not first:
+            yield ","
+        first = False
+        yield json.dumps(record, ensure_ascii=False, separators=(",", ":"))
+    yield "]"
 
 
 def get_model_fields(model):

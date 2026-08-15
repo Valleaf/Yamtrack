@@ -164,6 +164,12 @@ class ProbeImageUrl(TestCase):
         self.assertFalse(bnf._probe_image_url("https://example.com/missing.jpg"))  # noqa: SLF001
 
     @patch("requests.Session.head")
+    def test_malformed_content_length_does_not_crash(self, mock_head):
+        """A provider's malformed size header must not break metadata loading."""
+        mock_head.return_value = fake_head_response(content_length="unknown")
+        self.assertTrue(bnf._probe_image_url("https://example.com/cover.jpg"))  # noqa: SLF001
+
+    @patch("requests.Session.head")
     def test_network_error_rejected(self, mock_head):
         """A network error never raises out of the probe — it's treated as no cover."""
         mock_head.side_effect = requests.exceptions.ConnectionError("boom")

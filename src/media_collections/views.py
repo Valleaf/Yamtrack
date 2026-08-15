@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.apps import apps
 from django.contrib import messages
@@ -6,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import F, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -139,6 +140,45 @@ def _series_position(value):
     return position if position >= 0 else None
 
 
+_REGIONAL_SUFFIX_RE = re.compile(
+    r"\s*(?:\((?:usa|europe|eu|japan|asia|world|pal|ntsc|ps[45]|xbox|switch|pc)\)|"
+    r"\[(?:usa|europe|eu|japan|asia|world|pal|ntsc|ps[45]|xbox|switch|pc)\]|"
+    r"[-:]\s*(?:usa|european version|international version|world edition))\s*$",
+    re.IGNORECASE,
+)
+
+
+def _regional_variant_key(collection_item):
+    """Return a conservative grouping key for game editions, or None."""
+    item = collection_item.item
+    if item.media_type != "game":
+        return None
+    title = (item.title or "").strip()
+    normalized = _REGIONAL_SUFFIX_RE.sub("", title).strip()
+    if not title:
+        return None
+    return normalized.casefold()
+
+
+def _group_regional_variants(items):
+    """Collapse only explicitly-labelled game editions into display groups."""
+    groups = []
+    by_key = {}
+    for collection_item in items:
+        key = _regional_variant_key(collection_item)
+        if not key:
+            groups.append({"item": collection_item, "variants": []})
+            continue
+        group = by_key.get(key)
+        if group is None:
+            group = {"item": collection_item, "variants": []}
+            by_key[key] = group
+            groups.append(group)
+        else:
+            group["variants"].append(collection_item)
+    return groups
+
+
 def _backfill_series_positions(collection):
     """Fill missing BD positions from already-cached provider metadata."""
     items = CollectionItem.objects.filter(
@@ -250,6 +290,11 @@ def collection_detail(request, collection_id):
         .select_related("item")
         .order_by(*ITEM_SORT_ORDER_BY[item_sort])
     )
+    timeline_items = list(
+        CollectionItem.objects.filter(collection=collection)
+        .select_related("item")
+        .order_by(F("series_position").asc(nulls_last=True), "item__release_year", "item__title")
+    )
     if item_sort == "series_position":
         collection_items = collection_items.order_by(
             F("series_position").asc(nulls_last=True),
@@ -258,13 +303,20 @@ def collection_detail(request, collection_id):
     if media_type_filter != "all":
         collection_items = collection_items.filter(item__media_type=media_type_filter)
 
+    display_items = list(collection_items)
+    if collection.group_regional_variants:
+        display_items = _group_regional_variants(display_items)
+    else:
+        display_items = [{"item": collection_item, "variants": []} for collection_item in display_items]
     per_page = _get_items_per_page(request)
-    paginator = Paginator(collection_items, per_page)
+    paginator = Paginator(display_items, per_page)
     collection_items_page = paginator.get_page(request.GET.get("page", 1))
 
-    page_items = list(collection_items_page)
+    page_groups = list(collection_items_page)
+    page_items = [group["item"] for group in page_groups]
+    all_page_items = page_items + [variant for group in page_groups for variant in group["variants"]]
     item_ids_by_type = {}
-    for ci in page_items:
+    for ci in all_page_items:
         item_ids_by_type.setdefault(ci.item.media_type, []).append(ci.item_id)
 
     tracked_by_item_id = {}
@@ -277,13 +329,13 @@ def collection_detail(request, collection_id):
         for media in model.objects.filter(item_id__in=item_ids, user=request.user).select_related("item"):
             tracked_by_item_id[media.item_id] = media
 
-    for ci in page_items:
+    for ci in all_page_items:
         tracked = tracked_by_item_id.get(ci.item_id)
         ci.tracked = bool(tracked)
         ci.completed = bool(tracked and tracked.status == Status.COMPLETED.value)
         ci.dropped = bool(tracked and tracked.status == Status.DROPPED.value)
 
-    collection_items_page.object_list = page_items
+    collection_items_page.object_list = page_groups
 
     all_types = list(
         CollectionItem.objects.filter(collection=collection)
@@ -308,6 +360,9 @@ def collection_detail(request, collection_id):
         "sources": col_providers.SOURCE_CHOICES,
         "item_sort": item_sort,
         "item_sort_options": [(choice, ITEM_SORT_LABELS[choice]) for choice in ITEM_SORT_CHOICES],
+        "timeline_items": timeline_items,
+        "subcollections": collection.subcollections.filter(owner=request.user).order_by("name"),
+        "group_regional_variants": collection.group_regional_variants,
     })
 
 
@@ -384,7 +439,13 @@ def edit(request, collection_id):
         collection.name = request.POST.get("name", collection.name).strip()
         collection.description = request.POST.get("description", collection.description).strip()
         collection.poster_url = request.POST.get("poster_url", "").strip()
-        collection.save(update_fields=["name", "description", "poster_url"])
+        collection.group_regional_variants = request.POST.get("group_regional_variants") == "on"
+        parent_id = request.POST.get("parent_collection_id", "").strip()
+        parent = None
+        if parent_id:
+            parent = Collection.objects.filter(owner=request.user, pk=parent_id).exclude(pk=collection.pk).first()
+        collection.parent_collection = parent
+        collection.save(update_fields=["name", "description", "poster_url", "parent_collection", "group_regional_variants"])
         messages.success(request, "Collection updated.")
         next_url = _safe_next_url(request)
         if next_url:
@@ -394,7 +455,43 @@ def edit(request, collection_id):
     return render(request, "media_collections/edit.html", {
         "collection": collection,
         "poster_choices": collection.collectionitem_set.select_related("item").order_by("date_added"),
+        "parent_choices": Collection.objects.filter(owner=request.user).exclude(pk=collection.pk).order_by("name"),
     })
+
+
+@login_required
+def poster_search(request, collection_id):
+    """Search TMDB for poster candidates for an owned collection."""
+    collection = get_object_or_404(Collection, pk=collection_id)
+    if not _user_can_edit(request.user, collection):
+        return JsonResponse({"results": []}, status=403)
+
+    query = request.GET.get("q", "").strip()
+    if len(query) < 2:
+        return JsonResponse({"results": []})
+
+    from app.providers import tmdb
+
+    results = []
+    seen_images = set()
+    try:
+        for media_type in ("movie", "tv"):
+            response = tmdb.search(media_type, query, 1)
+            for result in response.get("results", [])[:8]:
+                image = result.get("image")
+                if not image or image in seen_images:
+                    continue
+                seen_images.add(image)
+                results.append({
+                    "title": result.get("title", "Untitled"),
+                    "year": result.get("year"),
+                    "image": image,
+                })
+    except Exception as exc:
+        logger.warning("Poster search failed for collection %s: %s", collection_id, exc)
+        return JsonResponse({"results": [], "error": "Poster search is temporarily unavailable."}, status=502)
+
+    return JsonResponse({"results": results[:12]})
 
 
 # ---------------------------------------------------------------------------

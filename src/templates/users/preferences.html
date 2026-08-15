@@ -150,6 +150,27 @@
         </div>
       </div>
 
+      {# Home Sections #}
+      <div class="mb-5">
+        <div class="rounded-md bg-[#39404b] p-3">
+          <div class="mb-3 flex items-center text-gray-200">
+            {% include "app/icons/house.svg" with classes="mr-2 h-5 w-5" %}
+            <span class="text-sm font-medium">Home sections</span>
+          </div>
+          <p class="mb-3 ml-7 text-xs text-gray-400">Choose which rows appear on the home page.</p>
+          <div class="ml-7 flex flex-wrap gap-4 text-sm text-gray-300">
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" name="show_home_in_progress" {% if user.show_home_in_progress %}checked{% endif %}>
+              In Progress
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" name="show_home_planning" {% if user.show_home_planning %}checked{% endif %}>
+              Planning
+            </label>
+          </div>
+        </div>
+      </div>
+
       {# Date Format #}
       <div class="mb-5">
         <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">

@@ -9,6 +9,7 @@ urlpatterns = [
     path("collection_item_toggle", views.collection_item_toggle, name="collection_item_toggle"),
     path("collection/<int:collection_id>", views.collection_detail, name="collection_detail"),
     path("collection/<int:collection_id>/edit", views.edit, name="collection_edit"),
+    path("collection/<int:collection_id>/poster-search", views.poster_search, name="collection_poster_search"),
     path("collection/<int:collection_id>/delete", views.delete, name="collection_delete"),
     path("collection/<int:collection_id>/sync", views.sync_from_source, name="collection_sync"),
     path(

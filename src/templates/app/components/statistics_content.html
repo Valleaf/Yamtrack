@@ -701,11 +701,22 @@
             <!-- Always-visible ranking list alongside the map -->
             <div id="country-rank-{{ media_type }}" class="country-rank-view max-h-[480px] overflow-y-auto pr-1 space-y-1.5">
               {% for country, country_info in countries.items %}
-                <div class="flex items-center gap-3 rounded-md bg-[#2a2f35] px-3 py-2 text-sm ring-1 ring-white/5">
-                  <span class="w-5 shrink-0 text-xs font-medium text-gray-500">{{ forloop.counter }}</span>
-                  <span class="flex-1 truncate text-gray-300">{{ country }}</span>
-                  <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs font-medium text-indigo-300">{{ country_info.count }}</span>
-                </div>
+                <details class="rounded-md bg-[#2a2f35] text-sm ring-1 ring-white/5">
+                  <summary class="flex cursor-pointer list-none items-center gap-3 px-3 py-2">
+                    <span class="w-5 shrink-0 text-xs font-medium text-gray-500">{{ forloop.counter }}</span>
+                    <span class="flex-1 truncate text-gray-300">{{ country }}</span>
+                    <span class="shrink-0 rounded bg-[#1e2329] px-2 py-0.5 text-xs font-medium text-indigo-300">{{ country_info.count }}</span>
+                  </summary>
+                  {% if country_info.titles %}
+                    <div class="border-t border-white/5 px-3 py-2 space-y-1">
+                      {% for title in country_info.titles %}
+                        <a href="{% url 'search' %}?q={{ title|urlencode }}&media_type={{ media_type }}"
+                           class="block truncate text-xs text-indigo-300 hover:text-indigo-200 hover:underline"
+                           title="Search for {{ title }}">{{ title }}</a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </details>
               {% endfor %}
             </div>
           {% endfor %}
@@ -958,7 +969,7 @@
       <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-semibold">List Progress</h2>
-          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Letterboxd · Sight & Sound · 1001 Albums</span>
+          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">{{ list_progress|length }} curated lists</span>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
           {% for entry in list_progress %}

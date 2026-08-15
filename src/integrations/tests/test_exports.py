@@ -1,4 +1,5 @@
 import csv
+import json
 from datetime import UTC, datetime
 from io import StringIO
 
@@ -174,3 +175,15 @@ class ExportCSVTest(TestCase):
         for row in reader:
             media_id = row["media_id"]
             self.assertIn(media_id, db_media_ids)
+
+    def test_export_json(self):
+        """JSON export preserves media type and separates record sections."""
+        response = self.client.get(reverse("export_json"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json; charset=utf-8")
+
+        records = json.loads(b"".join(response.streaming_content).decode("utf-8"))
+        self.assertTrue(records)
+        self.assertTrue(all({"media_type", "item", "tracking"} <= set(record) for record in records))
+        self.assertTrue(any(record["media_type"] == MediaTypes.MOVIE.value for record in records))

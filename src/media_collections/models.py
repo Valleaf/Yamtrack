@@ -50,6 +50,14 @@ class Collection(models.Model):
     source = models.CharField(max_length=50, blank=True, default="manual")
     source_id = models.CharField(max_length=255, blank=True, default="")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    parent_collection = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="subcollections",
+    )
+    group_regional_variants = models.BooleanField(
+        default=False,
+        help_text="Group clearly-labelled regional or platform editions in the collection view.",
+    )
     collaborators = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="collaborated_collections",
