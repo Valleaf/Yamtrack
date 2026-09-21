@@ -25,19 +25,19 @@ AWARDS = [
         "winners": [
             {"year": 2026, "tmdb_id": "1054867"},  # One Battle After Another
             {"year": 2025, "tmdb_id": "1064213"},  # Anora
-            {"year": 2024, "tmdb_id": "872585"},   # Oppenheimer
+            {"year": 2024, "tmdb_id": "1634345"},   # Oppenheimer
             {"year": 2023, "tmdb_id": "545611"},   # Everything Everywhere All at Once
             {"year": 2022, "tmdb_id": "776503"},   # CODA
             {"year": 2021, "tmdb_id": "581734"},   # Nomadland
             {"year": 2020, "tmdb_id": "496243"},   # Parasite
             {"year": 2019, "tmdb_id": "490132"},   # Green Book
             {"year": 2018, "tmdb_id": "399055"},   # The Shape of Water
-            {"year": 2017, "tmdb_id": "376867"},   # Moonlight
-            {"year": 2016, "tmdb_id": "314365"},   # Spotlight
-            {"year": 2015, "tmdb_id": "194662"},   # Birdman
+            {"year": 2017, "tmdb_id": "1396421"},   # Moonlight
+            {"year": 2016, "tmdb_id": "1380676"},   # Spotlight
+            {"year": 2015, "tmdb_id": "435092"},   # Birdman
             {"year": 2014, "tmdb_id": "76203"},    # 12 Years a Slave
             {"year": 2013, "tmdb_id": "68734"},    # Argo
-            {"year": 2012, "tmdb_id": "74643"},    # The Artist
+            {"year": 2012, "tmdb_id": "370425"},    # The Artist
             {"year": 2011, "tmdb_id": "45269"},    # The King's Speech
             {"year": 2010, "tmdb_id": "12405"},    # Slumdog Millionaire
             {"year": 2009, "tmdb_id": "12162"},    # The Hurt Locker
@@ -135,35 +135,35 @@ AWARDS = [
         "source": "tmdb",
         "winners": [
             {"year": 2024, "tmdb_id": "1064213"},   # Anora
-            {"year": 2023, "tmdb_id": "1011985"},   # Anatomy of a Fall
-            {"year": 2022, "tmdb_id": "747188"},    # Triangle of Sadness
-            {"year": 2021, "tmdb_id": "788183"},    # Titane
+            {"year": 2023, "tmdb_id": "915935"},   # Anatomy of a Fall
+            {"year": 2022, "tmdb_id": "497828"},    # Triangle of Sadness
+            {"year": 2021, "tmdb_id": "630240"},    # Titane
             {"year": 2019, "tmdb_id": "496243"},    # Parasite
-            {"year": 2018, "tmdb_id": "517623"},    # Shoplifters
-            {"year": 2017, "tmdb_id": "397645"},    # The Square
-            {"year": 2016, "tmdb_id": "394044"},    # I, Daniel Blake
-            {"year": 2015, "tmdb_id": "320793"},    # Dheepan
-            {"year": 2014, "tmdb_id": "253236"},    # Winter Sleep
-            {"year": 2013, "tmdb_id": "154226"},    # Blue Is the Warmest Color
-            {"year": 2012, "tmdb_id": "103663"},    # Amour
-            {"year": 2011, "tmdb_id": "75612"},     # The Tree of Life
-            {"year": 2010, "tmdb_id": "60545"},     # Uncle Boonmee Who Can Recall His Past Lives
-            {"year": 2009, "tmdb_id": "18491"},     # The White Ribbon
-            {"year": 2008, "tmdb_id": "19823"},     # The Class (Entre les murs)
-            {"year": 2007, "tmdb_id": "12446"},     # 4 Months, 3 Weeks and 2 Days
-            {"year": 2006, "tmdb_id": "4813"},      # The Wind That Shakes the Barley
-            {"year": 2005, "tmdb_id": "13528"},     # L'Enfant
-            {"year": 2004, "tmdb_id": "9614"},      # Fahrenheit 9/11
-            {"year": 2003, "tmdb_id": "11832"},     # Elephant
-            {"year": 2002, "tmdb_id": "1128"},      # The Pianist
-            {"year": 2000, "tmdb_id": "289"},       # Dancer in the Dark
-            {"year": 1999, "tmdb_id": "37232"},     # Rosetta
+            {"year": 2018, "tmdb_id": "505192"},    # Shoplifters
+            {"year": 2017, "tmdb_id": "401246"},    # The Square
+            {"year": 2016, "tmdb_id": "374473"},    # I, Daniel Blake
+            {"year": 2015, "tmdb_id": "314402"},    # Dheepan
+            {"year": 2014, "tmdb_id": "265169"},    # Winter Sleep
+            {"year": 2013, "tmdb_id": "152584"},    # Blue Is the Warmest Color
+            {"year": 2012, "tmdb_id": "86837"},    # Amour
+            {"year": 2011, "tmdb_id": "8967"},     # The Tree of Life
+            {"year": 2010, "tmdb_id": "38368"},     # Uncle Boonmee Who Can Recall His Past Lives
+            {"year": 2009, "tmdb_id": "37903"},     # The White Ribbon
+            {"year": 2008, "tmdb_id": "8841"},     # The Class (Entre les murs)
+            {"year": 2007, "tmdb_id": "2009"},     # 4 Months, 3 Weeks and 2 Days
+            {"year": 2006, "tmdb_id": "1116"},      # The Wind That Shakes the Barley
+            {"year": 2005, "tmdb_id": "1433895"},     # L'Enfant
+            {"year": 2004, "tmdb_id": "1777"},      # Fahrenheit 9/11
+            {"year": 2003, "tmdb_id": "1807"},     # Elephant
+            {"year": 2002, "tmdb_id": "423"},      # The Pianist
+            {"year": 2000, "tmdb_id": "16"},       # Dancer in the Dark
+            {"year": 1999, "tmdb_id": "11489"},     # Rosetta
             {"year": 1994, "tmdb_id": "680"},       # Pulp Fiction
-            {"year": 1993, "tmdb_id": "9816"},      # Farewell My Concubine (co-winner)
-            {"year": 1993, "tmdb_id": "397"},       # The Piano (co-winner)
-            {"year": 1991, "tmdb_id": "13823"},     # Barton Fink
-            {"year": 1989, "tmdb_id": "9561"},      # sex, lies, and videotape
-            {"year": 1984, "tmdb_id": "11252"},     # Paris, Texas
+            {"year": 1993, "tmdb_id": "10997"},      # Farewell My Concubine (co-winner)
+            {"year": 1993, "tmdb_id": "713"},       # The Piano (co-winner)
+            {"year": 1991, "tmdb_id": "290"},     # Barton Fink
+            {"year": 1989, "tmdb_id": "1412"},      # sex, lies, and videotape
+            {"year": 1984, "tmdb_id": "655"},     # Paris, Texas
         ],
     },
 
@@ -178,16 +178,16 @@ AWARDS = [
         "source": "tmdb",
         "winners": [
             {"year": 2023, "tmdb_id": "792307"},    # Poor Things
-            {"year": 2020, "tmdb_id": "581726"},    # Nomadland
+            {"year": 2020, "tmdb_id": "581734"},    # Nomadland
             {"year": 2019, "tmdb_id": "475557"},    # Joker
-            {"year": 2018, "tmdb_id": "481852"},    # Roma
+            {"year": 2018, "tmdb_id": "426426"},    # Roma
             {"year": 2017, "tmdb_id": "399055"},    # The Shape of Water
-            {"year": 2010, "tmdb_id": "45215"},     # Somewhere
-            {"year": 2008, "tmdb_id": "13380"},     # The Wrestler
-            {"year": 2007, "tmdb_id": "5408"},      # Lust, Caution
-            {"year": 2005, "tmdb_id": "324"},       # Brokeback Mountain
-            {"year": 2004, "tmdb_id": "9736"},      # Vera Drake
-            {"year": 2003, "tmdb_id": "9567"},      # The Return
+            {"year": 2010, "tmdb_id": "39210"},     # Somewhere
+            {"year": 2008, "tmdb_id": "12163"},     # The Wrestler
+            {"year": 2007, "tmdb_id": "4588"},      # Lust, Caution
+            {"year": 2005, "tmdb_id": "142"},       # Brokeback Mountain
+            {"year": 2004, "tmdb_id": "11109"},      # Vera Drake
+            {"year": 2003, "tmdb_id": "11190"},      # The Return
         ],
     },
 
@@ -201,11 +201,11 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2011, "tmdb_id": "72096"},     # A Separation
-            {"year": 2008, "tmdb_id": "7555"},      # Elite Squad (Tropa de Elite)
-            {"year": 2004, "tmdb_id": "11509"},     # Head-On (Gegen die Wand)
+            {"year": 2011, "tmdb_id": "60243"},     # A Separation
+            {"year": 2008, "tmdb_id": "7347"},      # Elite Squad (Tropa de Elite)
+            {"year": 2004, "tmdb_id": "363"},     # Head-On (Gegen die Wand)
             {"year": 2002, "tmdb_id": "129"},       # Spirited Away (co-winner)
-            {"year": 2000, "tmdb_id": "17044"},     # Magnolia
+            {"year": 2000, "tmdb_id": "334"},     # Magnolia
         ],
     },
 
@@ -219,28 +219,28 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "872585"},    # Oppenheimer
-            {"year": 2023, "tmdb_id": "843047"},    # All Quiet on the Western Front (2022)
-            {"year": 2022, "tmdb_id": "754609"},    # The Power of the Dog
-            {"year": 2021, "tmdb_id": "581726"},    # Nomadland
+            {"year": 2024, "tmdb_id": "1634345"},    # Oppenheimer
+            {"year": 2023, "tmdb_id": "49046"},    # All Quiet on the Western Front (2022)
+            {"year": 2022, "tmdb_id": "600583"},    # The Power of the Dog
+            {"year": 2021, "tmdb_id": "581734"},    # Nomadland
             {"year": 2020, "tmdb_id": "530915"},    # 1917
-            {"year": 2019, "tmdb_id": "481852"},    # Roma
+            {"year": 2019, "tmdb_id": "426426"},    # Roma
             {"year": 2018, "tmdb_id": "359940"},    # Three Billboards Outside Ebbing, Missouri
             {"year": 2017, "tmdb_id": "313369"},    # La La Land
             {"year": 2016, "tmdb_id": "281957"},    # The Revenant
-            {"year": 2015, "tmdb_id": "209112"},    # Boyhood
+            {"year": 2015, "tmdb_id": "85350"},    # Boyhood
             {"year": 2014, "tmdb_id": "76203"},     # 12 Years a Slave
-            {"year": 2013, "tmdb_id": "68721"},     # Argo
-            {"year": 2012, "tmdb_id": "74643"},     # The Artist
+            {"year": 2013, "tmdb_id": "68734"},     # Argo
+            {"year": 2012, "tmdb_id": "370425"},     # The Artist
             {"year": 2011, "tmdb_id": "45269"},     # The King's Speech
             {"year": 2010, "tmdb_id": "12162"},     # The Hurt Locker
             {"year": 2009, "tmdb_id": "12405"},     # Slumdog Millionaire
-            {"year": 2008, "tmdb_id": "16320"},     # Atonement
-            {"year": 2007, "tmdb_id": "1633"},      # The Queen
-            {"year": 2006, "tmdb_id": "324"},       # Brokeback Mountain
-            {"year": 2005, "tmdb_id": "11012"},     # The Aviator
+            {"year": 2008, "tmdb_id": "4347"},     # Atonement
+            {"year": 2007, "tmdb_id": "1165"},      # The Queen
+            {"year": 2006, "tmdb_id": "142"},       # Brokeback Mountain
+            {"year": 2005, "tmdb_id": "2567"},     # The Aviator
             {"year": 2004, "tmdb_id": "122"},       # The Lord of the Rings: The Return of the King
-            {"year": 2003, "tmdb_id": "1128"},      # The Pianist
+            {"year": 2003, "tmdb_id": "423"},      # The Pianist
             {"year": 2001, "tmdb_id": "98"},        # Gladiator
             {"year": 2000, "tmdb_id": "14"},        # American Beauty
         ],
@@ -256,17 +256,17 @@ AWARDS = [
         "media_type": "game",
         "source": "igdb",
         "winners": [
-            {"year": 2024, "igdb_id": "348663"},    # Astro Bot
-            {"year": 2023, "igdb_id": "119133"},    # Baldur's Gate 3
-            {"year": 2022, "igdb_id": "119171"},    # Elden Ring
-            {"year": 2021, "igdb_id": "134597"},    # It Takes Two
-            {"year": 2020, "igdb_id": "103287"},    # The Last of Us Part II
-            {"year": 2019, "igdb_id": "101204"},    # Sekiro: Shadows Die Twice
-            {"year": 2018, "igdb_id": "38408"},     # God of War (2018)
+            {"year": 2024, "igdb_id": "303811"},    # Astro Bot
+            {"year": 2023, "igdb_id": "119171"},    # Baldur's Gate 3
+            {"year": 2022, "igdb_id": "119133"},    # Elden Ring
+            {"year": 2021, "igdb_id": "135243"},    # It Takes Two
+            {"year": 2020, "igdb_id": "26192"},     # The Last of Us Part II
+            {"year": 2019, "igdb_id": "76882"},     # Sekiro: Shadows Die Twice
+            {"year": 2018, "igdb_id": "19560"},     # God of War (2018)
             {"year": 2017, "igdb_id": "7346"},      # The Legend of Zelda: Breath of the Wild
-            {"year": 2016, "igdb_id": "11989"},     # Overwatch
+            {"year": 2016, "igdb_id": "8173"},      # Overwatch
             {"year": 2015, "igdb_id": "1942"},      # The Witcher 3: Wild Hunt
-            {"year": 2014, "igdb_id": "1708"},      # Dragon Age: Inquisition
+            {"year": 2014, "igdb_id": "1887"},      # Dragon Age: Inquisition
         ],
     },
 
@@ -280,13 +280,13 @@ AWARDS = [
         "media_type": "game",
         "source": "igdb",
         "winners": [
-            {"year": 2023, "igdb_id": "119133"},    # Baldur's Gate 3
-            {"year": 2022, "igdb_id": "119171"},    # Elden Ring
-            {"year": 2021, "igdb_id": "134597"},    # It Takes Two
-            {"year": 2018, "igdb_id": "38408"},     # God of War (2018)
+            {"year": 2023, "igdb_id": "119171"},    # Baldur's Gate 3
+            {"year": 2022, "igdb_id": "119133"},    # Elden Ring
+            {"year": 2021, "igdb_id": "135243"},    # It Takes Two
+            {"year": 2018, "igdb_id": "19560"},     # God of War (2018)
             {"year": 2017, "igdb_id": "7346"},      # The Legend of Zelda: Breath of the Wild
             {"year": 2015, "igdb_id": "1942"},      # The Witcher 3: Wild Hunt
-            {"year": 2014, "igdb_id": "1708"},      # Dragon Age: Inquisition
+            {"year": 2014, "igdb_id": "1887"},      # Dragon Age: Inquisition
         ],
     },
 
@@ -300,14 +300,14 @@ AWARDS = [
         "media_type": "game",
         "source": "igdb",
         "winners": [
-            {"year": 2024, "igdb_id": "348663"},    # Astro Bot
-            {"year": 2023, "igdb_id": "119133"},    # Baldur's Gate 3
-            {"year": 2022, "igdb_id": "119171"},    # Elden Ring
-            {"year": 2021, "igdb_id": "134597"},    # It Takes Two
-            {"year": 2020, "igdb_id": "103287"},    # The Last of Us Part II
-            {"year": 2018, "igdb_id": "38408"},     # God of War (2018)
+            {"year": 2024, "igdb_id": "303811"},    # Astro Bot
+            {"year": 2023, "igdb_id": "119171"},    # Baldur's Gate 3
+            {"year": 2022, "igdb_id": "119133"},    # Elden Ring
+            {"year": 2021, "igdb_id": "135243"},    # It Takes Two
+            {"year": 2020, "igdb_id": "26192"},     # The Last of Us Part II
+            {"year": 2018, "igdb_id": "19560"},     # God of War (2018)
             {"year": 2017, "igdb_id": "7346"},      # The Legend of Zelda: Breath of the Wild
-            {"year": 2016, "igdb_id": "11989"},     # Overwatch
+            {"year": 2016, "igdb_id": "8173"},      # Overwatch
             {"year": 2015, "igdb_id": "1942"},      # The Witcher 3: Wild Hunt
         ],
     },
@@ -445,9 +445,9 @@ AWARDS = [
         "winners": [
             {"year": 2012, "mal_id": "23390"},      # Shingeki no Kyojin (Attack on Titan)
             {"year": 2009, "mal_id": "104"},        # Yotsuba&!
-            # {"year": 2010, "mal_id": None},        # Otoyomegatari (Bride's Story) — look up MAL ID
-            # {"year": 2013, "mal_id": None},        # Gin no Saji (Silver Spoon)
-            # {"year": 2015, "mal_id": None},        # Dungeon Meshi (Delicious in Dungeon)
+            # {"year": 2010, "mal_id": "11514"},        # Otoyomegatari (Bride's Story) — look up MAL ID
+            # {"year": 2013, "mal_id": "25096"},        # Gin no Saji (Silver Spoon)
+            # {"year": 2015, "mal_id": "85781"},        # Dungeon Meshi (Delicious in Dungeon)
         ],
     },
 
@@ -463,7 +463,7 @@ AWARDS = [
         "source": "mal",
         "winners": [
             {"year": 2003, "mal_id": "1"},          # Monster — Naoki Urasawa
-            {"year": 2002, "mal_id": "1357"},       # Vagabond — Takehiko Inoue
+            {"year": 2002, "mal_id": "656"},       # Vagabond — Takehiko Inoue
             # Add earlier/later winners with MAL IDs from myanimelist.net/manga/<id>
         ],
     },
@@ -479,8 +479,8 @@ AWARDS = [
         "media_type": "manga",
         "source": "mal",
         "winners": [
-            {"year": 2006, "mal_id": "47"},         # 20th Century Boys — Naoki Urasawa
-            {"year": 2002, "mal_id": "1357"},       # Vagabond — Takehiko Inoue
+            {"year": 2006, "mal_id": "3"},         # 20th Century Boys — Naoki Urasawa
+            {"year": 2002, "mal_id": "656"},       # Vagabond — Takehiko Inoue
             # {"year": 1997, "mal_id": "2"},         # Berserk — Kentaro Miura (verify year)
             # Add others with MAL IDs from myanimelist.net/manga/<id>
         ],
@@ -516,21 +516,21 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "929590"},    # Anatomy of a Fall — Justine Triet
-            {"year": 2023, "tmdb_id": "785084"},    # The Quiet Son — Léonor Serraille
-            {"year": 2022, "tmdb_id": "599117"},    # Illusions Perdues — Xavier Giannoli
-            {"year": 2021, "tmdb_id": "576845"},    # De leur vivant — Emmanuelle Bercot
-            {"year": 2020, "tmdb_id": "503919"},    # Les Misérables — Ladj Ly
-            {"year": 2019, "tmdb_id": "426320"},    # Jusqu'à la garde — Xavier Legrand
-            {"year": 2018, "tmdb_id": "413232"},    # 120 Battements par minute — Robin Campillo
-            {"year": 2017, "tmdb_id": "376660"},    # Elle — Paul Verhoeven
-            {"year": 2016, "tmdb_id": "283566"},    # La Loi du marché — Stéphane Brizé
-            {"year": 2015, "tmdb_id": "246655"},    # Timbuktu — Abderrahmane Sissako
-            {"year": 2014, "tmdb_id": "209263"},    # La vie d'Adèle — Abdellatif Kechiche
-            {"year": 2013, "tmdb_id": "87736"},     # Amour — Michael Haneke
-            {"year": 2012, "tmdb_id": "62362"},     # The Artist — Michel Hazanavicius
-            {"year": 2011, "tmdb_id": "57799"},     # Des hommes et des dieux — Xavier Beauvois
-            {"year": 2010, "tmdb_id": "24753"},     # Un prophète — Jacques Audiard
+            {"year": 2024, "tmdb_id": "915935"},    # Anatomy of a Fall — Justine Triet
+            {"year": 2023, "tmdb_id": "1118848"},    # The Quiet Son — Léonor Serraille
+            {"year": 2022, "tmdb_id": "1489982"},    # Illusions Perdues — Xavier Giannoli
+            {"year": 2021, "tmdb_id": "153069"},    # De leur vivant — Emmanuelle Bercot  # TODO verify: TMDB shows 2011 release date, 10yr gap from Cesar 2021 ceremony
+            {"year": 2020, "tmdb_id": "586863"},    # Les Misérables — Ladj Ly
+            {"year": 2019, "tmdb_id": "451657"},    # Jusqu'à la garde — Xavier Legrand
+            {"year": 2018, "tmdb_id": "451945"},    # 120 Battements par minute (BPM) — Robin Campillo
+            {"year": 2017, "tmdb_id": "734736"},    # Elle — Paul Verhoeven
+            {"year": 2016, "tmdb_id": "329712"},    # La Loi du marché — Stéphane Brizé
+            {"year": 2015, "tmdb_id": "265228"},    # Timbuktu — Abderrahmane Sissako
+            {"year": 2014, "tmdb_id": "152584"},    # La vie d'Adèle — Abdellatif Kechiche
+            {"year": 2013, "tmdb_id": "86837"},     # Amour — Michael Haneke
+            {"year": 2012, "tmdb_id": "370425"},     # The Artist — Michel Hazanavicius
+            {"year": 2011, "tmdb_id": "46332"},     # Des hommes et des dieux — Xavier Beauvois
+            {"year": 2010, "tmdb_id": "21575"},     # Un prophète — Jacques Audiard
             # Add older César Best Film winners with TMDB IDs from themoviedb.org
         ],
     },
@@ -546,13 +546,13 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1118031"},   # All We Imagine as Light — Payal Kapadia
-            {"year": 2023, "tmdb_id": "975902"},    # The Zone of Interest — Jonathan Glazer (verify — won Jury Prize, not Grand Prix)
-            {"year": 2022, "tmdb_id": "815246"},    # Stars at Noon — Claire Denis
-            {"year": 2021, "tmdb_id": "681660"},    # A Hero — Asghar Farhadi
-            {"year": 2019, "tmdb_id": "505571"},    # Atlantics — Mati Diop
-            {"year": 2018, "tmdb_id": "458818"},    # Capernaum — Nadine Labaki
-            {"year": 2017, "tmdb_id": "413232"},    # BPM (Beats per Minute) — Robin Campillo (verify)
+            {"year": 2024, "tmdb_id": "927547"},   # All We Imagine as Light — Payal Kapadia
+            {"year": 2023, "tmdb_id": "467244"},    # The Zone of Interest — Jonathan Glazer (verify — won Jury Prize, not Grand Prix)
+            {"year": 2022, "tmdb_id": "603204"},    # Stars at Noon — Claire Denis
+            {"year": 2021, "tmdb_id": "672208"},    # A Hero — Asghar Farhadi
+            {"year": 2019, "tmdb_id": "496967"},    # Atlantics — Mati Diop
+            {"year": 2018, "tmdb_id": "517814"},    # Capernaum — Nadine Labaki
+            {"year": 2017, "tmdb_id": "636760"},    # BPM (Beats per Minute) — Robin Campillo (verify)
             # Add others from fr.wikipedia.org/wiki/Grand_Prix_(festival_de_Cannes)
         ],
     },
@@ -568,10 +568,10 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1209290"},   # Armand — Halfdan Ullmann Tøndel
-            {"year": 2023, "tmdb_id": "878783"},    # How to Have Sex — Molly Manning Walker
-            {"year": 2022, "tmdb_id": "817758"},    # The Stranger — Thomas M. Wright (verify)
-            {"year": 2019, "tmdb_id": "560197"},    # Bull — Annie Silverstein (verify exact UCR winner)
+            {"year": 2024, "tmdb_id": "1144681"},   # Armand — Halfdan Ullmann Tøndel
+            {"year": 2023, "tmdb_id": "1075175"},    # How to Have Sex — Molly Manning Walker
+            {"year": 2022, "tmdb_id": "848791"},    # The Stranger — Thomas M. Wright (verify)
+            {"year": 2019, "tmdb_id": "595940"},    # Bull — Annie Silverstein (verify exact UCR winner)
             # Add others from en.wikipedia.org/wiki/Un_Certain_Regard
         ],
     },
@@ -587,45 +587,15 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1046193"},   # A New Kind of Wilderness — Camilla Nielsson (verify — documentary?)
-            {"year": 2023, "tmdb_id": "869626"},    # Passages — Ira Sachs (verify)
-            {"year": 2022, "tmdb_id": "818680"},    # Emergency — Carey Williams
-            {"year": 2021, "tmdb_id": "614278"},    # CODA — Sian Heder
-            {"year": 2020, "tmdb_id": "531876"},    # Minari — Lee Isaac Chung
-            {"year": 2019, "tmdb_id": "503907"},    # Clemency — Chinonye Chukwu
-            {"year": 2018, "tmdb_id": "433680"},    # Burden — Andrew Heckler
-            {"year": 2017, "tmdb_id": "399174"},    # I Don't Feel at Home in This World Anymore — Macon Blair
+            {"year": 2024, "tmdb_id": "1208994"},   # A New Kind of Wilderness — Camilla Nielsson (verify — documentary?)
+            {"year": 2023, "tmdb_id": "898673"},    # Passages — Ira Sachs (verify)
+            {"year": 2022, "tmdb_id": "819309"},    # Emergency — Carey Williams
+            {"year": 2021, "tmdb_id": "776503"},    # CODA — Sian Heder
+            {"year": 2020, "tmdb_id": "615643"},    # Minari — Lee Isaac Chung
+            {"year": 2019, "tmdb_id": "565307"},    # Clemency — Chinonye Chukwu
+            {"year": 2018, "tmdb_id": "424201"},    # Burden — Andrew Heckler
+            {"year": 2017, "tmdb_id": "425591"},    # I Don't Feel at Home in This World Anymore — Macon Blair
             # Add others from en.wikipedia.org/wiki/Sundance_Film_Festival_Award_for_Grand_Jury_Prize
-        ],
-    },
-
-    # ------------------------------------------------------------------ #
-    #  BAFTA — Best Film  (British Academy Film Awards)                    #
-    #  Source: TMDB movie IDs                                              #
-    # ------------------------------------------------------------------ #
-    {
-        "slug": "bafta_best_film",
-        "name": "BAFTA Best Film",
-        "icon": "🎭",
-        "media_type": "movie",
-        "source": "tmdb",
-        "winners": [
-            {"year": 2024, "tmdb_id": "872585"},    # Oppenheimer — Christopher Nolan
-            {"year": 2023, "tmdb_id": "674324"},    # The Banshees of Inisherin — Martin McDonagh (verify)
-            {"year": 2022, "tmdb_id": "763215"},    # Belfast — Kenneth Branagh
-            {"year": 2021, "tmdb_id": "581389"},    # Nomadland — Chloé Zhao
-            {"year": 2020, "tmdb_id": "503924"},    # 1917 — Sam Mendes
-            {"year": 2019, "tmdb_id": "505979"},    # Roma — Alfonso Cuarón
-            {"year": 2018, "tmdb_id": "399055"},    # Three Billboards Outside Ebbing, Missouri — Martin McDonagh
-            {"year": 2017, "tmdb_id": "376867"},    # La La Land — Damien Chazelle
-            {"year": 2016, "tmdb_id": "264644"},    # The Revenant — Alejandro González Iñárritu
-            {"year": 2015, "tmdb_id": "205596"},    # Boyhood — Richard Linklater
-            {"year": 2014, "tmdb_id": "138843"},    # 12 Years a Slave — Steve McQueen
-            {"year": 2013, "tmdb_id": "120467"},    # Argo — Ben Affleck
-            {"year": 2012, "tmdb_id": "62362"},     # The Artist — Michel Hazanavicius
-            {"year": 2011, "tmdb_id": "45269"},     # The King's Speech — Tom Hooper
-            {"year": 2010, "tmdb_id": "1731"},      # The Hurt Locker — Kathryn Bigelow
-            # Add older winners from en.wikipedia.org/wiki/BAFTA_Award_for_Best_Film
         ],
     },
 
@@ -641,10 +611,10 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1071215"},   # Who Do I Belong To — Meryam Joobeur
-            {"year": 2023, "tmdb_id": "961396"},    # Sur l'Adamant — Nicolas Philibert
-            {"year": 2022, "tmdb_id": "785154"},    # A Piece of Sky — Michael Koch (verify)
-            {"year": 2021, "tmdb_id": "628293"},    # Forest — Sheryl Moller (verify exact winner)
+            {"year": 2024, "tmdb_id": "794090"},   # Who Do I Belong To — Meryam Joobeur
+            {"year": 2023, "tmdb_id": "1070449"},    # Sur l'Adamant — Nicolas Philibert
+            {"year": 2022, "tmdb_id": "728499"},    # A Piece of Sky — Michael Koch (verify)
+            {"year": 2021, "tmdb_id": "875186"},    # Forest — Sheryl Moller (verify exact winner)
             # Add others from en.wikipedia.org/wiki/Silver_Bear_Jury_Prize
         ],
     },
@@ -660,11 +630,11 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1163126"},   # April — Dea Kulumbegashvili (verify)
-            {"year": 2023, "tmdb_id": "961268"},    # Evil Does Not Exist — Ryusuke Hamaguchi
-            {"year": 2022, "tmdb_id": "879499"},    # Saint Omer — Alice Diop
-            {"year": 2021, "tmdb_id": "644124"},    # Il buco — Michelangelo Frammartino
-            {"year": 2019, "tmdb_id": "544401"},    # J'accuse (An Officer and a Spy) — Roman Polanski (verify)
+            {"year": 2024, "tmdb_id": "1064021"},   # April — Dea Kulumbegashvili (verify)
+            {"year": 2023, "tmdb_id": "1156125"},    # Evil Does Not Exist — Ryusuke Hamaguchi
+            {"year": 2022, "tmdb_id": "925943"},    # Saint Omer — Alice Diop
+            {"year": 2021, "tmdb_id": "660708"},    # Il buco — Michelangelo Frammartino
+            {"year": 2019, "tmdb_id": "1121519"},    # J'accuse (An Officer and a Spy) — Roman Polanski (verify)
             # Add others from en.wikipedia.org/wiki/Silver_Lion_for_Grand_Jury_Prize
         ],
     },
@@ -680,13 +650,13 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "929590"},    # Anatomy of a Fall — Justine Triet
-            {"year": 2023, "tmdb_id": "840430"},    # The Zone of Interest — Jonathan Glazer
-            {"year": 2022, "tmdb_id": "669000"},    # Close — Lukas Dhont
-            {"year": 2021, "tmdb_id": "696374"},    # The Hand of God — Paolo Sorrentino
-            {"year": 2020, "tmdb_id": "524434"},    # Another Round — Thomas Vinterberg
-            {"year": 2019, "tmdb_id": "540903"},    # Parasite — Bong Joon-ho
-            {"year": 2018, "tmdb_id": "458818"},    # Capernaum — Nadine Labaki (verify — Lebanon/French co-production)
+            {"year": 2024, "tmdb_id": "915935"},    # Anatomy of a Fall — Justine Triet
+            {"year": 2023, "tmdb_id": "467244"},    # The Zone of Interest — Jonathan Glazer
+            {"year": 2022, "tmdb_id": "901563"},    # Close — Lukas Dhont
+            {"year": 2021, "tmdb_id": "722778"},    # The Hand of God — Paolo Sorrentino
+            {"year": 2020, "tmdb_id": "580175"},    # Another Round — Thomas Vinterberg
+            {"year": 2019, "tmdb_id": "496243"},    # Parasite — Bong Joon-ho
+            {"year": 2018, "tmdb_id": "517814"},    # Capernaum — Nadine Labaki (verify — Lebanon/French co-production)
             # Add others from europeanfilmacademy.org/European-Film-Awards
         ],
     },
@@ -702,8 +672,8 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "934632"},    # Poor Things — Yorgos Lanthimos (verify category)
-            {"year": 2023, "tmdb_id": "505642"},    # Avatar: The Way of Water — James Cameron
+            {"year": 2024, "tmdb_id": "792307"},    # Poor Things — Yorgos Lanthimos (verify category)
+            {"year": 2023, "tmdb_id": "76600"},    # Avatar: The Way of Water — James Cameron
             {"year": 2022, "tmdb_id": "438631"},    # Dune — Denis Villeneuve
             {"year": 2020, "tmdb_id": "330457"},    # Frozen II — Jennifer Lee & Chris Buck (verify category)
             {"year": 2019, "tmdb_id": "299537"},    # Captain Marvel (verify)
@@ -740,11 +710,11 @@ AWARDS = [
         "media_type": "movie",
         "source": "tmdb",
         "winners": [
-            {"year": 2024, "tmdb_id": "1079091"},   # The Substance — Coralie Fargeat (verify — she won Palme)
-            {"year": 2023, "tmdb_id": "872585"},    # American Fiction — Cord Jefferson
+            {"year": 2024, "tmdb_id": "933260"},   # The Substance — Coralie Fargeat (verify — she won Palme)
+            {"year": 2023, "tmdb_id": "1056360"},    # American Fiction — Cord Jefferson
             {"year": 2022, "tmdb_id": "785084"},    # The Whale — Darren Aronofsky (verify)
-            {"year": 2021, "tmdb_id": "823754"},    # Belfast — Kenneth Branagh
-            {"year": 2020, "tmdb_id": "615173"},    # Nomadland — Chloé Zhao
+            {"year": 2021, "tmdb_id": "777270"},    # Belfast — Kenneth Branagh
+            {"year": 2020, "tmdb_id": "581734"},    # Nomadland — Chloé Zhao
             {"year": 2019, "tmdb_id": "503924"},    # 1917 — Sam Mendes (verify TIFF date)
             # Add others from en.wikipedia.org/wiki/Toronto_International_Film_Festival_People%27s_Choice_Award
         ],

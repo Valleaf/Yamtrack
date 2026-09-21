@@ -1466,12 +1466,37 @@ def get_awards_progress(user):
             "slug": award["slug"],
             "name": award["name"],
             "icon": award["icon"],
+            "media_type": media_type,
             "tracked": tracked,
             "total": total,
             "percentage": pct,
             "dash_offset": offset,
         })
 
+    return _group_progress_entries_by_media_type(result)
+
+
+def _group_progress_entries_by_media_type(entries):
+    """Group a flat list of award/list progress entries (each carrying a
+    `media_type` key) into [{"media_type", "label", "entries": [...]}, ...],
+    sorted by the media type's readable label, with entries inside each
+    group sorted by name. Movies/TV/games/etc were previously all mixed
+    into one long grid on the Awards & Lists tab, which made ~25+ entries
+    hard to scan -- this lets the template render one labeled section per
+    media type instead.
+    """
+    grouped: dict[str, list] = defaultdict(list)
+    for entry in entries:
+        grouped[entry["media_type"]].append(entry)
+
+    result = []
+    for media_type in sorted(grouped, key=app_tags.media_type_readable):
+        group_entries = sorted(grouped[media_type], key=lambda e: e["name"])
+        result.append({
+            "media_type": media_type,
+            "label": app_tags.media_type_readable(media_type),
+            "entries": group_entries,
+        })
     return result
 
 
@@ -1617,6 +1642,7 @@ def get_list_progress(user):
             "slug": curated_list["slug"],
             "name": curated_list["name"],
             "icon": curated_list["icon"],
+            "media_type": media_type,
             "source_url": curated_list.get("source_url", ""),
             "tracked": tracked,
             "total": total,
@@ -1624,7 +1650,7 @@ def get_list_progress(user):
             "dash_offset": offset,
         })
 
-    return result
+    return _group_progress_entries_by_media_type(result)
 
 
 def get_list_winners_detail(user, list_slug):

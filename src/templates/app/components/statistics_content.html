@@ -969,32 +969,36 @@
       <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-semibold">List Progress</h2>
-          <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">{{ list_progress|length }} curated lists</span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-          {% for entry in list_progress %}
-            <button type="button"
-                    data-list-slug="{{ entry.slug }}"
-                    hx-get="{% url 'list_progress_detail' entry.slug %}"
-                    hx-target="#list-detail-panel"
-                    hx-swap="innerHTML"
-                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
-              <div class="relative w-28 h-28">
-                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"
-                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
-                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
-                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
-                </div>
-              </div>
-              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
-            </button>
-          {% endfor %}
-        </div>
+        {% for group in list_progress %}
+          <div class="mb-8 last:mb-0">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">{{ group.label }} <span class="text-gray-600 normal-case">· {{ group.entries|length }}</span></h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+              {% for entry in group.entries %}
+                <button type="button"
+                        data-list-slug="{{ entry.slug }}"
+                        hx-get="{% url 'list_progress_detail' entry.slug %}"
+                        hx-target="#list-detail-panel"
+                        hx-swap="innerHTML"
+                        class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+                  <div class="relative w-28 h-28">
+                    <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"
+                              stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                      <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                      <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                    </div>
+                  </div>
+                  <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
         <div id="list-detail-panel"></div>
       </div>
       <script>
@@ -1045,30 +1049,35 @@
           <h2 class="text-xl font-semibold">Awards Progress</h2>
           <span class="text-xs text-gray-500 bg-[#2a2f35] px-2 py-1 rounded">Óscars · César · Cannes · GOTY</span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-          {% for entry in awards_progress %}
-            <button type="button"
-                    data-award-slug="{{ entry.slug }}"
-                    hx-get="{% url 'award_progress_detail' entry.slug %}"
-                    hx-target="#award-detail-panel"
-                    hx-swap="innerHTML"
-                    class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
-              <div class="relative w-28 h-28">
-                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"
-                          stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span class="text-2xl leading-none">{{ entry.icon }}</span>
-                  <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
-                  <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
-                </div>
-              </div>
-              <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
-            </button>
-          {% endfor %}
-        </div>
+        {% for group in awards_progress %}
+          <div class="mb-8 last:mb-0">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">{{ group.label }} <span class="text-gray-600 normal-case">· {{ group.entries|length }}</span></h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+              {% for entry in group.entries %}
+                <button type="button"
+                        data-award-slug="{{ entry.slug }}"
+                        hx-get="{% url 'award_progress_detail' entry.slug %}"
+                        hx-target="#award-detail-panel"
+                        hx-swap="innerHTML"
+                        class="flex flex-col items-center gap-2 rounded-xl p-2 ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.03] transition-all duration-200 cursor-pointer">
+                  <div class="relative w-28 h-28">
+                    <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" stroke-width="7" stroke-linecap="round" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"
+                              stroke-dasharray="251.33" stroke-dashoffset="{{ entry.dash_offset }}" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-2xl leading-none">{{ entry.icon }}</span>
+                      <span class="text-xl font-bold leading-none mt-1">{{ entry.percentage }}%</span>
+                      <span class="text-xs text-gray-400 mt-0.5">{{ entry.tracked }}/{{ entry.total }}</span>
+                    </div>
+                  </div>
+                  <p class="text-sm font-medium text-center leading-tight px-1">{{ entry.name }}</p>
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
         <div id="award-detail-panel"></div>
       </div>
       <script>

@@ -17,6 +17,9 @@ services:
       - DB_USER=yamtrack
       - DB_PASSWORD=yamtrack_db_password
       - ALLOWED_HOSTS=*
+      - WEBPUSH_VAPID_PRIVATE_KEY=Q4XOV8xPaGhkHD3GG-EzshLf-Q4E6N0IYASqyF1GJSY
+      - WEBPUSH_VAPID_PUBLIC_KEY=BCDFDuO4_0UK11Qa_jUVKO96WdVq47YfAeqs2aoqcXChniwDkkqLmte9yKgnEG7ShouHMC3ohXvD17i8t6kGGYk
+      - WEBPUSH_VAPID_ADMIN_EMAIL=trouillet.valentin@gmail.com
     depends_on:
       db:
         condition: service_healthy

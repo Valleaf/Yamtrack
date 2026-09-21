@@ -249,6 +249,7 @@ def _search_tmdb_collection(query):
 
 def _fetch_igdb_collection(source_id):
     """Fetch an IGDB game series/collection by ID and return normalised data."""
+    import requests
     from django.conf import settings as django_settings
     from app.providers import igdb as igdb_provider
 
@@ -262,13 +263,33 @@ def _fetch_igdb_collection(source_id):
         "Client-ID": django_settings.IGDB_ID,
         "Authorization": f"Bearer {access_token}",
     }
-    response = services.api_request(
-        Sources.IGDB.value,
-        "POST",
-        url,
-        data=query,
-        headers=headers,
-    )
+    # Same retry-on-401 pattern as every other igdb.py caller: a cached token
+    # can go stale/get revoked between requests, and IGDB_ID/IGDB_SECRET are a
+    # single shared client, so a 401 here doesn't necessarily mean the
+    # collection itself is bad -- it usually just means the cached token needs
+    # a refresh. This was previously missing here, causing the collection Sync
+    # button to surface a raw 401 instead of transparently retrying.
+    try:
+        response = services.api_request(
+            Sources.IGDB.value,
+            "POST",
+            url,
+            data=query,
+            headers=headers,
+        )
+    except requests.exceptions.HTTPError as error:
+        error_resp = igdb_provider.handle_error(error)
+        if error_resp and error_resp.get("retry"):
+            headers["Authorization"] = f"Bearer {igdb_provider.get_access_token()}"
+            response = services.api_request(
+                Sources.IGDB.value,
+                "POST",
+                url,
+                data=query,
+                headers=headers,
+            )
+        else:
+            raise
     if not response:
         return None
     col = response[0]
@@ -296,6 +317,8 @@ def _search_igdb_collection(query):
     from django.conf import settings as django_settings
     from app.providers import igdb as igdb_provider
 
+    import requests
+
     access_token = igdb_provider.get_access_token()
     url = f"{igdb_provider.base_url}/collections"
     body = (
@@ -313,6 +336,27 @@ def _search_igdb_collection(query):
             data=body,
             headers=headers,
         )
+    except requests.exceptions.HTTPError as error:
+        # Retry once on a stale/revoked cached token before giving up, same
+        # as _fetch_igdb_collection -- previously this went straight to the
+        # broad except below and silently returned [] on every 401.
+        error_resp = igdb_provider.handle_error(error)
+        if error_resp and error_resp.get("retry"):
+            headers["Authorization"] = f"Bearer {igdb_provider.get_access_token()}"
+            try:
+                response = services.api_request(
+                    Sources.IGDB.value,
+                    "POST",
+                    url,
+                    data=body,
+                    headers=headers,
+                )
+            except Exception:
+                logger.exception("IGDB collection search failed after token refresh")
+                return []
+        else:
+            logger.exception("IGDB collection search failed")
+            return []
     except Exception:
         logger.exception("IGDB collection search failed")
         return []

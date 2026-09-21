@@ -580,10 +580,6 @@ CELERY_BEAT_SCHEDULE = {
         "task": "Cleanup user messages",
         "schedule": 60 * 60 * 24,  # every 24 hours
     },
-    "sync_external_lists": {
-        "task": "Sync external lists",
-        "schedule": 60 * 60 * 24 * 7,  # weekly
-    },
     "sync_all_tracked_media": {
         "task": "Sync all tracked media",
         # Monthly full-library refresh of titles/artwork/release years.

@@ -10,48 +10,12 @@ from app.models import UserMessage
 logger = logging.getLogger(__name__)
 
 
-@shared_task(name="Sync external lists")
-def sync_external_lists():
-    """Sync all configured ExternalLists from TMDB."""
-    from app.models import ExternalList, ExternalListItem  # noqa: PLC0415
-    from app.providers.tmdb import fetch_list  # noqa: PLC0415
-
-    lists = list(ExternalList.objects.all())
-    synced = 0
-
-    for ext_list in lists:
-        try:
-            raw_items = fetch_list(ext_list.tmdb_list_id)
-
-            # Filter to only items that match this list's media_type.
-            # TMDB v3 list items carry a 'media_type' field ("movie" / "tv").
-            # Fall back to the list's own media_type when the field is absent.
-            matching = [
-                item for item in raw_items
-                if item.get("media_type", ext_list.media_type) == ext_list.media_type
-            ]
-
-            ExternalListItem.objects.filter(external_list=ext_list).delete()
-            batch = [
-                ExternalListItem(
-                    external_list=ext_list,
-                    media_id=str(item["id"]),
-                    rank=rank,
-                )
-                for rank, item in enumerate(matching, start=1)
-            ]
-            ExternalListItem.objects.bulk_create(batch)
-
-            ext_list.item_count = len(batch)
-            ext_list.last_synced = timezone.now()
-            ext_list.save(update_fields=["item_count", "last_synced"])
-            synced += 1
-            logger.info("Synced %s (%d items)", ext_list.name, len(batch))
-
-        except Exception:
-            logger.exception("Failed to sync external list '%s'", ext_list.name)
-
-    return synced
+# NOTE: the old "Sync external lists" task (ExternalList/ExternalListItem-based)
+# was removed here -- those models were dropped in migration 0074 in favour of
+# the static app/external_lists_data.py fixture (see that migration's docstring
+# for why: the sync task/command that would have populated them was never
+# built). If this task was still registered in CELERY_BEAT_SCHEDULE anywhere,
+# remove that entry too -- it would ImportError on the now-deleted models.
 
 
 @shared_task(name="Populate media country")
@@ -428,5 +392,113 @@ def backfill_people_metadata_cache(progress_every=200):
         "total": total,
         "warmed": warmed,
         "already_cached": already_cached,
+        "failed": failed,
+    }
+
+
+@shared_task(name="Backfill award and list metadata cache")
+def backfill_award_and_list_metadata_cache(progress_every=200):
+    """One-time backfill: warm the provider-metadata cache for every ID
+    referenced in awards_data.AWARDS and external_lists_data.LISTS, so
+    the awards-progress and list-progress detail dropdowns stop showing
+    "Unknown title (ID xxxxx)".
+
+    get_award_winners_detail()/get_list_winners_detail() are intentionally
+    cache-only (no live API calls from the stats page): a winner/entry's
+    title comes from the shared Item row if anyone has ever tracked it,
+    then falls back to cached provider metadata, then to a placeholder.
+    Most award winners and curated-list entries (e.g. Oscar Best Picture
+    1929, Letterboxd Top 250 #250) are never tracked by anyone, so unlike
+    backfill_people_metadata_cache -- which only walks existing Item rows
+    -- this walks the fixture data directly by ID, since there may be no
+    Item row to start from at all.
+
+    Fetches through the normal provider dispatch, which caches as a side
+    effect (same trick every other backfill_* task uses) and populates the
+    exact `{source}_{media_type}_{media_id}` cache key the stats page reads.
+
+    Safe to re-run: entries already cached (or already backed by a tracked
+    Item) are skipped via a cache.get check.
+    Trigger manually with:
+        docker compose exec yamtrack python manage.py shell -c \\
+            "from app.tasks import backfill_award_and_list_metadata_cache; " \\
+            "backfill_award_and_list_metadata_cache.delay()"
+    """
+    from django.core.cache import cache  # noqa: PLC0415
+
+    from app.awards_data import AWARDS  # noqa: PLC0415
+    from app.external_lists_data import LISTS  # noqa: PLC0415
+    from app.models import Item  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    # Collect every unique (source, media_type, media_id) referenced across
+    # both fixtures. A given ID can appear in more than one award/list
+    # (e.g. a book on both a "Best of" list and an award), so dedupe first
+    # rather than doing redundant fetches per fixture entry.
+    seen = set()
+    for award in AWARDS:
+        source = award["source"]
+        media_type = award["media_type"]
+        id_key = f"{source}_id"
+        for winner in award["winners"]:
+            media_id = winner.get(id_key)
+            if media_id:
+                seen.add((source, media_type, str(media_id)))
+    for curated_list in LISTS:
+        source = curated_list["source"]
+        media_type = curated_list["media_type"]
+        id_key = f"{source}_id"
+        for entry in curated_list["items"]:
+            media_id = entry.get(id_key)
+            if media_id:
+                seen.add((source, media_type, str(media_id)))
+
+    # Items already tracked by someone already have their title on the Item
+    # row itself (get_award_winners_detail/get_list_winners_detail check
+    # that first) -- no need to also warm their cache entry.
+    tracked = set(
+        Item.objects.filter(
+            media_id__in={mid for _, _, mid in seen},
+        ).values_list("source", "media_type", "media_id"),
+    )
+
+    total = len(seen)
+    warmed = 0
+    already_covered = 0
+    failed = 0
+
+    logger.info("Award/list metadata cache backfill: %s unique IDs to check", total)
+
+    for index, (source, media_type, media_id) in enumerate(sorted(seen), start=1):
+        cache_key = f"{source}_{media_type}_{media_id}"
+        if (source, media_type, media_id) in tracked or cache.get(cache_key) is not None:
+            already_covered += 1
+        else:
+            try:
+                services.get_media_metadata(media_type, media_id, source)
+                warmed += 1
+            except Exception:
+                failed += 1
+                logger.exception(
+                    "Award/list metadata backfill failed for %s/%s/%s",
+                    source, media_type, media_id,
+                )
+
+        if index % progress_every == 0:
+            logger.info(
+                "Award/list metadata cache backfill: %s/%s checked "
+                "(warmed=%s, already_covered=%s, failed=%s)",
+                index, total, warmed, already_covered, failed,
+            )
+
+    logger.info(
+        "Award/list metadata cache backfill complete: %s checked, "
+        "warmed=%s, already_covered=%s, failed=%s",
+        total, warmed, already_covered, failed,
+    )
+    return {
+        "total": total,
+        "warmed": warmed,
+        "already_covered": already_covered,
         "failed": failed,
     }

@@ -96,7 +96,18 @@ def get_access_token():
                 params=json,
             )
         except requests.exceptions.HTTPError as error:
-            handle_error(error)
+            # This is the Twitch OAuth token endpoint, not the IGDB API itself --
+            # a 401 here means bad IGDB_ID/IGDB_SECRET, not an expired cached
+            # token (there's no cached token to expire, we're fetching a fresh
+            # one). handle_error()'s {"retry": True} path doesn't apply: there is
+            # nothing to retry with, so surface a clear config error instead of
+            # falling through to an UnboundLocalError on `response`.
+            msg = "IGDB authentication failed - check IGDB_ID/IGDB_SECRET"
+            raise services.ProviderAPIError(
+                Sources.IGDB.value,
+                error,
+                msg,
+            ) from error
 
         access_token = response["access_token"]
         cache.set(

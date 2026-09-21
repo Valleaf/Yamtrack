@@ -5,7 +5,7 @@
 - [X] FilmAffinity import accepts raw HTML and ZIP exports and queues ratings/list files.
 - [X] FilmAffinity ZIP exports are now extracted and queue ratings/list HTML files; direct HTML uploads remain supported.
 - [X] SensCritique review page renders correctly; invalid nested discard form and underscore template variables were fixed.
-- [ ] Collection sync identity bugs. Sync failed: 401 Client Error: Unauthorized for url: https://api.igdb.com/v4/collections
+- [X] Collection sync identity bugs. Sync failed: 401 Client Error: Unauthorized for url: https://api.igdb.com/v4/collections — root cause was `_fetch_igdb_collection`/`_search_igdb_collection` missing the retry-on-401 pattern used everywhere else in igdb.py; also fixed `get_access_token()` swallowing a real auth failure into an `UnboundLocalError` instead of a clear error.
 - [X] BnF loading is hardened against malformed cover headers and shortened ISBN-10 identifiers; provider tests pass.
 - [X] Faster statistics: the page shell loads immediately, content is async, and per-user/date-range results are cached with a manual refresh.
 
@@ -27,9 +27,11 @@
 - [X] Update the README with collection, calendar, statistics, and curated-list features.
 - [X] Arthur C. Clarke novels and SF Masterworks are included as Hardcover-backed curated book lists.
 - [ ] Unrated items ? Show a page for it.
-- [ ] Game awards goty list is wrong.
-- [ ] Some lists have Unknown title(ID xxxxx)
-- [ ] Group lists / Awards by media type
+- [X] Game awards goty list is wrong. Root cause: the igdb_ids in awards_data.py's three GOTY blocks (Game Awards, DICE, Golden Joystick) were never actually verified against IGDB — most pointed at completely unrelated games (e.g. 2022/2023 Elden Ring/Baldur's Gate 3 ids were transposed; 2018 God of War pointed at "WWF Royal Rumble"; 2016 Overwatch pointed at "Captain Blood"; 2014 Dragon Age: Inquisition pointed at "WarioWare D.I.Y."). Verified correct id for every winner via a direct IGDB search (debug_goty.py / resolve_goty.py, still in src/ for reuse) and rewrote all three GOTY winner lists.
+- [X] Full awards_data.py verification sweep (beyond GOTY). ~90% of non-Oscar/non-GOTY entries had wrong TMDB/IGDB/MAL ids (never actually verified against the providers). Verified and fixed all ~130 entries via a title-search resolver (resolve_all_awards.py, kept in src/ for reuse) cross-checked against each winner's `# comment`. Oscar Best Picture (98/98) and manga awards were already correct. Also found and merged a duplicate `bafta_best_film` slug (two AWARDS entries with the same slug, different/conflicting winner lists — kept the more complete, now-verified 24-winner block, dropped the wrong 15-winner duplicate). One entry still flagged `# TODO verify` in the file: César 2021 "De leur vivant" resolves to a film with a 2011 release date, a 10yr gap from the ceremony year — worth a manual sanity check. hardcover/bnf book & comic award categories are still empty stubs (source not auto-searchable by this script) — separate backlog item to populate.
+- [X] "Unknown title (ID xxxxx)" — cause: awards/curated-list entries fall back to that placeholder when nobody has tracked the item AND its provider metadata cache is cold (statistics page is intentionally cache-only, no live calls). Added `backfill_award_and_list_metadata_cache` task to warm the cache for every ID in awards_data.py/external_lists_data.py. Also found and removed a dead `sync_external_lists` Celery task + weekly beat schedule entry left over from the pre-0074-migration ExternalList models — would have crashed every week; may still need `docker compose exec yamtrack python manage.py shell -c "from django_celery_beat.models import PeriodicTask; PeriodicTask.objects.filter(name='sync_external_lists').delete()"` to remove the stale DB row since DatabaseScheduler doesn't auto-drop it from settings.py alone. Run the new backfill manually to clear existing Unknown titles:
+  `docker compose exec yamtrack python manage.py shell -c "from app.tasks import backfill_award_and_list_metadata_cache; backfill_award_and_list_metadata_cache.delay()"`
+- [X] Group lists / Awards by media type. `get_awards_progress`/`get_list_progress` now return entries grouped into `[{"media_type", "label", "entries": [...]}, ...]` (sorted by label, entries sorted by name within each group) via a shared `_group_progress_entries_by_media_type` helper, and the Awards & Lists tab renders one labeled sub-section per media type instead of one long mixed grid. Cache shape changed — requires a statistics cache bump after deploy: `docker compose exec yamtrack python manage.py shell -c "from django.contrib.auth import get_user_model; from app.statistics import invalidate_statistics_cache; [invalidate_statistics_cache(u.id) for u in get_user_model().objects.all()]"`
 - [ ] Artist page should show albums rated
 - [ ] Score on pages should be more noticeable
 
@@ -42,6 +44,12 @@ etc
 top for each year from publications like idk skillup , ign, digital foundry, nofrag, etc
 
 more lists for movies games etc
+
+all disneys, all best international best picture, more festivals winners if htey have (venice, san sebastian, sundance, cannes, venise, berlin,cesar etc)
+
+Check auto sync. For instance i had chad powers season 2 in my planned, but the poster and episodes did not show up until i manually synced.
+
+Also i had the gentlemen as finished after season 1. Season 2 was announced and it did not go into planned,nor did the series change to in progress.
 
 ## Feature-first order
 
