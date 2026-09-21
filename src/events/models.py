@@ -240,3 +240,56 @@ class Event(models.Model):
             and self.datetime.minute == SentinelDatetime.MINUTE
             and self.datetime.second == SentinelDatetime.SECOND
         )
+
+
+class MusicReleaseDiscovery(models.Model):
+    """A release discovered from an artist represented in a user's library.
+
+    Discoveries are deliberately separate from ``Music`` tracking rows: an
+    artist's new release should appear in the calendar without silently adding
+    every album to the user's collection.
+    """
+
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="music_release_discoveries",
+    )
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    artist_names = models.TextField(blank=True, default="")
+    release_date = models.DateTimeField()
+    discovered_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["user", "item"],
+                name="unique_music_release_discovery_user_item",
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=["user", "release_date"],
+                name="music_discovery_user_date_idx",
+            ),
+        ]
+
+    @property
+    def datetime(self):
+        """Expose the same interface as an Event for calendar templates."""
+        return self.release_date
+
+    @property
+    def content_number(self):
+        return None
+
+    @property
+    def readable_content_number(self):
+        return ""
+
+    @property
+    def is_sentinel_time(self):
+        return False
+
+    def __str__(self):
+        return str(self.item)

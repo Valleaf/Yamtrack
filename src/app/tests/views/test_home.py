@@ -178,7 +178,6 @@ class HomeViewTests(TestCase):
         self.assertIn(MediaTypes.SEASON.value, in_progress_section["media_types"])
         self.assertIn(MediaTypes.ANIME.value, in_progress_section["media_types"])
         self.assertIn(MediaTypes.MOVIE.value, planning_section["media_types"])
-
         self.assertIn("sort_choices", response.context)
         self.assertEqual(response.context["sort_choices"], HomeSortChoices.choices)
         self.assertEqual(in_progress_section["count"], 2)
@@ -191,6 +190,38 @@ class HomeViewTests(TestCase):
         planning_movies = planning_section["media_types"][MediaTypes.MOVIE.value]
         self.assertEqual(len(planning_movies["items"]), 1)
         self.assertEqual(planning_movies["items"][0].status, Status.PLANNING.value)
+
+    def test_unrated_view_groups_unrated_media(self):
+        """The unrated page includes null scores and excludes scored items."""
+        unrated_item = Item.objects.create(
+            media_id="unrated",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.MOVIE.value,
+            title="Unrated Movie",
+            image="http://example.com/image.jpg",
+        )
+        Movie.objects.create(item=unrated_item, user=self.user, score=None)
+        rated_item = Item.objects.create(
+            media_id="rated",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.MOVIE.value,
+            title="Rated Movie",
+            image="http://example.com/image.jpg",
+        )
+        Movie.objects.create(item=rated_item, user=self.user, score=0)
+
+        response = self.client.get(reverse("unrated"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/unrated.html")
+        movie_section = next(
+            section
+            for section in response.context["sections"]
+            if section["media_type"] == MediaTypes.MOVIE.value
+        )
+        movie_titles = {media.item.title for media in movie_section["media_list"]}
+        self.assertIn("Unrated Movie", movie_titles)
+        self.assertNotIn("Rated Movie", movie_titles)
 
     def test_home_view_includes_in_progress_tv_with_unwatched_seasons(self):
         """Test in-progress TV with unwatched seasons appears on home."""
@@ -233,9 +264,12 @@ class HomeViewTests(TestCase):
         self.assertNotIn(MediaTypes.TV.value, in_progress_section["media_types"])
         self.assertIn(MediaTypes.SEASON.value, in_progress_section["media_types"])
 
-        season_media = in_progress_section[MediaTypes.SEASON.value]
-        self.assertEqual(season_media["total"], 1)
-        self.assertEqual(season_media["items"][0].item.title, "Returning Show")
+        season_media = in_progress_section["media_types"][MediaTypes.SEASON.value]
+        self.assertEqual(season_media["total"], 2)
+        self.assertEqual(
+            {season.item.title for season in season_media["items"]},
+            {"Test TV Show", "Returning Show"},
+        )
 
         self.assertNotIn(MediaTypes.SEASON.value, planning_section["media_types"])
 

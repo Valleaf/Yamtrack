@@ -21,6 +21,11 @@
       {% for entry in curated_list.entries %}
         <a href="{{ entry.link }}"
            class="flex items-center gap-2 rounded-md px-3 py-2 text-sm ring-1 transition-colors hover:ring-sky-400/40 {% if entry.tracked %}bg-emerald-500/10 ring-emerald-400/20{% else %}bg-[#1e2329] ring-white/5{% endif %}">
+          {% if entry.image %}
+            <img src="{{ entry.image }}" alt="" loading="lazy" class="w-8 h-10 rounded object-cover shrink-0 bg-[#2a2f35]" onerror="this.onerror=null;this.style.display='none'">
+          {% else %}
+            <span class="w-8 h-10 rounded bg-[#2a2f35] shrink-0"></span>
+          {% endif %}
           {% if entry.rank %}
             <span class="shrink-0 text-xs text-gray-500 w-6 text-right">{{ entry.rank }}.</span>
           {% endif %}

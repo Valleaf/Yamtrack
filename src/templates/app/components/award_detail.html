@@ -17,6 +17,11 @@
       {% for winner in award.entries %}
         <a href="{{ winner.link }}"
            class="flex items-center gap-2 rounded-md px-3 py-2 text-sm ring-1 transition-colors hover:ring-indigo-400/40 {% if winner.tracked %}bg-emerald-500/10 ring-emerald-400/20{% else %}bg-[#1e2329] ring-white/5{% endif %}">
+          {% if winner.image %}
+            <img src="{{ winner.image }}" alt="" loading="lazy" class="w-8 h-10 rounded object-cover shrink-0 bg-[#2a2f35]" onerror="this.onerror=null;this.style.display='none'">
+          {% else %}
+            <span class="w-8 h-10 rounded bg-[#2a2f35] shrink-0"></span>
+          {% endif %}
           <span class="shrink-0">{% if winner.tracked %}✅{% else %}⬜{% endif %}</span>
           <span class="flex-1 truncate {% if winner.tracked %}text-white{% else %}text-gray-400{% endif %}">{{ winner.title }}</span>
           {% if winner.year %}<span class="shrink-0 text-xs text-gray-500">{{ winner.year }}</span>{% endif %}

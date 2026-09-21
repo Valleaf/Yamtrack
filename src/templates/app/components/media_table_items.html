@@ -42,8 +42,8 @@
     {% if media.score is not None %}
       <td class="p-2 text-center">
         <div class="flex items-center justify-center">
-          {% include "app/icons/star.svg" with classes="w-4 h-4 text-yellow-400 mr-1 fill-current" %}
-          <span class="{{ media.score|score_color }} -mt-[3px]">{{ media.formatted_score }}</span>
+          {% include "app/icons/star.svg" with classes="w-5 h-5 text-yellow-400 mr-1 fill-current" %}
+          <span class="font-semibold {{ media.score|score_color }} -mt-[3px]">{{ media.formatted_score }}<span class="text-xs text-gray-400 ml-0.5">/10</span></span>
         </div>
       </td>
     {% else %}

@@ -92,10 +92,13 @@ def form_error_messages(form, request):
 
 def format_search_response(page, per_page, total_results, results):
     """Format the search response for pagination."""
+    # Keep empty results on a valid page 1, without adding a phantom page when
+    # a provider count is an exact multiple of the page size.
+    total_pages = max(1, (total_results + per_page - 1) // per_page)
     return {
         "page": page,
         "total_results": total_results,
-        "total_pages": total_results // per_page + 1,
+        "total_pages": total_pages,
         "results": results,
     }
 

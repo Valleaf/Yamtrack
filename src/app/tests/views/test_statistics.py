@@ -15,10 +15,10 @@ class StatisticsViewTests(TestCase):
     def test_statistics_view_default_date_range(self):
         """Test the statistics view with default date range (last year)."""
         # Call the view
-        response = self.client.get(reverse("statistics"))
+        response = self.client.get(reverse("statistics_content"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "app/statistics.html")
+        self.assertTemplateUsed(response, "app/components/statistics_content.html")
 
         self.assertIn("media_count", response.context)
         self.assertIn("activity_data", response.context)
@@ -36,7 +36,7 @@ class StatisticsViewTests(TestCase):
 
         # Call the view with custom date range
         response = self.client.get(
-            reverse("statistics") + f"?start-date={start_date}&end-date={end_date}",
+            reverse("statistics_content") + f"?start-date={start_date}&end-date={end_date}",
         )
 
         self.assertEqual(response.status_code, 200)

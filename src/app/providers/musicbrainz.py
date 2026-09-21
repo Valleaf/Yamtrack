@@ -28,6 +28,7 @@ _MB_SESSION.headers.update(HEADERS)
 
 CAA_BASE = "https://coverartarchive.org/release-group"
 RESULTS_PER_PAGE = 15
+RELEASE_GROUPS_PER_PAGE = 100
 
 # MB type filter values
 TYPE_FILTERS = {
@@ -343,6 +344,49 @@ def artist(artist_id: str) -> dict:
 
     cache.set(cache_key, result, 3600)
     return result
+
+
+def artist_release_groups(artist_id: str) -> list[dict]:
+    """Return lightweight release-group data for background discovery.
+
+    This intentionally avoids the artist lookup's cover-art URLs and the album
+    provider's tracklist/recommendation calls.  One browse request is enough
+    for the normal case and the result is cached for a week because release
+    metadata changes infrequently.
+    """
+    cache_key = f"musicbrainz_artist_release_groups_{artist_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    release_groups = []
+    offset = 0
+    while True:
+        data = _get("release-group", {
+            "artist": artist_id,
+            "type": "album|ep|single",
+            "limit": RELEASE_GROUPS_PER_PAGE,
+            "offset": offset,
+        })
+        page = data.get("release-groups", [])
+        release_groups.extend(page)
+        if len(page) < RELEASE_GROUPS_PER_PAGE:
+            break
+        offset += len(page)
+    groups = []
+    for rg in release_groups:
+        first_release_date = rg.get("first-release-date") or ""
+        groups.append({
+            "media_id": rg.get("id"),
+            "title": rg.get("title", ""),
+            "release_date": first_release_date,
+            "year": first_release_date[:4] or None,
+            "type": rg.get("primary-type", ""),
+            "image": _cover_url(rg["id"]) if rg.get("id") else "",
+        })
+
+    cache.set(cache_key, groups, 7 * 24 * 60 * 60)
+    return groups
 
 
 def _get_artist_albums(artist_id: str, exclude_id: str = "", limit: int = 10) -> list[dict]:

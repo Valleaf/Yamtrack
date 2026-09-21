@@ -65,6 +65,65 @@
     {% endif %}
   </div>
 
+  {% if recent_music_releases %}
+    <div class="bg-[#2a2f35] p-5 rounded-lg mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-semibold">Recent music releases</h3>
+          <p class="text-sm text-gray-400">Tracked music released during the past year.</p>
+        </div>
+        <span class="text-xs text-gray-500">{{ recent_music_releases|length }} release{{ recent_music_releases|length|pluralize }}</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        {% for release in recent_music_releases %}
+          <a href="{{ release.item|media_url }}"
+             class="flex items-center gap-3 rounded-lg bg-[#39404b] p-2 hover:bg-[#454d5a] transition-colors">
+            <img alt="{{ release.item }}"
+                 class="w-10 h-14 rounded object-cover shrink-0 bg-[#3e454d]"
+                 src="{{ release.item.image|default:IMG_NONE }}"
+                 onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-white truncate">{{ release.item }}</p>
+              {% if release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
+              <p class="text-xs text-indigo-300">{{ release.datetime|date_format:user }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if upcoming_music_releases %}
+    <div class="bg-[#2a2f35] p-5 rounded-lg mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-semibold">Music releases</h3>
+          <p class="text-sm text-gray-400">Upcoming releases from your tracked music library.</p>
+        </div>
+        <span class="text-xs text-gray-500">{{ upcoming_music_releases|length }} release{{ upcoming_music_releases|length|pluralize }}</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        {% for release in upcoming_music_releases %}
+          <a href="{{ release.item|media_url }}"
+             class="flex items-center gap-3 rounded-lg bg-[#39404b] p-2 hover:bg-[#454d5a] transition-colors">
+            <img alt="{{ release.item }}"
+                 class="w-10 h-14 rounded object-cover shrink-0 bg-[#3e454d]"
+                 src="{{ release.item.image|default:IMG_NONE }}"
+                 onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-white truncate">{{ release.item }}</p>
+              {% if release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
+              <p class="text-xs text-indigo-300">
+                {{ release.datetime|date_format:user }}
+                {% if not release.is_sentinel_time %} · {{ release.datetime|time_format:user }}{% endif %}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
   <div class="bg-[#2a2f35] p-5 rounded-lg mb-6">
     <h3 class="text-lg font-semibold mb-4">Next releases</h3>
     {% if upcoming_release_groups %}

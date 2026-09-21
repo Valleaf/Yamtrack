@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load app_tags %}
+
+{% block title %}Unrated - Yamtrack{% endblock title %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold mb-2">Unrated</h1>
+  <p class="text-gray-400 mb-6">Tracked items that do not have a score yet.</p>
+
+  {% if sections %}
+    <div class="space-y-8">
+      {% for section in sections %}
+        <section>
+          <h2 class="text-xl font-semibold mb-3">{{ section.label }}</h2>
+          <div class="media-grid">
+            {% for media in section.media_list %}
+              {% include "app/components/media_card.html" with item=media.item title=media.item.title from_grid=True media_type=section.media_type %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="flex flex-col items-center justify-center py-16 bg-[#2a2f35] rounded-lg">
+      <h2 class="text-xl font-semibold mb-2">Everything is rated</h2>
+      <p class="text-gray-400">New tracked items without a score will appear here.</p>
+    </div>
+  {% endif %}
+{% endblock content %}

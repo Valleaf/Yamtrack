@@ -1565,15 +1565,18 @@ def get_award_winners_detail(user, award_slug):
 
         if item is not None:
             title = item.title
+            image = item.image
         else:
             cache_key = f"{source}_{media_type}_{media_id}"
             metadata = cache.get(cache_key)
             title = metadata["title"] if metadata else f"Unknown title (ID {media_id})"
+            image = (metadata or {}).get("image", "")
 
         entries.append({
             "media_id": media_id,
             "year": winner["year"],
             "title": title,
+            "image": image or "",
             "tracked": media_id in tracked_media_ids,
             "link": reverse(
                 "media_details",
@@ -1714,15 +1717,18 @@ def get_list_winners_detail(user, list_slug):
 
         if item is not None:
             title = item.title
+            image = item.image
         else:
             cache_key = f"{source}_{media_type}_{media_id}"
             metadata = cache.get(cache_key)
             title = metadata["title"] if metadata else f"Unknown title (ID {media_id})"
+            image = (metadata or {}).get("image", "")
 
         entries.append({
             "media_id": media_id,
             "rank": entry["rank"],
             "title": title,
+            "image": image or "",
             "tracked": media_id in tracked_media_ids,
             "link": reverse(
                 "media_details",

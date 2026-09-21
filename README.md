@@ -38,14 +38,18 @@ You can try the app at [yamtrack.fuzzygrim.com](https://yamtrack.fuzzygrim.com) 
 - 🎮 Optionally group clearly labelled regional or platform editions of games while keeping the original items available.
 - 📐 Choose collection page size, grid columns, sorting, and item ordering; preferences are saved per user.
 - 🗺️ Explore country coverage with a ranked, expandable title list.
-- 🗓️ See artwork and upcoming releases—including music releases—on the calendar.
+- 🗓️ See artwork and upcoming releases—including music releases—on the calendar, with recent music releases from the past year and upcoming releases for the next 90 days.
+- 🎵 Discover releases from every artist represented in tracked albums; shared weekly MusicBrainz caching keeps background calls low, and discoveries stay separate from the tracked library.
 - 🏠 Choose which In Progress and Planning sections appear on the home page.
 
 ### Statistics and curated lists
 
 - ⚡ Statistics are cached and can be refreshed manually instead of rebuilding on every page visit.
-- 📚 Track progress through curated lists including Sight & Sound, Letterboxd, Arthur C. Clarke, SF Masterworks, AFI, IMDb, 1001 Albums, and PC Gamer snapshots.
-- 🔗 Curated-list details link back to their source when available.
+- 📚 Track progress through 27 curated lists, including film-festival and award snapshots, Sight & Sound, Letterboxd, Arthur C. Clarke, SF Masterworks, AFI, IMDb, 1001 Albums, and PC Gamer.
+- 🏆 Explore verified award-backed lists from Cannes, Sundance, Venice, Berlinale, TIFF, BAFTA, César, the Oscars, and major game awards.
+- 🔗 Curated-list details include source links, snapshot dates, and provider-ID verification metadata.
+- 🖼️ Award and curated-list details show lazy-loaded mini artwork thumbnails from cached metadata without live provider calls.
+- ✅ Search pagination and release-date checks now handle exact page boundaries and partial release dates correctly.
 
 For this fork, collection edits and preference changes are applied through the normal web UI. After pulling source changes into a Docker deployment, rebuild the image so templates, migrations, and Python code are loaded:
 

@@ -165,7 +165,7 @@ def manga(media_id):
     if data is None:
         url = f"{base_url}/manga/{media_id}"
         params = {
-            "fields": f"{base_fields},num_chapters,related_manga,recommendations,authors{{first_name,last_name,role}}",
+            "fields": f"{base_fields},num_chapters,num_volumes,related_manga,recommendations,authors{{first_name,last_name,role}}",
         }
 
         try:
@@ -200,6 +200,7 @@ def manga(media_id):
                 "end_date": response.get("end_date"),
                 "status": get_readable_status(response),
                 "number_of_chapters": num_chapters,
+                "number_of_volumes": response.get("num_volumes"),
             },
             "related": {
                 "related_manga": get_related(

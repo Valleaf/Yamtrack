@@ -3,13 +3,14 @@ from datetime import date, timedelta
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from app.models import Item, MediaTypes, Sources
-from events.models import Event
+from events.models import Event, MusicReleaseDiscovery
 
 
 class CalendarViewTests(TestCase):
@@ -54,7 +55,8 @@ class CalendarViewTests(TestCase):
         else:
             last_day = date(today.year, today.month + 1, 1) - timedelta(days=1)
 
-        mock_get_user_events.assert_called_once_with(self.user, first_day, last_day)
+        mock_get_user_events.assert_any_call(self.user, first_day, last_day)
+        self.assertEqual(mock_get_user_events.call_count, 3)
 
         # Check context data
         self.assertEqual(response.context["month"], today.month)
@@ -91,7 +93,8 @@ class CalendarViewTests(TestCase):
         # Verify date range for June 2024
         first_day = date(2024, 6, 1)
         last_day = date(2024, 7, 1) - timedelta(days=1)
-        mock_get_user_events.assert_called_once_with(self.user, first_day, last_day)
+        mock_get_user_events.assert_any_call(self.user, first_day, last_day)
+        self.assertEqual(mock_get_user_events.call_count, 3)
 
         # Check context data
         self.assertEqual(response.context["month"], 6)
@@ -225,6 +228,14 @@ class CalendarViewTests(TestCase):
             title="Test Movie",
             image="https://example.com/image2.jpg",
         )
+        music_item = Item(
+            id=3,
+            media_id="789",
+            source=Sources.MUSICBRAINZ.value,
+            media_type=MediaTypes.MUSIC.value,
+            title="Test Album",
+            image="https://example.com/music.jpg",
+        )
 
         # Create some mock events
         today = timezone.localdate()
@@ -247,8 +258,18 @@ class CalendarViewTests(TestCase):
                 timezone.datetime(today.year, today.month, 20, 9, 0),
             ),
         )
+        music_event = Event(
+            item=music_item,
+            datetime=timezone.make_aware(
+                timezone.datetime(today.year, today.month, 21, 10, 0),
+            ),
+        )
 
-        mock_get_user_events.return_value = [event1, event2, event3]
+        mock_get_user_events.return_value = [event1, event2, event3, music_event]
+        cache.set(
+            f"{music_item.source}_{music_item.media_type}_{music_item.media_id}",
+            {"details": {"artists": "Test Artist"}},
+        )
 
         # Make the request
         response = self.client.get(reverse("calendar"))
@@ -258,13 +279,18 @@ class CalendarViewTests(TestCase):
 
         # Check release_dict in context
         release_dict = response.context["release_dict"]
-        self.assertEqual(len(release_dict), 2)  # Two days with events
+        self.assertEqual(len(release_dict), 3)  # Three days with events
         self.assertEqual(len(release_dict[15]), 2)  # Two events on the 15th
         self.assertEqual(len(release_dict[20]), 1)  # One event on the 20th
+        self.assertEqual(len(release_dict[21]), 1)  # One music release on the 21st
         self.assertContains(response, "https://example.com/image1.jpg")
         self.assertContains(response, "https://example.com/image2.jpg")
         self.assertIn("upcoming_releases", response.context)
-        self.assertEqual(len(response.context["upcoming_release_groups"]), 2)
+        self.assertEqual(len(response.context["upcoming_release_groups"]), 3)
+        self.assertEqual(response.context["upcoming_music_releases"], [music_event])
+        self.assertIn("recent_music_releases", response.context)
+        self.assertContains(response, "Music releases")
+        self.assertContains(response, "Test Artist")
 
     @patch("events.tasks.reload_calendar.delay")
     def test_reload_calendar(self, mock_reload_task):

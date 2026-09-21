@@ -64,6 +64,32 @@
            hx-swap="innerHTML"></div>
     {% endif %}
 
+    {% if rated_albums %}
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-500">Your rated albums</h2>
+          <span class="text-xs text-gray-600">{{ rated_albums|length }}</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+          {% for entry in rated_albums %}
+            {% with release=entry.release media=entry.media %}
+              <a href="{% url 'media_details' source='musicbrainz' media_type='music' media_id=release.media_id title=release.title|default:'album'|slug %}"
+                 class="group flex flex-col rounded-xl bg-[#2a2f35] ring-1 ring-indigo-400/30 hover:ring-indigo-400/60 overflow-hidden transition-all duration-200">
+                <div class="relative aspect-square bg-[#1e2329] overflow-hidden">
+                  <img src="{{ release.image }}" alt="{{ release.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                  <span class="absolute top-2 right-2 rounded-md bg-gray-900/90 px-2 py-1 text-xs text-yellow-300">★ {{ media.formatted_score }}</span>
+                </div>
+                <div class="p-2.5">
+                  <p class="text-xs font-semibold truncate text-white">{{ release.title }}</p>
+                  {% if release.year %}<p class="text-[10px] text-gray-500 mt-0.5">{{ release.year }}</p>{% endif %}
+                </div>
+              </a>
+            {% endwith %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
     {# ── Discography ────────────────────────────────────────────────────────── #}
     {% for rg_type, releases in artist.discography.items %}
       {% if releases %}

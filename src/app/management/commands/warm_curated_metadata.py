@@ -22,9 +22,12 @@ fetches the new ones.
 Usage:
     docker compose exec yamtrack python manage.py warm_curated_metadata
     docker compose exec yamtrack python manage.py warm_curated_metadata --dry-run
+    docker compose exec yamtrack python manage.py warm_curated_metadata --report /tmp/curated-failures.json
 """
 
+import json
 import logging
+from pathlib import Path
 
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
@@ -46,6 +49,11 @@ class Command(BaseCommand):
             "--dry-run",
             action="store_true",
             help="List what would be fetched without making any provider requests.",
+        )
+        parser.add_argument(
+            "--report",
+            metavar="PATH",
+            help="Write unresolved provider IDs as JSON to PATH after the run.",
         )
 
     def handle(self, *args, **options):
@@ -121,6 +129,7 @@ class Command(BaseCommand):
 
         warmed = 0
         failed = 0
+        failures = []
 
         for index, (source, media_type, media_id, origin) in enumerate(to_fetch, start=1):
             try:
@@ -128,6 +137,14 @@ class Command(BaseCommand):
                 warmed += 1
             except Exception:
                 failed += 1
+                failures.append(
+                    {
+                        "source": source,
+                        "media_type": media_type,
+                        "media_id": media_id,
+                        "origin": origin,
+                    },
+                )
                 logger.exception(
                     "Failed to warm metadata for %s/%s/%s (%s)",
                     source, media_type, media_id, origin,
@@ -140,6 +157,14 @@ class Command(BaseCommand):
 
             if index % 25 == 0 or index == len(to_fetch):
                 self.stdout.write(f"  {index}/{len(to_fetch)} processed...")
+
+        if options.get("report"):
+            report_path = Path(options["report"])
+            report_path.write_text(
+                json.dumps(failures, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            self.stdout.write(f"Wrote {len(failures)} unresolved IDs to {report_path}.")
 
         self.stdout.write(
             self.style.SUCCESS(

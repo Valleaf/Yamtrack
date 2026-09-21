@@ -58,6 +58,7 @@ class Metadata(TestCase):
         self.assertEqual(response["details"]["start_date"], "1994-12-05")
         self.assertEqual(response["details"]["status"], "Finished")
         self.assertEqual(response["details"]["number_of_chapters"], 162)
+        self.assertIn("number_of_volumes", response["details"])
 
     def test_mangaupdates(self):
         """Test the metadata method for manga from mangaupdates."""
@@ -65,6 +66,7 @@ class Metadata(TestCase):
         self.assertEqual(response["title"], "Monster")
         self.assertEqual(response["details"]["year"], "1994")
         self.assertEqual(response["details"]["format"], "Manga")
+        self.assertEqual(response["details"]["number_of_volumes"], 18)
 
     def test_tv(self):
         """Test the metadata method for TV shows."""

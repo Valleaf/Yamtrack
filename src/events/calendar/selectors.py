@@ -77,10 +77,20 @@ def filter_items_to_fetch(items):
     other_q = (
         ~Q(media_type__in=[MediaTypes.TV.value, MediaTypes.COMIC.value])
         & ~Q(media_type=MediaTypes.MOVIE.value, source=Sources.TMDB.value)
+        & ~Q(media_type=MediaTypes.MUSIC.value, source=Sources.MUSICBRAINZ.value)
         & (Q(event__isnull=True) | Q(has_future_events=True))
     )
 
-    return annotated.filter(tv_q | movie_q | comic_q | other_q).distinct()
+    music_ids = items.filter(
+        media_type=MediaTypes.MUSIC.value,
+        source=Sources.MUSICBRAINZ.value,
+    ).filter(
+        Q(event__isnull=True) | Q(event__datetime__gte=one_year_ago),
+    ).values_list("id", flat=True)
+
+    return annotated.filter(
+        tv_q | movie_q | comic_q | other_q | Q(id__in=music_ids),
+    ).distinct()
 
 
 def get_tv_items_to_include(tv_items):

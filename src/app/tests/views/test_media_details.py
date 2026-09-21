@@ -11,6 +11,7 @@ from app.models import (
     Movie,
     Sources,
     Status,
+    TV,
 )
 
 
@@ -63,6 +64,63 @@ class MediaDetailsViewTests(TestCase):
             "238",
             Sources.TMDB.value,
         )
+
+    @patch("app.providers.services.get_media_metadata")
+    def test_tv_details_report_untracked_provider_seasons(self, mock_get_metadata):
+        """TV details expose provider seasons not yet tracked by the user."""
+        item = Item.objects.create(
+            media_id="tv-1",
+            source=Sources.TMDB.value,
+            media_type=MediaTypes.TV.value,
+            title="Returning Show",
+        )
+        TV.objects.create(item=item, user=self.user, status=Status.IN_PROGRESS.value)
+        mock_get_metadata.return_value = {
+            "media_id": "tv-1",
+            "title": "Returning Show",
+            "media_type": MediaTypes.TV.value,
+            "source": Sources.TMDB.value,
+            "image": "http://example.com/show.jpg",
+            "related": {
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "season_title": "Season 1",
+                        "title": "Season 1",
+                        "max_progress": 8,
+                        "media_type": MediaTypes.SEASON.value,
+                        "source": Sources.TMDB.value,
+                        "media_id": "tv-1",
+                    },
+                    {
+                        "season_number": 2,
+                        "season_title": "Season 2",
+                        "title": "Season 2",
+                        "max_progress": 10,
+                        "media_type": MediaTypes.SEASON.value,
+                        "source": Sources.TMDB.value,
+                        "media_id": "tv-1",
+                    },
+                ],
+            },
+        }
+
+        response = self.client.get(
+            reverse(
+                "media_details",
+                kwargs={
+                    "source": Sources.TMDB.value,
+                    "media_type": MediaTypes.TV.value,
+                    "media_id": "tv-1",
+                    "title": "returning-show",
+                },
+            ),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["release_health"]["tracked_seasons"], 0)
+        self.assertContains(response, "RELEASE HEALTH")
+        self.assertContains(response, "S2")
 
     @patch("app.providers.tmdb.person_credits")
     @patch("app.providers.services.get_media_metadata")

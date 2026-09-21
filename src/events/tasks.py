@@ -4,6 +4,7 @@ from celery import shared_task
 
 from events import notifications
 from events.calendar.main import fetch_releases
+from events.music_discovery import sync_music_release_discoveries
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,12 @@ def reload_calendar(user=None, items_to_process=None):
         user=user,
         items_to_process=items_to_process,
     )
+
+
+@shared_task(name="Sync music release discoveries")
+def sync_music_releases():
+    """Refresh recent and upcoming releases for all tracked artists."""
+    return sync_music_release_discoveries()
 
 
 @shared_task(name="Send release notifications")

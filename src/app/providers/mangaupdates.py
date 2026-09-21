@@ -147,6 +147,7 @@ async def async_manga(media_id):
                 "year": response["year"],
                 "status_in_country_of_origin": get_status(response["status"]),
                 "latest_chapter_translated": response["latest_chapter"],
+                "number_of_volumes": get_volume_count(response["status"]),
             },
             "related": {
                 "related_manga": await related_task,
@@ -224,6 +225,14 @@ def get_status(status):
         if match:
             return match.group(1)
     return status
+
+
+def get_volume_count(status):
+    """Extract a stable volume count from MangaUpdates status text."""
+    if not status:
+        return None
+    match = re.search(r"(\d+)\s+Volumes\b", status)
+    return int(match.group(1)) if match else None
 
 
 def get_score(score):

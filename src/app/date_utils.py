@@ -119,7 +119,14 @@ def is_released_date(air_date, current_date=None):
     bool
         True if air_date has passed, False otherwise
     """
-    return parse_date_with_precision(air_date, current_date, use_sentinel=False)
+    parsed = parse_date_with_precision(air_date, current_date, use_sentinel=False)
+    if isinstance(parsed, datetime):
+        if current_date is None:
+            current_date = timezone.localdate()
+        elif isinstance(current_date, datetime):
+            current_date = timezone.localtime(current_date).date()
+        return parsed.date() <= current_date
+    return bool(parsed)
 
 
 def parse_calendar_date(date_str):

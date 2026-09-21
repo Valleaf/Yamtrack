@@ -1,11 +1,12 @@
 import calendar as cal
 import logging
-from datetime import UTC, date, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 import icalendar
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -13,10 +14,30 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from events import tasks
-from events.models import Event
+from events.models import Event, MusicReleaseDiscovery
 from users.models import User
 
 logger = logging.getLogger(__name__)
+
+
+def _calendar_releases(user, first_day, last_day):
+    """Combine tracked events with artist-wide music discoveries."""
+    events = list(Event.objects.get_user_events(user, first_day, last_day))
+    if "music" not in user.get_enabled_media_types():
+        return events
+
+    start = timezone.make_aware(datetime.combine(first_day, datetime.min.time()))
+    end = timezone.make_aware(datetime.combine(last_day, datetime.max.time()))
+    tracked_item_ids = {event.item_id for event in events}
+    discoveries = MusicReleaseDiscovery.objects.filter(
+        user=user,
+        release_date__gte=start,
+        release_date__lte=end,
+    ).exclude(item_id__in=tracked_item_ids).select_related("item")
+    return sorted(
+        [*events, *discoveries],
+        key=lambda release: release.datetime,
+    )
 
 
 @require_GET
@@ -64,7 +85,7 @@ def calendar(request):
     month_name = cal.month_name[month]
 
     # Get events and organize by day
-    releases = Event.objects.get_user_events(request.user, first_day, last_day)
+    releases = _calendar_releases(request.user, first_day, last_day)
 
     release_dict = {}
     for release in releases:
@@ -77,11 +98,20 @@ def calendar(request):
 
     # Get today's date for highlighting
     today = timezone.localdate()
-    upcoming_releases = Event.objects.get_user_events(
+    upcoming_releases = _calendar_releases(
         request.user,
         today,
         today + timedelta(days=90),
     )
+    recent_music_releases = [
+        release
+        for release in _calendar_releases(
+            request.user,
+            today - timedelta(days=365),
+            today - timedelta(days=1),
+        )
+        if release.item.media_type == "music"
+    ]
     upcoming_release_groups = []
     releases_by_type = {}
     for release in upcoming_releases:
@@ -94,6 +124,23 @@ def calendar(request):
             "media_type": media_type,
             "releases": releases_for_type,
         })
+    upcoming_music_releases = releases_by_type.get("music", [])
+    for release in upcoming_music_releases:
+        metadata = cache.get(
+            f"{release.item.source}_{release.item.media_type}_{release.item.media_id}",
+        )
+        release.music_artist_names = (
+            (metadata or {}).get("details", {}).get("artists")
+            or getattr(release, "artist_names", "")
+        )
+    for release in recent_music_releases:
+        metadata = cache.get(
+            f"{release.item.source}_{release.item.media_type}_{release.item.media_id}",
+        )
+        release.music_artist_names = (
+            (metadata or {}).get("details", {}).get("artists")
+            or getattr(release, "artist_names", "")
+        )
 
     context = {
         "calendar": calendar_format,
@@ -109,6 +156,8 @@ def calendar(request):
         "view_type": view_type,
         "upcoming_releases": upcoming_releases,
         "upcoming_release_groups": upcoming_release_groups,
+        "upcoming_music_releases": upcoming_music_releases,
+        "recent_music_releases": recent_music_releases,
     }
     return render(request, "events/calendar.html", context)
 
@@ -142,7 +191,7 @@ def download_calendar(_, token: str):
     end_date = now.date() + timedelta(days=90)
 
     # Retrieve release events
-    releases = Event.objects.get_user_events(user, start_date, end_date)
+    releases = _calendar_releases(user, start_date, end_date)
 
     # Create iCalendar object
     cal = icalendar.Calendar()

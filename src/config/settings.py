@@ -568,6 +568,12 @@ CELERY_BEAT_SCHEDULE = {
         "task": "Reload calendar",
         "schedule": 60 * 60 * 24,  # every 24 hours
     },
+    "sync_music_releases": {
+        "task": "Sync music release discoveries",
+        # MusicBrainz metadata changes slowly; shared seven-day caching keeps
+        # the request volume low even when many users track the same artists.
+        "schedule": 60 * 60 * 24 * 7,
+    },
     "send_release_notifications": {
         "task": "Send release notifications",
         "schedule": 60 * 10,  # every 10 minutes

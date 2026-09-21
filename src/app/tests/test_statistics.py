@@ -62,18 +62,21 @@ class StatisticsContextCacheTests(TestCase):
     def tearDown(self):
         cache.clear()
 
-    @patch("app.statistics.build_statistics_context")
+    @patch("app.statistics.build_statistics_sections")
     def test_statistics_context_is_cached_per_user_and_date_range(self, mock_build):
-        mock_build.return_value = {"media_count": {"total": 0}}
+        mock_build.side_effect = lambda user, start, end, sections: {
+            name: {"section": name}
+            for name in sections
+        }
 
         first_context = statistics.get_statistics_context(self.user, None, None)
         second_context = statistics.get_statistics_context(self.user, None, None)
 
-        self.assertEqual(first_context, {"media_count": {"total": 0}})
-        self.assertEqual(second_context, {"media_count": {"total": 0}})
-        mock_build.assert_called_once_with(self.user, None, None)
+        self.assertEqual(first_context["media_count"], {"section": "media_count"})
+        self.assertEqual(second_context["media_count"], {"section": "media_count"})
+        mock_build.assert_called_once()
 
-    @patch("app.statistics.build_statistics_context")
+    @patch("app.statistics.build_statistics_sections")
     def test_statistics_context_invalidation_bumps_cached_version(self, mock_build):
         mock_build.side_effect = [
             {"media_count": {"total": 1}},
@@ -84,8 +87,8 @@ class StatisticsContextCacheTests(TestCase):
         statistics.invalidate_statistics_cache(self.user.id)
         second_context = statistics.get_statistics_context(self.user, None, None)
 
-        self.assertEqual(first_context, {"media_count": {"total": 1}})
-        self.assertEqual(second_context, {"media_count": {"total": 2}})
+        self.assertEqual(first_context["media_count"], {"total": 1})
+        self.assertEqual(second_context["media_count"], {"total": 2})
         self.assertEqual(mock_build.call_count, 2)
 
 

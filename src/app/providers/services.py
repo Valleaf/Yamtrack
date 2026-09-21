@@ -4,7 +4,7 @@ import time
 import requests
 from defusedxml import ElementTree
 from django.conf import settings
-from pyrate_limiter import RedisBucket
+from pyrate_limiter import InMemoryBucket, RedisBucket
 from redis import Redis
 from requests.adapters import HTTPAdapter
 from requests_ratelimiter import LimiterAdapter, LimiterSession
@@ -40,11 +40,17 @@ def get_redis_client():
 redis_db = get_redis_client()
 bucket_key = f"{settings.REDIS_PREFIX}_api" if settings.REDIS_PREFIX else "api"
 
-session = LimiterSession(
-    per_second=5,
-    bucket_class=RedisBucket,
-    bucket_kwargs={"redis": redis_db, "bucket_key": bucket_key},
-)
+if settings.TESTING:
+    # fakeredis intentionally does not implement Redis scripting. Provider
+    # tests only need rate limiting semantics, so keep their bucket in memory
+    # and avoid requiring Lua support from the test double.
+    session = LimiterSession(per_second=5, bucket_class=InMemoryBucket)
+else:
+    session = LimiterSession(
+        per_second=5,
+        bucket_class=RedisBucket,
+        bucket_kwargs={"redis": redis_db, "bucket_key": bucket_key},
+    )
 
 session.mount("http://", HTTPAdapter(max_retries=3))
 session.mount("https://", HTTPAdapter(max_retries=3))

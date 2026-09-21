@@ -23,10 +23,18 @@ from app import statistics as stats
 from app.date_utils import get_release_year_from_metadata
 from app.forms import EpisodeForm, ManualItemForm, get_form_class
 from app.models import (
+    Anime,
+    BoardGame,
+    Book,
     TV,
     BasicMedia,
+    Comic,
+    Game,
     Item,
+    Manga,
     MediaTypes,
+    Movie,
+    Music,
     Season,
     Sources,
     Status,
@@ -98,6 +106,45 @@ def home(request):
         "items_limit": items_limit,
     }
     return render(request, "app/home.html", context)
+
+
+@require_GET
+def unrated(request):
+    """Show tracked media that has not received a score yet."""
+    model_by_type = {
+        MediaTypes.TV.value: TV,
+        MediaTypes.MOVIE.value: Movie,
+        MediaTypes.ANIME.value: Anime,
+        MediaTypes.MANGA.value: Manga,
+        MediaTypes.GAME.value: Game,
+        MediaTypes.BOOK.value: Book,
+        MediaTypes.COMIC.value: Comic,
+        MediaTypes.BOARDGAME.value: BoardGame,
+        MediaTypes.MUSIC.value: Music,
+    }
+    enabled_types = request.user.get_enabled_media_types()
+    sections = []
+    for media_type in enabled_types:
+        model = model_by_type.get(media_type)
+        if model is None:
+            continue
+        media_list = list(
+            model.objects.filter(user=request.user, score__isnull=True)
+            .select_related("item")
+            .order_by("item__title")
+        )
+        for media in media_list:
+            media.repeats = 1
+        if media_list:
+            sections.append(
+                {
+                    "media_type": media_type,
+                    "label": MediaTypes(media_type).label,
+                    "media_list": media_list,
+                },
+            )
+
+    return render(request, "app/unrated.html", {"sections": sections})
 
 
 @require_POST
@@ -326,6 +373,45 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
             ).distinct()
         )
 
+    # Surface provider seasons that have not been materialized in the user's
+    # tracker yet. This makes newly announced TV releases actionable without
+    # requiring the user to open each season individually.
+    release_health = None
+    if media_type == MediaTypes.TV.value:
+        provider_seasons = media_metadata.get("related", {}).get("seasons", [])
+        tracked_tv = (
+            TV.objects.filter(user=request.user, item=this_item).first()
+            if this_item
+            else None
+        )
+        tracked_numbers = set()
+        if tracked_tv:
+            tracked_numbers = set(
+                tracked_tv.seasons.values_list("item__season_number", flat=True),
+            )
+        season_rows = []
+        for season_entry in provider_seasons:
+            # Related sections are enriched above into {item, media} wrappers.
+            season = season_entry.get("item", season_entry)
+            season_number = season.get("season_number")
+            if season_number is None:
+                continue
+            season_rows.append(
+                {
+                    "number": season_number,
+                    "title": season.get("season_title") or season.get("title"),
+                    "episodes": season.get("max_progress"),
+                    "first_air_date": season.get("first_air_date"),
+                    "tracked": season_number in tracked_numbers,
+                },
+            )
+        release_health = {
+            "known_seasons": len(season_rows),
+            "tracked_seasons": sum(row["tracked"] for row in season_rows),
+            "untracked_seasons": [row for row in season_rows if not row["tracked"]],
+            "seasons": season_rows,
+        }
+
     # Find the Collection record for the collection/series this media belongs to
     tmdb_collection_obj = None
     collection_banner = None
@@ -390,6 +476,7 @@ def media_details(request, source, media_type, media_id, title):  # noqa: ARG001
         "tmdb_collection_obj": tmdb_collection_obj,
         "collection_banner": collection_banner,
         "country_display": get_country_display(media_metadata),
+        "release_health": release_health,
     }
     return render(request, "app/media_details.html", context)
 
@@ -618,8 +705,28 @@ def movie_director_filmography(request, director_id):
 def music_artist(request, artist_id, name):  # noqa: ARG001 name for URL
     """Return the MusicBrainz artist page."""
     from app.providers import musicbrainz
+
     artist_data = musicbrainz.artist(artist_id)
-    return render(request, "app/music_artist.html", {"artist": artist_data})
+    album_releases = artist_data.get("discography", {}).get("album", [])
+    release_ids = [str(release.get("media_id")) for release in album_releases]
+    rated_by_id = {
+        media.item.media_id: media
+        for media in Music.objects.filter(
+            user=request.user,
+            score__isnull=False,
+            item__media_id__in=release_ids,
+        ).select_related("item")
+    }
+    rated_albums = [
+        {"release": release, "media": rated_by_id[str(release.get("media_id"))]}
+        for release in album_releases
+        if str(release.get("media_id")) in rated_by_id
+    ]
+    return render(
+        request,
+        "app/music_artist.html",
+        {"artist": artist_data, "rated_albums": rated_albums},
+    )
 
 
 # ── Generic person/studio grouping ────────────────────────────────────────────

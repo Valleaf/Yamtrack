@@ -10,6 +10,80 @@ from app.models import UserMessage
 logger = logging.getLogger(__name__)
 
 
+def _sync_tracked_tv_structure(item, tv_metadata):
+    """Materialize newly announced seasons and episodes for tracked TVs."""
+    from app.models import Episode, Item, MediaTypes, Season, Status, TV  # noqa: PLC0415
+    from app.providers import services  # noqa: PLC0415
+
+    season_numbers = [
+        season["season_number"]
+        for season in tv_metadata.get("related", {}).get("seasons", [])
+        if season.get("season_number") != 0
+    ]
+    if not season_numbers:
+        return 0
+
+    tv_with_seasons = services.get_media_metadata(
+        "tv_with_seasons", item.media_id, item.source, season_numbers
+    )
+    created = 0
+    current_date = timezone.localdate()
+    tracked_tvs = TV.objects.filter(item=item).prefetch_related("seasons")
+    for tv in tracked_tvs:
+        for season_number in season_numbers:
+            season_metadata = tv_with_seasons.get(f"season/{season_number}")
+            if not season_metadata:
+                continue
+            season_item, _ = Item.objects.get_or_create(
+                media_id=item.media_id,
+                source=item.source,
+                media_type=MediaTypes.SEASON.value,
+                season_number=season_number,
+                defaults={
+                    "title": item.title,
+                    "image": season_metadata.get("image", item.image),
+                },
+            )
+            season, season_created = Season.objects.get_or_create(
+                item=season_item,
+                user=tv.user,
+                defaults={
+                    "related_tv": tv,
+                    "status": Status.PLANNING.value,
+                },
+            )
+            if season_created:
+                season.status = season.get_completion_status(
+                    season_metadata,
+                    unreleased_only_status=Status.PLANNING.value,
+                    current_date=current_date,
+                )
+                season.save(update_fields=["status"])
+                created += 1
+
+            existing_episode_numbers = set(
+                Episode.objects.filter(related_season=season).values_list(
+                    "item__episode_number", flat=True
+                )
+            )
+            for episode_data in season_metadata.get("episodes", []):
+                episode_number = episode_data.get("episode_number")
+                if episode_number in existing_episode_numbers:
+                    continue
+                episode_item = season.get_episode_item(episode_number, season_metadata)
+                Episode.objects.create(related_season=season, item=episode_item)
+                existing_episode_numbers.add(episode_number)
+                created += 1
+
+        if tv.status == Status.COMPLETED.value and tv.seasons.exclude(
+            status=Status.COMPLETED.value
+        ).exists():
+            tv.status = Status.IN_PROGRESS.value
+            tv.save(update_fields=["status"])
+
+    return created
+
+
 # NOTE: the old "Sync external lists" task (ExternalList/ExternalListItem-based)
 # was removed here -- those models were dropped in migration 0074 in favour of
 # the static app/external_lists_data.py fixture (see that migration's docstring
@@ -264,6 +338,14 @@ def sync_all_tracked_media(progress_every=50):
 
         # Picks up new seasons/episodes/releases for TV shows the same way
         # the manual sync button does; cheap no-op for other media types.
+        if item.media_type == MediaTypes.TV.value:
+            try:
+                _sync_tracked_tv_structure(item, metadata)
+            except Exception:
+                logger.exception(
+                    "Full media sync: failed to materialize TV structure for %s/%s",
+                    item.source, item.media_id,
+                )
         item.fetch_releases(delay=True)
 
         if index % progress_every == 0:
