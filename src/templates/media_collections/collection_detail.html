@@ -110,11 +110,12 @@
       <div class="flex min-w-max items-stretch gap-3">
         {% for ci in timeline_items %}
           <a href="{{ ci.item|media_url }}"
-             class="w-36 rounded-lg bg-[#2a2f35] p-2 transition-colors hover:bg-[#39404b]">
+             class="block w-36 shrink-0 grow-0 rounded-lg bg-[#2a2f35] p-2 transition-colors hover:bg-[#39404b]">
             <div class="relative mb-2 aspect-[2/3] overflow-hidden rounded-md bg-[#23272e]">
               <img src="{{ ci.item.image }}"
                    alt="{{ ci.item.title }}"
-                   class="h-full w-full object-cover"
+                   class="absolute inset-0 h-full w-full object-cover"
+                   loading="lazy"
                    onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
               {% if ci.series_position %}
                 <span class="absolute left-1.5 top-1.5 rounded bg-indigo-600/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">

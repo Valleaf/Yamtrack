@@ -41,7 +41,7 @@ STATISTICS_CACHE_TIMEOUT = getattr(settings, "STATISTICS_CACHE_TIMEOUT", 60 * 60
 # Bump this when the shape of a cached statistics section changes. In
 # particular, actor entries gained their watched-film list after the first
 # version of the people-stats cache was deployed.
-_STATISTICS_CACHE_VERSION_KEY = "statistics:v2:context:version:{user_id}"
+_STATISTICS_CACHE_VERSION_KEY = "statistics:v6:context:version:{user_id}"
 _STATISTICS_SECTION_CACHE_KEY = (
     "statistics:section:{section}:{user_id}:{version}:{media_types}:{start_date}:{end_date}"
 )
@@ -1191,12 +1191,95 @@ def get_people_stats(user_media):
             )
             entry["count"] += 1
 
-    top_n = 10
+    rated = _get_rated_people_stats(user_media)
+    min_count = 3
+
+    def _rank_by_count(people):
+        return sorted(
+            (p for p in people.values() if p["count"] >= min_count),
+            key=lambda x: (-x["count"], x["name"]),
+        )
+
     return {
-        "directors": sorted(directors.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
-        "actors": sorted(actors.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
-        "artists": sorted(artists.values(), key=lambda x: (-x["count"], x["name"]))[:top_n],
+        "directors": _rank_by_count(directors),
+        "actors": _rank_by_count(actors),
+        "artists": _rank_by_count(artists),
+        **rated,
     }
+
+
+def _get_rated_people_stats(user_media, min_rated=3):
+    """Rank directors, actors and artists by the average of the user's scores.
+
+    Only people with at least ``min_rated`` rated items are ranked. Like
+    get_people_stats, this only reads cached provider metadata.
+    """
+    buckets = {"directors_rated": {}, "actors_rated": {}, "artists_rated": {}}
+    sources = (
+        ("movie", "directors", "directors_rated"),
+        ("movie", "cast", "actors_rated"),
+        ("music", "artist_links", "artists_rated"),
+    )
+
+    for media_type, people_key, bucket_key in sources:
+        bucket = buckets[bucket_key]
+        for media in user_media.get(media_type, []):
+            if media.score is None:
+                continue
+            cache_key = f"{media.item.source}_{media.item.media_type}_{media.item.media_id}"
+            metadata = cache.get(cache_key)
+            if metadata is None:
+                continue
+
+            link = reverse(
+                "media_details",
+                kwargs={
+                    "source": media.item.source,
+                    "media_type": media.item.media_type,
+                    "media_id": media.item.media_id,
+                    "title": app_tags.slug(media.item.title),
+                },
+            )
+            for person in metadata.get(people_key, []):
+                pid = person.get("id")
+                if not pid:
+                    continue
+                entry = bucket.setdefault(
+                    pid,
+                    {
+                        "id": pid,
+                        "name": person["name"],
+                        "image": person.get("image"),
+                        "scores": [],
+                        "films": [],
+                    },
+                )
+                entry["scores"].append(float(media.score))
+                entry["films"].append(
+                    {"title": media.item.title, "score": float(media.score), "link": link},
+                )
+
+    result = {}
+    for bucket_key, bucket in buckets.items():
+        ranked = []
+        for entry in bucket.values():
+            scores = entry.pop("scores")
+            if len(scores) < min_rated:
+                continue
+            raw_avg = sum(scores) / len(scores)
+            entry["raw_avg"] = raw_avg
+            entry["avg"] = round(raw_avg, 1)
+            entry["rated_count"] = len(scores)
+            entry["films"].sort(key=lambda f: (-f["score"], f["title"]))
+            ranked.append(entry)
+        ranked.sort(key=lambda e: (-e["raw_avg"], -e["rated_count"], e["name"]))
+        result[bucket_key] = ranked
+    result["rated_columns"] = [
+        ("Directors", result["directors_rated"]),
+        ("Actors", result["actors_rated"]),
+        ("Artists", result["artists_rated"]),
+    ]
+    return result
 
 
 def get_year_chart_data(year_rows):

@@ -744,17 +744,23 @@
     <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Top People</h2>
-        <p class="text-sm text-gray-400">Most frequent directors, actors and artists in your library</p>
+        <p class="text-sm text-gray-400">Directors, actors and artists appearing at least 3 times in your library</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
         <!-- Directors -->
         {% if people_stats.directors %}
-        <div>
-          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Directors</h3>
+        <div x-data="{ showAll: false }">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Directors <span class="ml-1 text-xs font-normal normal-case text-gray-500">({{ people_stats.directors|length }})</span></h3>
+            {% if people_stats.directors|length > 10 %}
+            <button type="button" @click="showAll = !showAll" class="text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer" x-text="showAll ? 'Show top 10' : 'Show all'"></button>
+            {% endif %}
+          </div>
           <div class="space-y-2">
             {% for person in people_stats.directors %}
             <a href="{% url 'movie_director' person.id person.name|slug %}"
+               x-show="showAll || {{ forloop.counter }} <= 10"
                class="flex items-center gap-3 group py-1">
               {% if person.image %}
                 <img src="{{ person.image }}" alt="{{ person.name }}"
@@ -774,11 +780,17 @@
 
         <!-- Actors -->
         {% if people_stats.actors %}
-        <div>
-          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Actors</h3>
+        <div x-data="{ showAll: false }">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Actors <span class="ml-1 text-xs font-normal normal-case text-gray-500">({{ people_stats.actors|length }})</span></h3>
+            {% if people_stats.actors|length > 10 %}
+            <button type="button" @click="showAll = !showAll" class="text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer" x-text="showAll ? 'Show top 10' : 'Show all'"></button>
+            {% endif %}
+          </div>
           <div class="space-y-2">
             {% for person in people_stats.actors %}
             <div x-data="{ showActorFilms: false }"
+                 x-show="showAll || {{ forloop.counter }} <= 10"
                  @keydown.escape.window="showActorFilms = false"
                  class="flex items-center gap-3 py-1">
               {% if person.image %}
@@ -830,11 +842,17 @@
 
         <!-- Artists -->
         {% if people_stats.artists %}
-        <div>
-          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Artists</h3>
+        <div x-data="{ showAll: false }">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Artists <span class="ml-1 text-xs font-normal normal-case text-gray-500">({{ people_stats.artists|length }})</span></h3>
+            {% if people_stats.artists|length > 10 %}
+            <button type="button" @click="showAll = !showAll" class="text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer" x-text="showAll ? 'Show top 10' : 'Show all'"></button>
+            {% endif %}
+          </div>
           <div class="space-y-2">
             {% for person in people_stats.artists %}
             <a href="{% url 'music_artist' person.id person.name|slug %}"
+               x-show="showAll || {{ forloop.counter }} <= 10"
                class="flex items-center gap-3 group py-1">
               <div class="w-8 h-8 rounded-full bg-[#2a2f35] shrink-0 flex items-center justify-center text-gray-500 text-xs font-bold">
                 {{ person.name|first|upper }}
@@ -853,6 +871,58 @@
     <div x-show="statsTab === 'people'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
       <h2 class="text-xl font-semibold mb-2">Top People</h2>
       <p class="text-gray-400 text-sm">Director, actor, and artist stats will appear here once provider metadata has been cached.</p>
+    </div>
+    {% endif %}
+
+    <!-- Best rated people (auto ranking by average score, min 3 rated) -->
+    {% if people_stats.directors_rated or people_stats.actors_rated or people_stats.artists_rated %}
+    <div x-show="statsTab === 'people'" x-cloak class="mt-6 bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Best Rated People</h2>
+        <p class="text-sm text-gray-400">Ranked by the average of your scores, for people with at least 3 rated titles</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for title, people in people_stats.rated_columns %}
+        {% if people %}
+        <div x-data="{ showAll: false }">
+          <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">{{ title }} <span class="ml-1 text-xs font-normal normal-case text-gray-500">({{ people|length }})</span></h3>
+          <div class="space-y-1">
+            {% for person in people %}
+            <details x-show="showAll || {{ forloop.counter }} <= 10" class="group rounded-md">
+              <summary class="flex cursor-pointer list-none items-center gap-3 py-1">
+                <span class="w-5 shrink-0 text-right text-xs text-gray-500">{{ forloop.counter }}</span>
+                {% if person.image %}
+                  <img src="{{ person.image }}" alt="{{ person.name }}"
+                       class="w-8 h-8 rounded-full object-cover bg-[#2a2f35] shrink-0">
+                {% else %}
+                  <div class="w-8 h-8 rounded-full bg-[#2a2f35] shrink-0 flex items-center justify-center text-gray-500 text-xs font-bold">
+                    {{ person.name|first|upper }}
+                  </div>
+                {% endif %}
+                <span class="text-sm text-gray-300 group-hover:text-indigo-400 transition-colors flex-1 truncate">{{ person.name }}</span>
+                <span class="text-xs text-gray-500 shrink-0">{{ person.rated_count }} rated</span>
+                <span class="text-xs font-semibold text-yellow-400 shrink-0 bg-[#2a2f35] px-2 py-0.5 rounded">{{ person.avg }}</span>
+              </summary>
+              <ul class="ml-8 mt-1 mb-2 space-y-0.5 border-l border-white/10 pl-3">
+                {% for film in person.films %}
+                <li class="flex items-center justify-between gap-3 text-xs">
+                  <a href="{{ film.link }}" class="truncate text-gray-400 hover:text-indigo-400">{{ film.title }}</a>
+                  <span class="shrink-0 text-gray-500">{{ film.score|floatformat:"-1" }}</span>
+                </li>
+                {% endfor %}
+              </ul>
+            </details>
+            {% endfor %}
+            {% if people|length > 10 %}
+            <button type="button" @click="showAll = !showAll"
+                    class="mt-2 w-full rounded-md bg-[#2a2f35] px-3 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#39404b] hover:text-white cursor-pointer"
+                    x-text="showAll ? 'Show top 10 only' : 'Show all {{ people|length }}'"></button>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 

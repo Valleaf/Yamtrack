@@ -16,6 +16,8 @@
 - [ ] more local festival etc
 - [ ] cannes palme d'ors
 - [ ] cannes prix du jury
-- [ ] etc just more more lists and complete theme
-- [ ] director / music artists / actor rankings similar to this :(This one is a manual list, but i want a automatic list, at least 3 rated)
+- [ ] etc just more more lists and complete them
+- [X] Collections : Franchise timeline is nice but pictures are not all the same size, it looks weird (cards forced to fixed size + images absolutely filled; needs rebuild + visual check)
+- [ ] Any way to get faster stats ? (Preload them weekly or something ? any method?)
+- [X] director / music artists / actor rankings similar to this :(This one is a manual list, but i want a automatic list, at least 3 rated) (added "Best Rated People" card on stats > people tab, avg score, min 3 rated, no cap: full ranking with show top 10 / show all toggle, expandable film scores; Top People card also uncapped (min 3 appearances, show top 10 / show all); needs rebuild)
 - [ ] ![1790510735190](image/todo/1790510735190.png)
