@@ -129,6 +129,7 @@ def calendar(request):
         metadata = cache.get(
             f"{release.item.source}_{release.item.media_type}_{release.item.media_id}",
         )
+        release.music_artist_links = (metadata or {}).get("artist_links", [])
         release.music_artist_names = (
             (metadata or {}).get("details", {}).get("artists")
             or getattr(release, "artist_names", "")
@@ -137,6 +138,7 @@ def calendar(request):
         metadata = cache.get(
             f"{release.item.source}_{release.item.media_type}_{release.item.media_id}",
         )
+        release.music_artist_links = (metadata or {}).get("artist_links", [])
         release.music_artist_names = (
             (metadata or {}).get("details", {}).get("artists")
             or getattr(release, "artist_names", "")

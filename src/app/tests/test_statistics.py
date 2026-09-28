@@ -62,6 +62,21 @@ class StatisticsContextCacheTests(TestCase):
     def tearDown(self):
         cache.clear()
 
+    @patch("app.statistics.lastfm.user_stats")
+    @patch("app.statistics.build_statistics_sections")
+    def test_statistics_context_includes_lastfm_stats(self, mock_build, mock_lastfm):
+        mock_lastfm.return_value = {"username": "listener", "top_artists": []}
+        mock_build.side_effect = lambda user, start, end, sections: {
+            "lastfm_stats": mock_lastfm(user.lastfm_username),
+        }
+        self.user.lastfm_username = "listener"
+        self.user.save(update_fields=["lastfm_username"])
+
+        context = statistics.get_statistics_context(self.user, None, None)
+
+        self.assertEqual(context["lastfm_stats"]["username"], "listener")
+        mock_lastfm.assert_called_once_with("listener")
+
     @patch("app.statistics.build_statistics_sections")
     def test_statistics_context_is_cached_per_user_and_date_range(self, mock_build):
         mock_build.side_effect = lambda user, start, end, sections: {

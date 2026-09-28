@@ -33,6 +33,11 @@
               class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
         People
       </button>
+      <button @click="selectStatsTab('lastfm')"
+              :class="statsTab === 'lastfm' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
+              class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+        🎧 Last.fm
+      </button>
       <button @click="selectStatsTab('awards')"
               :class="statsTab === 'awards' ? 'text-white border-b-2 border-indigo-500 -mb-px' : 'text-gray-400 hover:text-gray-200'"
               class="px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
@@ -850,6 +855,53 @@
       <p class="text-gray-400 text-sm">Director, actor, and artist stats will appear here once provider metadata has been cached.</p>
     </div>
     {% endif %}
+
+    <!-- Last.fm Tab -->
+    <div x-show="statsTab === 'lastfm'" x-cloak class="space-y-6">
+      {% if lastfm_stats %}
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">
+          <div class="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <h2 class="text-xl font-semibold">Last.fm listening</h2>
+              <p class="text-sm text-gray-400 mt-1">Recent and most-played music for {{ lastfm_stats.username }}.</p>
+            </div>
+            <a href="https://www.last.fm/user/{{ lastfm_stats.username }}" target="_blank" rel="noopener noreferrer"
+               class="text-xs text-indigo-400 hover:text-indigo-300">Open profile ↗</a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-3">Top artists</h3>
+              <ol class="space-y-2">
+                {% for artist in lastfm_stats.top_artists|slice:":5" %}
+                  <li class="flex justify-between gap-3 text-sm"><span class="truncate text-gray-300">{{ artist.name }}</span><span class="text-gray-500 shrink-0">{{ artist.playcount }}</span></li>
+                {% empty %}<li class="text-sm text-gray-500">No artist data.</li>{% endfor %}
+              </ol>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-3">Top albums</h3>
+              <ol class="space-y-2">
+                {% for album in lastfm_stats.top_albums|slice:":5" %}
+                  <li class="flex justify-between gap-3 text-sm"><span class="truncate text-gray-300">{{ album.name }}</span><span class="text-gray-500 shrink-0">{{ album.playcount }}</span></li>
+                {% empty %}<li class="text-sm text-gray-500">No album data.</li>{% endfor %}
+              </ol>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-3">Top tracks</h3>
+              <ol class="space-y-2">
+                {% for track in lastfm_stats.top_tracks|slice:":5" %}
+                  <li class="flex justify-between gap-3 text-sm"><span class="truncate text-gray-300">{{ track.name }}</span><span class="text-gray-500 shrink-0">{{ track.playcount }}</span></li>
+                {% empty %}<li class="text-sm text-gray-500">No track data.</li>{% endfor %}
+              </ol>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-8 text-center">
+          <h2 class="text-xl font-semibold mb-2">Last.fm listening</h2>
+          <p class="text-gray-400 text-sm">Add a Last.fm username in Preferences and configure a server Last.fm API key to see listening statistics.</p>
+        </div>
+      {% endif %}
+    </div>
 
     <!-- Top Rated Media Section -->
     <div x-show="statsTab === 'ratings'" x-cloak class="bg-[#1e2329] rounded-xl ring-1 ring-white/5 shadow-md p-6">

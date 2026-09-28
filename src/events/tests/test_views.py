@@ -268,7 +268,10 @@ class CalendarViewTests(TestCase):
         mock_get_user_events.return_value = [event1, event2, event3, music_event]
         cache.set(
             f"{music_item.source}_{music_item.media_type}_{music_item.media_id}",
-            {"details": {"artists": "Test Artist"}},
+            {
+                "details": {"artists": "Test Artist"},
+                "artist_links": [{"id": "artist-1", "name": "Test Artist"}],
+            },
         )
 
         # Make the request
@@ -291,6 +294,10 @@ class CalendarViewTests(TestCase):
         self.assertIn("recent_music_releases", response.context)
         self.assertContains(response, "Music releases")
         self.assertContains(response, "Test Artist")
+        self.assertContains(
+            response,
+            reverse("music_artist", kwargs={"artist_id": "artist-1", "name": "test-artist"}),
+        )
 
     @patch("events.tasks.reload_calendar.delay")
     def test_reload_calendar(self, mock_reload_task):

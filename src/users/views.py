@@ -329,6 +329,7 @@ def preferences(request):
         "hide_completed_recommendations" in request.POST
     )
     request.user.hide_zero_rating = "hide_zero_rating" in request.POST
+    request.user.lastfm_username = request.POST.get("lastfm_username", "").strip()
     request.user.show_home_in_progress = "show_home_in_progress" in request.POST
     request.user.show_home_planning = "show_home_planning" in request.POST
     request.user.date_format = request.POST.get(
@@ -357,6 +358,10 @@ def preferences(request):
 
     # Save changes and redirect
     request.user.save()
+    # Preference changes can affect the Last.fm statistics section, whose
+    # cache key is versioned per user.
+    from app.statistics import invalidate_statistics_cache  # noqa: PLC0415
+    invalidate_statistics_cache(request.user.id)
     messages.success(request, "Settings updated.")
 
     return redirect("preferences")

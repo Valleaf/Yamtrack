@@ -21,6 +21,7 @@ from django.utils import timezone
 
 from app import config
 from app.date_utils import get_release_year_from_metadata
+from app.providers import lastfm
 from app.models import (
     TV,
     BasicMedia,
@@ -122,7 +123,7 @@ def get_statistics_context(user, start_date, end_date):
         "status_pie_chart_data", "extended_statistics", "timeline",
         "year_chart_data", "decade_chart_data", "release_year_chart_data",
         "release_decade_chart_data", "list_progress", "awards_progress",
-        "personal_best",
+        "personal_best", "lastfm_stats",
     ]
     for section in all_section_names:
         cached_value = cache.get(section_key(section))
@@ -166,6 +167,9 @@ def build_statistics_sections(user, start_date, end_date, sections=None):
         return want is None or any(n in want for n in names)
 
     result = {}
+
+    if needed("lastfm_stats"):
+        result["lastfm_stats"] = lastfm.user_stats(user.lastfm_username)
 
     user_media, media_count = get_user_media(user, start_date, end_date)
     if needed("media_count"):

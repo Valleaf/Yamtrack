@@ -468,6 +468,11 @@ class User(AbstractUser):
         blank=True,
         help_text="Comma-separated list of Plex usernames for webhook matching",
     )
+    lastfm_username = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Last.fm username used for personal music statistics",
+    )
 
     class Meta:
         """Meta options for the model."""

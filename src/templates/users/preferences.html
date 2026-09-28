@@ -235,6 +235,26 @@
 
       <div class="border-t border-gray-600 my-5"></div>
 
+      {# Last.fm Settings #}
+      <div class="mb-5">
+        <div class="flex items-center mb-3">
+          <span class="text-lg mr-2">🎧</span>
+          <h3 class="text-lg font-semibold">Last.fm Statistics</h3>
+        </div>
+        <p class="text-gray-400 mb-3 text-sm">
+          Enter your Last.fm username to show listening statistics on the Statistics page.
+          The server administrator must configure a Last.fm API key.
+        </p>
+        <input type="text"
+               name="lastfm_username"
+               value="{{ user.lastfm_username }}"
+               maxlength="100"
+               placeholder="Last.fm username"
+               class="w-full md:w-96 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+
+      <div class="border-t border-gray-600 my-5"></div>
+
       {# Media Types Settings #}
       <div class="mb-5">
         <div class="flex items-center mb-4">

@@ -1,4 +1,21 @@
-- Artworks on people's films etc
-- Music artists pages : Seperate albums eps singles lives etc
-- Collections : Seperate mainline, spin offs, etc (For instance final fantasy mainlines games, etc) (Inside the collection)
-- Last fm statistics integration somehow
+- [X] Artworks on people's films etc
+- [X] Music artists pages: separate albums, EPs, singles, live releases, etc.
+- [X] Collections: separate mainline, spin-offs, etc. inside collections
+- [X] Last.fm statistics integration
+- [X] Pitchfork lists: selected Best Albums of the 2000s snapshot
+- [X] Lists like 1001 Albums or Movies Before You Die
+- [X] Rolling Stone 500 Greatest Albums: selected snapshot
+- [X] Clickable artist on an album page
+- [ ] Where to watch (platforms, in spain) on movies and tv shows
+- [ ] Improve the music calendar view: artist links are added, but the calendar still needs a richer RateYourMusic-style layout and investigation of missing releases]
+- [ ] More last.fm (On album pages, artists pages, more stats on the stats page)
+- [ ] new york times best 100 tv shows of 21st century
+- [ ] nyt best 100 movies
+- [ ] 35 dogme 95 movies
+- [ ] robert festival
+- [ ] more local festival etc
+- [ ] cannes palme d'ors
+- [ ] cannes prix du jury
+- [ ] etc just more more lists and complete theme
+- [ ] director / music artists / actor rankings similar to this :(This one is a manual list, but i want a automatic list, at least 3 rated)
+- [ ] ![1790510735190](image/todo/1790510735190.png)

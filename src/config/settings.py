@@ -416,6 +416,11 @@ STEAM_API_KEY = config(
     ),  # Generate default key https://steamcommunity.com/dev/apikey
 )
 
+LASTFM_API_KEY = config(
+    "LASTFM_API_KEY",
+    default=secret("LASTFM_API_KEY_FILE", ""),
+)
+
 HARDCOVER_API = config(
     "HARDCOVER_API",
     default=secret(

@@ -576,6 +576,59 @@ LISTS = [
     },
 
     # ------------------------------------------------------------------ #
+    # Rolling Stone — The 500 Greatest Albums of All Time (selected)      #
+    # Source: https://au.rollingstone.com/music/music-lists/best-albums-of-all-time-32520/
+    # This is a small verified snapshot, not a claim to reproduce all 500. #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "rolling_stone_500_selected",
+        "source_url": "https://au.rollingstone.com/music/music-lists/best-albums-of-all-time-32520/",
+        "name": "Rolling Stone — 500 Greatest Albums (selected)",
+        "icon": "💿",
+        "media_type": "music",
+        "source": "musicbrainz",
+        "items": [
+            {"rank": 1, "musicbrainz_id": "8e8a594f-2175-38c7-a871-abb68ec363e7"},  # Miles Davis - Kind of Blue
+            {"rank": 2, "musicbrainz_id": "fdd96703-7b21-365e-bdea-38029fbeb84e"},  # The Beach Boys - Pet Sounds
+            {"rank": 3, "musicbrainz_id": "72d15666-99a7-321e-b1f3-a3f8c09dff9f"},  # The Beatles - Revolver
+            {"rank": 4, "musicbrainz_id": "9162580e-5df4-32de-80cc-f45a8d8a9b1d"},  # The Beatles - Abbey Road
+            {"rank": 5, "musicbrainz_id": "42d725fb-a8b7-388c-8866-3b02789af326"},  # Joni Mitchell - Blue
+            {"rank": 6, "musicbrainz_id": "4a4213d0-f224-3d51-bcca-476f61162681"},  # The Rolling Stones - Sticky Fingers
+            {"rank": 7, "musicbrainz_id": "9c1b8072-eb1d-33d2-af8c-984d46e40902"},  # Bob Dylan - Blood on the Tracks
+            {"rank": 8, "musicbrainz_id": "5cbd9d7b-597a-3c5e-bfd1-c2b364215560"},  # The Velvet Underground - The Velvet Underground & Nico
+            {"rank": 9, "musicbrainz_id": "a616dcf5-7a1f-3afe-a53b-27281c2bf75e"},  # The Velvet Underground - The Velvet Underground
+            {"rank": 10, "musicbrainz_id": "dca03435-8adb-30a5-ba82-5a162267ff38"},  # The Beatles - Rubber Soul
+        ],
+    },
+    # ------------------------------------------------------------------ #
+    # Pitchfork — The 200 Best Albums of the 2000s (selected snapshot)   #
+    # Source: https://pitchfork.com/features/lists-and-guides/7710-the-top-200-albums-of-the-2000s-20-1/
+    # Entries use MusicBrainz release-group MBIDs.                         #
+    # ------------------------------------------------------------------ #
+    {
+        "slug": "pitchfork_2000s_selected",
+        "source_url": "https://pitchfork.com/features/lists-and-guides/7710-the-top-200-albums-of-the-2000s-20-1/",
+        "name": "Pitchfork — Best Albums of the 2000s (selected)",
+        "icon": "🎧",
+        "media_type": "music",
+        "source": "musicbrainz",
+        "items": [
+            {"rank": 1, "musicbrainz_id": "e75c0549-ad55-39e3-8025-c72c5d4a3c5d"},  # Radiohead - Kid A
+            {"rank": 2, "musicbrainz_id": "05affa96-5959-32da-8d75-1c9eb985ca59"},  # Arcade Fire - Funeral
+            {"rank": 3, "musicbrainz_id": "48117b90-a16e-34ca-a514-19c702df1158"},  # Daft Punk - Discovery
+            {"rank": 4, "musicbrainz_id": "95f2ba4b-2dd9-38d1-8158-a416a391489c"},  # Wilco - Yankee Hotel Foxtrot
+            {"rank": 5, "musicbrainz_id": "11ae8c9c-27c1-3308-9761-edb87c8f54ea"},  # Jay-Z - The Blueprint
+            {"rank": 7, "musicbrainz_id": "efea26d1-a016-30f6-b8e2-bc8c02336b0a"},  # The Strokes - Is This It
+            {"rank": 8, "musicbrainz_id": "62b427b8-1c52-34e7-b250-da2aa3e44860"},  # Sigur Rós - Ágætis byrjun
+            {"rank": 10, "musicbrainz_id": "28438e4f-3710-459f-a332-a1eba9dd1f26"},  # The Avalanches - Since I Left You
+            {"rank": 12, "musicbrainz_id": "c5a0411f-374e-360d-9364-3ddec3007162"},  # The White Stripes - White Blood Cells
+            {"rank": 13, "musicbrainz_id": "00d2cd53-21c9-3738-b683-56847b7b0040"},  # OutKast - Stankonia
+            {"rank": 15, "musicbrainz_id": "02c05025-e031-30a0-afee-d92cea9d79dd"},  # The Knife - Silent Shout
+            {"rank": 16, "musicbrainz_id": "1fb75447-c513-38c4-ad8f-1bfc441aa74c"},  # Sufjan Stevens - Illinois
+            {"rank": 17, "musicbrainz_id": "5cbcdd9f-4b7d-3b3c-b9f2-6b0e75971157"},  # LCD Soundsystem - Sound of Silver
+        ],
+    },
+    # ------------------------------------------------------------------ #
     #  1001 Albums You Must Hear Before You Die                            #
     #  Source: https://1001albumsgenerator.com/ or the book's official list#
     #  Uses MusicBrainz release-group MBIDs (matches the music tracker)    #

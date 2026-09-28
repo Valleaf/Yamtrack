@@ -84,7 +84,14 @@
                  onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
             <div class="min-w-0">
               <p class="text-sm font-medium text-white truncate">{{ release.item }}</p>
-              {% if release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
+              {% if release.music_artist_links %}
+                <p class="text-xs text-gray-400 truncate">
+                  {% for artist in release.music_artist_links %}
+                    <a href="{% url 'music_artist' artist_id=artist.id name=artist.name|default:'unknown'|slugify|default:'unknown' %}"
+                       class="hover:text-indigo-300 hover:underline">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </p>
+              {% elif release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
               <p class="text-xs text-indigo-300">{{ release.datetime|date_format:user }}</p>
             </div>
           </a>
@@ -112,7 +119,14 @@
                  onerror="this.onerror=null;this.src='{{ IMG_NONE }}'">
             <div class="min-w-0">
               <p class="text-sm font-medium text-white truncate">{{ release.item }}</p>
-              {% if release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
+              {% if release.music_artist_links %}
+                <p class="text-xs text-gray-400 truncate">
+                  {% for artist in release.music_artist_links %}
+                    <a href="{% url 'music_artist' artist_id=artist.id name=artist.name|default:'unknown'|slugify|default:'unknown' %}"
+                       class="hover:text-indigo-300 hover:underline">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </p>
+              {% elif release.music_artist_names %}<p class="text-xs text-gray-400 truncate">{{ release.music_artist_names }}</p>{% endif %}
               <p class="text-xs text-indigo-300">
                 {{ release.datetime|date_format:user }}
                 {% if not release.is_sentinel_time %} · {{ release.datetime|time_format:user }}{% endif %}
